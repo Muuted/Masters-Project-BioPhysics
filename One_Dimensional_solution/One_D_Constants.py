@@ -1,13 +1,19 @@
 import numpy as np
+def gamma(i):
+    gam = 1
+    if i==0:
+        return gam/2
+    else:
+        return gam
 
 def One_D_Constants():
 
     """------ constants ---------"""
     L = 10e-6 # micrometers  :  Total length of line
     r0 = 0.5e-6 # micrometer  :   radius of hole
-    N = 10 + 1 # Number of chain links
+    N = 5 + 1 # Number of chain links
     m = 1e-6 # grams  :   Mass of each chain link
-    gamma = 1e-6 # units=   : The drag coefficient
+    gamma = 1#e-6 # units=   : The drag coefficient
     ds =  L/(N-1) # micrometers  :  Length of each chain
     T = 10 # s  : total time simulated
     dt = 1e-5 # s time step.
@@ -18,21 +24,21 @@ def One_D_Constants():
     """------ variables list ---------"""
     # list of variables
     # we are gonna assume for now that the membrane is just initially flat.
-    x_list = np.zeros(shape=(T,N+1)) # the x-list has increasing value from the start
-    z_list = np.zeros(shape=(T,N+1)) # the z-list is just flat
-    psi_list = np.zeros(shape=(T,N+1)) # all the angles are just flat
-    gamma_list = np.zeros(N+1) # list of all the masses
+    x_list = np.zeros(shape=(T,N)) # the x-list has increasing value from the start
+    z_list = np.zeros(shape=(T,N)) # the z-list is just flat
+    psi_list = np.zeros(shape=(T,N)) # all the angles are just flat
     
+    for i in range(len(psi_list)):
+        psi_list[i] = -np.pi/4
 
-    for i in range(0,N+1):
-        if i == 0:
-            gamma_list[i] = gamma/2
-        else:
-            gamma_list[i] = gamma
+    lambda_list = np.zeros(N)
+    nu_list = np.zeros(N)
+
 
     args = [
         L,r0,N,ds,T,dt
-        ,x_list,z_list,psi_list,m_list
+        ,x_list ,z_list ,psi_list 
+        ,lambda_list ,nu_list
         ]
 
 

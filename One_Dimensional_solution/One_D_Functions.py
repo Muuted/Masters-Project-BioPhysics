@@ -1,55 +1,75 @@
 import numpy as np
-from One_D_Constants import One_D_Constants
+from One_D_Constants import One_D_Constants,gamma
 
-def xi_pos(i,t,N,L,r0,psi_list,ds):
-    cos_sums = 0
-    for j in range(i,N):
-        cos_sums += np.cos(psi_list[t][j])
+
     
-    xi = L + r0 - ds*cos_sums
+def Kroncker(i,j):
+    if i == j :
+        return 1
+    else:
+        return 0
 
-    return xi
-
-def zi_pos(i,t,N,L,r0,psi_list,ds):
-    sin_sums = 0
-    for j in range(i,N):
-        sin_sums += np.sin(psi_list[t][j])
+def Lagran_multi(psi_list,t):
     
-    zi = - ds*sin_sums
+    N = int(len(psi_list[0]))
 
-    return zi
+    b = np.full(shape=(2*N),fill_value=0)
+    A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
+
+    row1,row2 = 0,N
+    for i in range(2*N):
+        for j in range(2*N):
+            if i%N == 0:
+                a1 =  (Kroncker(row1,j) /gamma(row1)- Kroncker(row1+1,j) /gamma(row1+1))*np.cos(psi_list[t][j%N])
+                a2 =(Kroncker(row2,j) /gamma(row2)- Kroncker(row2+1,j) /gamma(row2+1))*np.sin(psi_list[t][j%N])
+
+            else:
+                a11 = ( Kroncker(row1,j) - Kroncker(row1+1,j) )/gamma(row1+1)
+                a12 =( Kroncker(row1-1,j) - Kroncker(row1,j) )/gamma(row1)
+                a1 = ( a11 - a12 )*np.cos(psi_list[t][j%N])
+                
+                a21 = ( Kroncker(row2,j) - Kroncker(row2+1,j) )/gamma(row2+1)            
+                a22 = ( Kroncker(row2-1,j) - Kroncker(row2,j) )/gamma(row2)
+                a2 = (a21 - a22 )*np.sin(psi_list[t][j%N])      
 
 
-def d_xi_pos_dt(i,t,N,L,r0,psi_list,ds,dt):
-    sin_sums=0
-    for j in range(i,N):        
-        sin_sums += np.sin(psi_list[t][j])*(psi_list[t+1][j]-psi_list[t][j])
-    
-    return ds*sin_sums/dt
-
-def d_zi_pos_dt(i,t,N,L,r0,psi_list,ds,dt):
-    cos_sums=0
-    for j in range(i,N):        
-        cos_sums += -np.cos(psi_list[t][j])*(psi_list[t+1][j]-psi_list[t][j])
-    
-    return ds*cos_sums/dt
-
-def Kinetic_energy(t,N,L,r0,ds,dt,psi_list,m_list):
-    E_kin = 0
-    for j in range(N):
-        dxdt = d_xi_pos_dt(j,t,N,L,r0,psi_list,ds,dt)
-        dzdt = d_zi_pos_dt(j,t,N,L,r0,psi_list,ds,dt)
+            A[i][j] =  round(a1 + a2,2) # a1 + a2
         
-        E_kin += (m_list[j]/2)*(  dxdt**2  +  dzdt**2  )
+        row1 += 1
+        row2 += 1
+        if row1%N == 0 :
+            row1 = 0
+        if row2%N == 0 :
+            row2 = N
+        
+    print(A)
+    print(np.shape(A))
+    #x = np.linalg.lstsq(A,b)
+    x = np.linalg.solve(A,b)
 
-    return E_kin
-    
+    return x
 
 if __name__ == "__main__":
-    L,r0,N,ds,T,dt,x_list,z_list,psi_list,m_list = One_D_Constants()
-    t= 0
-    E_kin = 10
-    E_kin = Kinetic_energy(t,N,L,r0,ds,dt,psi_list,m_list)
+    args_list = One_D_Constants()
+    L,r0,N,ds,T,dt = args_list[0:6]
+    x_list ,z_list ,psi_list = args_list[6:9]
+    lambda_list ,nu_list = args_list[9:11]
+    
+    print(
+        "\n --------------------  \n"
+    )
+
+    x = Lagran_multi(
+        psi_list=psi_list
+        ,t=0
+        )
+
+    print("x:",x)
+
+
+
+
+
 
     
     
