@@ -7,6 +7,7 @@ def One_D_Constants():
     r0 = 0.5e-6 # micrometer  :   radius of hole
     N = 10 + 1 # Number of chain links
     m = 1e-6 # grams  :   Mass of each chain link
+    gamma = 1e-6 # units=   : The drag coefficient
     ds =  L/(N-1) # micrometers  :  Length of each chain
     T = 10 # s  : total time simulated
     dt = 1e-5 # s time step.
@@ -20,14 +21,14 @@ def One_D_Constants():
     x_list = np.zeros(shape=(T,N+1)) # the x-list has increasing value from the start
     z_list = np.zeros(shape=(T,N+1)) # the z-list is just flat
     psi_list = np.zeros(shape=(T,N+1)) # all the angles are just flat
-    m_list = np.zeros(N+1) # list of all the masses
+    gamma_list = np.zeros(N+1) # list of all the masses
     
 
     for i in range(0,N+1):
         if i == 0:
-            m_list[i] = m/2
+            gamma_list[i] = gamma/2
         else:
-            m_list[i] = m
+            gamma_list[i] = gamma
 
     args = [
         L,r0,N,ds,T,dt
