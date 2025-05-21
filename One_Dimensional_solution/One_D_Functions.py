@@ -42,8 +42,7 @@ def Lagran_multi(psi_list,t):
         if row2%N == 0 :
             row2 = N
         
-    #print(A)
-    print(np.shape(A))
+    
     x = np.linalg.lstsq(A,b,rcond=None)
     #x = np.linalg.solve(A,b)
 
@@ -51,28 +50,27 @@ def Lagran_multi(psi_list,t):
 
 
 
-def dPsidt(i,multi,psi,deltaS):
-    N = len(multi)/2
+def dPsidt(i,t,dt,multi,psi,deltaS):
+    N = int(len(multi)/2)
     # from 0 -> N-1 is the lambda Lagrangian multipliers
     # from N -> 2N is the nu Lagrangian multipliers
     k = i + N
     if i == 0:
-        a1 = (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*(np.sin(psi[i])/deltaS)
-        a2 =(multi[k+1]/gamma(i+1) - multi[k]/gamma(i))*(np.cos(psi[i])/deltaS)
+        a1 = (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*(np.sin(psi[t][i])/deltaS)
+        a2 =(multi[k+1]/gamma(i+1) - multi[k]/gamma(i))*(np.cos(psi[t][i])/deltaS)
 
-    if 0<i<=N:
+    else:
         a11 = (multi[i] - multi[i+1])/gamma(i+1) 
         a12 =- (multi[i-1] - multi[i])/gamma(i)
-        a1 = (a11+a12)*(np.sin(psi[i])/deltaS)
+        a1 = (a11+a12)*(np.sin(psi[t][i])/deltaS)
 
         a21 =(multi[k] - multi[k+1])/gamma(i+1) 
         a22 = - (multi[k-1] - multi[k])/gamma(i)
-        a2 = (a21 + a22)*(np.sin(psi[i])/deltaS)
+        a2 = (a21 + a22)*(np.sin(psi[t][i])/deltaS)
 
-    else:
-        print("error")
-
-    return a1 + a2
+    # updating the new psi.
+    psi[t+1][i] = psi[t][i] + dt*(a1 +a2)
+    
 
 
 
