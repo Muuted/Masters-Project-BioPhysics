@@ -13,15 +13,15 @@ def One_D_Constants():
     """------ constants ---------"""
     L = 10e-6 # micrometers  :  Total length of line
     r0 = 0.5e-6 # micrometer  :   radius of hole
-    N = 19 + 1 # Number of chain links
+    N = 6 + 1 # Number of chain links
     m = 1e-6 # grams  :   Mass of each chain link
     gamma = 1#e-6 # units=   : The drag coefficient
     ds =  L/(N-1) # micrometers  :  Length of each chain
     T = 10 # s  : total time simulated
     dt = 1e-5 # s time step.
-    k = 10 #    :  Mean curvature modulus
-    kG = 10 #   :  Guassian curvature modulus
-
+    k = 1 #    :  Mean curvature modulus
+    kG = 1 #   :  Guassian curvature modulus
+    c0 = 1 #   :  
     
     """------ variables list ---------"""
     # list of variables
@@ -41,6 +41,7 @@ def One_D_Constants():
         L,r0,N,ds,T,dt
         ,x_list ,z_list ,psi_list 
         ,lambda_list ,nu_list
+        ,k,c0
         ]
 
 

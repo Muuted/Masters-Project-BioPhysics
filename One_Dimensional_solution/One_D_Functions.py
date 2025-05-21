@@ -9,7 +9,7 @@ def Kroncker(i,j):
     else:
         return 0
 
-def Lagran_multi(psi_list,t):
+def Lagran_multi(psi_list,t,k,c0,ds):
     
     N = int(len(psi_list[0]))
 
@@ -17,32 +17,53 @@ def Lagran_multi(psi_list,t):
     A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
 
     row1,row2 = 0,N
+
     for i in range(2*N):
-        for j in range(2*N):
-            if i%N == 0:
-                a1 =  (Kroncker(row1,j) /gamma(row1)- Kroncker(row1+1,j) /gamma(row1+1))*np.cos(psi_list[t][j%N])
-                a2 =(Kroncker(row2,j) /gamma(row2)- Kroncker(row2+1,j) /gamma(row2+1))*np.sin(psi_list[t][j%N])
+        if i < N:
+            for j in range(2*N):
+                if i%N == 0:
+                    a1 =  (Kroncker(row1,j) /gamma(row1)- Kroncker(row1+1,j) /gamma(row1+1))*np.cos(psi_list[t][j%N])
+                    a2 =(Kroncker(row2,j) /gamma(row2)- Kroncker(row2+1,j) /gamma(row2+1))*np.sin(psi_list[t][j%N])
+
+                else:
+                    a11 = ( Kroncker(row1,j) - Kroncker(row1+1,j) )/gamma(row1+1)
+                    a12 =( Kroncker(row1-1,j) - Kroncker(row1,j) )/gamma(row1)
+                    a1 = ( a11 - a12 )*np.cos(psi_list[t][j%N])
+                    
+                    a21 = ( Kroncker(row2,j) - Kroncker(row2+1,j) )/gamma(row2+1)            
+                    a22 = ( Kroncker(row2-1,j) - Kroncker(row2,j) )/gamma(row2)
+                    a2 = (a21 - a22 )*np.sin(psi_list[t][j%N])      
+
+
+                A[i][j] =  round(a1 + a2,2) # a1 + a2
+            
+            row1 += 1
+            row2 += 1
+            if row1%N == 0 :
+                row1 = 0
+            if row2%N == 0 :
+                row2 = N
+        if i>=N:
+            if i==N:
+                b[i] = k*(psi_list[t][(i+1)%N]-psi_list[t][i%N]) -k*ds*c0
+                
+                for j in range(2*N):
+                    a1 = np.sin(psi_list[t][j%N])*Kroncker(i,j)
+                    a2 = - np.cos(psi_list[t][j%N])*Kroncker(i+N+1,j)
+
+                    A[i][j] = a1 + a2 #round(a1+a2,2)
 
             else:
-                a11 = ( Kroncker(row1,j) - Kroncker(row1+1,j) )/gamma(row1+1)
-                a12 =( Kroncker(row1-1,j) - Kroncker(row1,j) )/gamma(row1)
-                a1 = ( a11 - a12 )*np.cos(psi_list[t][j%N])
-                
-                a21 = ( Kroncker(row2,j) - Kroncker(row2+1,j) )/gamma(row2+1)            
-                a22 = ( Kroncker(row2-1,j) - Kroncker(row2,j) )/gamma(row2)
-                a2 = (a21 - a22 )*np.sin(psi_list[t][j%N])      
+                b[i] = k*(psi_list[t][(i+1)%N] + psi_list[t][(i-1)%N] - psi_list[t][i%N])
+                for j in range(2*N):
+                    a1 = np.sin(psi_list[t][j%N])*Kroncker(i%N,j)
+                    a2 = - np.cos(psi_list[t][j%N])*Kroncker(i%N+N+1,j)
+
+                    A[i][j] = a1+a2 #round(a1+a2,2)
 
 
-            A[i][j] =  round(a1 + a2,2) # a1 + a2
-        
-        row1 += 1
-        row2 += 1
-        if row1%N == 0 :
-            row1 = 0
-        if row2%N == 0 :
-            row2 = N
-        
-    
+
+    #print(A.round(2))
     x = np.linalg.lstsq(A,b,rcond=None)
     #x = np.linalg.solve(A,b)
 
@@ -51,6 +72,7 @@ def Lagran_multi(psi_list,t):
 
 
 def dPsidt(i,t,dt,multi,psi,deltaS):
+    
     N = int(len(multi)/2)
     # from 0 -> N-1 is the lambda Lagrangian multipliers
     # from N -> 2N is the nu Lagrangian multipliers
@@ -79,17 +101,18 @@ if __name__ == "__main__":
     L,r0,N,ds,T,dt = args_list[0:6]
     x_list ,z_list ,psi_list = args_list[6:9]
     lambda_list ,nu_list = args_list[9:11]
-    
+    k, c0 = args_list[11:13]
+
     print(
         "\n --------------------  \n"
     )
 
     x = Lagran_multi(
         psi_list=psi_list
-        ,t=0
+        ,t=0,k=k,c0=c0,ds=ds
         )
 
-    print("x:",x[0])
+    print("x:",x)
 
 
 
