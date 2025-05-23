@@ -5,21 +5,26 @@ from One_D_Functions import Lagran_multi, dPsidt
 from plotting_functions import plot_from_psi
 import os
 import pandas as pd
+import progressbar
+from Make_movie import Make_movie
 
 def sim_1D_surface(
         save_data=True
                   ):
 
-    args = One_D_Constants()
+    args = One_D_Constants(print_val=True)
 
     L,r0,N,ds,T,dt = args[0:6]
-    psi_list,k,c0  =args[6:9]
-    save_path, data_path, fig_save_path = args[9:12]
-    video_save_path,video_fig_path = args[12:14]
+    psi_list,k,c0,sim_steps  =args[6:10]
+    save_path, data_path, fig_save_path = args[10:13]
+    video_save_path,video_fig_path = args[13:15]
 
     sim_T_tot = int(T/dt)
     multipliers= []
-    for time in range(T-1):
+
+    b = progressbar.ProgressBar(maxval=sim_steps)
+    for time in range(sim_steps-1):
+        b.update(time)
         multipliers.append(Lagran_multi(
             psi_list=psi_list
             ,t=time,k=k,c0=c0,ds=ds
@@ -36,7 +41,9 @@ def sim_1D_surface(
 
     x_list = []
     z_list = []
-    for t in range(T-1):
+    b2 = progressbar.ProgressBar(maxval=sim_steps)
+    for t in range(sim_steps-1):
+        b2.update(t + 1)
         x0,z0 = plot_from_psi(psi=psi_list[t],ds=ds,r0=r0)
         x_list.append(x0)
         z_list.append(z0)
@@ -69,3 +76,4 @@ def sim_1D_surface(
 
 if __name__ == "__main__":
     sim_1D_surface()
+    Make_movie()
