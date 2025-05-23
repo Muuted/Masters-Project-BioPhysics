@@ -22,7 +22,8 @@ def sim_1D_surface(
     sim_T_tot = int(T/dt)
     multipliers= []
 
-    b = progressbar.ProgressBar(maxval=sim_steps)
+    print("Simulation progressbar")
+    b = progressbar.ProgressBar(maxval=sim_steps-2)
     for time in range(sim_steps-1):
         b.update(time)
         multipliers.append(Lagran_multi(
@@ -41,9 +42,10 @@ def sim_1D_surface(
 
     x_list = []
     z_list = []
-    b2 = progressbar.ProgressBar(maxval=sim_steps)
+    print("\n Getting x,z progressbar")
+    b2 = progressbar.ProgressBar(maxval=sim_steps-2)
     for t in range(sim_steps-1):
-        b2.update(t + 1)
+        b2.update(t)
         x0,z0 = plot_from_psi(psi=psi_list[t],ds=ds,r0=r0)
         x_list.append(x0)
         z_list.append(z0)
@@ -63,7 +65,7 @@ def sim_1D_surface(
             "dt":dt
                         })
 
-        print(df.info())
+        #print(df.info())
 
 
         if not os.path.exists(data_path):

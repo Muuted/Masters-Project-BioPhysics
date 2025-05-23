@@ -76,10 +76,10 @@ def dPsidt(i,t,dt,multi,psi,deltaS):
 
     else:
         a11 = (multi[i] - multi[i+1])/gamma(i+1) 
-        a12 =- (multi[i-1] - multi[i])/gamma(i)
+        a12 = - (multi[i-1] - multi[i])/gamma(i)
         a1 = (a11+a12)*(np.sin(psi[t][i])/deltaS)
 
-        a21 =(multi[k] - multi[k+1])/gamma(i+1) 
+        a21 = (multi[k] - multi[k+1])/gamma(i+1) 
         a22 = - (multi[k-1] - multi[k])/gamma(i)
         a2 = (a21 + a22)*(np.sin(psi[t][i])/deltaS)
 

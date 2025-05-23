@@ -63,6 +63,11 @@ def Make_video(
     
     shutil.move(filename, output_path)
 
+    print(
+        "\n ---------------------- \n"
+        +" Movie has been released"
+        +"\n ---------------------- \n"
+    )
 
 
 
@@ -70,32 +75,36 @@ def Make_frames(
         data_path
         ,figs_save_path
         ,df_name
+        ,tot_frames = 216
         ):
 
     if not os.path.exists(figs_save_path):
             os.makedirs(figs_save_path)
 
     df_sim = pd.read_pickle(data_path + df_name)
-    
+    print(df_sim.info())
     x = df_sim['x pos'][0]
     z = df_sim['z pos'][0]
+    dt = df_sim['dt'][0]
+    print("dt=",dt)
     tot_time = df_sim['Total time [sec]']
-    frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/216)==0]
+    frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
     
     fig = plt.figure()
     fig.canvas.manager.window.showMaximized()
     xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
     zmin, zmax = min([min(i) for i in z]) , max([max(i) for i in z])
     k = 0
-    b = progressbar.ProgressBar(maxval=len(frame_vec))
+    print("\n Plotting progressbar")
+    b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
     for t in frame_vec:
-        b.update(t)
+        b.update(k)
         plt.plot(x[t],z[t])
         plt.xlim([xmin*0.9, xmax*1.1])
         plt.ylim([zmin*0.9, zmax*1.1])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
-        plt.title(f"Dynamics for time={t} and k={k}")
+        plt.title(f"Dynamics for time={t*dt}s and k={k}")
         plt.pause(0.1)
         plt.draw()
         plt.pause(0.1)
@@ -125,7 +134,7 @@ def Make_movie():
         output_path = video_save_path
         ,input_path = video_fig_path
         ,video_name = "dynamics movie.avi"
-        ,fps=24
+        ,fps=12
     )
 
 
@@ -137,7 +146,7 @@ if __name__=="__main__":
     
     making_frame = True
     making_video = True
-    
+
     if making_frame==True:
         Make_frames(
             data_path=data_path

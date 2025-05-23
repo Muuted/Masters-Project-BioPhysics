@@ -1,9 +1,9 @@
 import numpy as np
 import random
 
-def gamma(i,N=31):
+def gamma(i,N=0):
     if N == 0:
-        gam = 100
+        gam = 50
         if i==0:
             return gam/2
         else:
@@ -11,7 +11,7 @@ def gamma(i,N=31):
     if N >0:
         b = 50
         a= 50/N
-        return a*i + b
+        return b*np.e**(i/N)
 
 def One_D_Constants(
         print_val=False
@@ -27,7 +27,7 @@ def One_D_Constants(
     """------ constants ---------"""
     L = 10e-6 # micrometers  :  Total length of line
     r0 = 0.5e-6 # micrometer  :   radius of hole
-    N = 30 + 1 # Number of chain links
+    N = 99 + 1 # Number of chain links
     m = 1e-6 # grams  :   Mass of each chain link
     ds =  L/(N-1) # micrometers  :  Length of each chain
     T = 1e0 # s  : total time simulated
