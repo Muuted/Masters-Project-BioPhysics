@@ -82,13 +82,20 @@ def Make_frames(
             os.makedirs(figs_save_path)
 
     df_sim = pd.read_pickle(data_path + df_name)
-    print(df_sim.info())
+    #print(df_sim.info())
     x = df_sim['x pos'][0]
     z = df_sim['z pos'][0]
     dt = df_sim['dt'][0]
-    print("dt=",dt)
-    tot_time = df_sim['Total time [sec]']
-    frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
+    L = df_sim["L"][0]
+    
+    tot_time = df_sim['Total time [sec]'][0]
+
+
+    if int(np.shape(x)[0]/tot_frames) < 2:
+        frame_vec= [i for i in range(np.shape(x)[0])]
+    else:
+        frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
+
     
     fig = plt.figure()
     fig.canvas.manager.window.showMaximized()
@@ -99,12 +106,13 @@ def Make_frames(
     b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
     for t in frame_vec:
         b.update(k)
-        plt.plot(x[t],z[t])
-        plt.xlim([xmin*0.9, xmax*1.1])
-        plt.ylim([zmin*0.9, zmax*1.1])
+        plt.plot(x[t],z[t],'-*')
+        plt.xlim([xmin*0.999, xmax*1.001])
+        #plt.ylim([-L,L])
+        plt.ylim([zmin , zmax ])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
-        plt.title(f"Dynamics for time={t*dt}s and k={k}")
+        plt.title(f"Dynamics for time={t*dt}s and frame ={k} of {len(frame_vec)}")
         plt.pause(0.1)
         plt.draw()
         plt.pause(0.1)
@@ -134,7 +142,7 @@ def Make_movie():
         output_path = video_save_path
         ,input_path = video_fig_path
         ,video_name = "dynamics movie.avi"
-        ,fps=12
+        ,fps=24
     )
 
 
@@ -159,6 +167,6 @@ if __name__=="__main__":
             output_path = video_save_path
             ,input_path = video_fig_path
             ,video_name = "dynamics movie.avi"
-            ,fps=24
+            ,fps=12
     )
     

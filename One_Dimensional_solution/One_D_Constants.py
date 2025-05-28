@@ -2,19 +2,18 @@ import numpy as np
 import random
 
 def gamma(i,N=0):
+    gam = 1 #
     if N == 0:
-        gam = 50
         if i==0:
             return gam/2
-        else:
+        if i > 0:
             return gam
-    if N >0:
-        b = 50
-        a= 50/N
-        return b*np.e**(i/N)
+    if N == 1:
+        return gam*i/5 + gam
 
 def One_D_Constants(
         print_val=False
+        ,init_rand_psi = False
         ):
     """------ paths ---------"""
     save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
@@ -23,33 +22,38 @@ def One_D_Constants(
     video_save_path = save_path +"figures and video\\"
     video_fig_path = save_path +"figures for video\\"
 
-    
+    """------ Saved files names  ---------"""
+    df_name= "\\1D surface membrane dynamics"
+
+
     """------ constants ---------"""
-    L = 10e-6 # micrometers  :  Total length of line
-    r0 = 0.5e-6 # micrometer  :   radius of hole
-    N = 99 + 1 # Number of chain links
-    m = 1e-6 # grams  :   Mass of each chain link
-    ds =  L/(N-1) # micrometers  :  Length of each chain
+    L = 100 #1e-6 # micrometers  :  Total length of line
+    ds =  0.1 #e-9 #L/(N-1) # micrometers  :  Length of each chain
+    r0 = 50 #0.5e-6 # micrometer  :   radius of hole
+    N = 10#100 #int(L/ds) # 99 + 1 # Number of chain links
+    #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e0 # s  : total time simulated
-    dt = 1e-4 # s time step.
-    sim_steps = int(T/dt) # : number of simulation steps
-    k = 1e-5 #    :  Mean curvature modulus
-    kG = 1 #   :  Guassian curvature modulus
-    c0 = 1e-6 #   :  
+    dt = 1e-5 # s time step.
+    sim_steps = 100#int(T/dt) # : number of simulation steps
+    k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
+    #kG = 1 #   :  Guassian curvature modulus
+    c0 =0.25# 0.25e8 # 1/m   :  
     
     
     """------ variables list ---------"""
     # list of variables
     # we are gonna assume for now that the membrane is just initially flat.
-    psi_list = np.zeros(shape=(sim_steps,N)) # all the angles are just flat
-    psi_list[0][0] = 3.14/10
-    for i in range(len(psi_list[0])):
-        if i%2 == 0:
-            a = -1
-        else:
-            a = 1
-        psi_list[0][i] = (3.14/10)*a
-
+    psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
+    #psi_list[0][0] = 1e-15#3.14/10
+    if init_rand_psi == True:
+        for i in range(N):
+            if i%2 == 0:
+                a = -1
+            else:
+                a = 1
+            psi_list[0][i] = (3.14/10)*a
+    
+    
     if print_val == True:
         print(
             f" \n \n"
@@ -57,6 +61,7 @@ def One_D_Constants(
             + f"    Total length of surface L={L:e} meter \n "
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} \n "
+            + f"    k = {k} \n "
             + f"    ds = {ds:e} m \n "
             + f"    dt = {dt:e} s \n "
             + f"    Total sim time = {T} s \n "
@@ -70,6 +75,7 @@ def One_D_Constants(
         ,k,c0,sim_steps
         ,save_path, data_path, fig_save_path
         ,video_save_path,video_fig_path
+        ,df_name
         ]
 
 
