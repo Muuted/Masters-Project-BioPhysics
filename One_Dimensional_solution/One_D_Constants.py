@@ -29,10 +29,10 @@ def One_D_Constants(
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  0.1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 3#int(L/ds) # 99 + 1 # Number of chain links
+    N = 100#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e0 # s  : total time simulated
-    dt = 1e-5 # s time step.
+    dt = 1e-6 # s time step.
     sim_steps = 100 #int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus

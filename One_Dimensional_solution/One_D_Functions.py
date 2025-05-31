@@ -16,7 +16,9 @@ def Lagran_multi(
         ,print_matrix = False
                  ):
     
-    N = num_chains
+    N = num_chains + 1
+    #NN = N + 1
+    #N = NN
     b = np.full(shape=(2*N),fill_value=10,dtype=float)
     A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
 
@@ -55,16 +57,15 @@ def Lagran_multi(
             A[i][j] = a1 + a2 #round(a1+a2,2)
         b[i] = b1 #round(b1,2)
 
-
-    if print_matrix == True:
-        print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n",A)
-        print("b:",b)
-    
     if linalg_lstsq == True:
         x = np.linalg.lstsq(A,b,rcond=None)[0]
     else:
         x = np.linalg.solve(A,b)
-
+    
+    if print_matrix == True:
+        print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n",A)
+        print("b:",b)
+        
     return x
 
 
@@ -118,7 +119,7 @@ def dPsidt_RungeKutta_4(link,N,ds,dt,multipliers,psi):
 
 if __name__ == "__main__":
     args = One_D_Constants(
-        init_rand_psi=True
+        init_rand_psi=False
     )
     L,r0,N,ds,T,dt = args[0:6]
     psi_list,k,c0  =args[6:9]
