@@ -17,8 +17,6 @@ def Lagran_multi(
                  ):
     
     N = num_chains + 1
-    #NN = N + 1
-    #N = NN
     b = np.full(shape=(2*N),fill_value=10,dtype=float)
     A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
 
@@ -70,7 +68,7 @@ def Lagran_multi(
 
 
 def dPsidt(i,N,multi,psi,deltaS):
-    k = i + N
+    k = i + N +1 
     if i == 0:
         a1 =  (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*np.sin(psi)/deltaS**2
         a2 = (multi[k]/gamma(i) - multi[k+1]/gamma(i+1) )*np.cos(psi)/deltaS**2

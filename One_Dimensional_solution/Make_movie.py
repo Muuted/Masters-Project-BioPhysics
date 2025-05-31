@@ -111,8 +111,8 @@ def Make_frames(
         plt.plot(x[t],z[t],'-*')
         plt.xlim([x[0,0] - ds*10, x[0,0] + ds*10])
         plt.xlim([xmin-1,xmax+1])
-        plt.ylim([zmin,zmax])
-        #plt.ylim([-ds*10,ds*10])
+        #plt.ylim([zmin,zmax])
+        plt.ylim([-ds*10,ds*10])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt}s and frame ={k} of {len(frame_vec)}")
@@ -131,6 +131,7 @@ def Make_frames(
 def Make_movie():
     args = One_D_Constants()
 
+    N = args[2]
     data_path= args[11]
     video_save_path,video_fig_path = args[13:15]
     
@@ -146,7 +147,7 @@ def Make_movie():
     Make_video(
         output_path = video_save_path
         ,input_path = video_fig_path
-        ,video_name = "dynamics movie.avi"
+        ,video_name = f"dynamics movie links={N}.avi"
         ,fps=8
     )
 
