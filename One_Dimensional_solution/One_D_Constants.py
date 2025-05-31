@@ -1,15 +1,14 @@
 import numpy as np
 import random
 
-def gamma(i,N=0):
+def gamma(i):
     gam = 1 #
-    if N == 0:
-        if i==0:
-            return gam/2
-        if i > 0:
-            return gam
-    if N == 1:
-        return gam*i/5 + gam
+    if i==0:
+        return gam/2
+    if i > 0:
+        return gam
+
+
 
 def One_D_Constants(
         print_val=False
@@ -28,16 +27,16 @@ def One_D_Constants(
 
     """------ constants ---------"""
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  0.1 #e-9 #L/(N-1) # micrometers  :  Length of each chain
-    r0 = 50 #0.5e-6 # micrometer  :   radius of hole
-    N = 10#100 #int(L/ds) # 99 + 1 # Number of chain links
+    ds =  0.1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
+    N = 3#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e0 # s  : total time simulated
     dt = 1e-5 # s time step.
-    sim_steps = 100#int(T/dt) # : number of simulation steps
+    sim_steps = 100 #int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
-    c0 =0.25# 0.25e8 # 1/m   :  
+    c0 = 0.25# 0.25e8 # 1/m   :  
     
     
     """------ variables list ---------"""
@@ -58,7 +57,7 @@ def One_D_Constants(
         print(
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
-            + f"    Total length of surface L={L:e} meter \n "
+            + f"    Total length of surface L={L} meter \n "
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} \n "
             + f"    k = {k} \n "
@@ -82,4 +81,4 @@ def One_D_Constants(
     return args
 
 if __name__ == "__main__":   
-    One_D_Constants()
+    One_D_Constants(print_val=True)

@@ -87,6 +87,8 @@ def Make_frames(
     z = df_sim['z pos'][0]
     dt = df_sim['dt'][0]
     L = df_sim["L"][0]
+    ds = df_sim["ds"][0]
+    r0 = df_sim["r0"][0]
     
     tot_time = df_sim['Total time [sec]'][0]
 
@@ -107,12 +109,15 @@ def Make_frames(
     for t in frame_vec:
         b.update(k)
         plt.plot(x[t],z[t],'-*')
-        plt.xlim([xmin*0.999, xmax*1.001])
-        #plt.ylim([-L,L])
-        plt.ylim([zmin , zmax ])
+        plt.xlim([x[0,0] - ds*10, x[0,0] + ds*10])
+        #plt.xlim([xmin-1,xmax+1])
+        #plt.ylim([zmin,zmax])
+        plt.ylim([-ds*10,ds*10])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt}s and frame ={k} of {len(frame_vec)}")
+        #ax = plt.gca()
+        #ax.set_aspect('equal', adjustable='box')
         plt.pause(0.1)
         plt.draw()
         plt.pause(0.1)
@@ -142,7 +147,7 @@ def Make_movie():
         output_path = video_save_path
         ,input_path = video_fig_path
         ,video_name = "dynamics movie.avi"
-        ,fps=24
+        ,fps=8
     )
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from One_D_Constants import One_D_Constants
-from One_D_Functions import Lagran_multi, dPsidt
+from One_D_Functions import Lagran_multi, dPsidt, dPsidt_RungeKutta_4
 from plotting_functions import plot_from_psi 
 import os
 import pandas as pd
@@ -24,25 +24,36 @@ def sim_1D_surface(
     multipliers= []
 
     print("Simulation progressbar")
-    b = progressbar.ProgressBar(maxval=sim_steps-2)
+    b = progressbar.ProgressBar(maxval=sim_steps-1)
     for time in range(sim_steps-1):
         b.update(time)
-        multipliers.append(Lagran_multi(
-            psi_list=psi_list
-            ,t=time,k=k,c0=c0,ds=ds
-            ,linalg_lstsq=False
-            ,num_chains=N
-        )
-        )
+        multipliers.append(
+            Lagran_multi(
+                psi_list=psi_list
+                ,t=time,k=k,c0=c0,ds=ds
+                ,linalg_lstsq=False
+                ,num_chains=N
+                        )
+                    )
 
         for link in range(N-2,-1,-1):
-            dpdt = dPsidt(
-                i=link, t=time, dt=dt, deltaS=ds
+            RungeKutta4 = dPsidt_RungeKutta_4(
+                link=link
+                ,N=N, ds=ds, dt=dt
+                ,multipliers=multipliers[time]
+                ,psi=psi_list[time,link]
+                )
+            
+            psi_list[time+1][link] = psi_list[time][link] + (dt/6)*RungeKutta4
+            """dpdt = dPsidt(
+                i=link, N=N, deltaS=ds
                 ,multi=multipliers[time]
-                ,psi=psi_list
-            )
-            psi_list[time+1][link] = psi_list[time][link] + dt*dpdt
-    
+                ,psi= psi_list[time,link]
+                )
+            psi_list[time+1][link] = psi_list[time][link] +dt*dpdt#(dt/6)*RungeKutta4
+            """
+            
+
     x_list,z_list = plot_from_psi(
         psi=psi_list
         ,sim_steps=sim_steps
@@ -59,7 +70,8 @@ def sim_1D_surface(
             "r0": r0,
             "num of chain links": N,
             "Total time [sec]" : T,
-            "dt":dt
+            "dt":dt,
+            "ds":ds
                         })
 
         #print(df.info())
@@ -67,8 +79,6 @@ def sim_1D_surface(
 
         if not os.path.exists(data_path):
             os.makedirs(data_path)
-
-        
         df.to_pickle(data_path + df_name)
 
 

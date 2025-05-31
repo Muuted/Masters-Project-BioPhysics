@@ -8,28 +8,28 @@ import pandas as pd
 
 def plot_from_psi(psi:list,sim_steps: int,ds: float,r0:float, L:float):
     N = len(psi[0])
-    x = np.full(shape=(sim_steps,N+1),dtype=float,fill_value=0)
-    z = np.zeros(shape=(sim_steps,N+1),dtype=float) #Because we have N+1 points, but run dynamics on N
-    x[:,N] = L + r0
+    x = np.full(shape=(sim_steps,N),dtype=float,fill_value=0)
+    z = np.zeros(shape=(sim_steps,N),dtype=float) #Because we have N+1 points, but run dynamics on N
+    print(np.shape(x))
+    x[:,N-1] = L + r0
     print_list = []
+    print_list2 = []
     print("\n Getting x,z progressbar")
-    b2 = progressbar.ProgressBar(maxval=sim_steps-2)
-    for t in range(sim_steps-1):
+    b2 = progressbar.ProgressBar(maxval=sim_steps)
+    for t in range(sim_steps):
         b2.update(t)
         tolerance= 1e-4
-        for i in range(N-1,-1,-1):
+        for i in range(N-2,-1,-1):
             x[t][i] = x[t][i+1] - ds*np.cos(psi[t][i])
-            z[t,i] = z[t,i+1] + ds*np.sin(psi[t,i])
+            z[t][i] = z[t][i+1] + ds*np.sin(psi[t][i])
             
             a = np.sqrt((x[t][i+1]-x[t][i])**2 + (z[t][i+1]-z[t][i])**2)
-
             if ds*(1+tolerance) < a  < ds*(1-tolerance) :
                 print(f"error on constant length , x[t][i]={x[t][i]} and z[t][i]={x[t][i]}")
                 exit()
 
-    
     return x,z
-
+ 
 
 
 if __name__ == "__main__":
@@ -45,6 +45,7 @@ if __name__ == "__main__":
     z = df_sim["z pos"][0]
     x = df_sim["x pos"][0]
 
+    
     x,z = plot_from_psi(
         psi=psi_list
         ,sim_steps=sim_steps
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     xz_diff = [ (x[t][1]-x[t][0])**2 + (z[t][1]-z[t][0])**2 - ds**2 for t in range(sim_steps) ]
     t = [i for i in range(sim_steps)]
     plt.figure()
-    plt.plot(t,xz_diff,'.')
+    plt.plot(t,xz_diff,'-.')
 
     plt.figure()
     plt.plot(z[:][0])
