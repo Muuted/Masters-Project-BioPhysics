@@ -87,12 +87,12 @@ def dPsidt(i,N,multi,psi,deltaS):
 
     if i > 0:
         a11 = (multi[i-1] - multi[i])/gamma(i)
-        a12 = -(multi[i] - multi[i+1])/gamma(i+1) 
-        a1 = (a11 + a12)*np.sin(psi)/deltaS**2
+        a12 = (multi[i] - multi[i+1])/gamma(i+1) 
+        a1 = (a11 - a12)*np.sin(psi)/deltaS**2
 
         a21 = (multi[k] - multi[k+1])/gamma(i+1) 
-        a22 = - (multi[k-1] - multi[k])/gamma(i)
-        a2 = (a21 + a22)*np.cos(psi)/deltaS**2
+        a22 = (multi[k-1] - multi[k])/gamma(i)
+        a2 = (a21 - a22)*np.cos(psi)/deltaS**2
 
     # updating the new psi.
     return a1 + a2
@@ -181,6 +181,9 @@ def Lagran_multi_V2(
         print("x:",x)
 
     return x
+
+
+
 
 
 if __name__ == "__main__":

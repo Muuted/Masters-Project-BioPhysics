@@ -34,12 +34,12 @@ def sim_1D_surface(
                         )
         multipliers.append(x)
 
-        for link in range(N-3,-1,-1):
+        for link in range(N-1,-1,-1):
             RungeKutta4 = dPsidt_RungeKutta_4(
                 link=link
                 ,N=N, ds=ds, dt=dt
                 ,multipliers=x#multipliers[time]
-                ,psi=psi_list[time,link]
+                ,psi=psi_list[time][link]
                 )
             
             psi_list[time+1][link] = psi_list[time][link] + (dt/6)*RungeKutta4
