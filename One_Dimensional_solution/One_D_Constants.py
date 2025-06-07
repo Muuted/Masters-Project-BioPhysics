@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 def gamma(i):
-    gam = 1 #
+    gam = 1.5e0#
     if i==0:
         return gam/2
     if i > 0:
@@ -27,16 +27,16 @@ def One_D_Constants(
 
     """------ constants ---------"""
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  0.1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 100#int(L/ds) # 99 + 1 # Number of chain links
+    N = 15#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e0 # s  : total time simulated
-    dt = 5e-6 # s time step.
+    dt = 2e-4 # s time step.
     sim_steps = 100 #int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
-    c0 = 0.25# 0.25e8 # 1/m   :  
+    c0 = 0.25e0# 0.25e8 # 1/m   :  
     
     
     """------ variables list ---------"""

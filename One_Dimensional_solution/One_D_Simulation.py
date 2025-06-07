@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from One_D_Constants import One_D_Constants
-from One_D_Functions import Lagran_multi, dPsidt, dPsidt_RungeKutta_4
+from One_D_Constants import One_D_Constants,gamma
+from One_D_Functions import Lagran_multi, dPsidt, dPsidt_RungeKutta_4, Lagran_multi_V2
 from plotting_functions import plot_from_psi 
 import os
 import pandas as pd
@@ -20,27 +20,25 @@ def sim_1D_surface(
     video_save_path,video_fig_path = args[13:15]
     df_name= args[15]
 
-    sim_T_tot = int(T/dt) 
     multipliers= []
 
     print("Simulation progressbar")
     b = progressbar.ProgressBar(maxval=sim_steps-1)
     for time in range(sim_steps-1):
         b.update(time)
-        multipliers.append(
-            Lagran_multi(
+        x = Lagran_multi(
                 psi_list=psi_list
                 ,t=time,k=k,c0=c0,ds=ds
                 ,linalg_lstsq=False
                 ,num_chains=N
                         )
-                    )
+        multipliers.append(x)
 
-        for link in range(N-2,-1,-1):
+        for link in range(N-3,-1,-1):
             RungeKutta4 = dPsidt_RungeKutta_4(
                 link=link
                 ,N=N, ds=ds, dt=dt
-                ,multipliers=multipliers[time]
+                ,multipliers=x#multipliers[time]
                 ,psi=psi_list[time,link]
                 )
             
@@ -71,10 +69,12 @@ def sim_1D_surface(
             "num of chain links": N,
             "Total time [sec]" : T,
             "dt":dt,
-            "ds":ds
+            "ds":ds,
+            "gam(i=0)":gamma(0),
+            "gam(i>0)":gamma(5)
                         })
 
-        #print(df.info())
+        #print(df.info())W
 
 
         if not os.path.exists(data_path):

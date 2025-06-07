@@ -18,13 +18,13 @@ def plot_from_psi(psi:list,sim_steps: int,ds: float,r0:float, L:float):
     b2 = progressbar.ProgressBar(maxval=sim_steps)
     for t in range(sim_steps):
         b2.update(t)
-        tolerance= 1e-4
+        tolerance= 1e-10 #1e-4
         for i in range(N-2,-1,-1):
             x[t][i] = x[t][i+1] - ds*np.cos(psi[t][i])
             z[t][i] = z[t][i+1] + ds*np.sin(psi[t][i])
             
             a = np.sqrt((x[t][i+1]-x[t][i])**2 + (z[t][i+1]-z[t][i])**2)
-            if ds*(1+tolerance) < a  < ds*(1-tolerance) :
+            if ds*(1+tolerance) <= a  <= ds*(1-tolerance) :
                 print(f"error on constant length , x[t][i]={x[t][i]} and z[t][i]={x[t][i]}")
                 exit()
 
