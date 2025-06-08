@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from One_D_Constants import One_D_Constants,gamma
-from One_D_Functions import Lagran_multi, dPsidt, dPsidt_RungeKutta_4, Lagran_multi_V2
+from One_D_Functions import Lagran_multi, dPsidt, dPsidt_RungeKutta_4#, Lagran_multi_V2
 from plotting_functions import plot_from_psi 
 import os
 import pandas as pd
@@ -29,7 +29,7 @@ def sim_1D_surface(
 
         t1, t2 = time%2 , (time + 1)%2
 
-        x = Lagran_multi_V2(
+        x = Lagran_multi(
                 psi_list=psi_list
                 ,t=time,k=k,c0=c0,ds=ds
                 ,linalg_lstsq=False
@@ -37,7 +37,7 @@ def sim_1D_surface(
                         )
         multipliers.append(x)
 
-        for link in range(N,-1,-1):
+        for link in range(N-2,-1,-1):
             if link == N :
                 psi_list[time+1][link] =  0
                 print(link)

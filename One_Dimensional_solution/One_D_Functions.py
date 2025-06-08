@@ -8,7 +8,7 @@ def Kroncker(i,j):
         return 1
     else:
         return 0
-
+"""
 def Lagran_multi(
         psi_list,t,k,c0,ds
         ,num_chains
@@ -79,9 +79,9 @@ def Lagran_multi(
         
     return x
 
-
+"""
 def dPsidt(i,N,multi,psi,deltaS):
-    l = i + N + 1
+    l = i + N #+ 1
     if i == 0:
         a1 = (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*np.sin(psi)/deltaS**2
         a2 = (multi[l]/gamma(i) - multi[l+1]/gamma(i+1) )*np.cos(psi)/deltaS**2
@@ -130,7 +130,7 @@ def dPsidt_RungeKutta_4(link,N,ds,dt,multipliers,psi):
 
 
 
-def Lagran_multi_V2(
+def Lagran_multi(
         psi_list,t,k,c0,ds
         ,num_chains
         ,linalg_lstsq =True
@@ -173,7 +173,7 @@ def Lagran_multi_V2(
                 A[i][j] = a1 + a2
             
             if i == N+1:
-                b[i] = -1*( -(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
+                b[i] = 1*( -(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
 
                 a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
