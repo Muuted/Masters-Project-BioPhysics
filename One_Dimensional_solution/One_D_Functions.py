@@ -17,6 +17,7 @@ def Lagran_multi(
                  ):
     
     N = num_chains #+ 1
+    NN = N +1
     b = np.full(shape=(2*N),fill_value=10,dtype=float)
     A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
 
@@ -30,32 +31,32 @@ def Lagran_multi(
             if i < N:
                 if i == 0:
                     if j < N:
-                        a1 = (  Kroncker(i,j)/gamma(i%N)  -  Kroncker(i+1,j)/gamma((i+1)%N)  )*np.cos(psi_list[t][j%N])
+                        a1 = (  Kroncker(i,j)/gamma(i%N)  -  Kroncker(i+1,j)/gamma((i+1)%N)  )*np.cos(psi_list[t][j%NN])
                     if j >= N:
-                        a2 = (  Kroncker(l,j)/gamma(l%N) - Kroncker(l+1,j)/gamma((l+1)%N) )*np.sin(psi_list[t][j%N])
+                        a2 = (  Kroncker(l,j)/gamma(l%N) - Kroncker(l+1,j)/gamma((l+1)%N) )*np.sin(psi_list[t][j%NN])
                 
                 if 0 < i < N:
                     if j < N:
                         a11 = ( Kroncker(i,j) - Kroncker(i+1,j) )/gamma((i+1)%N)
                         a12 = -( Kroncker(i-1,j) - Kroncker(i,j) )/gamma(i%N)
-                        a1 = ( a11 + a12 )*np.cos(psi_list[t][j%N]) 
+                        a1 = ( a11 + a12 )*np.cos(psi_list[t][j%NN]) 
                     if j >= N:
                         a21 = ( Kroncker(l,j) - Kroncker(l+1,j) )/gamma((l+1)%N)            
                         a22 = -( Kroncker(l-1,j) - Kroncker(l,j) )/gamma(l%N)
-                        a2 = (a21 + a22 )*np.sin(psi_list[t][j%N])                           
+                        a2 = (a21 + a22 )*np.sin(psi_list[t][j%NN])                           
             
             if i>=N:
                 if i==N:
-                    b1 = 1*(-(k/ds)*(psi_list[t][(i+1)%N] - psi_list[t][i%N]) + k*c0 )
+                    b1 = 1*(-(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
                     
-                    a1 = np.sin(psi_list[t][j%N])*Kroncker(i%N,j)
-                    a2 = -np.cos(psi_list[t][j%N])*Kroncker(l,j)
+                    a1 = np.sin(psi_list[t][j%NN])*Kroncker(i%N,j)
+                    a2 = -np.cos(psi_list[t][j%NN])*Kroncker(l,j)
 
                 if i > N:
-                    b1 = 1*(-(k/ds)*(psi_list[t][(i+1)%N] + psi_list[t][(i-1)%N] - 2*psi_list[t][i%N]) )
+                    b1 = 1*(-(k/ds)*(psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) )
 
-                    a1 = np.sin(psi_list[t][j%N])*Kroncker(i%N,j)
-                    a2 = -np.cos(psi_list[t][j%N])*Kroncker(l,j)
+                    a1 = np.sin(psi_list[t][j%NN])*Kroncker(i%N,j)
+                    a2 = -np.cos(psi_list[t][j%NN])*Kroncker(l,j)
             
                 
             if round(a1+a2,1) == 2.9:
@@ -80,18 +81,18 @@ def Lagran_multi(
 
 
 def dPsidt(i,N,multi,psi,deltaS):
-    k = i + N
+    l = i + N + 1
     if i == 0:
         a1 = (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*np.sin(psi)/deltaS**2
-        a2 = (multi[k]/gamma(i) - multi[k+1]/gamma(i+1) )*np.cos(psi)/deltaS**2
+        a2 = (multi[l]/gamma(i) - multi[l+1]/gamma(i+1) )*np.cos(psi)/deltaS**2
 
     if i > 0:
         a11 = (multi[i-1] - multi[i])/gamma(i)
         a12 = (multi[i] - multi[i+1])/gamma(i+1) 
         a1 = (a11 - a12)*np.sin(psi)/deltaS**2
 
-        a21 = (multi[k] - multi[k+1])/gamma(i+1) 
-        a22 = (multi[k-1] - multi[k])/gamma(i)
+        a21 = (multi[l] - multi[l+1])/gamma(i+1) 
+        a22 = (multi[l-1] - multi[l])/gamma(i)
         a2 = (a21 - a22)*np.cos(psi)/deltaS**2
 
     # updating the new psi.
@@ -136,42 +137,55 @@ def Lagran_multi_V2(
         ,print_matrix = False
                  ):
     
-    N = num_chains #+ 1
-    b = np.full(shape=(2*N),fill_value=0,dtype=float)
-    A = np.full(shape=(2*N,2*N),fill_value=10,dtype=float)
-    A1 = np.full(shape=(N,N),fill_value=10,dtype=float)
-    A2 = np.full(shape=(N,N),fill_value=10,dtype=float)
-    A3 = np.full(shape=(N,N),fill_value=10,dtype=float)
-    A4 = np.full(shape=(N,N),fill_value=10,dtype=float)
+    N = num_chains
+    NN = N + 1
+    b = np.full(shape=(2*NN),fill_value=0,dtype=float)
+    A = np.full(shape=(2*NN,2*NN),fill_value=10,dtype=float)
 
-    for i in range(N):
-        for j in range(N):
+    for i in range(2*(N+1)):
+        for j in range(2*(N+1)):
+            l = i%NN + NN
             if i == 0:
-                a = ( Kroncker(i,j)/gamma(i)  -  Kroncker(i+1,j)/gamma(i+1) )
-                A1[i,j] = a*np.cos(psi_list[t,j])
-                A2[i,j] = a*np.sin(psi_list[t,j])
-                b[i+N] = -(k/ds)*(psi_list[t,i+1] - psi_list[t,i]) + k*c0
+                b[i] = 0
 
-            if i > 0:
-                a1 = ( Kroncker(i,j) - Kroncker(i+1,j) )/gamma(i+1)
-                a2 = ( Kroncker(i-1,j) - Kroncker(i,j) )/gamma(i)
-                a = a1 - a2
-                A1[i,j] = a*np.cos(psi_list[t,j])
-                A2[i,j] = a*np.sin(psi_list[t,j])
+                if j < N + 1:
+                    a1 = Kroncker(i,j)/gamma(i%NN) - Kroncker(i+1,j)/gamma((i+1)%NN)
+                    a2 = 0
+                if j >= N +1 :
+                    a2 = Kroncker(l,j)/gamma(i%NN) - Kroncker(l+1,j)/gamma((i+1)%NN)
+                    a1 = 0
+                A[i][j] = a1*np.cos(psi_list[t][j%NN]) + a2*np.sin(psi_list[t][j%NN])
 
-                b[i+N] = -(k/ds)*(psi_list[t,i+1] + psi_list[t,i-1] - 2*psi_list[t,i] )
+            if 0 < i < N+1 :
+                b[i] = 0
+                
+                if j < N + 1:
+                    a11 = (Kroncker(i,j) - Kroncker(i+1,j))/gamma((i+1)%NN)
+                    a12 = (Kroncker(i-1,j) - Kroncker(i,j))/gamma(i%NN)
+                    a1 = (a11 - a12)*np.cos(psi_list[t][j%NN])
+                    a2 = 0
+                if j >= N + 1:
+                    a21 = (Kroncker(l,j) - Kroncker(l+1,j))/gamma((i+1)%NN)
+                    a22 = (Kroncker(l-1,j) - Kroncker(l,j))/gamma(i%NN)
+                    a2 = (a21 - a22)*np.sin(psi_list[t][j%NN])
+                    a1 = 0
+
+                A[i][j] = a1 + a2
             
-            A3[i,j] = Kroncker(i,j)*np.sin(psi_list[t,j])
-            A4[i,j] = -Kroncker(i,j)*np.cos(psi_list[t,j])
-        
-    for i in range(N):
-        for j in range(N):
-            l = i + N
-            d = j + N
-            A[i,j] = A1[i,j]
-            A[i,d] = A2[i,j]
-            A[l,j] = A3[i,j]
-            A[l,d] = A4[i,j]
+            if i == N+1:
+                b[i] = -1*( -(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
+
+                a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
+                a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
+                A[i][j] = a1 - a2
+
+            if i > N+1 :
+                b[i] = - (k/ds)*(psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
+
+                a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
+                a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
+                A[i][j] = a1 - a2
+
 
     x = np.linalg.solve(A,b)
 
@@ -179,6 +193,7 @@ def Lagran_multi_V2(
         print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n",A)
         print("b:",b)
         print("x:",x)
+        print("psi:",psi_list[t])
 
     return x
 
@@ -202,23 +217,18 @@ if __name__ == "__main__":
         ,t=0,k=k,c0=c0,ds=ds
         ,print_matrix=True
         ,linalg_lstsq=False
-        ,num_chains=N
+        ,num_chains=2
         )
-
+    exit()
     x1 = Lagran_multi(
         psi_list=psi_list
         ,t=0,k=k,c0=c0,ds=ds
         ,print_matrix=True
         ,linalg_lstsq=False
-        ,num_chains=N
+        ,num_chains=3
         )
-    F = []
-    for i in range(len(x)):
-        F.append(x[i]-x1[i])
+ 
     
-    print("F:",F)
-    print("x:",x)
-
 
 
 

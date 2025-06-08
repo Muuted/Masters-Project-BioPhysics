@@ -108,7 +108,7 @@ def Make_frames(
     b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
     for t in frame_vec:
         b.update(k)
-        plt.plot(x[t],z[t],'-*')
+        plt.plot(x[t],z[t],'-o')
         plt.xlim([x[0,0] - ds*1, x[0,0] + ds*19])
         #plt.xlim([xmin-ds,xmax])
         plt.ylim([-ds*10,ds*10])

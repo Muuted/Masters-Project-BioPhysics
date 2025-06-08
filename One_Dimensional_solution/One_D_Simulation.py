@@ -24,9 +24,12 @@ def sim_1D_surface(
 
     print("Simulation progressbar")
     b = progressbar.ProgressBar(maxval=sim_steps-1)
-    for time in range(sim_steps-1):
+    for time in range(0,sim_steps-1):
         b.update(time)
-        x = Lagran_multi(
+
+        t1, t2 = time%2 , (time + 1)%2
+
+        x = Lagran_multi_V2(
                 psi_list=psi_list
                 ,t=time,k=k,c0=c0,ds=ds
                 ,linalg_lstsq=False
@@ -34,22 +37,26 @@ def sim_1D_surface(
                         )
         multipliers.append(x)
 
-        for link in range(N-1,-1,-1):
-            RungeKutta4 = dPsidt_RungeKutta_4(
-                link=link
-                ,N=N, ds=ds, dt=dt
-                ,multipliers=x#multipliers[time]
-                ,psi=psi_list[time][link]
-                )
-            
-            psi_list[time+1][link] = psi_list[time][link] + (dt/6)*RungeKutta4
-            """dpdt = dPsidt(
-                i=link, N=N, deltaS=ds
-                ,multi=multipliers[time]
-                ,psi= psi_list[time,link]
-                )
-            psi_list[time+1][link] = psi_list[time][link] +dt*dpdt#(dt/6)*RungeKutta4
-            """
+        for link in range(N,-1,-1):
+            if link == N :
+                psi_list[time+1][link] =  0
+                print(link)
+            if link < N:
+                RungeKutta4 = dPsidt_RungeKutta_4(
+                    link=link
+                    ,N=N, ds=ds, dt=dt
+                    ,multipliers=x#multipliers[time]
+                    ,psi=psi_list[time][link]
+                    )
+                
+                psi_list[time+1][link] = psi_list[time][link] + (dt/6)*RungeKutta4
+                """dpdt = dPsidt(
+                    i=link, N=N, deltaS=ds
+                    ,multi=multipliers[time]
+                    ,psi= psi_list[time,link]
+                    )
+                psi_list[time+1][link] = psi_list[time][link] +dt*dpdt#(dt/6)*RungeKutta4
+                """
             
 
     x_list,z_list = plot_from_psi(

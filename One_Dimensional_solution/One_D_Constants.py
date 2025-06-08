@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 def gamma(i):
-    gam = 1.5e0#
+    gam = 1e0#
     if i==0:
         return gam/2
     if i > 0:
@@ -32,7 +32,7 @@ def One_D_Constants(
     N = 15#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e0 # s  : total time simulated
-    dt = 2e-4 # s time step.
+    dt = 1e-4 # s time step.
     sim_steps = 100 #int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
@@ -45,7 +45,7 @@ def One_D_Constants(
     psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
     #psi_list[0][0] = 1e-15#3.14/10
     if init_rand_psi == True:
-        for i in range(N):
+        for i in range(N+1):
             if i%2 == 0:
                 a = -1
             else:
