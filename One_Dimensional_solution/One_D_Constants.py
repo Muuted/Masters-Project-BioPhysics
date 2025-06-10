@@ -14,6 +14,19 @@ def One_D_Constants(
         print_val=False
         ,init_rand_psi = False
         ):
+    """------ constants ---------"""
+    L = 100 #1e-6 # micrometers  :  Total length of line
+    ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
+    N = 25#int(L/ds) # 99 + 1 # Number of chain links
+    #m = 1e-6 # grams  :   Mass of each chain link
+    T = 1e0 # s  : total time simulated
+    dt = 1e-5 # s time step.
+    sim_steps = int(1e5)#int(T/dt) # : number of simulation steps
+    k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
+    #kG = 1 #   :  Guassian curvature modulus
+    c0 = 25e-2# 0.25e8 # 1/m   :  
+
     """------ paths ---------"""
     save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     data_path =  save_path 
@@ -21,23 +34,13 @@ def One_D_Constants(
     video_save_path = save_path +"figures and video\\"
     video_fig_path = save_path +"figures for video\\"
 
+
+
     """------ Saved files names  ---------"""
     df_name= "\\1D surface membrane dynamics"
+    fps_movie = 24
+    num_frames = 100
 
-
-    """------ constants ---------"""
-    L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
-    r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 25 #int(L/ds) # 99 + 1 # Number of chain links
-    #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e0 # s  : total time simulated
-    dt = 1e-4 # s time step.
-    sim_steps = 1000 #int(T/dt) # : number of simulation steps
-    k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    #kG = 1 #   :  Guassian curvature modulus
-    c0 = 25e-2# 0.25e8 # 1/m   :  
-    
     
     """------ variables list ---------"""
     # list of variables
@@ -61,11 +64,11 @@ def One_D_Constants(
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} \n "
             + f"    k = {k} \n "
-            + f"    ds = {ds:e} m \n "
-            + f"    dt = {dt:e} s \n "
-            + f"    gamma(i!=0) = {gamma(2):e} s \n "
+            + f"    ds = {ds:0.1e} m \n "
+            + f"    dt = {dt:0.1e} s \n "
+            + f"    gamma(i!=0) = {gamma(2):0.1e} s \n "
             + f"    Total sim time = {T} s \n "
-            + f"    Sim steps = {sim_steps} \n "
+            + f"    Sim steps = {sim_steps:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
         )
         
@@ -75,7 +78,7 @@ def One_D_Constants(
         ,k,c0,sim_steps
         ,save_path, data_path, fig_save_path
         ,video_save_path,video_fig_path
-        ,df_name
+        ,df_name, fps_movie ,num_frames
         ]
 
 

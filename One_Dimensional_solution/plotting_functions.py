@@ -7,7 +7,46 @@ import pandas as pd
 
 
 def plot_from_psi(psi:list,sim_steps: int,ds: float,r0:float, L:float):
+
     N = len(psi[0])
+    x = np.full(shape=(sim_steps,N),dtype=float,fill_value=0)
+    z = np.zeros(shape=(sim_steps,N),dtype=float) #Because we have N+1 points, but run dynamics on N
+    print(np.shape(x))
+    x[:,N-1] = L + r0
+    
+    print("\n Getting x,z progressbar")
+    b2 = progressbar.ProgressBar(maxval=sim_steps)
+    for t in range(sim_steps):
+        b2.update(t)
+        tolerance= 1e-10 #1e-4
+        for i in range(N-2,-1,-1):
+            x[t][i] = x[t][i+1] - ds*np.cos(psi[t][i])
+            z[t][i] = z[t][i+1] + ds*np.sin(psi[t][i])
+            
+            a = np.sqrt((x[t][i+1]-x[t][i])**2 + (z[t][i+1]-z[t][i])**2)
+            if ds*(1+tolerance) <= a  <= ds*(1-tolerance) :
+                print(f"error on constant length , x[t][i]={x[t][i]} and z[t][i]={x[t][i]}")
+                exit()
+
+    return x,z
+ 
+
+def plot_from_psi_V2(
+        #psi:list,sim_steps: int,ds: float,r0:float, L:float
+        data_path,df_name
+        ):
+
+    df_sim = pd.read_pickle(data_path + df_name)
+    
+    dt = df_sim['dt'][0]
+    N = dt = df_sim['N'][0]
+    L = df_sim["L"][0]
+    ds = df_sim["ds"][0]
+    r0 = df_sim["r0"][0]
+    sim_steps = df_sim["sim_steps"][0]
+    psi = df_sim["psi"][0]
+
+    
     x = np.full(shape=(sim_steps,N),dtype=float,fill_value=0)
     z = np.zeros(shape=(sim_steps,N),dtype=float) #Because we have N+1 points, but run dynamics on N
     print(np.shape(x))
@@ -28,7 +67,13 @@ def plot_from_psi(psi:list,sim_steps: int,ds: float,r0:float, L:float):
                 print(f"error on constant length , x[t][i]={x[t][i]} and z[t][i]={x[t][i]}")
                 exit()
 
-    return x,z
+    
+    df_sim["x pos"] = [x]
+    df_sim["z pos"]= [z]
+
+    df_sim.to_pickle(data_path + df_name)
+    print("hello")
+    print(df_sim.info())
  
 
 

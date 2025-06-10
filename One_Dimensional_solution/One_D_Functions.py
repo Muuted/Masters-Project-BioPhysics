@@ -8,7 +8,7 @@ def Kroncker(i,j):
         return 1
     else:
         return 0
-"""
+
 def Lagran_multi(
         psi_list,t,k,c0,ds
         ,num_chains
@@ -58,13 +58,6 @@ def Lagran_multi(
                     a1 = np.sin(psi_list[t][j%NN])*Kroncker(i%N,j)
                     a2 = -np.cos(psi_list[t][j%NN])*Kroncker(l,j)
             
-                
-            if round(a1+a2,1) == 2.9:
-                print("(i,j)=",i,j)
-                print(f"a11={a11}")
-                print(f"a12={a12}")
-                print(f"a1={a1}")
-                print(f"a2={a2}")
             A[i][j] = a1+a2 #round(a1+a2,1)
         b[i] = b1 #round(b1,1)
 
@@ -79,9 +72,13 @@ def Lagran_multi(
         
     return x
 
-"""
+
 def dPsidt(i,N,multi,psi,deltaS):
-    l = i + N #+ 1
+    if int(len(multi))%2 != 0:
+        print("wrong dimensions on lagrange multiplier list")
+        exit()
+    l = i + int(len(multi)/2)
+    
     if i == 0:
         a1 = (multi[i+1]/gamma(i+1) - multi[i]/gamma(i))*np.sin(psi)/deltaS**2
         a2 = (multi[l]/gamma(i) - multi[l+1]/gamma(i+1) )*np.cos(psi)/deltaS**2
@@ -128,9 +125,7 @@ def dPsidt_RungeKutta_4(link,N,ds,dt,multipliers,psi):
     return Runge_kutta
 
 
-
-
-def Lagran_multi(
+def Lagran_multi_V2(
         psi_list,t,k,c0,ds
         ,num_chains
         ,linalg_lstsq =True
@@ -143,49 +138,50 @@ def Lagran_multi(
     A = np.full(shape=(2*NN,2*NN),fill_value=10,dtype=float)
 
     for i in range(2*(N+1)):
+        a,b1 = 0,0
         for j in range(2*(N+1)):
             l = i%NN + NN
             if i == 0:
-                b[i] = 0
+                b1 = 0
 
-                if j < N + 1:
-                    a1 = Kroncker(i,j)/gamma(i%NN) - Kroncker(i+1,j)/gamma((i+1)%NN)
-                    a2 = 0
-                if j >= N +1 :
-                    a2 = Kroncker(l,j)/gamma(i%NN) - Kroncker(l+1,j)/gamma((i+1)%NN)
-                    a1 = 0
-                A[i][j] = a1*np.cos(psi_list[t][j%NN]) + a2*np.sin(psi_list[t][j%NN])
+                #if j < N + 1:
+                a1 = Kroncker(i,j%NN)/gamma(i%NN) - Kroncker(i+1,j%NN)/gamma((i+1)%NN)
+                    #a2 = 0
+                #if j >= N +1 :
+                a2 = Kroncker(l,j)/gamma(i%NN) - Kroncker(l+1,j)/gamma((i+1)%NN)
+                #    a1 = 0
+                a = a1*np.cos(psi_list[t][j%NN]) + a2*np.sin(psi_list[t][j%NN])
 
             if 0 < i < N+1 :
-                b[i] = 0
+                b1 = 0
                 
-                if j < N + 1:
-                    a11 = (Kroncker(i,j) - Kroncker(i+1,j))/gamma((i+1)%NN)
-                    a12 = (Kroncker(i-1,j) - Kroncker(i,j))/gamma(i%NN)
-                    a1 = (a11 - a12)*np.cos(psi_list[t][j%NN])
-                    a2 = 0
-                if j >= N + 1:
-                    a21 = (Kroncker(l,j) - Kroncker(l+1,j))/gamma((i+1)%NN)
-                    a22 = (Kroncker(l-1,j) - Kroncker(l,j))/gamma(i%NN)
-                    a2 = (a21 - a22)*np.sin(psi_list[t][j%NN])
-                    a1 = 0
-
-                A[i][j] = a1 + a2
+                #if j < N + 1:
+                a11 = (Kroncker(i,j%NN) - Kroncker(i+1,j%NN))/gamma((i+1)%NN)
+                a12 = (Kroncker(i-1,j%NN) - Kroncker(i,j%NN))/gamma(i%NN)
+                a1 = (a11 - a12)*np.cos(psi_list[t][j%NN])
+                #a2 = 0
+                #if j >= N + 1:
+                a21 = (Kroncker(l,j) - Kroncker(l+1,j))/gamma((i+1)%NN)
+                a22 = (Kroncker(l-1,j) - Kroncker(l,j))/gamma(i%NN)
+                a2 = (a21 - a22)*np.sin(psi_list[t][j%NN])
+                #    a1 = 
+                a= a1 + a2
             
             if i == N+1:
-                b[i] = 1*( -(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
+                b1 = 1*( -(k/ds)*(psi_list[t][(i+1)%NN] - psi_list[t][i%NN]) + k*c0 )
 
                 a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
-                A[i][j] = a1 - a2
+                a = a1 - a2
 
             if i > N+1 :
-                b[i] = - (k/ds)*(psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
+                b1 = - (k/ds)*(psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
 
                 a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
-                A[i][j] = a1 - a2
-
+                a = a1 - a2
+            A[i][j] = a
+            b[i] = b1
 
     x = np.linalg.solve(A,b)
 
@@ -217,15 +213,15 @@ if __name__ == "__main__":
         ,t=0,k=k,c0=c0,ds=ds
         ,print_matrix=True
         ,linalg_lstsq=False
-        ,num_chains=2
+        ,num_chains=N
         )
     exit()
     x1 = Lagran_multi(
         psi_list=psi_list
         ,t=0,k=k,c0=c0,ds=ds
-        ,print_matrix=True
+        ,print_matrix=False
         ,linalg_lstsq=False
-        ,num_chains=3
+        ,num_chains=N
         )
  
     

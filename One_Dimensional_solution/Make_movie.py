@@ -82,14 +82,25 @@ def Make_frames(
             os.makedirs(figs_save_path)
 
     df_sim = pd.read_pickle(data_path + df_name)
-    #print(df_sim.info())
+    print(df_sim.info())
+    
     x = df_sim['x pos'][0]
     z = df_sim['z pos'][0]
     dt = df_sim['dt'][0]
     L = df_sim["L"][0]
     ds = df_sim["ds"][0]
+    N = df_sim["N"][0]
+    gam2 = df_sim["gam(i>0)"][0]
+    sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
     
+    textstr = "\n".join((
+        f"dt= {dt:0.1e}",
+        f"ds={ds:0.1e}",
+        f"N={N}",
+        f"gam(i>1)={gam2}",
+    ))
+
     tot_time = df_sim['Total time [sec]'][0]
 
 
@@ -99,7 +110,8 @@ def Make_frames(
         frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
 
     
-    fig = plt.figure()
+    fig,ax = plt.subplots()#figure()
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     fig.canvas.manager.window.showMaximized()
     xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
     zmin, zmax = min([min(i) for i in z]) , max([max(i) for i in z])
@@ -109,16 +121,21 @@ def Make_frames(
     for t in frame_vec:
         b.update(k)
         plt.plot(x[t],z[t],'-o')
-        plt.xlim([x[0,0] - ds*1, x[0,0] + ds*19])
-        #plt.xlim([xmin-ds,xmax])
+        #plt.xlim([x[0,0] - ds*1, x[0,0] + ds*19])
+        plt.xlim([xmin-ds,xmax])
         plt.ylim([-ds*10,ds*10])
         #plt.ylim([zmin*0.99,zmax*1.01])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt}s and frame ={k} of {len(frame_vec)}")
-        #ax = plt.gca()
-        #ax.set_aspect('equal', adjustable='box')
-        #plt.pause(0.1)
+        
+        plt.text(0.05, 0.95, textstr
+                 ,transform=ax.transAxes
+                 , fontsize=14
+                 ,verticalalignment='top'
+                 , bbox=props
+                 )
+
         plt.draw()
         plt.pause(0.1)
 
