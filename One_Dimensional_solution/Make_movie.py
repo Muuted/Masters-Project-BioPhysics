@@ -7,6 +7,7 @@ import os
 import pandas as pd
 from One_D_Constants import One_D_Constants
 import progressbar
+import glob 
 
 def Make_video(
         output_path
@@ -65,7 +66,7 @@ def Make_video(
 
     print(
         "\n ---------------------- \n"
-        +" Movie has been released"
+        +" Movie has been released   ,   name=" + video_name
         +"\n ---------------------- \n"
     )
 
@@ -80,7 +81,11 @@ def Make_frames(
 
     if not os.path.exists(figs_save_path):
             os.makedirs(figs_save_path)
-
+    
+    files = glob.glob(figs_save_path + "/*")
+    for f in files:
+        os.remove(f)
+   
     df_sim = pd.read_pickle(data_path + df_name)
     print(df_sim.info())
     
@@ -127,9 +132,9 @@ def Make_frames(
         #plt.ylim([zmin*0.99,zmax*1.01])
         plt.xlabel(f"x")
         plt.ylabel(f"z")
-        plt.title(f"Dynamics for time={t*dt}s and frame ={k} of {len(frame_vec)}")
+        plt.title(f"Dynamics for time={t*dt}s  \n and frame ={k} of {len(frame_vec)}")
         
-        plt.text(0.05, 0.95, textstr
+        plt.text(0.88, 0.95, textstr
                  ,transform=ax.transAxes
                  , fontsize=14
                  ,verticalalignment='top'
@@ -145,36 +150,16 @@ def Make_frames(
     
     plt.close()
 
-def Make_movie():
-    args = One_D_Constants()
-
-    N = args[2]
-    data_path= args[11]
-    video_save_path,video_fig_path = args[13:15]
-    
-    
-    
-    Make_frames(
-        data_path=data_path
-        ,figs_save_path=video_fig_path
-        ,df_name="1D surface membrane dynamics"
-    )
-    
-
-    Make_video(
-        output_path = video_save_path
-        ,input_path = video_fig_path
-        ,video_name = f"dynamics movie links={N}.avi"
-        ,fps=8
-    )
-
 
 if __name__=="__main__":
     args = One_D_Constants()
 
+    L,r0,N,ds,T,dt = args[0:6]
+    psi_list,k,c0,sim_steps  =args[6:10]
     save_path, data_path, fig_save_path = args[10:13]
     video_save_path,video_fig_path = args[13:15]
-    
+    df_name= args[15]
+
     making_frame = True
     making_video = True
 
@@ -189,7 +174,7 @@ if __name__=="__main__":
         Make_video(
             output_path = video_save_path
             ,input_path = video_fig_path
-            ,video_name = "dynamics movie.avi"
+            ,video_name = f"dynamics movie links={N}.avi"
             ,fps=12
     )
     

@@ -18,14 +18,14 @@ def One_D_Constants(
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 25#int(L/ds) # 99 + 1 # Number of chain links
+    N = 24#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e0 # s  : total time simulated
-    dt = 1e-5 # s time step.
-    sim_steps = int(1e5)#int(T/dt) # : number of simulation steps
+    T = 10 # s  : total time simulated
+    dt = 1e-4 # s time step.
+    sim_steps = int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
-    c0 = 25e-2# 0.25e8 # 1/m   :  
+    c0 = 0.25e0# 0.25e8 # 1/m   :  
 
     """------ paths ---------"""
     save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
@@ -60,13 +60,13 @@ def One_D_Constants(
         print(
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
-            + f"    Total length of surface L={L} meter \n "
+            + f"    Total length of surface L={L} sim units \n "
             + f"    number of chain links : {N} \n " 
-            + f"    r0 = {r0} \n "
-            + f"    k = {k} \n "
-            + f"    ds = {ds:0.1e} m \n "
+            + f"    r0 = {r0} sim units \n "
+            + f"    k = {k} \n sim units"
+            + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
-            + f"    gamma(i!=0) = {gamma(2):0.1e} s \n "
+            + f"    gamma(i!=0) = {gamma(2)} unit?  \n "
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
