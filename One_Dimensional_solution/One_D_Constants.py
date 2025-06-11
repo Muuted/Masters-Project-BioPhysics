@@ -49,7 +49,7 @@ def One_D_Constants(
     #psi_list[0][0] = 1e-15#3.14/10
     if init_rand_psi == True:
         for i in range(N+1):
-            if i%2 == 0
+            if i%2 == 0:
                 a = -1
             else:
                 a = 1
