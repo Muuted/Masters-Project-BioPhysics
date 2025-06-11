@@ -172,11 +172,19 @@ def Lagran_multi_V2(
                 a = a1 - a2
 
             if i > NN :
-                b1 = -(k/ds)*(Kroncker(i+1,j)*psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
+                b1 = -(k/ds)*(psi_list[t][(i+1)%NN] + psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
 
                 a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
                 a = a1 - a2
+
+            if i == 2*NN-1:
+                b1 = -(k/ds)*(psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
+
+                a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
+                a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
+                a = a1 - a2
+
             A[i][j] = a
             b[i] = b1
 
@@ -200,6 +208,7 @@ if __name__ == "__main__":
     L,r0,N,ds,T,dt = args[0:6]
     psi_list,k,c0  =args[6:9]
 
+    
     print(
         "\n --------------------  \n"
     )
