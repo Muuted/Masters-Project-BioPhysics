@@ -178,12 +178,12 @@ def Lagran_multi_V2(
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
                 a = a1 - a2
 
-            if i == 2*NN-1:
+            """if i == 2*NN-1:
                 b1 = -(k/ds)*(psi_list[t][(i-1)%NN] - 2*psi_list[t][i%NN]) 
 
                 a1 = Kroncker(i%NN,j)*np.sin(psi_list[t][j%NN])
                 a2 = Kroncker(l,j)*np.cos(psi_list[t][j%NN])
-                a = a1 - a2
+                a = a1 - a2"""
 
             A[i][j] = a
             b[i] = b1

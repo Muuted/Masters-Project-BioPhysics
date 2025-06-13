@@ -48,8 +48,6 @@ def sim_1D_surface(
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi_list],
-            #'x pos': [x_list],
-            #'z pos': [z_list],
             'multipliers': [multipliers],
             "L" : L,
             "r0": r0,
