@@ -9,7 +9,6 @@ def gamma(i):
         return gam
 
 
-
 def One_D_Constants(
         print_val=False
         ,init_rand_psi = False
@@ -18,9 +17,9 @@ def One_D_Constants(
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 25#25 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 24 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 10 # s  : total time simulated
+    T = 20 # s  : total time simulated
     dt = 1e-4 # s time step.
     sim_steps = int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
@@ -63,7 +62,7 @@ def One_D_Constants(
             + f"    Total length of surface L={L} sim units \n "
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} sim units \n "
-            + f"    k = {k} \n sim units"
+            + f"    k = {k}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
             + f"    gamma(i!=0) = {gamma(2)} unit?  \n "

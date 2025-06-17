@@ -60,7 +60,7 @@ def plot_from_psi_V2(
         tolerance= 1e-10 #1e-4
         for i in range(N-2,-1,-1):
             x[t][i] = x[t][i+1] - ds*np.cos(psi[t][i])
-            z[t][i] = z[t][i+1] + ds*np.sin(psi[t][i])
+            z[t][i] = z[t][i+1] - ds*np.sin(psi[t][i])
             
             a = np.sqrt((x[t][i+1]-x[t][i])**2 + (z[t][i+1]-z[t][i])**2)
             if ds*(1+tolerance) <= a  <= ds*(1-tolerance) :
@@ -72,8 +72,8 @@ def plot_from_psi_V2(
     df_sim["z pos"]= [z]
 
     df_sim.to_pickle(data_path + df_name)
-    print("hello")
-    print(df_sim.info())
+    #print("hello")
+    #print(df_sim.info())
  
 
 

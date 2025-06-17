@@ -8,6 +8,7 @@ import pandas as pd
 from One_D_Constants import One_D_Constants
 import progressbar
 import glob 
+from plotting_functions import plot_from_psi_V2
 
 def Make_video(
         output_path
@@ -87,7 +88,7 @@ def Make_frames(
         os.remove(f)
    
     df_sim = pd.read_pickle(data_path + df_name)
-    print(df_sim.info())
+    #print(df_sim.info())
     
     x = df_sim['x pos'][0]
     z = df_sim['z pos'][0]
@@ -98,12 +99,14 @@ def Make_frames(
     gam2 = df_sim["gam(i>0)"][0]
     sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
+    T_tot = df_sim["Total time [sec]"][0]
     
     textstr = "\n".join((
         f"dt= {dt:0.1e}",
         f"ds={ds:0.1e}",
         f"N={N}",
         f"gam(i>1)={gam2}",
+        r" $ T_{tot} $ =" + f"{T_tot}s",
     ))
 
     tot_time = df_sim['Total time [sec]'][0]
@@ -162,6 +165,10 @@ if __name__=="__main__":
 
     making_frame = True
     making_video = True
+    plot_from_psi_V2(
+        data_path=data_path
+        ,df_name=df_name
+    )
 
     if making_frame==True:
         Make_frames(
