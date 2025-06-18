@@ -9,41 +9,10 @@ import progressbar
 from Make_movie import Make_frames,Make_video
 
 
-
-def finding_curvature(x,y):
-
-    xR = max(x) - min(x)
-    yR =  xR
-    R0 = abs(xR)
-    tol = 0.1
-
-     
-    R_val = [R0*(1-tol), R0 , R0*(1+tol)]
-    xR_val = [xR*(1-tol), xR , xR*(1+tol)]
-    yR_val = [yR*(1-tol), yR , yR*(1+tol)]
-
-    for i in range(len(x)):
-
-
-
-        pass
-
-    pass
-
-
-#from numpy import *
-
 def cirle_fit(data_path, df_name,steps_tot):
     df_sim = pd.read_pickle(data_path + df_name)
-    #print(df_sim.info())
-    
     x = df_sim['x pos'][0][steps_tot-1]
     z = df_sim['z pos'][0][steps_tot-1]
-    
-    #x = [  9, 35, -13,  10,  23,   0]
-    #z = [ 34, 10,   6, -14,  27, -10]
-    # == METHOD 1 ==
-    method_1 = 'algebraic'
 
     # coordinates of the barycenter
     x_m = np.mean(x)
@@ -68,8 +37,6 @@ def cirle_fit(data_path, df_name,steps_tot):
     A = np.array([ [ Suu, Suv ], [Suv, Svv]])
     B = np.array([ Suuu + Suvv, Svvv + Suuv ])/2.0
 
-    #print(np.shape(A),np.shape(B))
-    #exit()
     uc, vc = np.linalg.solve(A, B)
 
     xc_1 = x_m + uc
@@ -81,43 +48,33 @@ def cirle_fit(data_path, df_name,steps_tot):
     residu_1  = np.sum((Ri_1-R_1)**2)
     residu2_1 = np.sum((Ri_1**2-R_1**2)**2)
 
-    
-    print(
-        f"xc_1 = {xc_1} \n "
-        +f"zc_1 = {zc_1} \n "
-        #+f"Ri_1 = {Ri_1} \n "
-        +f"R_1 = {R_1} \n "
-    )
-
     return [xc_1 , zc_1 , R_1]
 
 
 def make_circle(xc,zc,R,ds,xlim,zlim):
-
     xmax,xmin = xlim
     zmax,zmin = zlim
     x_list,z_list = [],[]
     x,z = xmin, zmax
-    z = zmax
-    steps = int(3*abs(xmax-xmin)/ds)
+
+    steps_size = ds/30
+    tol = steps_size #Tolerence for divation of radius
     on_circ = False
     while x <= xmax:
         on_circ = False
         r =  (x-xc)**2 + (z-zc)**2
-        if R**2*0.99 < r < R**2*1.01 :
+        if R**2*(1-tol) < r < R**2*(1+tol) :
             x_list.append(x)
             z_list.append(z)
-            x += ds/3
-            #z -= ds/3
+            x += steps_size
             on_circ = True
         
         if on_circ == False:
-            z -= ds/3
-        
-        if x%(xmax/10) == 0:
-            print(f"x={x} and xmax={xmax}")
+            z -= steps_size
 
     return [x_list,z_list]
+
+
 
 if __name__ == "__main__":
     args = One_D_Constants()
@@ -127,32 +84,29 @@ if __name__ == "__main__":
     video_save_path,video_fig_path = args[13:15]
     df_name= args[15]
 
-    xc,zc,R  = cirle_fit(
+    x_cen,z_cen,Radius  = cirle_fit(
         data_path=data_path
         ,df_name=df_name
         ,steps_tot=sim_steps
     )
 
     df_sim = pd.read_pickle(data_path + df_name)
-    #print(df_sim.info())
-    
-    total_time = df_sim["Total time [sec]"][0]
-    print(total_time)
     x = df_sim['x pos'][0][sim_steps-1]
     z = df_sim['z pos'][0][sim_steps-1]
+
     x_max, x_min = max(x), min(x)
     z_max, z_min = max(z), min(z)
 
-    print(x_max,x_min,z_max,z_min)
-    x_circle,z_circle = make_circle(
-        xc=xc,zc=zc,R=R,ds=ds
+
+    x_circle ,z_circle = make_circle(
+        xc=x_cen,zc=z_cen,R=Radius,ds=ds
         ,xlim=[x_max,x_min]
         ,zlim=[z_max, z_min]
     )
 
     plt.figure()
 
-    #plt.plot(x,z,label="data")
+    plt.plot(x,z,label="data")
     plt.plot(x_circle,z_circle,label="circle")
     plt.xlim([x_min-ds,x_max])
     plt.ylim([-ds*10,ds*10])    
