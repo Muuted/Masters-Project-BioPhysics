@@ -9,11 +9,13 @@ import progressbar
 from Make_movie import Make_frames,Make_video
 
 
-def cirle_fit(data_path, df_name,steps_tot):
+def cirle_fit(data_path, df_name):
     df_sim = pd.read_pickle(data_path + df_name)
+    steps_tot = df_sim["sim_steps"][0]
     x = df_sim['x pos'][0][steps_tot-1]
     z = df_sim['z pos'][0][steps_tot-1]
-
+    x_max ,x_min = max(x), min(x)
+    z_max ,z_min = max(z), min(z)
     # coordinates of the barycenter
     x_m = np.mean(x)
     z_m = np.mean(z)
@@ -48,7 +50,23 @@ def cirle_fit(data_path, df_name,steps_tot):
     residu_1  = np.sum((Ri_1-R_1)**2)
     residu2_1 = np.sum((Ri_1**2-R_1**2)**2)
 
-    return [xc_1 , zc_1 , R_1]
+
+    
+    x_circle ,z_circle = make_circle(
+        xc=xc_1,zc=zc_1,R=R_1,ds=ds
+        ,xlim=[x_max,x_min]
+        ,zlim=[z_max, z_min]
+    )
+
+    df_sim["x circle points"] = [x_circle]
+    df_sim["z circle points"] = [z_circle]
+    df_sim["x circle center"] = [xc_1]
+    df_sim["z circle center"] = [zc_1]
+    df_sim["circle radius"] = [R_1]
+
+    df_sim.to_pickle(data_path + df_name)
+
+    return [xc_1 , zc_1 , R_1 , x_circle, z_circle]
 
 
 def make_circle(xc,zc,R,ds,xlim,zlim):
@@ -84,26 +102,18 @@ if __name__ == "__main__":
     video_save_path,video_fig_path = args[13:15]
     df_name= args[15]
 
-    x_cen,z_cen,Radius  = cirle_fit(
+    x_cen,z_cen,Radius,x_circle ,z_circle  = cirle_fit(
         data_path=data_path
         ,df_name=df_name
-        ,steps_tot=sim_steps
     )
 
     df_sim = pd.read_pickle(data_path + df_name)
     x = df_sim['x pos'][0][sim_steps-1]
     z = df_sim['z pos'][0][sim_steps-1]
-
-    x_max, x_min = max(x), min(x)
-    z_max, z_min = max(z), min(z)
-
-
-    x_circle ,z_circle = make_circle(
-        xc=x_cen,zc=z_cen,R=Radius,ds=ds
-        ,xlim=[x_max,x_min]
-        ,zlim=[z_max, z_min]
-    )
-
+    x_max ,x_min = max(x), min(x)
+    z_max ,z_min = max(z), min(z)
+    
+    print(df_sim.info())
     plt.figure()
 
     plt.plot(x,z,label="data")
