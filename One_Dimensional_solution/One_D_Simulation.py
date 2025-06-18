@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from One_D_Constants import One_D_Constants,gamma
-from One_D_Functions import Lagran_multi, dPsidt_RungeKutta_4
+from One_D_Constants import One_D_Constants
 from plotting_functions import plot_from_psi_V2 
-from data_processing import cirle_fit,make_circle
+from data_processing import cirle_fit
 from One_D_sim_function import sim_1D_surface
 import os
 import pandas as pd
@@ -47,3 +46,10 @@ if __name__ == "__main__":
         ,video_name = f"dynamics movie links={N}.avi"
         ,fps=8
     )
+
+    x_cen,z_cen,Radius,x_circle ,z_circle = cirle_fit(
+        data_path=data_path
+        ,df_name=df_name
+    )
+
+    print(f"radius={Radius}")

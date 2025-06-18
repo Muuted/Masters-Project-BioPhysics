@@ -49,8 +49,6 @@ def cirle_fit(data_path, df_name):
     R_1       = np.mean(Ri_1)
     residu_1  = np.sum((Ri_1-R_1)**2)
     residu2_1 = np.sum((Ri_1**2-R_1**2)**2)
-
-
     
     x_circle ,z_circle = make_circle(
         xc=xc_1,zc=zc_1,R=R_1,ds=ds

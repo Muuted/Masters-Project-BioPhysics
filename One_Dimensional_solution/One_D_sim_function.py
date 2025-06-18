@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from One_D_Constants import gamma
-from One_D_Functions import Lagran_multi, dPsidt_RungeKutta_4,sim_1D_surface
+from One_D_Functions import Lagran_multi, dPsidt_RungeKutta_4
 import os
 import pandas as pd
 import progressbar
