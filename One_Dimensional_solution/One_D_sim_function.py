@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from One_D_Constants import gamma
-from One_D_Functions import Lagran_multi, dPsidt_RungeKutta_4
+from One_D_Functions import Lagran_multi, dPsidt_RungeKutta_4, dPsidt
 import os
 import pandas as pd
 import progressbar
@@ -42,7 +42,13 @@ def sim_1D_surface(
                     )
                 
                 psi_list[time+1][link] = psi_list[time][link] + (dt/6)*RungeKutta4
-                
+
+                """dpsidt = dPsidt(
+                    i=link, N=N, deltaS=ds
+                    ,multi=x
+                    ,psi=psi_list[time][link]
+                        )
+                psi_list[time+1][link] = psi_list[time][link] + dt*dpsidt"""
   
     if save_data == True:
         df = pd.DataFrame({
@@ -51,6 +57,7 @@ def sim_1D_surface(
             "L" : L,
             "r0": r0,
             "N": N,
+            "c0": c0,
             "Total time [sec]" : T,
             "sim_steps": sim_steps,
             "dt":dt,

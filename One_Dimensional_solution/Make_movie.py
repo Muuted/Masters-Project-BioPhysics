@@ -118,7 +118,7 @@ def Make_frames(
         frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
 
     
-    fig,ax = plt.subplots()#figure()
+    fig,ax = plt.subplots()
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
     fig.canvas.manager.window.showMaximized()
     xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
