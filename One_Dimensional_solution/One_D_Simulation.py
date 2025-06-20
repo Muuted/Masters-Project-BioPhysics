@@ -46,9 +46,8 @@ def One_iteration_sim():
         ,fps=8
     )
 
-    x_cen,z_cen,Radius,x_circle ,z_circle = cirle_fit(
-        sim_step=sim_steps-1
-        ,data_path=data_path
+    x_cen,z_cen,Radius = cirle_fit(
+        data_path=data_path
         ,df_name=df_name
     )
 

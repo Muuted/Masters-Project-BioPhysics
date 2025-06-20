@@ -263,7 +263,7 @@ def plot_end_result_curve():
 
 
 if __name__ == "__main__":
-    show_radius()
+    #show_radius()
     plot_end_result_curve()
 
     
