@@ -20,7 +20,7 @@ def One_D_Constants(
     N = 25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 30 # s  : total time simulated
-    dt = 1e-4 # s time step.
+    dt = 3e-4 # s time step.
     sim_steps = 100#int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
@@ -28,6 +28,7 @@ def One_D_Constants(
 
     """------ paths ---------"""
     save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
+    save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     data_path =  save_path 
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
