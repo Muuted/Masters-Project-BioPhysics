@@ -20,6 +20,11 @@ def show_radius():
     video_save_path,video_fig_path = args[13:15]
     df_name = args[15]
     
+    time_vec = np.linspace(
+        start=0
+        ,stop=T
+        ,num=sim_steps-1
+    )
     c0_list = [ c0/2 , c0 , c0*2]
 
     df_name_0 = df_name + f" c0={c0_list[0]}  sim time={T}s"
@@ -39,7 +44,7 @@ def show_radius():
     fig = plt.figure()
     fig.canvas.manager.window.showMaximized()
 
-    plt.plot(radius_0
+    plt.plot(time_vec,radius_0
              ,label=f"rad0  " + f"1/c0={1/c0_list[0]}"
              ,linestyle="-"
              ,marker="*"
@@ -47,12 +52,12 @@ def show_radius():
              )
     plt.hlines(
         y=1/c0_list[0]
-        ,xmin=0, xmax=length-1
+        ,xmin=0, xmax=T
         ,linestyles="--",colors="r"
         ,label=f"1/c0={1/c0_list[0]}"
         )
     
-    plt.plot(radius_1
+    plt.plot(time_vec,radius_1
              ,label= f"rad1  " + f"1/c0={1/c0_list[1]}"
              ,linestyle="-"
              ,marker="*"
@@ -60,12 +65,12 @@ def show_radius():
              )
     plt.hlines(
         y=1/c0_list[1]
-        ,xmin=0, xmax=length-1
+        ,xmin=0, xmax=T
         ,linestyles="--",colors="k"
         ,label=f"1/c0={1/c0_list[1]}"
         )
     
-    plt.plot(radius_2
+    plt.plot(time_vec,radius_2
              ,label="rad2  " + f"1/c0={1/c0_list[2]}"
              ,linestyle="-"
              ,marker="*"
@@ -73,15 +78,17 @@ def show_radius():
              )
     plt.hlines(
         y=1/c0_list[2]
-        ,xmin=0, xmax=length-1
+        ,xmin=0, xmax=T
         ,linestyles="--",colors="m"
         ,label=f"1/c0={1/c0_list[2]}"
         )
 
-    plt.xlim(xmin=0, xmax=length+3000)
+    plt.xlim(xmin=0, xmax=T+0.1)
     plt.ylim(ymin=0,ymax=radius_0[len(radius_0)-1]*1.5)
 
-
+    plt.title("time evolution of the radius of the fitted cirles")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Radius (nm)")
     plt.legend(
         fontsize=15
     )
@@ -187,11 +194,12 @@ def plot_end_result_curve():
         x_circle_2,z_circle_2,label=f"circle fit, c0={c0_list[2]} "
     )
     plt.xlabel("x",fontsize=25)
+    
     plt.ylabel("z",fontsize=25)
-
     plt.title(
         "Final state of membrane in simulation \n "
-        +"for different spontaneous curvatures"
+        +"for different spontaneous curvatures \n"
+        +f"simulation time ={T}s with dt={dt:0.1e}"
         ,fontsize=20
         )
 
@@ -263,7 +271,7 @@ def plot_end_result_curve():
 
 
 if __name__ == "__main__":
-    #show_radius()
-    plot_end_result_curve()
+    show_radius()
+    #plot_end_result_curve()
 
     

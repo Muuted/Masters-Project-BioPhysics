@@ -81,27 +81,26 @@ def Multiple_iteration_sim():
             ,df_name=df_name_1
         )
         
-        """Make_frames(
+        Make_frames(
             data_path=data_path
             ,figs_save_path=video_fig_path
-            ,df_name="1D surface membrane dynamics"
+            ,df_name= df_name_1
         )
         
         Make_video(
             output_path = video_save_path
             ,input_path = video_fig_path
-            ,video_name = f"dynamics movie links={N}.avi"
+            ,video_name = f"dynamics movie links={N}, c0={c0}.avi"
             ,fps=8
-        )"""
+        )
 
-        x_cen,z_cen,Radius,x_circle ,z_circle = cirle_fit(
-            sim_step=sim_steps-1
-            ,data_path=data_path
+        x_cen,z_cen,Radius = cirle_fit(
+            data_path=data_path
             ,df_name=df_name_1
         )
 
         print(f" \n radius={Radius}")
 
 if __name__ == "__main__":
-    #Multiple_iteration_sim()
-    One_iteration_sim()
+    Multiple_iteration_sim()
+    #One_iteration_sim()

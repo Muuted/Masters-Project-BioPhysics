@@ -163,8 +163,6 @@ if __name__=="__main__":
     video_save_path,video_fig_path = args[13:15]
     df_name= args[15]
 
-    c0_list = [ c0/2 , c0 , c0*2]
-    df_name = df_name + f" c0={c0_list[0]}  sim time={T}s"
     making_frame = True
     making_video = True
     plot_from_psi_V2(
