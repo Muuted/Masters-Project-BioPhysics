@@ -16,6 +16,7 @@ def plot_from_psi(psi:list,sim_steps: int,ds: float,r0:float, L:float):
     
     print("\n Getting x,z progressbar")
     b2 = progressbar.ProgressBar(maxval=sim_steps)
+    b2.start()
     for t in range(sim_steps):
         b2.update(t)
         tolerance= 1e-10 #1e-4
@@ -55,6 +56,7 @@ def plot_from_psi_V2(
     print_list2 = []
     print("\n Getting x,z progressbar")
     b2 = progressbar.ProgressBar(maxval=sim_steps)
+    b2.start()
     for t in range(sim_steps):
         b2.update(t)
         tolerance= 1e-10 #1e-4

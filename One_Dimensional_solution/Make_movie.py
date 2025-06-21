@@ -120,12 +120,16 @@ def Make_frames(
     
     fig,ax = plt.subplots()
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    fig.canvas.manager.window.showMaximized()
+    #fig.canvas.manager.window.showMaximized()
+    mng = plt.get_current_fig_manager()
+    #mng.frame.Maximize(True)
+    mng.full_screen_toggle()
     xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
     zmin, zmax = min([min(i) for i in z]) , max([max(i) for i in z])
     k = 0
     print("\n Plotting progressbar")
     b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
+    b.start()
     for t in frame_vec:
         b.update(k)
         plt.plot(x[t],z[t],'-o')

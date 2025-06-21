@@ -18,6 +18,7 @@ def sim_1D_surface(
 
     print("Simulation progressbar")
     b = progressbar.ProgressBar(maxval=sim_steps-1)
+    b.start()
     for time in range(0,sim_steps-1):
         b.update(time)
         #t1, t2 = time%2 , (time + 1)%2
