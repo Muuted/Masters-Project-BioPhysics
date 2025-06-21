@@ -19,7 +19,6 @@ def One_iteration_sim():
     video_save_path,video_fig_path = args[13:15]
     df_name = args[15]
 
-
     
     sim_1D_surface(
         L=L,r0=r0,N=N,ds=ds,T=T,dt=dt
@@ -36,7 +35,7 @@ def One_iteration_sim():
     Make_frames(
         data_path=data_path
         ,figs_save_path=video_fig_path
-        ,df_name="1D surface membrane dynamics"
+        ,df_name=df_name
     )
     
     Make_video(
@@ -102,5 +101,5 @@ def Multiple_iteration_sim():
         print(f" \n radius={Radius}")
 
 if __name__ == "__main__":
-    Multiple_iteration_sim()
-    #One_iteration_sim()
+    One_iteration_sim()
+    #Multiple_iteration_sim()
