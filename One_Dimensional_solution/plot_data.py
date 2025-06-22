@@ -305,16 +305,50 @@ def plot_energies():
         start=0,stop=T
         ,num=len(E_pot)
         )
+
         plt.figure()
         plt.plot(
-            time_vec,E_pot,label="E_pot")
-        plt.plot(
-            time_vec,E_kin,label="E_kin")
-        plt.plot(
-            time_vec
-            ,E_tot,label="E_tot")
-        plt.title(f"for the first simulation of c0={c0_list[i]}")
+            time_vec, E_tot, label=f"c0={c0_list[i]}"
+        )
+
+        plt.title(
+            r"The Total energy $E_{tot}$ = T + V" + f"\n"
+            +r"$\frac{\Delta E_{tot}}{E_{max}}$="#+"max(E_tot)-min(E_tot)="
+            +f"{(max(E_tot)-min(E_tot))/max(E_tot)}"
+            )
+        plt.xlabel("time [s]")
+        plt.ylabel("Energy [units?]")
         plt.legend()
+
+    plt.figure()
+    for i in range(len(c0_list)):
+        # Get the results from sim 0 ----------------------------------------------------
+        df_name = df_name_orginal + f" c0={c0_list[i]}  sim time={T}s"
+        df_sim = pd.read_pickle(data_path + df_name)
+        psi = df_sim["psi"][0]
+        x = df_sim["x pos"][0]
+        z = df_sim["z pos"][0]
+        
+        E_pot , E_kin ,E_tot = total_energy(
+            k=k,c0=c0_list[i]
+            ,sigma=k*c0_list[i]**2
+            ,ds=ds,m=m
+            ,psi=psi,x=x,z=z
+        )
+        time_vec = np.linspace(
+        start=0,stop=T
+        ,num=len(E_pot)
+        )
+        plt.plot(
+            time_vec, E_tot, label=f"c0={c0_list[i]}"
+        )
+
+    plt.title(
+        r"The Total energy $E_{tot}$ = T + V"
+        )
+    plt.xlabel("time [s]")
+    plt.ylabel("Energy [units?]")
+    plt.legend()
     
     plt.show()
 
