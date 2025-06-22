@@ -59,6 +59,9 @@ def Make_video(
     cv2.destroyAllWindows()
     video.release() 
 
+    if not os.path.exists(output_path):
+            os.makedirs(output_path)
+    
     # remove exisiting file
     if os.path.isfile(output_path + filename):
         os.remove( output_path + filename )
@@ -67,7 +70,7 @@ def Make_video(
 
     print(
         "\n ---------------------- \n"
-        +" Movie has been released   ,   name=" + video_name
+        +" Movie has been released   ,   name=" + filename
         +"\n ---------------------- \n"
     )
 
@@ -120,10 +123,12 @@ def Make_frames(
     
     fig,ax = plt.subplots()
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
-    #fig.canvas.manager.window.showMaximized()
-    mng = plt.get_current_fig_manager()
-    #mng.frame.Maximize(True)
-    mng.full_screen_toggle()
+    #fig.canvas.manager.window.full_screen_toggle()
+    #mng = plt.get_current_fig_manager()
+    #mng.full_screen_toggle()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+
     xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
     zmin, zmax = min([min(i) for i in z]) , max([max(i) for i in z])
     k = 0

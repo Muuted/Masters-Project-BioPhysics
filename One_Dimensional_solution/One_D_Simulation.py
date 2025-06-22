@@ -34,13 +34,13 @@ def One_iteration_sim():
     
     Make_frames(
         data_path=data_path
-        ,figs_save_path=video_fig_path
+        ,figs_save_path=video_fig_path + df_name +"\\"
         ,df_name=df_name
     )
     
     Make_video(
         output_path = video_save_path
-        ,input_path = video_fig_path
+        ,input_path = video_fig_path + df_name +"\\"
         ,video_name = f"dynamics movie links={N}.avi"
         ,fps=8
     )
@@ -82,13 +82,13 @@ def Multiple_iteration_sim():
         
         Make_frames(
             data_path=data_path
-            ,figs_save_path=video_fig_path
+            ,figs_save_path=video_fig_path + df_name_1 +"\\"
             ,df_name= df_name_1
         )
         
         Make_video(
             output_path = video_save_path
-            ,input_path = video_fig_path
+            ,input_path = video_fig_path + df_name_1 +"\\"
             ,video_name = f"dynamics movie links={N}, c0={c0}.avi"
             ,fps=8
         )
@@ -101,5 +101,5 @@ def Multiple_iteration_sim():
         print(f" \n radius={Radius}")
 
 if __name__ == "__main__":
-    One_iteration_sim()
-    #Multiple_iteration_sim()
+    #One_iteration_sim()
+    Multiple_iteration_sim()

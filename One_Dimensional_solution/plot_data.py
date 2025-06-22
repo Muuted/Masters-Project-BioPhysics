@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import progressbar
 from Make_movie import Make_frames,Make_video
-from data_processing import make_circle
+from data_processing import make_circle, total_energy
 
 
 
@@ -270,8 +270,57 @@ def plot_end_result_curve():
 
 
 
+def plot_energies():
+    args = One_D_Constants()
+    L,r0,N,ds,T,dt = args[0:6]
+    psi_list,k,c0,sim_steps  =args[6:10]
+    save_path, data_path, fig_save_path = args[10:13]
+    video_save_path,video_fig_path = args[13:15]
+    df_name_orginal = args[15]
+    
+    time_vec = np.linspace(
+        start=0
+        ,stop=T
+        ,num=sim_steps-1
+    )
+    c0_list = [ c0/2 , c0 , c0*2]
+    m = 1 #grams
+
+    for i in range(len(c0_list)):
+        # Get the results from sim 0 ----------------------------------------------------
+        df_name = df_name_orginal + f" c0={c0_list[i]}  sim time={T}s"
+        df_sim = pd.read_pickle(data_path + df_name)
+        psi = df_sim["psi"][0]
+        x = df_sim["x pos"][0]
+        z = df_sim["z pos"][0]
+
+        E_pot , E_kin ,E_tot = total_energy(
+            k=k,c0=c0_list[i]
+            ,sigma=k*c0_list[i]**2
+            ,ds=ds,m=m
+            ,psi=psi,x=x,z=z
+        )
+
+        time_vec = np.linspace(
+        start=0,stop=T
+        ,num=len(E_pot)
+        )
+        plt.figure()
+        plt.plot(
+            time_vec,E_pot,label="E_pot")
+        plt.plot(
+            time_vec,E_kin,label="E_kin")
+        plt.plot(
+            time_vec
+            ,E_tot,label="E_tot")
+        plt.title(f"for the first simulation of c0={c0_list[i]}")
+        plt.legend()
+    
+    plt.show()
+
 if __name__ == "__main__":
-    show_radius()
+    #show_radius()
     #plot_end_result_curve()
+    plot_energies()
 
     

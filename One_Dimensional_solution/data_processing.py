@@ -102,6 +102,33 @@ def make_circle(xc,zc,R,ds,xlim,zlim):
 
 
 
+def total_energy(
+        k:float ,c0:float ,sigma:float ,ds:float ,m:float
+        ,psi:list , x:list , z:list
+                ):
+    
+    t_steps,links = np.shape(psi)
+    E_pot = np.zeros(t_steps) 
+    E_kin = np.zeros(t_steps)
+    E_tot = np.zeros(t_steps)
+
+    for t in range(0,t_steps-1):
+        for i in range(links-2): # -2 as we loose a point due to the derivative and the psi list is one longer.
+            E_pot[t] += (ds*k/2)*(psi[t][i+1] - psi[t][i])**2 + ds*sigma
+
+
+            x_dot = (x[t+1][i] - x[t][i])/ds
+            z_dot = (z[t+1][i] - z[t][i])/ds
+            if i == 0:
+                E_kin[t] += (m/2)*( x_dot**2 + z_dot**2)
+            if i > 0 :
+                E_kin[t] += m*( x_dot**2 + z_dot**2)
+
+        E_tot[t] = E_pot[t] + E_kin[t]
+    return E_pot , E_kin, E_tot
+
+
+
 if __name__ == "__main__":
     args = One_D_Constants()
     L,r0,N,ds,T,dt = args[0:6]
@@ -112,6 +139,11 @@ if __name__ == "__main__":
 
     c0_list = [ c0/2 , c0 , c0*2]
 
+    df_name_1 = df_name + f" c0={c0}  sim time={T}s"
+
+
+
+    exit()
     for i in range(len(c0_list)):
         c0 = c0_list[i]
         df_name_1 = df_name + f" c0={c0}  sim time={T}s"
