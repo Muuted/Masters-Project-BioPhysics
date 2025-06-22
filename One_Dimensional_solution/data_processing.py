@@ -108,9 +108,9 @@ def total_energy(
                 ):
     
     t_steps,links = np.shape(psi)
-    E_pot = np.zeros(t_steps) 
-    E_kin = np.zeros(t_steps)
-    E_tot = np.zeros(t_steps)
+    E_pot = np.zeros(t_steps-1) 
+    E_kin = np.zeros(t_steps-1)
+    E_tot = np.zeros(t_steps-1)
 
     for t in range(0,t_steps-1):
         for i in range(links-2): # -2 as we loose a point due to the derivative and the psi list is one longer.
