@@ -270,7 +270,7 @@ def plot_end_result_curve():
 
 
 
-def plot_energies():
+def plot_energies_multiple():
     args = One_D_Constants()
     L,r0,N,ds,T,dt = args[0:6]
     psi_list,k,c0,sim_steps  =args[6:10]
@@ -352,9 +352,73 @@ def plot_energies():
     
     plt.show()
 
+
+def plot_energies_One():
+    args = One_D_Constants()
+    L,r0,N,ds,T,dt = args[0:6]
+    psi_list,k,c0,sim_steps  =args[6:10]
+    save_path, data_path, fig_save_path = args[10:13]
+    video_save_path,video_fig_path = args[13:15]
+    df_name = args[15]
+    
+    time_vec = np.linspace(
+        start=0
+        ,stop=T
+        ,num=sim_steps-1
+    )
+    m = 1 #grams
+
+    fig,ax = plt.subplots()
+
+    # Get the results from sim 0 ----------------------------------------------------
+    df_sim = pd.read_pickle(data_path + df_name)
+    psi = df_sim["psi"][0]
+    x = df_sim["x pos"][0]
+    z = df_sim["z pos"][0]
+    
+    E_pot , E_kin ,E_tot = total_energy(
+        k=k,c0=c0
+        ,sigma=k*c0**2
+        ,ds=ds,m=m
+        ,psi=psi,x=x,z=z
+    )
+    time_vec = np.linspace(
+    start=0,stop=T
+    ,num=len(E_pot)
+    )
+    plt.plot(
+        time_vec, E_tot, label=f"c0={c0}"
+    )
+
+    textstr = "\n".join((
+        f"dt= {dt:0.1e}",
+        f"ds={ds:0.1e}",
+        f"N={N}",
+        r" $ T_{tot} $ =" + f"{T}s",
+    ))
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    plt.text(0.88, 0.95, textstr
+                 ,transform=ax.transAxes
+                 , fontsize=14
+                 ,verticalalignment='top'
+                 , bbox=props
+                 )
+    
+    plt.title(
+        r"The Total energy $E_{tot}$ = T + V"
+        )
+    plt.xlabel("time [s]")
+    plt.ylabel("Energy [units?]")
+    plt.legend()
+
+    plt.show()
+
+
+
 if __name__ == "__main__":
     #show_radius()
     #plot_end_result_curve()
-    plot_energies()
+    plot_energies_multiple()
+    plot_energies_One()
 
     

@@ -19,16 +19,16 @@ def One_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     N = 25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 30 # s  : total time simulated
-    dt = 1e-4 # s time step.
+    T = 10 # s  : total time simulated
+    dt = (1e-4)/2/3 # s time step.
     sim_steps = int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
     c0 = 0.25e0# 0.25e8 # 1/m   :  
 
     """------ paths ---------"""
-    save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
-    #save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
+    #save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
+    save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     data_path =  save_path 
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -37,7 +37,7 @@ def One_D_Constants(
 
 
     """------ Saved files names  ---------"""
-    df_name= "\\1D surface membrane dynamics"
+    df_name= "1D surface membrane dynamics"
     fps_movie = 24
     num_frames = 100
 
