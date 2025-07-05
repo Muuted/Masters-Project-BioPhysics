@@ -58,7 +58,7 @@ def Two_D_Constants(
     psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
     r_list = [L + r0 - i*ds for i in range(N,-1,-1)]
 
-    Area_list = [2*np.pi(r_list[i+1]-r_list[i]) for i in range(N)]
+    Area_list = [np.pi(r_list[i+1]**2-r_list[i]**2) for i in range(N)]
     #psi_list[0][0] = 1e-15#3.14/10
     if init_rand_psi == True:
         for i in range(N+1):
