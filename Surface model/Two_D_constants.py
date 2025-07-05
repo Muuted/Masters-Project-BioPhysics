@@ -8,15 +8,15 @@ def gamma(i):
     if i > 0:
         return gam
 
+
 def Two_D_paths():
     """------ paths ---------"""
     #save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
-    data_path =  save_path 
+    data_path = "2D sim results\\"
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
     video_fig_path = save_path +"figures for video\\"
-
 
 
     """------ Saved files names  ---------"""
@@ -25,7 +25,7 @@ def Two_D_paths():
     num_frames = 100
 
     path_args=[
-        save_path, data_path, fig_save_path
+        data_path, fig_save_path
         ,video_save_path,video_fig_path
         ,df_name, fps_movie ,num_frames
     ]
@@ -56,6 +56,9 @@ def Two_D_Constants(
     # list of variables
     # we are gonna assume for now that the membrane is just initially flat.
     psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
+    r_list = [L + r0 - i*ds for i in range(N,-1,-1)]
+
+    Area_list = [2*np.pi(r_list[i+1]-r_list[i]) for i in range(N)]
     #psi_list[0][0] = 1e-15#3.14/10
     if init_rand_psi == True:
         for i in range(N+1):
@@ -84,7 +87,7 @@ def Two_D_Constants(
         
     args = [
         L,r0,N,ds,T,dt
-        ,psi_list 
+        ,psi_list, Area_list
         ,k,c0,sim_steps
         ]
 

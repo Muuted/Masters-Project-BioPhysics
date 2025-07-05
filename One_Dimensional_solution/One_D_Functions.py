@@ -1,8 +1,8 @@
 import numpy as np
 from One_D_Constants import One_D_Constants,gamma
-import os
-import pandas as pd
-import progressbar
+#import os
+#import pandas as pd
+#import progressbar
 
     
 def Kroncker(i,j):
