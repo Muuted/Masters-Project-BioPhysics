@@ -308,7 +308,8 @@ def plot_energies_multiple():
 
         plt.figure()
         plt.plot(
-            time_vec, E_tot, label=f"c0={c0_list[i]}"
+            #time_vec, E_tot, label=f"c0={c0_list[i]}"
+            time_vec, E_pot, label=f"c0={c0_list[i]}"
         )
 
         plt.title(
@@ -419,6 +420,6 @@ if __name__ == "__main__":
     #show_radius()
     #plot_end_result_curve()
     plot_energies_multiple()
-    plot_energies_One()
+    #plot_energies_One()
 
     

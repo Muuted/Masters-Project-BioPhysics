@@ -114,7 +114,7 @@ def total_energy(
 
     for t in range(0,t_steps-1):
         for i in range(links-2): # -2 as we loose a point due to the derivative and the psi list is one longer.
-            E_pot[t] += (ds*k/2)*(psi[t][i+1] - psi[t][i])**2 + ds*sigma
+            E_pot[t] += (ds*k/2)*(psi[t][i+1] - psi[t][i] - c0 )**2 
 
 
             x_dot = (x[t+1][i] - x[t][i])/ds

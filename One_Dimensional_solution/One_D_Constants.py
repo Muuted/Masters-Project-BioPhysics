@@ -19,7 +19,7 @@ def One_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     N = 25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 10 # s  : total time simulated
+    T = 30 # s  : total time simulated
     dt = (1e-4)/2/3 # s time step.
     sim_steps = int(T/dt) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
