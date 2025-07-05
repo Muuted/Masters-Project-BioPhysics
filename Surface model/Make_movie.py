@@ -164,7 +164,7 @@ def Make_frames(
 
 
 if __name__=="__main__":
-    args = One_D_Constants()
+    args = Two_D_Constants()
 
     L,r0,N,ds,T,dt = args[0:6]
     psi_list,k,c0,sim_steps  =args[6:10]
