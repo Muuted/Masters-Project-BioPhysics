@@ -41,8 +41,9 @@ def Two_D_Constants(
     ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     sigma = 5 #
+    tau = 1 #
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    #kG = 1 #   :  Guassian curvature modulus
+    kG = 1 #   :  Guassian curvature modulus
     c0 = 0.25e0# 0.25e8 # 1/m   :  
 
     N = 25 #int(L/ds) # 99 + 1 # Number of chain links
@@ -58,7 +59,8 @@ def Two_D_Constants(
     psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
     r_list = [L + r0 - i*ds for i in range(N,-1,-1)]
 
-    Area_list = [np.pi(r_list[i+1]**2-r_list[i]**2) for i in range(N)]
+    Area_list = [np.pi*(r_list[i+1]**2-r_list[i]**2) for i in range(N)]
+
     #psi_list[0][0] = 1e-15#3.14/10
     if init_rand_psi == True:
         for i in range(N+1):
@@ -87,8 +89,9 @@ def Two_D_Constants(
         
     args = [
         L,r0,N,ds,T,dt
-        ,psi_list, Area_list
         ,k,c0,sim_steps
+        ,sigma,tau,kG
+        ,psi_list, Area_list
         ]
 
 
