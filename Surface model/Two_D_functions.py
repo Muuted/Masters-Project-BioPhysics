@@ -245,19 +245,21 @@ def Langrange_multi(
                         radi[l+1]**2 - radi[l]**2 + z_list[l+1] - z_list[l] 
                                                 )*np.sin(psi[l])
                     + 2*( radi[l+1]/gamma(l+1) + radi[l]/gamma(l)  )*np.cos(psi[l])
-                )
+                )*Kronecker(i,l)
 
                 nu_i_before = np.pi**2/(gamma(l)*Area[l]*Area[l-1])*(
                     (
                         (z_list[l+1] - z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
                     )*(z_list[l] - z_list[l-1])
                     -(radi[l+1] + radi[l])*(radi[l]-radi[l-1])*np.sin(psi[l])
-                )
+                )*Kronecker(i-1,l)
 
                 nus = nu_i_next + nu_i + nu_i_before
                 
             if i == N-1:
-                pass
+                lambs_i_next = (
+                    5
+                )*Kronecker(i+1,l)
 
             # The 2nd N equations. where l is the shifted index
           
