@@ -162,11 +162,12 @@ def drdt_func(
 
 
 def Langrange_multi(
-         i,N ,k ,c0 ,sigma ,kG ,tau
+         N ,k ,c0 ,sigma ,kG ,tau
         ,Area:list,psi:list
         ,radi:list
         ,z_list:list
-    ):
+        ,print_matrix = False
+        ):
 
     A = np.zeros(shape=(2*N,2*N))
     b = np.zeros(2*N)
@@ -175,103 +176,146 @@ def Langrange_multi(
         for j in range(2*N):
             l = j%N 
             n = i%N + N
+            nu_i_next ,nu_i ,nu_i_before = 0,0,0
+            lamb_i_next ,lamb_i ,lamb_i_before = 0,0,0
             # The first N equations
             if i == 0:
                 #---------------- calc lambda vals -------------------------
-                lamb_i_next = (
-                    -2*np.pi**2*(
-                        radi[l+1]*(z_list[l+1] - z_list[l])*np.sin(psi[l])
-                        +2*radi[l+1]**2*np.cos(psi[l])
-                    )/(gamma(l+1)*Area[l+1]*Area[l])
-                )*Kronecker(i+1,l)
+                if i+1==j:
+                    lamb_i_next = (
+                        -2*np.pi**2*(
+                            radi[l+1]*(z_list[l+1] - z_list[l])*np.sin(psi[l])
+                            +2*radi[l+1]**2*np.cos(psi[l])
+                        )/(gamma(l+1)*Area[l+1]*Area[l])
+                    )#*Kronecker(i+1,j)
                 
-                lamb_i = (
-                    -2*np.pi**2*(
-                        (z_list[l+1] - z_list[l] )*radi[l]*np.sin(psi[l]) 
-                        + 2*radi[l]**2*np.cos(psi[l])
-                    )/(gamma(l)*Area[l]**2)
-                )*Kronecker(i,l)
+                if i == j:
+                    lamb_i = (
+                        -2*np.pi**2*(
+                            (z_list[l+1] - z_list[l] )*radi[l]*np.sin(psi[l]) 
+                            + 2*radi[l]**2*np.cos(psi[l])
+                        )/(gamma(l)*Area[l]**2)
+                    )#*Kronecker(i,j)
 
                 lambs = lamb_i_next + lamb_i
 
                 #---------------- calc nu vals -------------------------
-                nu_i_next_1 = (
-                    (   (z_list[l+1] - z_list[l] )*np.sin(psi[l])  
-                        +2*radi[l+1]*np.cos(psi[l]) 
-                     )*(z_list[l+2]-z_list[l+1])
-                )#/(gamma(l+1)*Area[l+1]*Area[l])
+                if n+1== j:
+                    nu_i_next_1 = (
+                        (   (z_list[l+1] - z_list[l] )*np.sin(psi[l])  
+                            +2*radi[l+1]*np.cos(psi[l]) 
+                        )*(z_list[l+2]-z_list[l+1])
+                    )#/(gamma(l+1)*Area[l+1]*Area[l])
 
-                nu_i_next_2 = -1*(
-                    (radi[l+1] + radi[l])*(radi[l+2] - radi[l+1])*np.sin(psi[l])
-                )#/(gamma(l+1)*Area[l+1]*Area[l])
+                    nu_i_next_2 = -1*(
+                        (radi[l+1] + radi[l])*(radi[l+2] - radi[l+1])*np.sin(psi[l])
+                    )#/(gamma(l+1)*Area[l+1]*Area[l])
 
-                nu_i_next = np.pi**2*(nu_i_next_1 + nu_i_next_2)*Kronecker(n+1,j)/(gamma(l+1)*Area[l+1]*Area[l])
+                    nu_i_next = (np.pi**2*(nu_i_next_1 + nu_i_next_2)/(gamma(l+1)*Area[l+1]*Area[l]))#*Kronecker(n+1,j)
 
-                nu_i_1 = (radi[l+1]**2 - radi[l]**2 )*np.sin(psi[l])
+                if n == j :
+                    nu_i_1 = (radi[l+1]**2 - radi[l]**2 )*np.sin(psi[l])
 
-                nu_i_2 =(
-                    (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
-                )*(z_list[l+1]-z_list[l])
+                    nu_i_2 =(
+                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
+                    )*(z_list[l+1]-z_list[l])
 
-                nu_i = np.pi**2*(nu_i_1 + nu_i_2)*Kronecker(n,j)/(gamma(l)*Area[l]**2)
+                    nu_i = np.pi**2*(nu_i_1 + nu_i_2)*Kronecker(n,j)/(gamma(l)*Area[l]**2)
 
                 nus = nu_i_next + nu_i
+            
+            if 0 < i < N-2:
+                if i+1==j :
+                    print(f"l={l} and j={j} and i ={i}")
+                    lamb_i_next = -(
+                        (2*np.pi**2*radi[l]/(gamma(l+1)*Area[l+1]*Area[l]))*(
+                            (z_list[l+1]-z_list[l])*np.sin(psi[l]) +2*radi[l+1]*np.cos(psi[l])
+                        )
+                    )#*Kronecker(i+1,j)
 
-            if 0 < i < N-1:
-                lambs_i_next = -(
-                    (2*np.pi**2*radi[l]/(gamma(l+1)*Area[l+1]))*(
-                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) +2*radi[l+1]*np.cos(psi[l])
-                    )/Area[l]
-                )*Kronecker(i+1,l)
+                if i == j:
+                    lamb_i = (2*np.pi**2/Area[l]**2)*(
+                        (z_list[l+1]-z_list[l])*(radi[l+1]-radi[l])*np.sin(psi[l])
+                        +2*(radi[l+1]**2 - radi[l]**2) * np.cos(psi[l])
+                    )#*Kronecker(i,j)
 
-                lambs_i = (2*np.pi**2/Area[l]**2)*(
-                    (z_list[l+1]-z_list[l])*(radi[l+1]-radi[l])*np.sin(psi[l])
-                    +2*(radi[l+1]**2 - radi[l]**2) * np.cos(psi[l])
-                )*Kronecker(i,l)
+                if i-1 ==j:
+                    lamb_i_before = 2*np.pi**2*radi[l]*(
+                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
+                    )/(gamma(l)*Area[l-1]) #*Kronecker(i-1,j)
 
-                lambs_i_before = 2*np.pi**2*radi[l]*(
-                    (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
-                )*Kronecker(i-1,l)/(gamma(l)*Area[l-1])
+                lambs = lamb_i_next + lamb_i + lamb_i_before
+                
+                #---------- nu ----------------------------------
+                if n+1 == j:
+                    nu_i_next = np.pi**2*(
+                        2*radi[l+1]*(z_list[l+2] - z_list[l+1])*np.cos(psi[l])
+                        +(z_list[l+1] - z_list[l] - (radi[l+1] + radi[l])*(radi[l+2] - radi[l+1]))*np.sin(psi[l])
+                    )/(Area[l]*Area[l+1]*gamma(l)) # *Kronecker(n+1,j)
+                
+                if n == j:
+                    nu_i = (np.pi**2/Area[l]**2)*(
+                        (1/gamma(l+1) + 1/gamma(l))*( radi[l+1]**2 - radi[l]**2 + z_list[l+1] - z_list[l] )*np.sin(psi[l])
+                        + 2*( radi[l+1]/gamma(l+1) + radi[l]/gamma(l)  )*np.cos(psi[l])
+                    )#*Kronecker(n,j)
 
-                lambs = lambs_i_next + lambs_i + lambs_i_before
-
-                nu_i_next = np.pi**2*(
-                    2*radi[l+1]*(z_list[l+2] - z_list[l+1])*np.cos(psi[l])
-                    +(z_list[l+1] - z_list[l] - (radi[l+1] + radi[l])*(radi[l+2] - radi[l+1]))*np.sin(psi[l])
-                )*Kronecker(i+1,l)/(Area[l]*Area[l+1]*gamma(l))
-
-                nu_i = (np.pi**2/Area[l]**2)(
-                    (1/gamma(l+1) + 1/gamma(l))*(
-                        radi[l+1]**2 - radi[l]**2 + z_list[l+1] - z_list[l] 
-                                                )*np.sin(psi[l])
-                    + 2*( radi[l+1]/gamma(l+1) + radi[l]/gamma(l)  )*np.cos(psi[l])
-                )*Kronecker(i,l)
-
-                nu_i_before = np.pi**2/(gamma(l)*Area[l]*Area[l-1])*(
-                    (
-                        (z_list[l+1] - z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
-                    )*(z_list[l] - z_list[l-1])
-                    -(radi[l+1] + radi[l])*(radi[l]-radi[l-1])*np.sin(psi[l])
-                )*Kronecker(i-1,l)
+                if n-1 == j:
+                    nu_i_before = np.pi**2/(gamma(l)*Area[l]*Area[l-1])*(
+                        (
+                            (z_list[l+1] - z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
+                        )*(z_list[l] - z_list[l-1])
+                        -(radi[l+1] + radi[l])*(radi[l]-radi[l-1])*np.sin(psi[l])
+                    )#*Kronecker(n-1,j)
 
                 nus = nu_i_next + nu_i + nu_i_before
-                
-            if i == N-1:
-                lambs_i_next = (
-                    5
-                )*Kronecker(i+1,l)
-
-            # The 2nd N equations. where l is the shifted index
-          
-            if i == N:
-                pass
-            if N < i < 2*N-1:
-                pass
-            if i == 2*N - 1:
-                pass
             
-        if i < N - 1:
-            #---------------- calc b vals -------------------------        
+            if i == N-2:#### do this ########## do this ############ do this ###################################################### 
+               pass
+               lambs = Kronecker(i,j) 
+               nus = Kronecker(n,j)
+
+            if i == N-1:     
+                if i == j:
+                    lamb_i = 2*np.pi**2*radi[l]*(
+                        2*radi[l]*np.cos(psi[l]) - z_list[l]*np.sin(psi[l])
+                    )/( gamma(l)*Area[l]**2  )#*Kronecker(i,j)
+                if i-1== j:
+                    lamb_i_before = 2*np.pi**2*radi[l]*(
+                            2*radi[l]*np.cos(psi[l]) - z_list[l]*np.sin(psi[l])/(gamma(l)*Area[l]*Area[l-1])
+                        )#*Kronecker(i-1,j)
+                
+                lambs = lamb_i_next + lamb_i + lamb_i_before
+                #---------- nu ----------------------------------
+                if n == j:
+                    nu_i = (np.pi**2/(gamma(l)*Area[l]**2))*(
+                       (radi[l+1]**2 - radi[l]**2 + z_list[l]**2)*np.sin(psi[l])
+                       - 2*radi[l]*z_list[l]*np.cos(psi[l])
+                    )#*Kronecker(n,j)
+                if n-1 == j:
+                    nu_i_before = (np.pi**2/gamma(l))*(
+                        (2*radi[l]*np.cos(psi[l]) - z_list[l]*np.sin(psi[l]))*(z_list[l] - z_list[l-1])
+                        -(radi[l+1]+radi[l])*(radi[l]-radi[l-1])*np.sin(psi[l])
+                    )/(Area[l]*Area[l-1]) # *Kronecker(n-1,j)
+
+                nus = nu_i_next + nu_i + nu_i_before
+            # The 2nd N equations. where l is the shifted index
+
+            if i > N - 1:
+                if i%N == j:
+                    lamb_i = np.sin(psi[l])*Kronecker(i%N,j)
+                lambs = lamb_i_next + lamb_i + lamb_i_before
+                if n==j:
+                    nu_i = -np.cos(psi[l])*Kronecker(n,j)
+                nus = nu_i_next + nu_i + nu_i_before
+
+            if print_matrix == True:
+                A[i][j] =   '{:.0e}'.format(lambs+nus)
+            else:
+                A[i][j] = lambs + nus
+            
+
+            #---------------- calc b vals -------------------------     
+        if i <= N - 1:   
             Q_i_next = Q_function(
                 i=i+1
                 ,N=N,k=k,c0=c0,sigma=sigma,kG=kG
@@ -297,11 +341,75 @@ def Langrange_multi(
                         )/(gamma(i)*Area[i])
                 )
             )
-        if i >= N - 1:
-            pass
+        if i > N - 1:
+            if i == N :
+                b11 = k*(
+                    np.pi*(psi[i%N+1] - psi[i%N])*(radi[i%N+1]+radi[i%N])/Area[i%N]
+                    +np.sin(psi[i%N])/radi[i%N] - c0
+                )*(
+                    1 - Area[i%N]*np.cos(psi[i%N])/(np.pi*radi[i%N]*(radi[i%N+1] + radi[i%N]))
+                )
+                b12 = kG*(np.sin(psi[i%N]) - (psi[i%N+1] - psi[i%N])*np.cos(psi[i%N]))/radi[i%N]
+                
+                b1 = b11 + b12
+            if N < i < 2*N -1:
+                b21 = k*(
+                    np.pi*(psi[i%N+1] - psi[i%N])*(radi[i%N+1]+radi[i%N])/Area[i%N]
+                    +np.sin(psi[i%N])/radi[i%N] - c0
+                )*(
+                    1 - Area[i%N]*np.cos(psi[i%N])/(np.pi*radi[i%N]*(radi[i%N+1] + radi[i%N]))
+                )
+            
+                b22 =  k*(
+                    np.pi*(psi[i%N] - psi[i%N-1])*(radi[i%N]+radi[i%N-1])/Area[i%N-1]
+                    +np.sin(psi[i%N-1])/radi[i%N-1] - c0
+                )
+                
+                b23 = kG*(
+                    np.sin(psi[i%N])/radi[i%N] - np.sin(psi[i%N-1])/radi[i%N-1]
+                    - (psi[i%N+1] - psi[i%N] )*np.cos(psi[i%N])/radi[i%N]
+                )
+
+                b1 = b21 + b22 + b23
+            
+            if i == 2*N -1:
+                b21 = k*(
+                    -np.pi*psi[i%N]*(radi[i%N+1]+radi[i%N])/Area[i%N]
+                    +np.sin(psi[i%N])/radi[i%N] - c0
+                )*(
+                    1 - Area[i%N]*np.cos(psi[i%N])/(np.pi*radi[i%N]*(radi[i%N+1] + radi[i%N]))
+                )
+            
+                b22 =  k*(
+                    np.pi*(psi[i%N] - psi[i%N-1])*(radi[i%N]+radi[i%N-1])/Area[i%N-1]
+                    +np.sin(psi[i%N-1])/radi[i%N-1] - c0
+                )
+                
+                b23 = kG*(
+                    np.sin(psi[i%N])/radi[i%N] - np.sin(psi[i%N-1])/radi[i%N-1]
+                    +psi[i%N] *np.cos(psi[i%N])/radi[i%N]
+                )
+
+                b1 = b21 + b22 + b23
         
+        if print_matrix == True:
+            b[i] = '{:.0e}'.format(b1)
+        else:
+            b[i] = b1
+
+    if print_matrix == True:
+        print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
+        print("b:",b)
+        #print("x:",x)
+        print("psi:",psi)
+        x = np.linalg.solve(A,b)
+    else:
         A[i][j] = lambs + nus
         b[i] = b1
+        x = np.linalg.solve(A,b)
+
+    return x
+
 
 if __name__ == "__main__":
     
@@ -315,7 +423,25 @@ if __name__ == "__main__":
     psi_list, Area_list = const_args[12:14]
     
     radi_list = [L + r0 - i*ds for i in range(N,-1,-1)]
+    zz_list = [0 for i in range(N,-1,-1)]
 
+    print(
+        f"radi shape = {np.shape(radi_list)} \n"
+        +f"z shape = {np.shape(zz_list)} \n"
+        +f"psi shape = {np.shape(psi_list)} \n"
+        f"Area shape = {np.shape(Area_list)} \n"
+    )
+    #exit()
+    x = Langrange_multi(
+        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+        ,Area=Area_list
+        ,psi=psi_list[0]
+        ,radi=radi_list
+        ,z_list=zz_list
+        ,print_matrix=True
+    )
+
+    exit()
     Q = Q_function(
         i=N-1,N=N,k=k,c0=c0
         ,sigma=sigma,tau=tau,kG=kG
