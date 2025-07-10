@@ -62,6 +62,8 @@ def Two_D_Constants(
 
     Area_list = [np.pi*( r_list[i+1]**2 - r_list[i]**2 ) for i in range(N)]
 
+    print("area:",len(Area_list))
+    print("psi:",len(psi_list[0]))
     if init_rand_psi == True:
         for i in range(N+1):
             if i%2 == 0:
