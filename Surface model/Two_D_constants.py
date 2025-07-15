@@ -47,7 +47,7 @@ def Two_D_Constants(
     kG = 1 #   :  Guassian curvature modulus
      
 
-    N = 3#25 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 30 # s  : total time simulated
     dt = 1e-4 # s time step.
@@ -61,7 +61,7 @@ def Two_D_Constants(
     r_list = [L + r0 - i*ds for i in range(N,-1,-1)]
 
     Area_list = [np.pi*( r_list[i+1]**2 - r_list[i]**2 ) for i in range(N)]
-
+    
     print("area:",len(Area_list))
     print("psi:",len(psi_list[0]))
     if init_rand_psi == True:
