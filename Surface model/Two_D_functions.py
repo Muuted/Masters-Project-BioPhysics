@@ -174,7 +174,7 @@ def Langrange_multi(
 
     for i in range(2*N):
         for j in range(2*N):
-            l = j%N 
+            l = i%N 
             n = i%N + N
             nu_i_next ,nu_i ,nu_i_before = 0,0,0
             lamb_i_next ,lamb_i ,lamb_i_before = 0,0,0
@@ -276,6 +276,7 @@ def Langrange_multi(
             
             if i == N-2:#### do this ########## do this ############ do this ######################################################          
                 if i+1 == j:
+                    print(f"n+1={n+1}, l={l}, len(radi)={len(radi)} and 2*N={2*N}, i={i}, j={j}")
                     lamb_i_next = -2*np.pi**2*(
                                 (z_list[l+1] - z_list[l])*radi[l+1]*np.sin(psi[l])
                                 + 2*radi[l+1]**2*np.cos(psi[l])
