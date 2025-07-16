@@ -160,6 +160,11 @@ def drdt_func(
     return drdt
 
 
+def dzdt_func():
+    pass
+
+def dpsidt_func():
+    pass
 
 def Langrange_multi(
          N ,k ,c0 ,sigma ,kG ,tau #, ds

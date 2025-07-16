@@ -103,6 +103,7 @@ def Lagran_multi(
                 a2 = (a21 - a22)*np.sin(psi_list[t][j%N])
                 
                 a = a1 + a2
+                
             if i == N - 1:
                 b1 = 0
                 a1 = (Kroncker(i-1,j) - Kroncker(i,j))*np.cos(psi_list[t][j%N])/gamma(i)
