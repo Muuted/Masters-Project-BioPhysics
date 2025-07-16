@@ -122,7 +122,7 @@ def drdt_func(
         ,Area:list,psi:list,radi:list
         ,lamb:list , nu:list, z_list:list
         ):
-    a1,a2,a3 = 0,0,0,0
+    a1,a2,a3 = 0,0,0
 
     if i == 0:
         a11 = -2*np.pi*radi[i]*lamb[i]/Area[i]
@@ -299,7 +299,7 @@ def Langrange_multi(
                         +2*(radi[l+1]**2 - radi[l]**2) * np.cos(psi[l])
                     )#*Kronecker(i,j)
                     lamb_i = 2*np.pi**2*(
-                        (z_list[l+1 - z_list[l]])*np.sin(psi[l])*( radi[l+1]/gamma(l+1) - radi[l]/gamma(l))
+                        (z_list[l+1] - z_list[l])*np.sin(psi[l])*( radi[l+1]/gamma(l+1) - radi[l]/gamma(l))
                         + 2*np.cos(psi[l])*( radi[l+1]**2/gamma(l+1) - radi[l]**2/gamma(l))
                     )/Area[l]**2
 
@@ -513,12 +513,19 @@ def Langrange_multi(
         #print("x:",x)
         print("psi:",psi)
         x = np.linalg.solve(A,b)
+        lamb_return = x[0:N]
+        nu_return = x[N:2*N]
+        print("len(lamb_return):",np.shape(lamb_return))
+        print("len(nus_return):",np.shape(nu_return))
     else:
         A[i][j] = lambs + nus
         b[i] = b1
         x = np.linalg.solve(A,b)
 
-    return x
+        lamb_return = x[0:N]
+        nu_return = x[N:2*N]
+
+    return lamb_return,nu_return
 
 
 if __name__ == "__main__":
@@ -530,7 +537,7 @@ if __name__ == "__main__":
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
     sigma, tau, kG = const_args[9:12]
-    psi_list, Area_list = const_args[12:14]
+    Area_list, psi_list = const_args[12:14]
     
     radi_list = [L + r0 - i*ds for i in range(N,-1,-1)]
     zz_list = [0 for i in range(N,-1,-1)]
@@ -542,7 +549,7 @@ if __name__ == "__main__":
         f"Area shape = {np.shape(Area_list)} \n"
     )
     #exit()
-    x = Langrange_multi(
+    lambs,nus = Langrange_multi(
         N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area_list
         ,psi=psi_list[0]

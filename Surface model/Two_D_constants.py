@@ -47,7 +47,7 @@ def Two_D_Constants(
     kG = 1 #   :  Guassian curvature modulus
      
 
-    N = 3#25 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 30 # s  : total time simulated
     dt = 1e-4 # s time step.
