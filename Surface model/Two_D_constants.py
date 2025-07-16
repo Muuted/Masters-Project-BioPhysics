@@ -57,19 +57,17 @@ def Two_D_Constants(
     """------ variables list ---------"""
     # list of variables
     # we are gonna assume for now that the membrane is just initially flat.
-    psi_list = np.zeros(shape=(sim_steps,N+1)) # all the angles are just flat
-    for i in range(N+1):
-            if i%2 == 0:
-                a = -1
-            else:
-                a = 1
-            psi_list[0][i] = (3.14/10)*a
-    r_list = [L + r0 - i*ds for i in range(N,-1,-1)]
-
-    Area_list = [np.pi*( r_list[i+1]**2 - r_list[i]**2 ) for i in range(N)]
+    psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
+    r_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
+    z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
+    Area_list = np.zeros(N,dtype=float)
     
-    print("area:",len(Area_list))
-    print("psi:",len(psi_list[0]))
+    for i in range(N+1):
+        r_list[0][i] = L + r0 - i*ds
+    
+    for i in range(N):
+        Area_list[i] =  np.pi*( r_list[0][i+1]**2 - r_list[0][i]**2 )
+            
     if init_rand_psi == True:
         for i in range(N+1):
             if i%2 == 0:
@@ -99,9 +97,9 @@ def Two_D_Constants(
         L,r0,N,ds,T,dt
         ,k,c0,sim_steps
         ,sigma,tau,kG
-        ,psi_list, Area_list
+        ,Area_list
+        ,psi_list, r_list,z_list
         ]
-
 
     return args
 

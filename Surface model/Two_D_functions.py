@@ -122,7 +122,7 @@ def drdt_func(
         ,Area:list,psi:list,radi:list
         ,lamb:list , nu:list, z_list:list
         ):
-    drdt,a1,a2,a3 = 0,0,0,0
+    a1,a2,a3 = 0,0,0,0
 
     if i == 0:
         a11 = -2*np.pi*radi[i]*lamb[i]/Area[i]
@@ -160,11 +160,65 @@ def drdt_func(
     return drdt
 
 
-def dzdt_func():
-    pass
+def dzdt_func( i #,N,k,c0, sigma, kG, tau
+        ,Area:list,radi:list, nu:list #,psi:list
+        #,lamb:list , z_list:list
+        ):
+    
+    if i == 0 :
+        dzdt = - np.pi*nu[i]*(radi[i+1] + radi[i])/(gamma(i)*Area[i])
+    if i > 0 :
+        dzdt = np.pi*(
+            nu[i-1]*(radi[i] + radi[i-1])/Area[i-1]
+            -nu[i]*(radi[i+1] + radi[i])/Area[i]
+        )/gamma(i)
+    
+    return dzdt
 
-def dpsidt_func():
-    pass
+def dpsidt_func(  i,N,k,c0, sigma, kG, tau
+        ,Area:list,psi:list,radi:list
+        ,lamb:list , nu:list, z_list:list
+        ):
+    
+    if i < N :
+        dzdt_i_next = dzdt_func(i=i+1,Area=Area,radi=radi,nu=nu)
+        dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
+
+        drdt_i_next = drdt_func(
+            i=i+1
+            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+            ,Area=Area,psi=psi,radi=radi,z_list=z_list
+            ,lamb=lamb,nu=nu
+            )
+        
+        drdt_i = drdt_func(
+            i=i
+            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+            ,Area=Area,psi=psi,radi=radi,z_list=z_list
+            ,lamb=lamb,nu=nu
+            )
+        
+        a1 = (radi[i+1] + radi[i])*np.cos(psi[i])
+        a2 = (z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i+1]*np.sin(psi[i])
+        a3 =(z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i]*np.sin(psi[i])
+
+        dpsidt = np.pi*(   a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
+
+    if i == N :
+        dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
+        drdt_i = drdt_func(
+            i=i
+            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+            ,Area=Area,psi=psi,radi=radi,z_list=z_list
+            ,lamb=lamb,nu=nu
+            )
+        
+        a1 = (radi[i+1] + radi[i])*np.cos(psi[i])
+        a3 =(z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i]*np.sin(psi[i])
+
+        dpsidt = np.pi*( -a1*dzdt_i  + a3*drdt_i )/Area[i]
+
+    return dpsidt
 
 def Langrange_multi(
          N ,k ,c0 ,sigma ,kG ,tau #, ds
