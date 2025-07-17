@@ -527,7 +527,9 @@ def Langrange_multi(
 
 
 if __name__ == "__main__":
-    
+    a = np.zeros(5)
+    print(a)
+    exit()
     const_args = Two_D_Constants(
         print_val=True
     )

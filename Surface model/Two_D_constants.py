@@ -11,16 +11,16 @@ def gamma(i):
 
 def Two_D_paths():
     """------ paths ---------"""
-    #save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
-    save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
-    data_path = "2D sim results\\"
+    
+    save_path = "2D sim results\\"
+    data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
     video_fig_path = save_path +"figures for video\\"
 
 
     """------ Saved files names  ---------"""
-    df_name= "1D surface membrane dynamics"
+    df_name= "2D surface"
     fps_movie = 24
     num_frames = 100
 
@@ -49,24 +49,27 @@ def Two_D_Constants(
 
     N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 30 # s  : total time simulated
-    dt = 1e-4 # s time step.
+    T = 1 # s  : total time simulated
+    dt = 1e-6 # s time step.
     sim_steps = int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""
     # list of variables
     # we are gonna assume for now that the membrane is just initially flat.
-    psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
+    psi_list = np.zeros(shape=(sim_steps,N+1),dtype=float) # all the angles are just flat
     r_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     Area_list = np.zeros(N,dtype=float)
     
     for i in range(N+1):
-        r_list[0][i] = L + r0 - i*ds
+        r_list[0][i] = L + r0 + i*ds
     
     for i in range(N):
         Area_list[i] =  np.pi*( r_list[0][i+1]**2 - r_list[0][i]**2 )
+        if Area_list[i] == 0 :
+            print(f"Area[{i}]=0")
+            exit()
             
     if init_rand_psi == True:
         for i in range(N+1):

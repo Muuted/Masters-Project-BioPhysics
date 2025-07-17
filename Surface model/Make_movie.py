@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import os
 import pandas as pd
-from Two_D_constants import Two_D_Constants
+from Two_D_constants import Two_D_Constants, Two_D_paths
 import progressbar
 import glob 
 #from plotting_functions import plot_from_psi_V2
@@ -27,7 +27,7 @@ def Make_video(
     FILES = [f"{i}.png" for i in range(num-1)]
     
     # Get the filename from the output path
-    filename = video_name
+    filename = video_name +".avi"
     #print(f'Creating video "{filename}" from images "{FILES}"')
 
     # Load the first image to get the frame size
@@ -42,7 +42,8 @@ def Make_video(
     # Create a VideoWriter object to write the video file
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
-    video = cv2.VideoWriter(filename=filename, fourcc=fourcc
+    video = cv2.VideoWriter(filename=filename
+                            , fourcc=fourcc
                             , fps= fps
                             , frameSize=(width, height)
                             )
@@ -77,10 +78,10 @@ def Make_video(
 
 
 def Make_frames(
-        data_path
-        ,figs_save_path
-        ,df_name
-        ,tot_frames = 216
+        data_path: str
+        ,figs_save_path: str
+        ,df_name: str
+        ,tot_frames: int = 216
         ):
 
     if not os.path.exists(figs_save_path):
@@ -93,20 +94,22 @@ def Make_frames(
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
     
-    x = df_sim['x pos'][0]
-    z = df_sim['z pos'][0]
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
     dt = df_sim['dt'][0]
     L = df_sim["L"][0]
-    ds = df_sim["ds"][0]
+    tau = df_sim["tau"][0]
+    sigma = df_sim["sigma"][0]
     N = df_sim["N"][0]
+    c0 = df_sim["c0"][0]
     gam2 = df_sim["gam(i>0)"][0]
     sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
     T_tot = df_sim["Total time [sec]"][0]
-    
+
     textstr = "\n".join((
         f"dt= {dt:0.1e}",
-        f"ds={ds:0.1e}",
+        f"c0={c0:0.1e}",
         f"N={N}",
         f"gam(i>1)={gam2}",
         r" $ T_{tot} $ =" + f"{T_tot}s",
@@ -115,10 +118,10 @@ def Make_frames(
     tot_time = df_sim['Total time [sec]'][0]
 
 
-    if int(np.shape(x)[0]/tot_frames) < 2:
-        frame_vec= [i for i in range(np.shape(x)[0])]
+    if int(np.shape(r)[0]/tot_frames) < 2:
+        frame_vec= [i for i in range(np.shape(r)[0])]
     else:
-        frame_vec = [i  for i in range(np.shape(x)[0]) if i%int(np.shape(x)[0]/tot_frames)==0]
+        frame_vec = [i  for i in range(np.shape(r)[0]) if i%int(np.shape(r)[0]/tot_frames)==0]
 
     
     fig,ax = plt.subplots()
@@ -129,17 +132,17 @@ def Make_frames(
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
 
-    xmin,xmax = min([min(i) for i in x]), max([max(i) for i in x])
-    zmin, zmax = min([min(i) for i in z]) , max([max(i) for i in z])
+    rmin,rmax = np.min([np.min(i) for i in r]), np.max([np.max(i) for i in r])
+    zmin, zmax = np.min([np.min(i) for i in z]) , np.max([np.max(i) for i in z])
     k = 0
     print("\n Plotting progressbar")
     b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
     b.start()
     for t in frame_vec:
         b.update(k)
-        plt.plot(x[t],z[t],'-o')
-        #plt.xlim([x[0,0] - ds*1, x[0,0] + ds*19])
-        plt.xlim([xmin-ds,xmax])
+        plt.plot(r[t],z[t],'-o')
+        plt.xlim([r[0,0] - ds, r[0,0] + ds*N])
+        #plt.xlim([rmin-ds,rmax])
         plt.ylim([-ds*10,ds*10])
         #plt.ylim([zmin*0.99,zmax*1.01])
         plt.xlabel(f"x")
@@ -172,25 +175,25 @@ if __name__=="__main__":
     video_save_path,video_fig_path = args[13:15]
     df_name= args[15]
 
+    path_args = Two_D_paths()
+    data_path, fig_save_path = path_args[0:2]
+    video_save_path,video_fig_path = path_args[2:4]
+    df_name, fps_movie ,num_frames = path_args[4:7]
     making_frame = True
     making_video = True
-    plot_from_psi_V2(
-        data_path=data_path
-        ,df_name=df_name
-    )
-
+    
     if making_frame==True:
         Make_frames(
             data_path=data_path
             ,figs_save_path=video_fig_path
-            ,df_name="1D surface membrane dynamics"
+            ,df_name=df_name
         )
     
     if making_video == True:
         Make_video(
             output_path = video_save_path
             ,input_path = video_fig_path
-            ,video_name = f"dynamics movie links={N}.avi"
+            ,video_name = df_name
             ,fps=12
     )
     

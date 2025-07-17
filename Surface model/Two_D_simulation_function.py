@@ -7,7 +7,6 @@ import pandas as pd
 import progressbar
 
 
-
 def Two_D_simulation(
     N:int,k:float,c0:float
     ,sigma:float,kG:float,tau:float
@@ -20,7 +19,12 @@ def Two_D_simulation(
     ):
     lambs_save = []
     nus_save = []
-    for t in range(sim_steps):
+
+    print("Simulation progressbar \n ")
+    b = progressbar.ProgressBar(maxval=sim_steps-1)
+    b.start()
+    for t in range(sim_steps-1):
+        b.update(t)
         lambs,nus = Langrange_multi(
         N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area_list
@@ -30,24 +34,28 @@ def Two_D_simulation(
             )
         lambs_save.append(lambs)
         nus_save.append(nus)
-        for i in range(N):
-            
-            z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
+        for i in range(N+1):
+            if i == N:
+                z_list[t+1][i] = z_list[t][i]
+                radi[t+1][i] = radi[t][i]
+                psi[t+1][i] = psi[t][i]
+            if i < N:
+                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
-            radi[t+1][i] = radi[t][i] + dt*drdt_func(
-                                                i=i
-                                                ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                ,lamb=lambs,nu=nus
-                                                )
+                radi[t+1][i] = radi[t][i] + dt*drdt_func(
+                                                    i=i
+                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                    ,lamb=lambs,nu=nus
+                                                    )
 
-            psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
-                                                i=i
-                                                ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                ,lamb=lambs,nu=nus
-                                                )
-            
+                psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
+                                                    i=i
+                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                    ,lamb=lambs,nu=nus
+                                                    )
+                
 
     if save_data == True:
         df = pd.DataFrame({
@@ -80,7 +88,7 @@ def Two_D_simulation(
         df.to_pickle(data_path + df_name)
 
     plt.subplots()        
-    plt.plot(radi[0],z_list[0])
+    plt.plot(radi[sim_steps-1],z_list[sim_steps-1])
 
     plt.show()
 
@@ -95,7 +103,7 @@ if __name__ == "__main__":
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    sim_steps = 10
+    #sim_steps = 3
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
