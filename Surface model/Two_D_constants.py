@@ -42,16 +42,16 @@ def Two_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    sigma = 5 #
-    tau = 1 #
+    sigma =1 # k*c0**2 #
+    tau = 1 # 0.1 #
     kG = 1 #   :  Guassian curvature modulus
      
 
     N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 # s  : total time simulated
-    dt = 1e-6 # s time step.
-    sim_steps = int(T/dt) # : number of simulation steps
+    dt = 1e-7 # s time step.
+    sim_steps = int(1e5)#int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""
@@ -63,7 +63,7 @@ def Two_D_Constants(
     Area_list = np.zeros(N,dtype=float)
     
     for i in range(N+1):
-        r_list[0][i] = L + r0 + i*ds
+        r_list[0][i] = r0 + i*ds
     
     for i in range(N):
         Area_list[i] =  np.pi*( r_list[0][i+1]**2 - r_list[0][i]**2 )
@@ -88,6 +88,10 @@ def Two_D_Constants(
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} sim units \n "
             + f"    k = {k}  sim units \n "
+            + f"    c0 = {c0}  sim units \n "
+            + f"    kG = {kG}  sim units \n "
+            + f"    sigma = {sigma}  sim units \n "
+            + f"    tau = {tau}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
             + f"    gamma(i!=0) = {gamma(2)} unit?  \n "

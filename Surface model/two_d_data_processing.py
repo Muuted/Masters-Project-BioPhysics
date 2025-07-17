@@ -18,6 +18,7 @@ def check_area(
     
     r = df_sim['r'][0]
     z = df_sim['z'][0]
+    Area = df_sim['area list'][0]
     dt = df_sim['dt'][0]
     L = df_sim["L"][0]
     tau = df_sim["tau"][0]
@@ -28,6 +29,10 @@ def check_area(
     sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
     T_tot = df_sim["Total time [sec]"][0]
+
+    area_change = []
+    for t in range(1,sim_steps):
+        pass
 
     
 

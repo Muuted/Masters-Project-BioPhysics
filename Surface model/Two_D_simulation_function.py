@@ -62,6 +62,7 @@ def Two_D_simulation(
             'psi': [psi_list],
             "r":[radi],
             "z":[z_list],
+            "area list":[Area],
             'lambs': [lambs_save],
             'nus': [nus_save],
             "L" : L,
@@ -88,7 +89,7 @@ def Two_D_simulation(
         df.to_pickle(data_path + df_name)
 
     plt.subplots()        
-    plt.plot(radi[sim_steps-1],z_list[sim_steps-1])
+    plt.plot(radi[sim_steps-1],z_list[sim_steps-1],marker="o")
 
     plt.show()
 
