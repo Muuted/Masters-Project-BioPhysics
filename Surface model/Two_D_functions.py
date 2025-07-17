@@ -180,7 +180,7 @@ def dpsidt_func(  i,N,k,c0, sigma, kG, tau
         ,lamb:list , nu:list, z_list:list
         ):
     
-    if i < N :
+    if i < N-1 :
         dzdt_i_next = dzdt_func(i=i+1,Area=Area,radi=radi,nu=nu)
         dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
@@ -204,7 +204,7 @@ def dpsidt_func(  i,N,k,c0, sigma, kG, tau
 
         dpsidt = np.pi*(   a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
 
-    if i == N :
+    if i == N-1:
         dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
         drdt_i = drdt_func(
             i=i
@@ -335,7 +335,6 @@ def Langrange_multi(
             
             if i == N-2:#### do this ########## do this ############ do this ######################################################          
                 if i+1 == j:
-                    print(f"n+1={n+1}, l={l}, len(radi)={len(radi)} and 2*N={2*N}, i={i}, j={j}")
                     lamb_i_next = -2*np.pi**2*(
                                 (z_list[l+1] - z_list[l])*radi[l+1]*np.sin(psi[l])
                                 + 2*radi[l+1]**2*np.cos(psi[l])
@@ -355,7 +354,6 @@ def Langrange_multi(
                 lambs = lamb_i_next + lamb_i + lamb_i_before
 
                 if n+1 == j:
-                    print(f"n+1={n+1}, l={l}, len(radi)={len(radi)} and 2*N={2*N}, i={i}, j={j}")
                     nu_i_next_1 =(radi[l+1] + radi[l])*(radi[l+2] + radi[l+1])*np.sin(psi[l])
                     
                     nu_i_next_2 = ((z_list[l+1]- z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]))*z_list[l+1]
