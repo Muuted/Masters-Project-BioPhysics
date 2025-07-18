@@ -50,6 +50,35 @@ def check_area(
 
 
 
+def rotate_coords(
+         df_name:str
+        ,data_path:str
+    ):
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    N = df_sim["N"][0]
+    sim_steps = df_sim["sim_steps"][0]
+
+    r = df_sim['r'][0][sim_steps-1] # use this as reference maybe?
+
+    x = df_sim['r'][0][sim_steps-1] # calling it x, initially
+    z = df_sim['z'][0][sim_steps-1]
+    y = np.zeros(N+1)
+
+    pos_vec = [np.zeros(3) for i in range(N+1)]# 3 pos for x,y,z and then the number of time steps in the other direction
+
+    for i in range(N+1):
+        pos_vec[i][0] = x[i]
+        pos_vec[i][1] = y[i]
+        pos_vec[i][2] = z[i]
+
+    num_angles = 20
+    phi = np.zeros(num_angles)
+    dphi = 2*np.pi/num_angles
+    for i in range(num_angles):
+        phi[i] = i*dphi
+    
+
 
 
 if __name__ == "__main__":
@@ -69,5 +98,9 @@ if __name__ == "__main__":
     data_path, fig_save_path = path_args[0:2]
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
+
+    rotate_coords(
+        df_name=df_name,data_path=data_path
+    )
 
     
