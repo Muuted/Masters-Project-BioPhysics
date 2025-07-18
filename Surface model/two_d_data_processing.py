@@ -30,9 +30,21 @@ def check_area(
     r0 = df_sim["r0"][0]
     T_tot = df_sim["Total time [sec]"][0]
 
-    area_change = []
+    area_change = np.zeros(shape=(sim_steps,N),dtype=float)
+    tolerence = 1e-10
+
     for t in range(1,sim_steps):
-        pass
+        for i in range(N):
+            area_change[t][i] =np.pi*( r[t][i+1]**2 - r[t][i]**2 )
+
+            if Area[i] != area_change[t][i] :
+                print(
+                    f"we had a change in area \n"
+                    +f"Area[{i}]={Area[i]}  and area_change[{i}]={area_change[t][i]} \n"
+                    +f"at time={t} s and position i={i} \n"
+                    f" Delta A = {Area[i] - area_change[t][i]}"
+                    )
+                exit()
 
     
 
@@ -57,3 +69,8 @@ if __name__ == "__main__":
     data_path, fig_save_path = path_args[0:2]
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
+
+    check_area(
+        df_name=df_name
+        ,data_path=data_path
+    )

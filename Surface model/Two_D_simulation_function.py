@@ -8,9 +8,9 @@ import progressbar
 
 
 def Two_D_simulation(
-    N:int,k:float,c0:float
+    N:int,k:float,c0:float, dt:float
     ,sigma:float,kG:float,tau:float
-    ,sim_steps:int
+    ,sim_steps:int, L:float, r0:float
     ,radi:list,z_list:list
     ,Area:list,psi:list
     ,df_name:str,num_frames:str
@@ -27,9 +27,9 @@ def Two_D_simulation(
         b.update(t)
         lambs,nus = Langrange_multi(
         N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area_list
-        ,psi=psi_list[t]
-        ,radi=radi_list[t]
+        ,Area=Area
+        ,psi=psi[t]
+        ,radi=radi[t]
         ,z_list=z_list[t]
             )
         lambs_save.append(lambs)
@@ -59,7 +59,7 @@ def Two_D_simulation(
 
     if save_data == True:
         df = pd.DataFrame({
-            'psi': [psi_list],
+            'psi': [psi],
             "r":[radi],
             "z":[z_list],
             "area list":[Area],
@@ -73,10 +73,8 @@ def Two_D_simulation(
             "kG":kG,
             "sigma":sigma,
             "tau":tau,
-            "Total time [sec]" : sim_steps*dt,
             "sim_steps": sim_steps,
             "dt":dt,
-            "ds":ds,
             "gam(i=0)":gamma(0),
             "gam(i>0)":gamma(5)
                         })
@@ -112,7 +110,9 @@ if __name__ == "__main__":
     df_name, fps_movie ,num_frames = path_args[4:7]
 
     Two_D_simulation(
-        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau, sim_steps=sim_steps
+        N=N,k=k,c0=c0,sigma=sigma, dt=dt
+        ,kG=kG,tau=tau, sim_steps=sim_steps
+        ,L=L, r0=r0
         ,Area=Area_list
         ,psi=psi_list
         ,radi=radi_list
