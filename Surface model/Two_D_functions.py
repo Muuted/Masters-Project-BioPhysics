@@ -611,19 +611,4 @@ if __name__ == "__main__":
         ,print_matrix=True
     )
 
-    exit()
-    Q = Q_function(
-        i=N-1,N=N,k=k,c0=c0
-        ,sigma=sigma,tau=tau,kG=kG
-        ,Area=Area_list,psi=psi_list[0],radi=radi_list
-    )
-
-    drdt = drdt_func(
-        i=N-1,N=N,k=k,c0=c0
-        ,sigma=sigma,tau=tau,kG=kG
-        ,Area=Area_list,psi=psi_list[0],radi=radi_list
-        ,lamb=np.zeros(N), nu=np.zeros(N)
-        ,z_list=np.zeros(N)
-    )
-    print(Q)
-    print(drdt)
+    

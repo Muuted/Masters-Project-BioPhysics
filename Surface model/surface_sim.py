@@ -2,7 +2,7 @@ from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import check_area
-
+from Two_D_functions import Langrange_multi
 
 if __name__ == "__main__":
     const_args = Two_D_Constants(
@@ -23,7 +23,7 @@ if __name__ == "__main__":
     df_name, fps_movie ,num_frames = path_args[4:7]
 
     make_movies = False
-
+ 
     Two_D_simulation(
         N=N,k=k,c0=c0,sigma=sigma, dt=dt
         ,kG=kG,tau=tau,L=L,r0=r0

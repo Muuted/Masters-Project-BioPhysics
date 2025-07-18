@@ -70,7 +70,4 @@ if __name__ == "__main__":
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    check_area(
-        df_name=df_name
-        ,data_path=data_path
-    )
+    
