@@ -8,6 +8,7 @@ from Two_D_functions import Langrange_multi
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
         print_val=True
+        ,init_rand_psi=True
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -117,6 +118,6 @@ def test_check_area():
     
 if __name__ == "__main__":
     test_Lagrange_multi()
-    test_make_frames()
-    test_make_video()
-    test_check_area()
+    #test_make_frames()
+    #test_make_video()
+    #test_check_area()

@@ -28,7 +28,7 @@ def check_area(
     gam2 = df_sim["gam(i>0)"][0]
     sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
-    T_tot = df_sim["Total time [sec]"][0]
+    #T_tot = df_sim["Total time [sec]"][0]
 
     area_change = np.zeros(shape=(sim_steps,N),dtype=float)
     tolerence = 1e-10
@@ -41,15 +41,12 @@ def check_area(
                 print(
                     f"we had a change in area \n"
                     +f"Area[{i}]={Area[i]}  and area_change[{i}]={area_change[t][i]} \n"
-                    +f"at time={t} s and position i={i} \n"
+                    +f"at time_step={t}  and position i={i} \n"
                     f" Delta A = {Area[i] - area_change[t][i]}"
                     )
                 exit()
 
     
-
-
-
 def rotate_coords(
          df_name:str
         ,data_path:str

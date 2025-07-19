@@ -310,7 +310,7 @@ def Langrange_multi(
                         )/(gamma(l)*Area[l]**2)
                     )#*Kronecker(i,j)
 
-                lambs = lamb_i_next + lamb_i
+                #lambs = lamb_i_next + lamb_i
 
                 #---------------- calc nu vals -------------------------
                 if n+1== j:
@@ -335,7 +335,7 @@ def Langrange_multi(
 
                     nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l)*Area[l]**2) # *Kronecker(n,j)
 
-                nus = nu_i_next + nu_i
+                #nus = nu_i_next + nu_i
             
             if 0 < i < N-2:
                 if i+1==j :
@@ -361,7 +361,7 @@ def Langrange_multi(
                         (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
                     )/(gamma(l)*Area[l]*Area[l-1]) #*Kronecker(i-1,j)
 
-                lambs = lamb_i_next + lamb_i + lamb_i_before
+                #lambs = lamb_i_next + lamb_i + lamb_i_before
                 
                 #---------- nu ----------------------------------
                 if n+1 == j:
@@ -384,7 +384,7 @@ def Langrange_multi(
                         -(radi[l+1] + radi[l])**2*np.sin(psi[l])
                     )#*Kronecker(n-1,j)
 
-                nus = nu_i_next + nu_i + nu_i_before
+                #nus = nu_i_next + nu_i + nu_i_before
             
             if i == N-2:#### do this ########## do this ############ do this ######################################################          
                 if i+1 == j:
@@ -404,7 +404,7 @@ def Langrange_multi(
                         (z_list[l+1] - z_list[l])*radi[l]*np.sin(psi[l]) + 2*radi[l]**2*np.cos(psi[l])
                     )/(gamma(l)*Area[l]*Area[l-1])
 
-                lambs = lamb_i_next + lamb_i + lamb_i_before
+                #lambs = lamb_i_next + lamb_i + lamb_i_before
 
                 if n+1 == j:
                     nu_i_next_1 =(radi[l+1] + radi[l])*(radi[l+2] + radi[l+1])*np.sin(psi[l])
@@ -432,7 +432,7 @@ def Langrange_multi(
                     
                     nu_i_before = np.pi**2*(nu_i_before_1 + nu_i_before_2)/(gamma(l)*Area[l]*Area[l-1])
 
-                nus = nu_i_next + nu_i + nu_i_before
+                #nus = nu_i_next + nu_i + nu_i_before
 
             if i == N-1:     
                 if i == j:
@@ -445,7 +445,7 @@ def Langrange_multi(
                             2*radi[l]*np.cos(psi[l]) - z_list[l]*np.sin(psi[l])
                         )/(gamma(l)*Area[l]*Area[l-1])  #*Kronecker(i-1,j)
                 
-                lambs = lamb_i_next + lamb_i + lamb_i_before
+                #lambs = lamb_i_next + lamb_i + lamb_i_before
                 #---------- nu ----------------------------------
                 if n == j:
                     nu_i = (np.pi**2/(gamma(l)*Area[l]**2))*(
@@ -458,21 +458,21 @@ def Langrange_multi(
                         -(radi[l+1]+radi[l])*(radi[l]+radi[l-1])*np.sin(psi[l])
                     )/(Area[l]*Area[l-1]) # *Kronecker(n-1,j)
 
-                nus = nu_i_next + nu_i + nu_i_before
+                #nus = nu_i_next + nu_i + nu_i_before
             # The 2nd N equations. where l is the shifted index
 
             if i > N - 1:
                 if i%N == j:
                     lamb_i = np.sin(psi[l])*Kronecker(i%N,j)
-                lambs = lamb_i_next + lamb_i + lamb_i_before
+                #lambs = lamb_i_next + lamb_i + lamb_i_before
                 if n==j:
                     nu_i = -np.cos(psi[l])*Kronecker(n,j)
-                nus = nu_i_next + nu_i + nu_i_before
+                #nus = nu_i_next + nu_i + nu_i_before
 
             if print_matrix == True:
-                A[i][j] =   '{:.0e}'.format(lambs+nus)
+                A[i][j] =  '{:.0e}'.format(lamb_i_next + lamb_i + lamb_i_before + nu_i_next + nu_i + nu_i_before) #'{:.0e}'.format(lambs+nus)
             else:
-                A[i][j] = lambs + nus
+                A[i][j] = lamb_i_next + lamb_i + lamb_i_before + nu_i_next + nu_i + nu_i_before#lambs + nus
             
 
             #---------------- calc b vals -------------------------     

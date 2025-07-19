@@ -86,10 +86,10 @@ def Two_D_simulation(
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name)
 
-    plt.subplots()        
-    plt.plot(radi[sim_steps-1],z_list[sim_steps-1],marker="o")
+    #plt.subplots()        
+    #plt.plot(radi[sim_steps-1],z_list[sim_steps-1],marker="o")
 
-    plt.show()
+    #plt.show()
 
 if __name__ == "__main__":
     const_args = Two_D_Constants(
