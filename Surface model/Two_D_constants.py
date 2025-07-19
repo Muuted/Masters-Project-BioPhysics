@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 def gamma(i):
-    gam = 1e1#
+    gam = 1e3# standard 1e0
     if i==0:
         return gam/2
     if i > 0:
@@ -42,15 +42,15 @@ def Two_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    sigma =1 # k*c0**2 #
-    tau = 1 # 0.1 #
+    sigma = 0#1 # k*c0**2 #
+    tau = 0#1 # 0.1 #
     kG = 1 #   :  Guassian curvature modulus
      
 
     N = 3#10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 # s  : total time simulated
-    dt = 1e-9 # s time step.
+    dt = 1e-16 # s time step.
     sim_steps = int(1e5)#int(T/dt) # : number of simulation steps
     
 

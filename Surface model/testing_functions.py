@@ -25,14 +25,22 @@ def test_Lagrange_multi():
     df_name, fps_movie ,num_frames = path_args[4:7]
 
     make_movies = False
-    lambs,nus = Langrange_multi(
+    """lambs,nus = Langrange_multi(
         N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area
         ,psi=psi_list[0]
         ,radi=radi_list[0]
         ,z_list=z_list[0]
         ,print_matrix=True
-    )
+    )"""
+    t = 0
+    lambs,nus = Langrange_multi(
+        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+        ,Area=Area
+        ,psi=psi_list[t]
+        ,radi=radi_list[t]
+        ,z_list=z_list[t]
+            )
 
 
 def test_make_frames():

@@ -7,8 +7,28 @@ import pandas as pd
 import progressbar
 
 
-
 def check_area(
+        t:int,N:int,r:list,Area:list
+        ,tolerence:float=1e-10
+        ):
+    error = False
+    print(np.shape(Area))
+    for i in range(N):
+        area_change = np.pi*( r[i+1]**2 - r[i]**2 )
+
+        if Area[i] != area_change :
+            print(
+                f"we had a change in area \n"
+                +f"Area[{i}]={Area[i]}  and area_change[{i}]={area_change} \n"
+                +f"at time_step={t}  and position i={i} \n"
+                f" Delta A = {Area[i] - area_change}"
+                )
+            error = True
+            break
+
+    return error
+
+def check_area_from_data(
         df_name:str
         ,data_path:str
         ):
@@ -33,6 +53,7 @@ def check_area(
     area_change = np.zeros(shape=(sim_steps,N),dtype=float)
     tolerence = 1e-10
 
+    error = False
     for t in range(1,sim_steps):
         for i in range(N):
             area_change[t][i] =np.pi*( r[t][i+1]**2 - r[t][i]**2 )
@@ -44,8 +65,15 @@ def check_area(
                     +f"at time_step={t}  and position i={i} \n"
                     f" Delta A = {Area[i] - area_change[t][i]}"
                     )
-                exit()
+                error = True
+                break#exit()
+        if error == True:
+            break
 
+    """print(
+        f"\n check all the areas and no change in area was found. with dt={dt}"
+    )"""
+    return error
     
 def rotate_coords(
          df_name:str
