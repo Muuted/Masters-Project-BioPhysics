@@ -77,6 +77,7 @@ def Make_video(
 
 
 
+
 def Make_frames(
         data_path: str
         ,figs_save_path: str
@@ -179,21 +180,5 @@ if __name__=="__main__":
     data_path, fig_save_path = path_args[0:2]
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
-    making_frame = True
-    making_video = True
     
-    if making_frame==True:
-        Make_frames(
-            data_path=data_path
-            ,figs_save_path=video_fig_path
-            ,df_name=df_name
-        )
-    
-    if making_video == True:
-        Make_video(
-            output_path = video_save_path
-            ,input_path = video_fig_path
-            ,video_name = df_name
-            ,fps=12
-    )
     
