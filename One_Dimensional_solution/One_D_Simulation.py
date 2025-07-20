@@ -111,6 +111,7 @@ def Rolling_test():
     video_save_path,video_fig_path = args[13:15]
     df_name = args[15]
 
+    #sim_steps = 3
     iter_count = 0
     Rolling = False
     while Rolling == False:
@@ -131,7 +132,7 @@ def Rolling_test():
         x = df_sim["x pos"][0]
 
 
-        if x[0] > x[1]:
+        if x[:][0].all() > x[:][1].all():
             Rolling = True
             df_sim["c0"] = c0
             df_sim.to_pickle(data_path + df_name)

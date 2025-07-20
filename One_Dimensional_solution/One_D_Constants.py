@@ -29,6 +29,7 @@ def One_D_Constants(
     """------ paths ---------"""
     #save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
+    save_path = "1D sim results\\"
     data_path =  save_path 
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
