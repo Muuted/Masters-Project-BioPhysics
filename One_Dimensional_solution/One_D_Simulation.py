@@ -100,6 +100,68 @@ def Multiple_iteration_sim():
 
         print(f" \n radius={Radius}")
 
+
+
+def Rolling_test():
+    args = One_D_Constants(print_val=True)
+
+    L,r0,N,ds,T,dt = args[0:6]
+    psi_list,k,c0,sim_steps  =args[6:10]
+    save_path, data_path, fig_save_path = args[10:13]
+    video_save_path,video_fig_path = args[13:15]
+    df_name = args[15]
+
+    iter_count = 0
+    Rolling = False
+    while Rolling == False:
+        print(f"\n iter counter = {iter_count} \n")
+        sim_1D_surface(
+            L=L,r0=r0,N=N,ds=ds,T=T,dt=dt
+            ,psi_list=psi_list,k=k,c0=c0,sim_steps=sim_steps
+            ,data_path=data_path 
+            ,df_name=df_name
+        )
+        
+        plot_from_psi_V2(
+            data_path=data_path
+            ,df_name=df_name
+        )
+
+        df_sim = pd.read_pickle(data_path + df_name)
+        x = df_sim["x pos"][0]
+
+
+        if x[0] > x[1]:
+            Rolling = True
+            df_sim["c0"] = c0
+            df_sim.to_pickle(data_path + df_name)
+
+            Make_frames(
+                data_path=data_path
+                ,figs_save_path=video_fig_path + df_name +"\\"
+                ,df_name=df_name
+            )
+            
+            Make_video(
+                output_path = video_save_path
+                ,input_path = video_fig_path + df_name +"\\"
+                ,video_name = f"dynamics movie links={N}.avi"
+                ,fps=8
+            )
+
+            x_cen,z_cen,Radius = cirle_fit(
+                data_path=data_path
+                ,df_name=df_name
+            )
+
+            print(f"Rolling was found at c0={c0}")
+            break
+
+        if Rolling == False:
+            c0 *= 1.5
+            iter_count += 1
+
 if __name__ == "__main__":
-    One_iteration_sim()
+    #One_iteration_sim()
     #Multiple_iteration_sim()
+    Rolling_test()
