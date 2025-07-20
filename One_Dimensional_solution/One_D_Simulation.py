@@ -115,7 +115,8 @@ def Rolling_test():
     iter_count = 0
     Rolling = False
     while Rolling == False:
-        print(f"\n iter counter = {iter_count} \n")
+        print(f"\n \n iter counter = {iter_count} and c0={c0} \n \n")
+
         sim_1D_surface(
             L=L,r0=r0,N=N,ds=ds,T=T,dt=dt
             ,psi_list=psi_list,k=k,c0=c0,sim_steps=sim_steps
