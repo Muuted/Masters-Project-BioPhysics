@@ -104,7 +104,7 @@ def test_check_area():
     Area, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    sim_steps = 3
+    #sim_steps = 3
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
@@ -125,7 +125,7 @@ def test_check_area():
     )
     
 if __name__ == "__main__":
-    test_Lagrange_multi()
+    #test_Lagrange_multi()
     #test_make_frames()
     #test_make_video()
-    #test_check_area()
+    test_check_area()

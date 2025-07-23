@@ -17,18 +17,18 @@ def One_D_Constants(
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-    N = 25 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 24 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 30 # s  : total time simulated
     dt = 1e-4 # s time step.
-    sim_steps = int(T/dt) # : number of simulation steps
+    sim_steps = int(T/dt/10) # : number of simulation steps
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     #kG = 1 #   :  Guassian curvature modulus
     c0 = 0.25e0# 0.25e8 # 1/m   :  
 
     """------ paths ---------"""
     #save_path = "C:\\Users\\adams\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
-    save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
+    #save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Sim data\\1D surface sim data\\"
     save_path = "1D sim results\\"
     data_path =  save_path 
     fig_save_path = save_path + "figures and video\\"
