@@ -5,7 +5,8 @@ from two_d_data_processing import check_area
 from Two_D_functions import Langrange_multi
 import pandas as pd
 
-if __name__ == "__main__":
+
+def surface_sim_find_c0():
     const_args = Two_D_Constants(
         print_val=True
     )
@@ -74,3 +75,5 @@ if __name__ == "__main__":
             dt *= 10
         
         
+if __name__ == "__main__":
+    surface_sim_find_c0()
