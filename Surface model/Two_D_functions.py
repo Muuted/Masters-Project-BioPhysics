@@ -577,6 +577,14 @@ def Langrange_multi(
     return lamb_return,nu_return
 
 
+
+
+def constraint_f():
+    pass
+def constraint_g():
+    pass
+
+
 if __name__ == "__main__":
     a = np.zeros(5)
     print(a)
