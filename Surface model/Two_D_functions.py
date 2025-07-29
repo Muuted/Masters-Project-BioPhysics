@@ -579,7 +579,7 @@ def Langrange_multi(
 
 
 
-def constraint_f(i:int,r:list,psi:list,Area:list):
+def constraint_f(i:int,N:int,r:list,psi:list,Area:list):
     if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
@@ -588,7 +588,7 @@ def constraint_f(i:int,r:list,psi:list,Area:list):
     
     return f
 
-def constraint_g(i:int,r:list,z:list,psi:list,Area:list):
+def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list):
     if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
@@ -696,10 +696,10 @@ def Epsilon_values(
             A[alpha][beta] = K
         
         if alpha > N:
-            b[alpha] = - constraint_f(i=alpha%N,r=r,psi=psi,Area=Area)
+            b[alpha] = - constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
         
         if alpha >= N:
-            b[alpha] = - constraint_f(i=alpha%N,r=r,psi=psi,Area=Area)
+            b[alpha] = - constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
 
     if print_matrix == True:
         print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
