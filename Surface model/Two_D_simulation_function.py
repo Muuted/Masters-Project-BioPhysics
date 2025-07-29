@@ -17,6 +17,9 @@ def Two_D_simulation(
     ,data_path:str
     ,save_data:bool = True 
     ):
+
+    do_correction = True
+
     lambs_save = []
     nus_save = []
 
@@ -56,6 +59,12 @@ def Two_D_simulation(
                                                     ,lamb=lambs,nu=nus
                                                     )
                 
+            if do_correction == True:
+                K = 0
+                for beta in range(N):
+                    K += (
+
+                    )
 
     if save_data == True:
         df = pd.DataFrame({
