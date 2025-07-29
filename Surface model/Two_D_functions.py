@@ -579,12 +579,141 @@ def Langrange_multi(
 
 
 
-def constraint_f():
-    pass
-def constraint_g():
-    pass
+def constraint_f(i:int,r:list,psi:list,Area:list):
+    if i > N:
+        print(f"the value of i is to large, in the constraint equation")
+        exit()
+    else:
+        f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
+    
+    return f
+
+def constraint_g(i:int,r:list,z:list,psi:list,Area:list):
+    if i > N:
+        print(f"the value of i is to large, in the constraint equation")
+        exit()
+    else:
+        g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
+    
+    return g
 
 
+def c_diff_f(
+        i:int,j:int,N:int
+        ,r:list,Area:list
+        ,diff_var:str =""
+        ):
+    df = 0
+    
+    if diff_var == "r":
+        df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
+
+    if diff_var == "z":
+        df = 0
+
+    if diff_var == "psi":
+        df = np.sin(i)*Kronecker(i,j)
+
+
+    if diff_var == "":
+            #Error handling
+            print(f"Forgot to give diff variable of either (r,z,psi)")
+            exit()
+
+    return df
+
+
+def c_diff_g(
+        i:int,j:int,N:int
+        ,r:list,z:list,Area:list
+        ,diff_var:str =""
+        ):
+    dg = 0
+    
+    if diff_var == "r":
+        dg = np.pi*(z[i+1]-z[i])*Kronecker(i+1,j)/Area[i] + np.pi*(z[i+1]-z[i])*Kronecker(i,j)/Area[i]
+
+    if diff_var == "z":
+        dg = np.pi*(r[i+1]-r[i])*Kronecker(i+1,j)/Area[i] - np.pi*(r[i+1]-r[i])*Kronecker(i,j)/Area[i]
+
+    if diff_var == "psi":
+        dg = -np.cos(i)*Kronecker(i,j)
+
+    if diff_var == "":
+            #Error handling
+            print(f"Forgot to give diff variable of either (r,z,psi)")
+            exit()
+
+    return dg
+
+
+def Epsilon_values(
+        N:int,r:list
+        ,z:list,psi:list,Area:list
+        ,print_matrix = False
+        ):
+    
+    A = np.zeros(shape=(2*N,2*N))
+    b = np.zeros(2*N)
+
+    for alpha in range(2*N):
+        for beta in range(2*N):
+            l = alpha%N 
+            n = beta%N # + N
+            K = 0
+            if alpha < N and beta < N:
+                for j in range(N):
+                    K += (
+                        c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
+                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
+                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
+                    )         
+            
+            if alpha < N and beta >= N:
+                for j in range(N):
+                    K += (
+                        c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")
+                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
+                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")
+                    )
+
+            if alpha >= N  and beta < N:
+                for j in range(N):
+                    K += (
+                        c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
+                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
+                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
+                    )
+
+            if alpha >= N and beta >= N:
+                for j in range(N):
+                    K += (
+                        c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")
+                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
+                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")
+                    )
+            
+            A[alpha][beta] = K
+        
+        if alpha > N:
+            b[alpha] = - constraint_f(i=alpha%N,r=r,psi=psi,Area=Area)
+        
+        if alpha >= N:
+            b[alpha] = - constraint_f(i=alpha%N,r=r,psi=psi,Area=Area)
+
+    if print_matrix == True:
+        print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
+        print("b:",b)
+        x = np.linalg.solve(A,b)
+        epsilon_f = x[0:N]
+        epsilon_g = x[N:2*N]
+    else:
+        x = np.linalg.solve(A,b)
+        epsilon_f = x[0:N]
+        epsilon_g = x[N:2*N]
+    
+    return epsilon_f, epsilon_g
+        
 if __name__ == "__main__":
     a = np.zeros(5)
     print(a)
