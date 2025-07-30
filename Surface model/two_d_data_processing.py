@@ -12,7 +12,7 @@ def check_area(
         ,tolerence:float=1e-10
         ):
     error = False
-    print(np.shape(Area))
+    #print(np.shape(Area))
     for i in range(N):
         area_change = np.pi*( r[i+1]**2 - r[i]**2 )
 

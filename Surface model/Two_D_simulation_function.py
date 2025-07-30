@@ -1,6 +1,8 @@
 import numpy as np
 from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func
+from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
+from two_d_data_processing import check_area
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
@@ -19,6 +21,7 @@ def Two_D_simulation(
     ):
 
     do_correction = True
+    #do_correction = False
 
     lambs_save = []
     nus_save = []
@@ -60,12 +63,28 @@ def Two_D_simulation(
                                                     )
                 
             if do_correction == True:
-                K = 0
+                ebf, ebg = Epsilon_values(
+                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                )
+                K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
-                    K += (
+                    ebf_val, ebg_val = ebf[beta] ,ebg[beta]
+                    
+                    K_r += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="r") + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="r")
+                    
+                    K_z += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="z")+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="z")
+                    
+                    K_psi += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="psi")+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="psi")
+                    
+                if i == int(N/2):
+                    #print(f"Kr={K_r} , Kz={K_z} and Kpsi={K_psi}")
+                    #print(f"ebf={ebf} \n ebg={ebg}")
+                    pass
+                z_list[t+1][i] += K_z
+                radi[t+1][i] += K_r
+                psi[t+1][i] += K_psi
 
-                    )
-
+    print("\n")
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],
@@ -111,7 +130,7 @@ if __name__ == "__main__":
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    #sim_steps = 3
+    #sim_steps = 1000
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
@@ -130,3 +149,30 @@ if __name__ == "__main__":
         ,num_frames = num_frames
         ,data_path = data_path
     )
+
+    df_sim = pd.read_pickle(data_path + df_name)
+    r = df_sim['r'][0]        
+    Area = df_sim['area list'][0]
+
+    error = False
+    for t in range(sim_steps):
+        error = check_area(
+            t=t,N=N,r=r[t],Area=Area
+        )
+        if error == True:
+            print(
+                f"\n ----------------------------- \n"
+                +f"error at dt={dt}"
+                +f"\n ----------------------------- \n"
+                )
+            break
+    i = 0
+    Area_change = []
+    for t in range(sim_steps):
+        dA = np.pi*( r[t][i+1]**2 - r[t][i]**2 ) - Area[i] 
+        Area_change.append(dA)
+
+    plt.figure()
+    plt.plot(Area_change)
+    plt.show()
+    
