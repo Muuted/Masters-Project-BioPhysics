@@ -577,15 +577,13 @@ def Langrange_multi(
     return lamb_return,nu_return
 
 
-
-
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list):
     if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
     else:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
-    
+
     return f
 
 def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list):
@@ -600,11 +598,10 @@ def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list):
 
 def c_diff_f(
         i:int,j:int,N:int
-        ,r:list,Area:list
+        ,r:list,psi:list,Area:list
         ,diff_var:str =""
         ):
     df = 0
-    
     if diff_var == "r":
         df = 2*np.pi*r[i+1]*Kronecker(i+1,j)/Area[i] - 2*np.pi*r[i]*Kronecker(i,j)/Area[i]
         
@@ -612,9 +609,8 @@ def c_diff_f(
         df = 0
 
     if diff_var == "psi":
-        df = np.sin(i)*Kronecker(i,j)
-
-
+        df = np.sin(psi[i])*Kronecker(i,j)
+        
     if diff_var == "":
             #Error handling
             print(f"Forgot to give diff variable of either (r,z,psi)")
@@ -625,19 +621,18 @@ def c_diff_f(
 
 def c_diff_g(
         i:int,j:int,N:int
-        ,r:list,z:list,Area:list
+        ,r:list,z:list,psi:list,Area:list
         ,diff_var:str =""
         ):
     dg = 0
-    
     if diff_var == "r":
-        dg = np.pi*(z[i+1]-z[i])*Kronecker(i+1,j)/Area[i] + np.pi*(z[i+1]-z[i])*Kronecker(i,j)/Area[i]
-
+        dg = np.pi*((z[i+1]-z[i])*Kronecker(i+1,j)/Area[i] + (z[i+1]-z[i])*Kronecker(i,j)/Area[i])
+        
     if diff_var == "z":
-        dg = np.pi*(r[i+1]+r[i])*Kronecker(i+1,j)/Area[i] - np.pi*(r[i+1]+r[i])*Kronecker(i,j)/Area[i]
+        dg = np.pi*((r[i+1]+r[i])*Kronecker(i+1,j)/Area[i] - (r[i+1]+r[i])*Kronecker(i,j)/Area[i])
 
     if diff_var == "psi":
-        dg = -np.cos(i)*Kronecker(i,j)
+        dg = -np.cos(psi[i])*Kronecker(i,j)
 
     if diff_var == "":
             #Error handling
@@ -665,38 +660,36 @@ def Epsilon_values(
                 K = 0
                 for j in range(N):
                     K += (
-                        c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
-                        #+c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
-                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
+                        c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")
+                        +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")
+                        +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")
                     )
-                   #print(c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r"))
-                    #print( 2*np.pi*r[l+1]*Kronecker(l+1,j)/Area[l] - 2*np.pi*r[l]*Kronecker(l,j)/Area[l])         
-            
+                   
             if alpha < N and beta >= N:
                 K = 0
                 for j in range(N):
                     K += (
-                        c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")
-                        #+c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
-                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")
+                        c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
+                        +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
+                        +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
                     )
 
             if alpha >= N  and beta < N:
                 K = 0
                 for j in range(N):
                     K += (
-                        c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
-                        #+c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
-                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
+                        c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")
+                        +c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")
+                        +c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")
                     )
 
             if alpha >= N and beta >= N:
                 K = 0
                 for j in range(N):
                     K += (
-                        c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")
-                        + c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
-                        + c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")
+                        c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
+                        + c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
+                        + c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
                     )
             
             A[alpha][beta] = K
@@ -717,7 +710,10 @@ def Epsilon_values(
         x = np.linalg.solve(A,b)
         epsilon_f = x[0:N]
         epsilon_g = x[N:2*N]
-    
+    a = (
+        (2*np.pi*r[0]/Area[0])**2 + (2*np.pi*r[1]/Area[0])**2 + np.sin(psi[0])**2
+    )
+
     return epsilon_f, epsilon_g
 
 

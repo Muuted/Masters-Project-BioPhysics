@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 def gamma(i):
-    gam = 1e3# standard 1e0
+    gam = 1e0# standard 1e0
     if i==0:
         return gam/2
     if i > 0:
@@ -16,7 +16,7 @@ def Two_D_paths():
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
-    video_fig_path = save_path +"figures for video\\"
+    figs_for_video_path = save_path +"figures for video\\"
 
 
     """------ Saved files names  ---------"""
@@ -26,7 +26,7 @@ def Two_D_paths():
 
     path_args=[
         data_path, fig_save_path
-        ,video_save_path,video_fig_path
+        ,video_save_path,figs_for_video_path
         ,df_name, fps_movie ,num_frames
     ]
 
@@ -47,11 +47,11 @@ def Two_D_Constants(
     kG = 1 #   :  Guassian curvature modulus
      
 
-    N = 2#10#25 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1 # s  : total time simulated
+    T = 10 # s  : total time simulated
     dt = 1e-4 # s time step.
-    sim_steps = 1000#int(1e5)#int(T/dt) # : number of simulation steps
+    sim_steps = int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""

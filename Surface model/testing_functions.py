@@ -128,7 +128,7 @@ def test_check_area():
 def test_epsilon_value():
     const_args = Two_D_Constants(
         print_val=False#True
-        ,init_rand_psi=True
+        #,init_rand_psi=True
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -154,6 +154,7 @@ def test_epsilon_value():
 
     print(f"ef={ef}")
     print(f"eg={eg}")
+    
 
 
 if __name__ == "__main__":
@@ -161,5 +162,4 @@ if __name__ == "__main__":
     #test_make_frames()
     #test_make_video()
     #test_check_area()
-
     test_epsilon_value()

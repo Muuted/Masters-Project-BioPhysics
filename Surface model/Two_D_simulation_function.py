@@ -10,7 +10,7 @@ import progressbar
 
 
 def Two_D_simulation(
-    N:int,k:float,c0:float, dt:float
+    N:int,k:float,c0:float, dt:float, ds:float
     ,sigma:float,kG:float,tau:float
     ,sim_steps:int, L:float, r0:float
     ,radi:list,z_list:list
@@ -62,26 +62,31 @@ def Two_D_simulation(
                                                     ,lamb=lambs,nu=nus
                                                     )
                 
-            if do_correction == True:
+            if do_correction == True and i < N:
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
-                )
+                            )
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
                     ebf_val, ebg_val = ebf[beta] ,ebg[beta]
                     
-                    K_r += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="r") + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="r")
+                    K_r += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        )
                     
-                    K_z += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="z")+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="z")
+                    K_z += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        )
                     
-                    K_psi += ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],Area=Area,diff_var="psi")+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],z=z_list[t],Area=Area,diff_var="psi")
+                    K_psi += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        )
                     
-                if i == int(N/2):
-                    #print(f"Kr={K_r} , Kz={K_z} and Kpsi={K_psi}")
-                    #print(f"ebf={ebf} \n ebg={ebg}")
-                    pass
-                z_list[t+1][i] += K_z
                 radi[t+1][i] += K_r
+                z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
     print("\n")
@@ -103,6 +108,7 @@ def Two_D_simulation(
             "tau":tau,
             "sim_steps": sim_steps,
             "dt":dt,
+            "ds":ds,
             "gam(i=0)":gamma(0),
             "gam(i>0)":gamma(5)
                         })
@@ -114,10 +120,7 @@ def Two_D_simulation(
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name)
 
-    #plt.subplots()        
-    #plt.plot(radi[sim_steps-1],z_list[sim_steps-1],marker="o")
 
-    #plt.show()
 
 if __name__ == "__main__":
     const_args = Two_D_Constants(
@@ -172,7 +175,9 @@ if __name__ == "__main__":
         dA = np.pi*( r[t][i+1]**2 - r[t][i]**2 ) - Area[i] 
         Area_change.append(dA)
 
+    #print(Area_change)
+    print(len(Area_change))
     plt.figure()
-    plt.plot(Area_change)
+    plt.plot(Area_change[0:len(Area_change)-1],'-o')
     plt.show()
     

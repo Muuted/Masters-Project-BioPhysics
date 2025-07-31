@@ -65,7 +65,7 @@ def Make_video(
     
     # remove exisiting file
     if os.path.isfile(output_path + filename):
-        os.remove( output_path + filename )
+        os.remove(output_path + filename )
     
     shutil.move(filename, output_path)
 
@@ -98,6 +98,7 @@ def Make_frames(
     r = df_sim['r'][0]
     z = df_sim['z'][0]
     dt = df_sim['dt'][0]
+    ds = df_sim['ds'][0]
     L = df_sim["L"][0]
     tau = df_sim["tau"][0]
     sigma = df_sim["sigma"][0]
@@ -106,7 +107,8 @@ def Make_frames(
     gam2 = df_sim["gam(i>0)"][0]
     sim_steps = df_sim["sim_steps"][0]
     r0 = df_sim["r0"][0]
-    T_tot = df_sim["Total time [sec]"][0]
+    #T_tot = df_sim["Total time [sec]"][0]
+    T_tot = dt*sim_steps
 
     textstr = "\n".join((
         f"dt= {dt:0.1e}",
@@ -115,9 +117,6 @@ def Make_frames(
         f"gam(i>1)={gam2}",
         r" $ T_{tot} $ =" + f"{T_tot}s",
     ))
-
-    tot_time = df_sim['Total time [sec]'][0]
-
 
     if int(np.shape(r)[0]/tot_frames) < 2:
         frame_vec= [i for i in range(np.shape(r)[0])]
@@ -165,20 +164,37 @@ def Make_frames(
         k += 1
     
     plt.close()
+    print("\n")
 
 
 if __name__=="__main__":
-    args = Two_D_Constants()
+    const_args = Two_D_Constants(
+        print_val=True
+    )
 
-    L,r0,N,ds,T,dt = args[0:6]
-    psi_list,k,c0,sim_steps  =args[6:10]
-    save_path, data_path, fig_save_path = args[10:13]
-    video_save_path,video_fig_path = args[13:15]
-    df_name= args[15]
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+    #sim_steps = 1000
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
-    video_save_path,video_fig_path = path_args[2:4]
+    video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
+
+    Make_frames(
+        data_path=data_path
+        ,figs_save_path=figs_for_video_path
+        ,df_name=df_name
+    )
+    Make_video(
+        output_path=video_save_path
+        ,input_path=figs_for_video_path
+        ,video_name= df_name
+        ,fps=fps_movie
+    )
     
     
