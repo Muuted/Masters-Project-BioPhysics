@@ -3,7 +3,7 @@ from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import check_area
 from Two_D_functions import Langrange_multi, Epsilon_values
-
+import numpy as np
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
@@ -127,7 +127,7 @@ def test_check_area():
 
 def test_epsilon_value():
     const_args = Two_D_Constants(
-        print_val=True
+        print_val=False#True
         ,init_rand_psi=True
     )
 
@@ -145,6 +145,7 @@ def test_epsilon_value():
     df_name, fps_movie ,num_frames = path_args[4:7]
 
     print(f"r={radi_list[0]}")
+    print(f"psi={psi_list[0]}")
     print(f"Area={Area}")
     ef,eg = Epsilon_values(
         N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area
@@ -153,6 +154,7 @@ def test_epsilon_value():
 
     print(f"ef={ef}")
     print(f"eg={eg}")
+
 
 if __name__ == "__main__":
     #test_Lagrange_multi()

@@ -659,7 +659,7 @@ def Epsilon_values(
     for alpha in range(2*N):
         for beta in range(2*N):
             l = alpha%N 
-            n = beta%N  + N
+            n = beta%N # + N
             K = 0
             if alpha < N and beta < N:
                 K = 0
