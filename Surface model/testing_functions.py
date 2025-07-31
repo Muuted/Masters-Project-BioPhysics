@@ -144,6 +144,8 @@ def test_epsilon_value():
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
+    print(f"r={radi_list[0]}")
+    print(f"Area={Area}")
     ef,eg = Epsilon_values(
         N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area
         ,print_matrix=True

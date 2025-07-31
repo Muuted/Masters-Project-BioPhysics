@@ -607,7 +607,7 @@ def c_diff_f(
     
     if diff_var == "r":
         df = 2*np.pi*r[i+1]*Kronecker(i+1,j)/Area[i] - 2*np.pi*r[i]*Kronecker(i,j)/Area[i]
-
+        
     if diff_var == "z":
         df = 0
 
@@ -659,23 +659,25 @@ def Epsilon_values(
     for alpha in range(2*N):
         for beta in range(2*N):
             l = alpha%N 
-            n = beta%N # + N
+            n = beta%N  + N
             K = 0
             if alpha < N and beta < N:
                 K = 0
                 for j in range(N):
                     K += (
                         c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
-                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
+                        #+c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
                         +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
-                    )         
+                    )
+                   #print(c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r"))
+                    #print( 2*np.pi*r[l+1]*Kronecker(l+1,j)/Area[l] - 2*np.pi*r[l]*Kronecker(l,j)/Area[l])         
             
             if alpha < N and beta >= N:
                 K = 0
                 for j in range(N):
                     K += (
                         c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="r")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")
-                        +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
+                        #+c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")
                         +c_diff_f(i=l,j=j,N=N,r=r,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")
                     )
 
@@ -684,7 +686,7 @@ def Epsilon_values(
                 for j in range(N):
                     K += (
                         c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="r")
-                        +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
+                        #+c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="z")
                         +c_diff_g(i=l,j=j,N=N,r=r,z=z,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,Area=Area,diff_var="psi")
                     )
 
@@ -699,7 +701,7 @@ def Epsilon_values(
             
             A[alpha][beta] = K
             
-        if alpha > N:
+        if alpha < N:
             b[alpha] = -constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
         
         if alpha >= N:
@@ -717,7 +719,8 @@ def Epsilon_values(
         epsilon_g = x[N:2*N]
     
     return epsilon_f, epsilon_g
-        
+
+
 if __name__ == "__main__":
     a = np.zeros(5)
     print(a)
