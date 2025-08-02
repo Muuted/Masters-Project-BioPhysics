@@ -171,4 +171,6 @@ def Rolling_test():
 if __name__ == "__main__":
     #One_iteration_sim()
     #Multiple_iteration_sim()
-    Rolling_test()
+    #Rolling_test()
+    print("dont run unless you want new data")
+    pass

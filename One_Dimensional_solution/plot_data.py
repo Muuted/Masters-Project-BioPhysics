@@ -418,8 +418,8 @@ def plot_energies_One():
 
 if __name__ == "__main__":
     #show_radius()
-    #plot_end_result_curve()
-    plot_energies_multiple()
+    plot_end_result_curve()
+    #plot_energies_multiple()
     #plot_energies_One()
 
     
