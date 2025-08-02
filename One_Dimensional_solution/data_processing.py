@@ -14,7 +14,7 @@ def cirle_fit(
         ):
 
     df_sim = pd.read_pickle(data_path + df_name)
-    print(df_sim.info())
+    #print(df_sim.info())
     steps_tot = df_sim["sim_steps"][0]
     ds = df_sim["ds"][0]
 

@@ -23,6 +23,7 @@ def Two_D_simulation(
     do_correction = True
     #do_correction = False
 
+    condition = 1
     lambs_save = []
     nus_save = []
 
@@ -62,7 +63,7 @@ def Two_D_simulation(
                                                     ,lamb=lambs,nu=nus
                                                     )
                 
-            if do_correction == True and i < N:
+            if do_correction == True and t%condition==0 and i < N:
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
                             )

@@ -110,6 +110,7 @@ def Make_frames(
         f"N={N}",
         f"gam(i>1)={gam2}",
         r" $ T_{tot} $ =" + f"{T_tot}s",
+        r"$ c_0 $ ="+f"{df_sim["c0"][0]}"
     ))
 
     tot_time = df_sim['Total time [sec]'][0]
@@ -161,6 +162,7 @@ def Make_frames(
         k += 1
     
     plt.close()
+    print("\n")
 
 
 if __name__=="__main__":

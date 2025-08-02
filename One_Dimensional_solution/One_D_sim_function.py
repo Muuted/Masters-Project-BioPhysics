@@ -70,7 +70,7 @@ def sim_1D_surface(
 
         #print(df.info())W
 
-
+        print("\n")
         if not os.path.exists(data_path):
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name)
