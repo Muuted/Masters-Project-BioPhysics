@@ -85,7 +85,7 @@ def make_circle(xc,zc,R,ds,xlim,zlim):
 
     steps_size = ds/30
     tol = steps_size #Tolerence for divation of radius
-    on_circ = False
+    z_count,x_c = 0,0
     while x <= xmax:
         on_circ = False
         r =  (x-xc)**2 + (z-zc)**2
@@ -97,6 +97,11 @@ def make_circle(xc,zc,R,ds,xlim,zlim):
         
         if on_circ == False:
             z -= steps_size
+            z_count += 1
+            if z_count > zmax/steps_size:
+                z = zmax
+                z_count = 0
+                
 
     return [x_list,z_list]
 

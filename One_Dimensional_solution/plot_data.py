@@ -42,7 +42,9 @@ def show_radius():
 
     length = len(radius_0)
     fig = plt.figure()
-    fig.canvas.manager.window.showMaximized()
+    #fig.canvas.manager.window.showMaximized()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
 
     plt.plot(time_vec,radius_0
              ,label=f"rad0  " + f"1/c0={1/c0_list[0]}"
@@ -92,7 +94,12 @@ def show_radius():
     plt.legend(
         fontsize=15
     )
-    plt.show()
+    plt.draw()
+    plt.pause(0.1)
+    plt.savefig(video_save_path + "radius evolution 1D model.png")
+    plt.savefig(video_save_path + "radius evolution 1D model.svg")
+    plt.pause(0.1)
+    #plt.show()
 
 
 
@@ -117,10 +124,11 @@ def plot_end_result_curve():
     df_sim_1 = pd.read_pickle(data_path + df_name_1)
     df_sim_2 = pd.read_pickle(data_path + df_name_2)
 
-    print(df_sim_0.info())
+    #print(df_sim_0.info())
     x_pos_0 = df_sim_0["x pos"][0][sim_steps-1]
     z_pos_0 = df_sim_0["z pos"][0][sim_steps-1]
     R_0 = df_sim_0["circle radius"][0][sim_steps-2]
+    print(f"Starting with with data of c0={c0_list[0]}")
     x_circle_0, z_circle_0 = make_circle(
         xc = df_sim_0["x circle center"][0][sim_steps-2]
         ,zc = df_sim_0["z circle center"][0][sim_steps-2]
@@ -133,6 +141,7 @@ def plot_end_result_curve():
     x_pos_1 = df_sim_1["x pos"][0][sim_steps-1]
     z_pos_1 = df_sim_1["z pos"][0][sim_steps-1]
     R_1 = df_sim_1["circle radius"][0][sim_steps-2]
+    print(f"Starting with with data of c0={c0_list[1]}")
     x_circle_1, z_circle_1 = make_circle(
         xc = df_sim_1["x circle center"][0][sim_steps-2]
         ,zc = df_sim_1["z circle center"][0][sim_steps-2]
@@ -145,6 +154,7 @@ def plot_end_result_curve():
     x_pos_2 = df_sim_2["x pos"][0][sim_steps-1]
     z_pos_2 = df_sim_2["z pos"][0][sim_steps-1]
     R_2 = df_sim_2["circle radius"][0][sim_steps-2]
+    print(f"Starting with with data of c0={c0_list[2]}")
     x_circle_2, z_circle_2 = make_circle(
         xc = df_sim_2["x circle center"][0][sim_steps-2]
         ,zc = df_sim_2["z circle center"][0][sim_steps-2]
@@ -154,8 +164,12 @@ def plot_end_result_curve():
         , ds=ds
     )
 
+    print(f"Finished finding all the circles")
+
     fig = plt.figure()
-    fig.canvas.manager.window.showMaximized()
+    #fig.canvas.manager.window.showMaximized()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
 
     plt.plot(
         x_pos_0,z_pos_0
@@ -265,8 +279,12 @@ def plot_end_result_curve():
     ax[1,0].legend(
         fontsize=15
     )"""
-
-    plt.show()
+    plt.draw()
+    plt.pause(0.1)
+    plt.savefig(video_save_path + "radius evolution 1D model.png")
+    plt.savefig(video_save_path + "radius evolution 1D model.svg")
+    plt.pause(0.1)
+    #plt.show()
 
 
 
@@ -320,6 +338,12 @@ def plot_energies_multiple():
         plt.xlabel("time [s]")
         plt.ylabel("Energy [units?]")
         plt.legend()
+        plt.draw()
+        plt.pause(0.1)
+        plt.savefig(video_save_path + f"tot energy c0={c0_list[i]}.png")
+        plt.savefig(video_save_path + f"tot energy c0={c0_list[i]}.svg")
+        plt.pause(0.1)
+        plt.close()
 
     plt.figure()
     for i in range(len(c0_list)):
@@ -350,8 +374,13 @@ def plot_energies_multiple():
     plt.xlabel("time [s]")
     plt.ylabel("Energy [units?]")
     plt.legend()
-    
-    plt.show()
+    plt.draw()
+    plt.pause(0.1)
+    plt.savefig(video_save_path + f"tot energy all.png")
+    plt.savefig(video_save_path + f"tot energy all.svg")
+    plt.pause(0.1)
+    plt.close()
+    #plt.show()
 
 
 def plot_energies_One():
@@ -417,8 +446,8 @@ def plot_energies_One():
 
 
 if __name__ == "__main__":
-    #show_radius()
-    plot_end_result_curve()
+    show_radius()
+    #plot_end_result_curve()
     #plot_energies_multiple()
     #plot_energies_One()
 

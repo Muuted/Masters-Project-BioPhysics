@@ -101,7 +101,6 @@ def Multiple_iteration_sim():
         print(f" \n radius={Radius}")
 
 
-
 def Rolling_test():
     args = One_D_Constants(print_val=True)
 
@@ -169,7 +168,7 @@ def Rolling_test():
             iter_count += 1
 
 if __name__ == "__main__":
-    #One_iteration_sim()
+    One_iteration_sim()
     #Multiple_iteration_sim()
     #Rolling_test()
     print("dont run unless you want new data")
