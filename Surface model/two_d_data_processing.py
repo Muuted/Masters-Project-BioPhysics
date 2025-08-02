@@ -8,13 +8,13 @@ import progressbar
 
 
 def check_area(
-        t:int,N:int,r:list,Area:list
+        t:int,N:int,r:list,z:list,Area:list
         ,tolerence:float=1e-10
         ):
     error = False
     #print(np.shape(Area))
     for i in range(N):
-        area_change = np.pi*( r[i+1]**2 - r[i]**2 )
+        area_change = np.pi*( r[i+1]+ r[i] )*np.sqrt( (r[i+1]- r[i])**2 + (z[i+1]- z[i])**2 )
 
         if Area[i] != area_change :
             print(
@@ -104,7 +104,14 @@ def rotate_coords(
         phi[i] = i*dphi
     
 
+def tot_area(
+        N:int,r:list,z:list
+        ):
+    Area = 0
+    for i in range(N):
+        Area += np.pi*( r[i+1]+ r[i] )*np.sqrt( (r[i+1]- r[i])**2 + (z[i+1]- z[i])**2 )
 
+    return Area
 
 if __name__ == "__main__":
     const_args = Two_D_Constants(

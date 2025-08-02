@@ -12,7 +12,7 @@ def gamma(i):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"
+    save_path = "2D sim results\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
