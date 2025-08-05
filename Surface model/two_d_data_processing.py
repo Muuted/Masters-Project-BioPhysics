@@ -1,5 +1,5 @@
 import numpy as np
-from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
+from Two_D_constants import Two_D_Constants, gamma, Two_D_paths, mass
 from Two_D_functions import Delta_s
 import matplotlib.pyplot as plt
 import os
@@ -112,6 +112,44 @@ def tot_area(
         Area += np.pi*( r[i+1]+ r[i] )*np.sqrt( (r[i+1]- r[i])**2 + (z[i+1]- z[i])**2 )
 
     return Area
+
+
+def E_pot(
+        N:int, k:float, kG:float ,sigma:float 
+        ,tau:float ,c0:float
+        ,r:list,z:list,psi:list
+        ,Area:list
+        ):
+    Atot = np.sum(Area)
+    Epot = tau*r[0] - sigma*Atot/(2*np.pi)
+    for i in range(N):
+        Epot += (
+            (k*Area[i]/(2*np.pi*(r[i+1]+r[i])))*(
+                np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
+                )**2
+            + sigma*Area[i]*r[i]/(np.pi*(r[i+1]+r[i]))
+            + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
+        )
+
+    return Epot
+
+
+def E_kin(
+    N:int, t:int, dt:float
+    ,r:list ,z:list ,Area:list
+):
+    Ekin = 0
+    for i in range(N):
+        m = mass(i=i,Area=Area)
+
+        dot_r = (r[t+1][i] - r[t][i])/dt
+        dot_z = (z[t+1][i] - z[t][i])/dt
+
+        Ekin += m*( dot_r**2 + dot_z**2 )
+
+    return Ekin
+
+
 
 if __name__ == "__main__":
     const_args = Two_D_Constants(

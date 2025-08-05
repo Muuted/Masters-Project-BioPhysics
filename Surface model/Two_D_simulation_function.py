@@ -20,7 +20,7 @@ def Two_D_simulation(
     ,save_data:bool = True 
     ):
 
-    condition = 1
+    condition = 2
     lambs_save = []
     nus_save = []
 

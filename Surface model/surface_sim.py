@@ -87,7 +87,6 @@ def Surface_sim():
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    #sim_steps = 1000
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
@@ -107,6 +106,7 @@ def Surface_sim():
         ,data_path = data_path
     )
 
+    exit()
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path

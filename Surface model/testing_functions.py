@@ -1,7 +1,7 @@
 from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
-from two_d_data_processing import tot_area
+from two_d_data_processing import tot_area, E_pot, E_kin
 from Two_D_functions import Langrange_multi, Epsilon_values
 import numpy as np
 import pandas as pd
@@ -43,7 +43,6 @@ def test_Lagrange_multi():
         ,radi=radi_list[t]
         ,z_list=z_list[t]
             )
-
 
 def test_make_frames():
     const_args = Two_D_Constants(
@@ -94,7 +93,36 @@ def test_make_video():
         ,fps=12
     )
 
+def test_epsilon_value():
+    const_args = Two_D_Constants(
+        print_val=False#True
+        #,init_rand_psi=True
+    )
 
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+    sim_steps = 3
+
+    path_args = Two_D_paths()
+    data_path, fig_save_path = path_args[0:2]
+    video_save_path,video_fig_path = path_args[2:4]
+    df_name, fps_movie ,num_frames = path_args[4:7]
+
+    print(f"r={radi_list[0]}")
+    print(f"psi={psi_list[0]}")
+    print(f"Area={Area}")
+    ef,eg = Epsilon_values(
+        N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area
+        ,print_matrix=True
+    )
+
+    print(f"ef={ef}")
+    print(f"eg={eg}")
+    
 def test_tot_area():
 
     path_args = Two_D_paths()
@@ -137,40 +165,58 @@ def test_tot_area():
     fig, ax = plt.subplots()
     plt.plot(dA[0:sim_steps-1],'.')
     ax.ticklabel_format(useOffset=False)
+    plt.title("Change in Area")
     plt.show()
     
-
-def test_epsilon_value():
-    const_args = Two_D_Constants(
-        print_val=False#True
-        #,init_rand_psi=True
-    )
-
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
-
-    sim_steps = 3
-
+def testing_Epot_Ekin():
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
     video_save_path,video_fig_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    print(f"r={radi_list[0]}")
-    print(f"psi={psi_list[0]}")
-    print(f"Area={Area}")
-    ef,eg = Epsilon_values(
-        N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area
-        ,print_matrix=True
+    const_args = Two_D_Constants(
+        print_val=True
     )
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
 
-    print(f"ef={ef}")
-    print(f"eg={eg}")
-    
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    #exit()
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
+    psi = df_sim['psi'][0]
+    Area = df_sim['area list'][0]
+    N = df_sim["N"][0]
+    c0 = df_sim["c0"][0]
+    dt = df_sim["dt"][0]
+    sim_steps = df_sim["sim_steps"][0]
 
+    T = []
+    S = []
+
+    for t in range(sim_steps-1):
+        T.append(
+            E_kin(N=N,t=t,dt=dt,r=r,z=z,Area=Area)
+            )
+        S.append(
+            E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
+                  ,r=r[t],z=z[t],psi=psi[t],Area=Area)
+        )
+
+
+    plt.figure()
+    plt.plot(T)
+    plt.title("E kin")
+
+    plt.figure()
+    plt.plot(S)
+    plt.title("E pot")
+
+    plt.show()
 
 if __name__ == "__main__":
     #test_Lagrange_multi()
@@ -178,4 +224,5 @@ if __name__ == "__main__":
     #test_make_video()
     #test_check_area()
     #test_epsilon_value()
-    test_tot_area()
+    #test_tot_area()
+    testing_Epot_Ekin()

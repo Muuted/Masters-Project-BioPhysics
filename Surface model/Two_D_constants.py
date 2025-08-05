@@ -8,11 +8,22 @@ def gamma(i):
     if i > 0:
         return gam
 
+def mass(i:int ,Area:list):
+    rho = 1
+    m = -1
+    if i == 0:
+        m = rho*Area[i]/2
+    if i > 0:
+        m = rho*( Area[i]+ Area[i-1])/2
+    if m == -1:
+        print("We have got the wrong correct mass, in the mass function")
+        exit()
+    return m
 
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\" #+ "Testing\\"
+    save_path = "2D sim results\\" + "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -49,8 +60,8 @@ def Two_D_Constants(
 
     N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1 # s  : total time simulated
-    dt = 1e-5 # s time step.
+    T = 1 #5.45#s  : total time simulated
+    dt = 1e-7 # s time step.
     sim_steps = int(T/dt) # : number of simulation steps
     
 
