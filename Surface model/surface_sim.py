@@ -1,10 +1,11 @@
+import pandas as pd
+import time
 from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import check_area
 from Two_D_functions import Langrange_multi
-import pandas as pd
-
+from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
 
 def surface_sim_find_c0():
     const_args = Two_D_Constants(
@@ -93,6 +94,7 @@ def Surface_sim():
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
+    start_time = time.time()
     Two_D_simulation(
         N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
         ,kG=kG ,tau=tau ,sim_steps=sim_steps
@@ -106,7 +108,12 @@ def Surface_sim():
         ,data_path = data_path
     )
 
+    print(f"\n the simulation time={(time.time()-start_time)/60} min \n")
+    plot_tot_area()
     exit()
+    plot_Epot_Ekin()
+    
+    
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path

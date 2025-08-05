@@ -224,5 +224,5 @@ if __name__ == "__main__":
     #test_make_video()
     #test_check_area()
     #test_epsilon_value()
-    #test_tot_area()
+    test_tot_area()
     testing_Epot_Ekin()
