@@ -18,9 +18,10 @@ def Two_D_simulation(
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
+    ,condition = 1
     ):
 
-    condition = 2
+    
     lambs_save = []
     nus_save = []
 
@@ -130,13 +131,14 @@ def Two_D_simulation_V2(
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
-    ,condition = 2
-    ,Tolerence = 1e-7
+    ,condition = 1
+    ,Tolerence = 1e-15
     ):
 
     Area_old = np.sum(Area)
     Area_new = 0
     correction_count = 0
+    pos_count = 0
     lambs_save, nus_save = [], []
 
     print("Simulation progressbar \n ")
@@ -176,9 +178,10 @@ def Two_D_simulation_V2(
                                                     )
             
             Area_new = tot_area(N=N,r=radi[t],z=z_list[t])
-            dA = np.abs(Area_new-Area_old)
-            if i < N and dA >Tolerence:
-                correction_count += 1
+            dA = np.abs(Area_new - Area_old)
+            pos_count += 1
+            if i < N and Tolerence < dA :
+                correction_count += 1 
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
                             )
@@ -207,7 +210,8 @@ def Two_D_simulation_V2(
 
             Area_old = Area_new
     print("\n")
-    print(f"correction count={correction_count}")
+    #print(f"correction count={correction_count} of {sim_steps*(N-1)} possible")
+    print(f"correction count={correction_count} of {pos_count} possible")
 
     if save_data == True:
         df = pd.DataFrame({
