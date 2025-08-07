@@ -53,7 +53,7 @@ def Two_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    sigma = k*c0**2 #1 # k*c0**2 #
+    sigma = k*c0**2 ####1 # k*c0**2 #
     tau = 0.1#1 # 0.1 #
     kG = 1 #   :  Guassian curvature modulus
      
