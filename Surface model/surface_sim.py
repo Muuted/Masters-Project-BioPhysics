@@ -180,5 +180,5 @@ def Surface_sim_Area_condition():
     
 if __name__ == "__main__":
     #surface_sim_find_c0()
-    Surface_sim()
-    #Surface_sim_Area_condition()
+    #Surface_sim()
+    Surface_sim_Area_condition()

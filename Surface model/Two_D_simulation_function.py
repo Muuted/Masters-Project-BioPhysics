@@ -132,7 +132,7 @@ def Two_D_simulation_V2(
     ,data_path:str
     ,save_data:bool = True 
     ,condition = 1
-    ,Tolerence = 1e-15
+    ,Tolerence = 1e-4#1e-15
     ):
 
     Area_old = np.sum(Area)
@@ -177,11 +177,12 @@ def Two_D_simulation_V2(
                                                     ,lamb=lambs,nu=nus
                                                     )
             
-            Area_new = tot_area(N=N,r=radi[t],z=z_list[t])
-            dA = np.abs(Area_new - Area_old)
-            pos_count += 1
-            if i < N and Tolerence < dA :
-                correction_count += 1 
+        Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
+        dA = np.abs(Area_new - Area_old)
+        pos_count += 1
+        if Tolerence < dA:
+            correction_count += 1
+            for i in range(N):
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
                             )
@@ -208,7 +209,6 @@ def Two_D_simulation_V2(
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
-            Area_old = Area_new
     print("\n")
     #print(f"correction count={correction_count} of {sim_steps*(N-1)} possible")
     print(f"correction count={correction_count} of {pos_count} possible")

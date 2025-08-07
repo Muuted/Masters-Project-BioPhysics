@@ -53,7 +53,7 @@ def Two_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    sigma = 0.1#1 # k*c0**2 #
+    sigma = k*c0**2 #1 # k*c0**2 #
     tau = 0.1#1 # 0.1 #
     kG = 1 #   :  Guassian curvature modulus
      
@@ -61,8 +61,8 @@ def Two_D_Constants(
     N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 #5.45#s  : total time simulated
-    dt = 2e-5 # s time step.
-    sim_steps =int(1e4)# int(T/dt) # : number of simulation steps
+    dt = 1e-5 # s time step.
+    sim_steps =int(1e3)# int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""

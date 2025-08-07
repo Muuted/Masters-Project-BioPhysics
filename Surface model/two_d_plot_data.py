@@ -9,12 +9,13 @@ import matplotlib.pyplot as plt
 
 
     
-def plot_tot_area():
+def plot_tot_area(data_path="",df_name=""):
 
-    path_args = Two_D_paths()
-    data_path, fig_save_path = path_args[0:2]
-    video_save_path,video_fig_path = path_args[2:4]
-    df_name, fps_movie ,num_frames = path_args[4:7]
+    if data_path == "" and df_name== "":
+        path_args = Two_D_paths()
+        data_path, fig_save_path = path_args[0:2]
+        video_save_path,video_fig_path = path_args[2:4]
+        df_name, fps_movie ,num_frames = path_args[4:7]
 
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
@@ -54,11 +55,13 @@ def plot_tot_area():
     plt.title("Change in Area")
     plt.show()
     
-def plot_Epot_Ekin():
-    path_args = Two_D_paths()
-    data_path, fig_save_path = path_args[0:2]
-    video_save_path,video_fig_path = path_args[2:4]
-    df_name, fps_movie ,num_frames = path_args[4:7]
+def plot_Epot_Ekin(data_path="",df_name=""):
+
+    if data_path == "" and df_name== "":
+        path_args = Two_D_paths()
+        data_path, fig_save_path = path_args[0:2]
+        video_save_path,video_fig_path = path_args[2:4]
+        df_name, fps_movie ,num_frames = path_args[4:7]
 
     const_args = Two_D_Constants(
         print_val=True
@@ -106,4 +109,5 @@ def plot_Epot_Ekin():
 
 
 if __name__ == "__main__":
-    pass
+    #plot_tot_area()
+    plot_Epot_Ekin()
