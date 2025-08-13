@@ -132,7 +132,7 @@ def Two_D_simulation_V2(
     ,data_path:str
     ,save_data:bool = True 
     ,condition = 1
-    ,Tolerence = 1e-4#1e-15
+    ,Tolerence = 1e-7#1e-15
     ):
 
     Area_old = np.sum(Area)

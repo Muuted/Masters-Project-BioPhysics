@@ -1,11 +1,13 @@
 from Two_D_constants import Two_D_Constants, Two_D_paths
-from Two_D_simulation_function import Two_D_simulation
+from Two_D_simulation_function import Two_D_simulation_V2
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import tot_area, E_pot, E_kin
 from Two_D_functions import Langrange_multi, Epsilon_values
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import time
+import os
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
@@ -218,11 +220,104 @@ def testing_Epot_Ekin():
 
     plt.show()
 
+
+
+def test_Area_diff_dt():
+
+    const_args = Two_D_Constants(
+        print_val=True
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+
+    path_args = Two_D_paths()
+    data_path, fig_save_path = path_args[0:2]
+    video_save_path,figs_for_video_path = path_args[2:4]
+    df_name_ref, fps_movie ,num_frames = path_args[4:7]
+
+    dt_list = [dt/2 ,dt ,dt*2]
+    Area_data = np.zeros(shape=(3,sim_steps))
+    time_vec = np.zeros(shape=(3,sim_steps))
+    name_list = [df_name_ref + f" dt={dt}" for dt in dt_list]
+    
+    """ To check if all the data files exits as to not
+      redo the simulations if the files allready exsits"""
+    all_data_sims = False
+    redo = True
+    file_count = 0
+    for i in range(len(name_list)):
+        if os.path.isfile(data_path + name_list[i]):
+            file_count += 1
+    if file_count == len(name_list):
+        all_data_sims = True
+    
+
+    """Do the simulations to gain the files"""
+    if all_data_sims == False or redo == True:
+        for i in range(len(dt_list)):
+            dt = dt_list[i]
+            df_name = name_list[i]
+            Two_D_simulation_V2(
+                N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
+                ,kG=kG ,tau=tau ,sim_steps=sim_steps
+                ,L=L, r0=r0
+                ,Area=Area_list
+                ,psi=psi_list
+                ,radi=radi_list
+                ,z_list=z_list
+                ,df_name = df_name
+                ,num_frames = num_frames
+                ,data_path = data_path
+            )
+
+    """ To plot the data from the simulations"""
+    for i in range(len(dt_list)):
+        dt = dt_list[i]
+        df_name = name_list[i]
+        df_sim = pd.read_pickle(data_path + df_name)
+
+        r = df_sim['r'][0]
+        z = df_sim['z'][0]
+        N = df_sim["N"][0]
+        dt = df_sim["dt"][0]
+        sim_steps = df_sim["sim_steps"][0]
+
+        
+        for t in range(sim_steps):
+            Area_data[i][t] = tot_area(N=N,r=r[t],z=z[t])
+            time_vec[i][t] = t*dt
+
+    fig, ax = plt.subplots()
+    for i in range(len(dt_list)):
+        plt.plot(
+            time_vec[i],Area_data[i]
+            ,".",label=f"dt={dt_list[i]}"
+            )
+    
+    plt.xlabel("time [s]")
+    plt.ylabel("Area [arbirary unit]")
+    plt.title(label="The total membrane area evolution for different time steps")
+    plt.legend(fontsize=15)
+    plt.show()
+
+
+
+def test_area_correction_difference():
+    pass
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
     #test_make_video()
     #test_check_area()
     #test_epsilon_value()
-    test_tot_area()
-    testing_Epot_Ekin()
+    #test_tot_area()
+    #testing_Epot_Ekin()
+    #test_Area_diff_dt()
+    pass
