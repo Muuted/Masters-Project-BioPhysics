@@ -1,0 +1,87 @@
+%% input parameters
+% clear all;
+% %
+% alpha_target=-0.75; % alpha=kG/k
+% tauD=5; % linetension
+% sigmaD=0.01; % tension
+% lambdaD=(0.5+sigmaD)^-0.5; % length scale asymptotic regime
+% r2D=2*tauD*lambdaD^2; % radius in (2)
+% psi2=-2.0133E-4;
+clear all;
+% input parameters
+alpha_target=-0.75;
+tauD=1;
+sigmaD=-0.1;
+%
+[Result]=ShapeAlpha(alpha_target,tauD,sigmaD);
+%
+%%
+NPoints=1000; % number of points when evaluating solution with deval
+% generating perturbed z and r coordinates:
+b=0.05; % b=amplitude of perturbations in units of max(z)
+l=0.27; % l=wavelength of perturbations in units of range(SD)
+ph=0.7694; % ph=phase angle of sin perturbation
+%
+p=1;
+k=4;
+[SDp,Yp,SD,Y] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,l,ph);
+[SAp] = Shape2Action(Yp,SDp,tauD,sigmaD,alpha_target);
+[SA] = Shape2Action(Y,SD,tauD,sigmaD,alpha_target);
+Delta_SA_fraction=(SAp-SA)/SA;
+%
+% make array of perturbations
+Npert=50;
+b=0.05;
+l=linspace(0.01,0.5,Npert);
+ph=linspace(0,pi,Npert);
+%
+p=1;
+k=2;
+Delta_SA_fraction=NaN(Npert,Npert);
+for u=1:Npert
+    for v=1:Npert
+        [SDp,Yp,SD,Y] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,l(u),ph(v));
+        [SAp] = Shape2Action(Yp,SDp,tauD,sigmaD,alpha_target);
+        [SA] = Shape2Action(Y,SD,tauD,sigmaD,alpha_target);
+        Delta_SA_fraction(u,v)=(SAp-SA)/SA;
+        disp(u);
+    end
+end
+%
+[r,c]=find(Delta_SA_fraction==min(min(Delta_SA_fraction)));
+lmin=l(r);
+phmin=ph(c);
+[SDp,Yp,SD,Y] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,lmin,phmin);
+
+%
+% %
+% plotting neck shape
+figure()
+plot(Y(1,:),Y(5,:),'k') % plot (r,z) in solution
+hold on
+plot(Yp(1,:),Yp(5,:),'b');
+title('Neck profile')
+xlabel('rD');
+ylabel('zD');
+axis equal
+% plot areas
+figure()
+plot(SD,abs(Y(6,:)),'.-k')
+hold on
+plot(SDp,Yp(6,:),'.-b')
+% plot psip
+figure()
+plot(SD,Y(2,:),'k')
+hold on
+plot(SDp,Yp(2,:),'b')
+%plot(psipdot)
+figure()
+plot(SD,Y(3,:),'k')
+hold on
+plot(SDp,Yp(3,:),'.-b')
+%
+
+% TODO
+% -evaluate energy difference between perturbed and unperturbed solution (make deltaG function)
+% -make energy plots (l, ph, (b))
+

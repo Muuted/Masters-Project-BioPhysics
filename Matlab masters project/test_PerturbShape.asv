@@ -1,0 +1,141 @@
+%% Script to test the perturbation of neck shapes with sinusoidal perturbation
+% Generate first a solution to perturb:
+clear all;
+% input parameters
+alpha_target=-0.75;
+tauD=1;
+sigmaD=-0.2;
+%
+[Result]=ShapeAlpha(alpha_target,tauD,sigmaD);
+% plot the neck shape of the unperturbed solutions
+figure()
+[R,C]=size(Result);
+for k=1:R % loop over crossings t=tau
+    for p=1:C % loop over psi2zero values
+        if ~isempty(Result(k,p).ShapeSolution)
+            subplot(R,C,C*(k-1)+p);
+            plot(Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot (r,z) in solution
+            hold on;
+            %plot(-Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot mirrored (r,z) in solution
+            plot(Result(k,p).ShapeSolution.ye(1,k),Result(k,p).ShapeSolution.ye(5,k),'og'); % plot integration endpoint
+            axis equal
+            %xlim([0 max(Result(k,p).ShapeSolution.ye(1,k))]);
+            xlabel('rD');
+            ylabel('zD');
+            plottext{1}=['\alpha_{out}=' num2str(Result(k,p).alpha_out)];
+            plottext{2}=['r0D=' num2str(Result(k,p).r0D)];
+            plottext{3}=['k=' num2str(k) '  p=' num2str(p) ];
+            text(mean(xlim),0.7*mean(ylim),plottext)
+        else
+            continue
+        end
+    end
+end
+%
+%% Make single perturbation
+NPoints=100000; % number of points when evaluating solution with deval
+%generating perturbed z and r coordinates:
+b=0.1; % b=amplitude of perturbations in units of max(z)
+%l=0.27; % l=wavelength of perturbations in units of range(SD)
+%ph=0.7694; % ph=phase angle of sin perturbation
+%
+p=1;
+k=4;
+[SDp,Yp,SD,Y,~] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,lmin,phmin);
+[SAp] = Shape2Action(Yp,SDp,tauD,sigmaD,alpha_target);
+[SA] = Shape2Action(Y,SD,tauD,sigmaD,alpha_target);
+Delta_SA_fraction=(SAp-SA)/SA;
+%% make an array of perturbations in phase ph and wavelength l
+p=7; % pick one solution to perturb from all solutions in Results
+k=1; %
+NPoints=10000; % number of points when evaluating solution with deval
+Npert=50; % vector size of ph and l
+b=0.1; % amplitude of perturbations (kept constant)
+l1=0.1; % min wavelength
+l2=5; % max wavelength
+ph1=0; % min phase
+ph2=2*pi; % max phase
+l=linspace(l1,l2,Npert); % wavelength vector
+ph=linspace(ph1,ph2,Npert); % phase vector
+%
+DSAf=NaN(Npert,Npert); % initialize delta energy matrix
+%
+h = waitbar(0,'Making perturbations');
+for u=1:Npert
+    for v=1:Npert
+        [SDp,Yp,SD,Y,~] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,l(u),ph(v));
+        [SAp] = Shape2Action(Yp,SDp,tauD,sigmaD,alpha_target); % should this be alpha_p or alpha_target??
+        [SA] = Shape2Action(Y,SD,tauD,sigmaD,alpha_target);
+        DSAf(u,v)=(SAp-SA)/SA; % Relative change in action SA upon perturbation
+        %
+        waitbar(u/Npert,h);
+    end
+end
+close(h)
+%
+DSA_min=min(min(DSAf)); % minimum of change in action 
+[r,c]=find(DSAf==DSA_min); % indices to minimum value
+lmin=l(r); % wavelength of perturbation with minimum delta S
+phmin=ph(c); % phase of perturbation with minimum delta S
+[SDp,Yp,SD,Y,alpha_p] = PerturbShape(Result(k,p).ShapeSolution,k,NPoints,b,lmin,phmin); % evaluate solution with minium delta S
+%
+% %
+%% plotting neck shape for original and perturbed solution with minimum in Delta SA
+% make map of delta S
+%
+figure()
+clims = [DSA_min abs(5*DSA_min)];
+x = [0 ph2];
+y = [l1 l2];
+imagesc(x,y,DSAf,clims);
+title('Relative change in neck energy as a function of perturbation parameters')
+xlabel('phase (rad)')
+ylabel('wavelength (fraction of max S-range)')
+colorbar;
+hold on
+plot(phmin,lmin,'o','MarkerFaceColor','w','MarkerEdgeColor','k')
+%
+%% Plot Y and Yp
+%
+figure()
+subplot(2,2,1)
+plot(Y(1,:),Y(5,:),'.-k') % plot (r,z) in original solution
+hold on
+plot(Yp(1,:),Yp(5,:),'.-b'); % plot (r,z) in perturbed solution
+title('Neck shape')
+xlabel('rD');
+ylabel('zD');
+axis equal
+legend('Original','Perturbed (min energy change)')
+%
+% plot areas
+%
+subplot(2,2,2)
+plot(SD,abs(Y(6,:)),'.-k')
+hold on
+plot(SDp,Yp(6,:),'.-b')
+title('Area')
+xlabel('SD');
+ylabel('Area');
+%
+% plot psip
+%
+subplot(2,2,3)
+plot(SD,Y(2,:),'.-k')
+hold on
+plot(SDp,Yp(2,:),'.-b')
+title('Psi')
+xlabel('SD');
+ylabel('Psi (rad)');
+%
+%plot psipdot
+%
+subplot(2,2,4)
+plot(SD,Y(3,:),'.-k')
+hold on
+plot(SDp,Yp(3,:),'.-b')
+title('Psi dot')
+xlabel('SD');
+ylabel('Psidot (rad/sec)');
+%
+

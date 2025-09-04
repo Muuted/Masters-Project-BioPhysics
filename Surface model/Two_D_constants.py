@@ -62,7 +62,7 @@ def Two_D_Constants(
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 #5.45#s  : total time simulated
     dt = 1e-5 # s time step.
-    sim_steps =int(5e2)#int(1e3)# int(T/dt) # : number of simulation steps
+    sim_steps = int(1e3)# int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""

@@ -1,0 +1,94 @@
+function [SDp,Yp,SD,Y] = PerturbSolution2(ShapeSolution,k,NPoints,b,l,ph)
+%
+% First evaluate the pathlength endpoint fe that gives same area of
+% perturbed and unperturbed solutions
+zerofun = @(fe) ExtendSolution(ShapeSolution,k,fe,NPoints,b,l,ph); % function handle. Evaluates area difference between perturbed and original solution as function of fe (extension parameter)
+% Note: argument k is the index (enumeration) of the crossing point t=tau. Is needed when evaluating and
+% picking the correct solution from ShapeSolution which contains all the crossings.
+%
+fe0=fzero(zerofun,[0.4 1.4]); % evaluates the zero point value of fe
+%
+% After fe0 is found we evaluate the final perturbed solution for output
+[~,rp,zp,psip,psipdot,SD,Y,SD_tot,~,area_pert] = ExtendSolution(ShapeSolution,k,fe0,NPoints,b,l,ph); % call ExtendRange with solution fe0
+% placing perturbed functions in the Yp matrix (same format as original solution)
+Yp(1,:)=rp;
+Yp(2,:)=psip;
+Yp(3,:)=psipdot;
+Yp(4,:)=NaN*rp; % we did not calculate t for the perturbed solution (not needed)
+Yp(5,:)=zp;
+Yp(6,:)=area_pert;
+SDp=SD_tot;
+%
+% Start defining nested utility functions.
+%
+% % First utility function: Definition of ExtendSolution
+%     function [delta_area,rp,zp,psip,psipdot,SD,Y,SD_tot,area_unpert,area_pert] = ExtendSolution(ShapeSolution,k,fe,NPoints,b,l,ph)
+%         % ExtendSolution is total function to generate extended solution with perturbation. 
+%         % ExtendSolution is called by the minimization function zerofun to achieve equal area relative to unperturbed solution. 
+%         %
+%         %xe_ext=fe*ShapeSolution.xe(k);
+%         if fe>1
+%             SD=linspace(ShapeSolution.x(1),ShapeSolution.xe(k),NPoints); % unextended pathvector
+%             Y=deval(ShapeSolution,SD); % original unextended solution
+%             %
+%             %ShapeSolution_ext = odextend(ShapeSolution,[],xe_ext); % extend solution structure to new xe
+%             %SD_ext=linspace(ShapeSolution.xe(k),xe_ext,0.1*NPoints); % pathlength vector in extended range
+%             %Y_ext=deval(ShapeSolution_ext,SD_ext); % evaluating solution in extended range
+%             %
+%             %SD_tot=[SD SD_ext]; % merging original and extended pathvectors
+%             %Y_tot=[Y Y_ext]; % merging original and extended solution vectors
+%             SD_tot=linspace(ShapeSolution.x(1),fe*ShapeSolution.xe(k),NPoints); % extended pathvector
+%             Y_tot=deval(ShapeSolution,SD_tot); % extended solution (will produce error if SD_tot is beyond range in ShapeSolution)
+%             [rp,zp,psip,psipdot]=unpert2pert(Y_tot,SD_tot,b,l,ph); % perturb extended solution 
+%             area_unpert=rz2area(Y(1,:),Y(5,:)); % area unperturbed solution (vector)
+%             area_pert=rz2area(rp,zp); % area perturbed (vector)
+%             delta_area=area_pert(end)-area_unpert(end); % area difference (number). Must be minimized to zero by adjusting fe
+%         else % if fe<1
+%             SD=linspace(ShapeSolution.x(1),ShapeSolution.xe,NPoints); % unextended pathvector
+%             Y=deval(ShapeSolution,SD); % original unextended solution
+%             %
+%             SD_tot=linspace(ShapeSolution.x(1),fe*ShapeSolution.xe(k),NPoints); % shortened pathvector
+%             Y_tot=deval(ShapeSolution,SD_tot); % evaluate solution over shortened range
+%             [rp,zp,psip,psipdot]=unpert2pert(Y_tot,SD_tot,b,l,ph); % obtain perturbed solution
+%             area_unpert=rz2area(Y(1,:),Y(5,:)); % area unperturbed solution (vector)
+%             area_pert=rz2area(rp,zp); % area perturbed (vector)
+%             delta_area=area_pert(end)-area_unpert(end); % area difference (number). Must be minimized to zero by adjusting fe
+%         end
+%         %
+%         % Second utility function: Definition of rz2area
+%         function [area]=rz2area(r,z)
+%             % Utility function to determine area of neck from r and z coordinates
+%             ds=sqrt(diff(z).^2 + diff(r).^2); % pathlength between points on neck profile
+%             dA=2*pi*ds.*0.5.*(r(2:end)+r(1:end-1)); % area increment betwen points. Using average radius between endpoints
+%             dA=[0 dA];
+%             area=cumsum(dA); % area as cummulative sum
+%         end
+%         %
+%         % Third utility function: Definition of unpert2pert
+%         function [rp,zp,psip,psipdot]=unpert2pert(Y,SD,b,l,ph) 
+%             % utility function to generate perturbed neck shape (rp,zp) from unperturbed solution (Y).
+%             % SD = pathlength vector for solution Y
+%             % b=amplitude of perturbations in units of max(z)
+%             % l=wavelength of perturbations in units of range(SD)
+%             % ph=phase angle of sin perturbation
+%             a=b*max(Y(5,:))*abs((SD/range(SD)).^3).*sin(((2*pi)/(l*range(SD)))*SD + ph); % perturbation as function of SD
+%             zp=Y(5,:)+a.*cos(Y(2,:)); % perturbed z-coordinate
+%             rp=Y(1,:)-a.*sin(Y(2,:)); % perturbed r-coordinate
+%             % obtain psip = perturbed psi-coordinate
+%             dsp=sqrt(diff(zp).^2 + diff(rp).^2); % pathlength step between points on neck profile (positive)
+%             %psip=-acos(-diff(rp)./dsp); % calculating psi from triangle relation
+%             psip=atan(diff(zp)./diff(rp)); % must use tan to be able to unwrap angles !
+%             psip=0.5*unwrap(2*psip);
+%             %extrapolaring first point (missing because of diff):
+%             sp_startpoints=-cumsum(dsp(1:10)); % first 10 points in s
+%             psip2=interp1(sp_startpoints,psip(1:10),0,'linear','extrap'); % extrapolating to psi2
+%             psip=[psip2 psip]; % appending psi2 to psi
+%             dsp=[dsp(1) dsp]; % appending ds(1) to s
+%             % finding psipdot=dpsip/dsp or perturbed psidot
+%             psipdot=-diff(psip)./dsp(2:end); % calculating psidot by differentiation
+%             psidot2=interp1(sp_startpoints,psipdot(1:10),0,'linear','extrap'); % extrapolating to psi2
+%             psipdot=[psidot2 psipdot]; %appending psidot2 to psidot
+%         end
+%         %
+%     end
+end
