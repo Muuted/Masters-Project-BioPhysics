@@ -11,8 +11,6 @@ import pandas as pd
 def dSds(s,S,k,sigma,c0):
     psi, r, z,n,lambs,nus,A = S
     #k,kG,sigma,c0 = p
-    # Hello github
-
     drds = np.cos(psi)
     dzds = np.sin(psi)
     dlambs_ds = (k/2)*( (n-c0)**2 -np.sin(psi)**2/r**2) + sigma
@@ -97,7 +95,19 @@ def integrate_solution():
     plt.ylabel("z")
     plt.show()
 
+def descritize_sim_results(r,z,ds):
+    
+    r_return =[r[0]]
+    z_return =[z[0]]
+    j=0
+    for i in range(1,len(r)-2):
+        dist = np.sqrt( (r[j]-r[i])**2 + (z[j]-z[i])**2)
+        if dist > ds:
+            r_return.append(r[i-1])
+            z_return.append(z[i-1])
+            j = i-1
 
+    return r_return,z_return
 def Test_with_matlab_integrate_solution():
 
     const_args = Two_D_Constants(
@@ -164,9 +174,9 @@ def Test_with_matlab_integrate_solution():
     m = len(ans_odeint.y[0])
     for i in range(len(ans_odeint.y[0])-1):
         #if tau*(1-tol) <ans_odeint.y[4][i] < tau*(1.+tol):
-        if tau*(1-tol) <ans_odeint.y[4][i] < tau*(1+tol):
-            pass #m = i
-            #break
+        if ans_odeint.y[4][i] < tau:
+            m = i
+            break
     print(f"m=",m)
     
     r = ans_odeint.y[1][0:m]
@@ -188,6 +198,8 @@ def Test_with_matlab_integrate_solution():
              ,label="Python results"
              )
     plt.plot(r_matlab,z_matlab,".-",label="matlab results")
+    r_descreet,z_descreet = descritize_sim_results(r=r,z=z,ds=0.5)
+    plt.plot(r_descreet,z_descreet,"*-",label="discreet version",color="k")
     plt.xlabel("r")
     plt.ylabel("z")
     plt.title(

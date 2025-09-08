@@ -38,11 +38,11 @@ for i= 1:length(ShapeSolution.y(1,:))
     end
 end
 m
-%r = ShapeSolution.y(1,1:m);
-%z = ShapeSolution.y(5,1:m);
+r = ShapeSolution.y(1,1:m);
+z = ShapeSolution.y(5,1:m);
 
-r = ShapeSolution.y(1,:);
-z = ShapeSolution.y(5,:);
+%r = ShapeSolution.y(1,:);
+%z = ShapeSolution.y(5,:);
 
 plot(r,z)
 
