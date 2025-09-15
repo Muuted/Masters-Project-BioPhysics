@@ -3,12 +3,15 @@ from Two_D_simulation_function import Two_D_simulation_V2, Two_D_simulation_V3
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import tot_area, E_pot, E_kin
 from Two_D_functions import Langrange_multi, Epsilon_values
+from two_d_continues_integration import dSds, descritize_sim_results,find_init_stationary_state
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
 import os
 import progressbar
+import scipy
+from scipy.special import kv
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
@@ -403,6 +406,180 @@ def test_area_correction_difference():
     plt.legend(fontsize=15)
     #plt.show()
 
+
+
+def Test_with_matlab_integrate_solution():
+
+    const_args = Two_D_Constants(
+        print_val=False
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    
+    
+    #args list
+    sigma_c = k*c0**2
+    k_c = k
+    kG = -0.75*k
+    tau_c = k*c0
+    c0_c = c0
+
+    # making the dimless variables.
+    c0 = c0/c0_c
+    tau = 1#tau/tau_c #1
+    sigma = 0.1#sigma/sigma_c #0.1
+    k = k/k_c
+    #kG = -0.75*k
+
+    args_list = (k ,sigma ,c0)
+    
+    #initial values
+    lc = 1/np.sqrt(0.5 + sigma) # characterisitic length in the aymptotic regime.
+    psi_L = -7.3648e-8 
+    r_L =  20.0 #(tau*lc**2/k)*1.01
+    z_L = 0.0
+    n_L = (psi_L/kv(1,r_L/lc))*( -kv(0,r_L/lc) - kv(1,r_L/lc)/(r_L/lc))/lc# 5.8973e-08 #
+    
+    lambs_L = (k*c0**2/2 + sigma)*r_L
+    print(lambs_L)
+    nus_L = 0 # nu(s_1) = nu(s_2) = 0 from that we know the outer value
+    A = 0#2*np.pi*( r_L**2 - r0**2  )
+    print(
+        f"nL={n_L}  ,   lambs_L={lambs_L}  \n"
+        +f"lc={lc}  ,   k={k}   ,   c0 = {c0}   ,   sigma={sigma} \n"
+        +f" p2D ={r_L/lc}"
+        )
+    #initial values list
+    init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
+    
+
+    #The integration start and stop
+    s0 ,sN = 0,(r_L + 10)
+
+    #The integration part.
+    ans_odeint = scipy.integrate.solve_ivp(
+        dSds,
+        t_span = [sN ,s0],
+        #t_eval = np.linspace(start=sN,stop=s0,num=5003),
+        y0 = init_conditions,
+        args = args_list,
+        method="LSODA"#"RK45"
+    )
+
+    #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
+    #print(ans_odeint)
+    tol = 1e-2
+    m = len(ans_odeint.y[0])
+    for i in range(len(ans_odeint.y[0])-1):
+        #if tau*(1-tol) <ans_odeint.y[4][i] < tau*(1.+tol):
+        if ans_odeint.y[4][i] < tau:
+            m = i
+            break
+    print(f"m=",m)
+    
+    r = ans_odeint.y[1][0:m]
+    z = ans_odeint.y[2][0:m]
+
+    #Then lets load the data from matlab
+    matlab_data_path = r"C:\\Users\\AdamSkovbjergKnudsen\\Documents\\GitHub\\Masters-Project-BioPhysics\\Matlab masters project\\saved data\\"    
+    matlab_file_name = "Compare integration results.txt"
+    df_matlab_data = pd.read_csv(matlab_data_path + matlab_file_name)
+    
+    m = len(df_matlab_data.loc[0])
+    
+    r_matlab = df_matlab_data.loc[0][0:m]
+    z_matlab = df_matlab_data.loc[4][0:m]
+    lambs_matlab = df_matlab_data.loc[3]
+    
+    fig, ax = plt.subplots()
+    plt.plot(r,z,".-"
+             ,label="Python results"
+             )
+    plt.plot(r_matlab,z_matlab,".-",label="matlab results")
+    index_list = descritize_sim_results(r=r,z=z,ds=0.5,max_num_points=10)
+    r_descreet,z_descreet = [],[]
+    for i in index_list:
+        r_descreet.append(r[i])
+        z_descreet.append(z[i])
+    
+    #plt.plot(r_descreet,z_descreet,"*-",label="discreet version",color="k")
+    plt.xlabel("r",fontsize=20)
+    plt.ylabel("z",fontsize=20)
+    plt.title(
+        f"The constants values: \n"
+        r"$\tau$"+f"={tau} ,"
+        +r"$\sigma$"+f"={sigma} ,"
+        +r"$k$"+f"={k} ,"
+        +r"$c_0$"+f"={c0}"
+        )
+    plt.legend(fontsize=20)
+    
+
+    r = ans_odeint.y[1]
+    plt.figure()
+    plt.plot(r,ans_odeint.y[4],".-",label="Python")
+    plt.plot(r_matlab,lambs_matlab,".-",label="Matlab")
+    plt.hlines(y=tau,xmin=min(r),xmax=max(r),label=r"$\tau$="+f"{tau}")
+
+
+    plt.title(r"$\lambda$ or tD Lagrange multiplier")
+    plt.xlabel("r",fontsize=20)
+    plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
+    plt.legend(fontsize=20)
+    
+
+    plt.show()
+
+
+def test_of_sim_varialbes_in_stationary_configuration():
+    
+    c0 = 0.25
+    k = 1
+    sigma_c = k*c0**2
+    tau_c = k*c0
+    lc = 1/c0
+
+    sigma = 0.1*sigma_c
+    tau = 1*tau_c
+    rs2 = 20*lc
+    zs2 = 0
+    s0, sN = 0, 30*lc
+    psi_L = -7.3648e-8
+    
+    psi,r1,z1,dpsidt,lambs1,nus = find_init_stationary_state(
+        sigma=sigma,k=k,c0=c0,tau=tau, ds=0.5
+        ,psi_L=psi_L,r_L=rs2,z_L=zs2,s0=s0,sN=sN
+        ,total_points=""
+    )
+    psi,r,z,dpsidt,lambs,nus = find_init_stationary_state(
+        sigma=0.1,k=1,c0=1,tau=1, ds = 0.5/4
+        ,psi_L=-7.3648e-8,r_L=20,z_L=0,s0=0,sN=30
+        ,total_points=""
+    )
+
+    plt.figure()
+    #plt.plot(r/max(r),z/max(z),"*-",label="dimless")
+    plt.plot(r,z,"*-",label="dimless")
+    #plt.plot(r[0],z[0],"o")
+    #plt.plot(r1/max(r1),z1/max(z1),".-",label="sim units")
+    plt.plot(r1,z1,".-",label="sim units")
+    #plt.plot(r1[0],z1[0],"o")
+    plt.legend()
+
+    plt.figure()
+    plt.plot(r,lambs,".-",label="dimless")
+    plt.hlines(y=1,xmin=min(r),xmax=max(r),label="dimless")
+
+    plt.plot(r1,lambs1,".-",label="sim units")
+    plt.hlines(y=tau,xmin=min(r1),xmax=max(r1),label="sim units")
+
+
+
+    plt.legend()
+    plt.show()
+   
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -411,8 +588,8 @@ if __name__ == "__main__":
     #test_epsilon_value()
     #test_tot_area()
     #testing_Epot_Ekin()
-
-    """ Show for supervisor meeting"""
     #test_Area_diff_dt()
-    test_area_correction_difference()
-    pass
+    #test_area_correction_difference()
+    
+    #Test_with_matlab_integrate_solution()
+    test_of_sim_varialbes_in_stationary_configuration()

@@ -1,5 +1,7 @@
+from two_d_continues_integration import find_init_stationary_state
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 def gamma(i):
     gam = 1e0# standard 1e0
@@ -53,10 +55,9 @@ def Two_D_Constants(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
-    sigma = k*c0**2 ####1 # k*c0**2 #
-    tau = 0.1#1 # 0.1 #
-    kG = 1 #   :  Guassian curvature modulus
-     
+    kG = 1
+    sigma = k*c0**2 #
+    tau = 1 #
 
     N = 10#25 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
@@ -121,5 +122,105 @@ def Two_D_Constants(
 
     return args
 
+
+
+def Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state = True
+        ):
+    """------ constants ---------"""
+    L = 100 #1e-6 # micrometers  :  Total length of line
+    ds =  2#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
+    #Base variables
+    c0 = 0.25e0# 0.25e8 # 1/m   : 
+    k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
+    
+    # scaling parameters
+    lc = 1/c0
+    sigma_c = k*c0**2
+    tau_c = k*c0
+
+    #Dimless variables
+    tilde_sigma = 0.1
+    tilde_tau = 1
+
+    #Converted variables
+    sigma = tilde_sigma*sigma_c
+    tau = tilde_tau*tau_c
+    kG = -0.75*k
+    rs2 = 20*lc
+    zs2 = 0
+    s0, sN = 0, 30*lc
+    psi_L = -7.3648e-8
+
+    N = 20 #int(L/ds) # 99 + 1 # Number of chain links
+    #m = 1e-6 # grams  :   Mass of each chain link
+    T = 1 #5.45#s  : total time simulated
+    dt = 1e-5 # s time step.
+    sim_steps = int(1e3)# int(T/dt) # : number of simulation steps
+    
+
+    """------ variables list ---------"""
+    psi,r,z,dpsidt,lambs,nus = find_init_stationary_state(
+        sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
+        ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+        ,total_points=N
+    )
+    Area_list = []
+
+    if show_stationary_state==True:
+        plt.figure()
+        font_size = 15
+        plt.plot(r,z,"o-")
+        plt.xlabel("r",fontsize=font_size)
+        plt.ylabel("z",fontsize=font_size)
+        plt.title(
+            f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
+            ,fontsize=font_size
+            )
+        plt.xlim(min(r), max(r))
+        plt.ylim(0,max(r)-min(r))
+        plt.show()
+
+    for i in range(N):
+        Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
+        if Area_list[i] == 0 :
+            print(f"Area[{i}]=0")
+            exit()
+    
+    if print_val == True:
+        print(
+            f" \n \n"
+            + "------------- Constant used in Simulation -------------- \n "
+            + f"    Total length of surface L={L} sim units \n "
+            + f"    number of chain links : {N} \n " 
+            + f"    r0 = {r0} sim units \n "
+            + f"    k = {k}  sim units \n "
+            + f"    c0 = {c0}  sim units \n "
+            + f"    kG = {kG}  sim units \n "
+            + f"    sigma = {sigma}  sim units \n "
+            + f"    tau = {tau}  sim units \n "
+            + f"    ds = {ds:0.1e} sim units \n "
+            + f"    dt = {dt:0.1e} s \n "
+            + f"    gamma(i!=0) = {gamma(2)} unit?  \n "
+            + f"    Total sim time = {T} s \n "
+            + f"    Sim steps = {sim_steps:0.1e} \n "
+            + f" ------------------------------------------------------ \n \n "
+        )
+        
+    args = [
+        L,r0,N,ds,T,dt
+        ,k,c0,sim_steps
+        ,sigma,tau,kG
+        ,Area_list
+        ,psi, r,z
+        ]
+
+    return args
+
 if __name__ == "__main__":   
-    Two_D_Constants(print_val=True)
+    #Two_D_Constants(print_val=True)
+    Two_D_Constants_stationary_state(
+        show_stationary_state=True
+    )

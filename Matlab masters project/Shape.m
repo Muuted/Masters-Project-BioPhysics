@@ -16,6 +16,7 @@ Area0=0; % start area for integration
 %% Solve differential equations:
 % Define the range of s values we want to solve for (unit of s is meters):
 srangeD=[0 -r2D-10]; % (meters). Note that we integrate in negative s direction from s2=0 to s1<0.
+%srangeD = linspace(0, -r2D-10,5000);
 % Integration from s2 to s1 is necessary because the state s2 is known (asymptotic), but the state s1 is not.
 initialvalues=[... % initial values written into a vector
     r2D ...    % r(s2)

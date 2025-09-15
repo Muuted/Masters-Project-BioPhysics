@@ -374,6 +374,142 @@ def Two_D_simulation_V3(
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name)
 
+
+
+
+
+
+def Two_d_simulation_stationary_states(
+    N:int,k:float,c0:float, dt:float, ds:float
+    ,sigma:float,kG:float,tau:float
+    ,sim_steps:int, L:float, r0:float
+    ,radi:list,z_list:list
+    ,Area:list,psi:list
+    ,df_name:str,num_frames:str
+    ,data_path:str
+    ,save_data:bool = True 
+    ,condition = 1
+    ,Tolerence = 1e-15
+    ):
+
+    Area_old = np.sum(Area)
+    Area_new = 0
+    correction_count = 0
+    pos_count = 0
+    lambs_save, nus_save = [], []
+
+    print("Simulation progressbar \n ")
+    b = progressbar.ProgressBar(maxval=sim_steps-1)
+    b.start()
+    for t in range(sim_steps-1):
+        b.update(t)
+        t1,t2 = t%2, (t+1)%2
+        
+        lambs,nus = Langrange_multi(
+        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+        ,Area=Area
+        ,psi=psi[t]
+        ,radi=radi[t]
+        ,z_list=z_list[t]
+            )
+        lambs_save.append(lambs)
+        nus_save.append(nus)
+        for i in range(N+1):
+            if i == N:
+                z_list[t+1][i] = z_list[t][i]
+                radi[t+1][i] = radi[t][i]
+                psi[t+1][i] = psi[t][i]
+            if i < N:
+                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
+
+                radi[t+1][i] = radi[t][i] + dt*drdt_func(
+                                                    i=i
+                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                    ,lamb=lambs,nu=nus
+                                                    )
+
+                psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
+                                                    i=i
+                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                    ,lamb=lambs,nu=nus
+                                                    )
+            
+        Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
+        dA = np.abs(Area_new - Area_old)
+        do_correction = False
+        if Tolerence < dA:
+            do_correction = True
+        pos_count += 1
+        while do_correction == True:
+            correction_count += 1
+            for i in range(N):
+                ebf, ebg = Epsilon_values(
+                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                            )
+                K_r,K_z,K_psi = 0,0,0
+                for beta in range(N):
+                    ebf_val, ebg_val = ebf[beta] ,ebg[beta]
+                    
+                    K_r += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        )
+                    
+                    K_z += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        )
+                    
+                    K_psi += (
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        )
+                    
+                radi[t+1][i] += K_r
+                z_list[t+1][i] += K_z
+                psi[t+1][i] += K_psi
+
+            Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
+            dA = np.abs(Area_new - Area_old)
+            if Tolerence > dA :
+                do_correction = False
+                break
+    
+    print("\n")
+    #print(f"correction count={correction_count} of {sim_steps*(N-1)} possible")
+    print(f"correction count={correction_count} of {pos_count} possible")
+
+    if save_data == True:
+        df = pd.DataFrame({
+            'psi': [psi],
+            "r": [radi],
+            "z": [z_list],
+            "area list": [Area],
+            'lambs': [lambs_save],
+            'nus': [nus_save],
+            "L" : L,
+            "r0": r0,
+            "N": N,
+            "c0": c0,
+            "k": k,
+            "kG": kG,
+            "sigma": sigma,
+            "tau": tau,
+            "sim_steps": sim_steps,
+            "dt": dt,
+            "ds": ds,
+            "gam(i=0)": gamma(0),
+            "gam(i>0)": gamma(5),
+            "correction count": correction_count
+                        })
+
+
+        if not os.path.exists(data_path):
+            os.makedirs(data_path)
+        df.to_pickle(data_path + df_name)
+
 if __name__ == "__main__":
     const_args = Two_D_Constants(
         print_val=True
