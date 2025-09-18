@@ -592,4 +592,10 @@ if __name__ == "__main__":
     #test_area_correction_difference()
     
     #Test_with_matlab_integrate_solution()
-    test_of_sim_varialbes_in_stationary_configuration()
+    #test_of_sim_varialbes_in_stationary_configuration()
+
+    from Two_D_constants import Two_D_Constants_stationary_state
+    Two_D_Constants_stationary_state(
+        show_stationary_state=False
+        ,print_val=True
+    )

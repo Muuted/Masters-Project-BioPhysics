@@ -25,7 +25,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\" + "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -157,8 +157,8 @@ def Two_D_Constants_stationary_state(
     N = 20 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 #5.45#s  : total time simulated
-    dt = 1e-5 # s time step.
-    sim_steps = int(1e3)# int(T/dt) # : number of simulation steps
+    dt = 1e-7 # s time step.
+    sim_steps = int(1e1)# int(T/dt) # : number of simulation steps
     
 
     """------ variables list ---------"""
@@ -167,21 +167,33 @@ def Two_D_Constants_stationary_state(
         ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
         ,total_points=N
     )
-    Area_list = []
+
+    psi_list = np.zeros(shape=(sim_steps,N+1),dtype=float) # all the angles are just flat
+    r_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
+    z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
+    Area_list = np.zeros(N,dtype=float)
+
+    for i in range(N+1):
+        psi_list[0][i] = psi[i]
+        r_list[0][i] = r[i]
+        z_list[0][i] = z[i]
 
     if show_stationary_state==True:
         plt.figure()
-        font_size = 15
-        plt.plot(r,z,"o-")
+        font_size = 10
+        plt.plot(r_list[0],z_list[0],"o-")
         plt.xlabel("r",fontsize=font_size)
         plt.ylabel("z",fontsize=font_size)
         plt.title(
             f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
             ,fontsize=font_size
             )
-        plt.xlim(min(r), max(r))
-        plt.ylim(0,max(r)-min(r))
-        plt.show()
+        plt.xlim(min(r)*0.95, max(r)*1.05)
+        plt.ylim(-5,max(r)-min(r)-5)
+        #plt.show()
+        plt.draw()
+        plt.pause(5)
+        plt.close()
 
     for i in range(N):
         Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
@@ -214,7 +226,7 @@ def Two_D_Constants_stationary_state(
         ,k,c0,sim_steps
         ,sigma,tau,kG
         ,Area_list
-        ,psi, r,z
+        ,psi_list, r_list ,z_list
         ]
 
     return args

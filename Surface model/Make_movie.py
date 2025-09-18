@@ -141,7 +141,7 @@ def Make_frames(
     for t in frame_vec:
         b.update(k)
         plt.plot(r[t],z[t],'-o')
-        plt.xlim([r[0,0] - ds, r[0,0] + ds*(N-1)])
+        plt.xlim([max(r[0]) - ds*(N+1), max(r[0])])
         #plt.xlim([rmin-ds,rmax])
         plt.ylim([-ds*10,ds*10])
         #plt.ylim([zmin*0.99,zmax*1.01])

@@ -394,8 +394,6 @@ def Two_d_simulation_stationary_states(
 
     Area_old = np.sum(Area)
     Area_new = 0
-    correction_count = 0
-    pos_count = 0
     lambs_save, nus_save = [], []
 
     print("Simulation progressbar \n ")
@@ -439,18 +437,22 @@ def Two_d_simulation_stationary_states(
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
         dA = np.abs(Area_new - Area_old)
         do_correction = False
+
+        Area_compare = [dA]
+
         if Tolerence < dA:
             do_correction = True
-        pos_count += 1
+        correction_count = 0
         while do_correction == True:
             correction_count += 1
+            print(correction_count)
             for i in range(N):
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
                             )
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
-                    ebf_val, ebg_val = ebf[beta] ,ebg[beta]
+                    ebf_val, ebg_val = ebf[beta]*1e-3 ,ebg[beta]*1e-3
                     
                     K_r += (
                         ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
@@ -471,15 +473,21 @@ def Two_d_simulation_stationary_states(
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
+
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
             dA = np.abs(Area_new - Area_old)
-            if Tolerence > dA :
+            if Tolerence > dA or correction_count >= 10:
                 do_correction = False
                 break
-    
+            Area_compare.append(dA)
+        plt.figure()
+        #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
+        plt.plot(Area_compare,".-")
+        plt.title("testing of correction dA = Area_new - Area_old")
+        plt.show()
     print("\n")
-    #print(f"correction count={correction_count} of {sim_steps*(N-1)} possible")
-    print(f"correction count={correction_count} of {pos_count} possible")
+    plt.show()
+    #exit()
 
     if save_data == True:
         df = pd.DataFrame({
