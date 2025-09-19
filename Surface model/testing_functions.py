@@ -602,9 +602,12 @@ def test_if_constraint_diff_is_correct():
     dfdr,dfdz,dfdpsi = [],[],[]
     dgdr,dgdz,dgdpsi = [],[],[]
 
+    h = 0.1
+
     for i in range(len(radi_list)-1):
         diff_f =(
-                constraint_f(i=i+1,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+                constraint_f(i=i,N=N,r= [i + h for i in radi_list[0]]
+                             ,psi=psi_list[0],Area=Area_list)
                -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
              )
         grad_f_r.append(
