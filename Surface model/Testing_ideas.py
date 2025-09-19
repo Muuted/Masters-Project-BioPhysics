@@ -4,10 +4,17 @@
 import matplotlib.pyplot as plt
 
 
-corr_am = [1,2,3,4]
-sim_mins = [6.9,3.2,2.1,1.6]
 
 
-plt.figure()
-plt.plot(corr_am,sim_mins,'-o')
-plt.show()
+diff_var_list = ["r","z","psi"]
+var = "psi"
+if var not in diff_var_list:
+    print("not hello")
+
+if var in diff_var_list:
+    print("hello")
+
+
+print(diff_var_list[0])
+print(diff_var_list[1])
+print(diff_var_list[2])

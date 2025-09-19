@@ -601,9 +601,10 @@ def c_diff_f(
         ,r:list,psi:list,Area:list
         ,diff_var:str =""
         ):
+    diff_var_list = ["r","z","psi"]
     df = 0
     if diff_var == "r":
-        df = 2*np.pi*r[i+1]*Kronecker(i+1,j)/Area[i] - 2*np.pi*r[i]*Kronecker(i,j)/Area[i]
+        df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
         
     if diff_var == "z":
         df = 0
@@ -611,9 +612,9 @@ def c_diff_f(
     if diff_var == "psi":
         df = np.sin(psi[i])*Kronecker(i,j)
         
-    if diff_var == "":
+    if diff_var not in diff_var_list:
             #Error handling
-            print(f"Forgot to give diff variable of either (r,z,psi)")
+            print(f"wrong diff variable of either (r,z,psi) error in c_diff_f")
             exit()
 
     return df
@@ -624,19 +625,20 @@ def c_diff_g(
         ,r:list,z:list,psi:list,Area:list
         ,diff_var:str =""
         ):
+    diff_var_list = ["r","z","psi"]
     dg = 0
     if diff_var == "r":
-        dg = np.pi*((z[i+1]-z[i])*Kronecker(i+1,j)/Area[i] + (z[i+1]-z[i])*Kronecker(i,j)/Area[i])
+        dg = np.pi*(z[i+1]-z[i])*(  Kronecker(i+1,j) +Kronecker(i,j)    )/Area[i]
         
     if diff_var == "z":
-        dg = np.pi*((r[i+1]+r[i])*Kronecker(i+1,j)/Area[i] - (r[i+1]+r[i])*Kronecker(i,j)/Area[i])
+        dg = np.pi*(r[i+1]+r[i])*(Kronecker(i+1,j) -Kronecker(i,j))/Area[i]
 
     if diff_var == "psi":
         dg = -np.cos(psi[i])*Kronecker(i,j)
 
-    if diff_var == "":
+    if diff_var not in diff_var_list:
             #Error handling
-            print(f"Forgot to give diff variable of either (r,z,psi)")
+            print(f"wrong diff variable of either (r,z,psi) error in c_diff_g")
             exit()
 
     return dg
@@ -710,9 +712,6 @@ def Epsilon_values(
         x = np.linalg.solve(A,b)
         epsilon_f = x[0:N]
         epsilon_g = x[N:2*N]
-    a = (
-        (2*np.pi*r[0]/Area[0])**2 + (2*np.pi*r[1]/Area[0])**2 + np.sin(psi[0])**2
-    )
 
     return epsilon_f, epsilon_g
 

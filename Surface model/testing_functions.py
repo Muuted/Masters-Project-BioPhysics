@@ -580,6 +580,129 @@ def test_of_sim_varialbes_in_stationary_configuration():
     plt.legend()
     plt.show()
    
+
+def test_if_constraint_diff_is_correct():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g
+
+    const_args = Two_D_Constants_stationary_state(
+        print_val=True
+        ,show_stationary_state=True
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+
+    grad_f_r,grad_f_z,grad_f_psi = [],[],[]
+    grad_g_r,grad_g_z,grad_g_psi = [],[],[]
+    dfdr,dfdz,dfdpsi = [],[],[]
+    dgdr,dgdz,dgdpsi = [],[],[]
+
+    for i in range(len(radi_list)-1):
+        diff_f =(
+                constraint_f(i=i+1,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+             )
+        grad_f_r.append(
+            diff_f/(radi_list[0][i+1] - radi_list[0][i])
+        )
+
+        dfdr.append(
+            c_diff_f(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                ,diff_var="r"
+            ))
+        
+        grad_f_z.append(
+            diff_f/(z_list[0][i+1]- z_list[0][i])
+        )
+
+        dfdz.append(
+            c_diff_f(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                ,diff_var="z"
+            ))
+        
+        grad_f_psi.append(
+            diff_f/(psi_list[0][i+1] - psi_list[0][i])
+        )
+
+        dfdpsi.append(
+            c_diff_f(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                ,diff_var="psi"
+            ))
+
+    for i in range(len(radi_list)-1):
+        diff_g =(
+                constraint_g(i=i+1,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+             )
+        grad_g_r.append(
+            diff_g/(radi_list[0][i+1] - radi_list[0][i])
+        )
+
+        dgdr.append(
+            c_diff_g(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                ,diff_var="r"
+            ))
+        
+        grad_g_z.append(
+            diff_g/(z_list[0][i+1]- z_list[0][i])
+        )
+
+        dgdz.append(
+            c_diff_g(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                ,diff_var="z"
+            ))
+        
+        grad_g_psi.append(
+            diff_g/(psi_list[0][i+1] - psi_list[0][i])
+        )
+
+        dgdpsi.append(
+            c_diff_g(
+                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                ,diff_var="psi"
+            ))
+
+    fig, ax = plt.subplots(nrows=3,ncols=2)
+
+    ax[0,0].set_title(r" dfdr =$\frac{\partial f}{\partial q}$ and diff_f =$\frac{ f_{i +1 } - f_{i}}{q_{i+1} - q_{i}}$")
+    ax[0,0].plot(grad_f_r,".-",label="diff_f")
+    ax[0,0].plot(dfdr,".-",label="dfdr")
+    ax[0,0].legend()
+    
+    ax[1,0].plot(grad_f_z,".-",label="diff_f")
+    ax[1,0].plot(dfdz,".-",label="dfdz")
+    ax[1,0].legend()
+
+    ax[2,0].plot(grad_f_psi,".-",label="diff_f")
+    ax[2,0].plot(dfdpsi,".-",label=r"dfd$\psi$")
+    ax[2,0].legend()
+
+
+    ax[0,1].set_title(r" dgdr =$\frac{\partial g}{\partial q}$ and diff_g =$\frac{ g_{i+1 } - g_{i}}{q_{i+1} - q_{i}}$")
+    ax[0,1].plot(grad_g_r,".-",label="diff_g")
+    ax[0,1].plot(dgdr,".-",label="dgdr")
+    ax[0,1].legend()
+
+    ax[1,1].plot(grad_g_z,".-",label="diff_g")
+    ax[1,1].plot(dgdz,".-",label="dgdz")
+    ax[1,1].legend()
+
+    ax[2,1].plot(grad_g_psi,".-",label="diff_g")
+    ax[2,1].plot(dgdpsi,".-",label=r"dgd$\psi$")
+    ax[2,1].legend()
+
+    plt.show()
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -594,8 +717,10 @@ if __name__ == "__main__":
     #Test_with_matlab_integrate_solution()
     #test_of_sim_varialbes_in_stationary_configuration()
 
-    from Two_D_constants import Two_D_Constants_stationary_state
+    """from Two_D_constants import Two_D_Constants_stationary_state
     Two_D_Constants_stationary_state(
         show_stationary_state=False
         ,print_val=True
-    )
+    )"""
+
+    test_if_constraint_diff_is_correct()
