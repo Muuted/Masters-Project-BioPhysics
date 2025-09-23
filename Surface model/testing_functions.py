@@ -809,8 +809,10 @@ def testing_perturbation_function():
 
     r_init,z_init,psi_init =[i for i in radi_list[0]],[i for i in z_list[0]],[i for i in psi_list[0]]
     psi_inverse = [psi_init[i] for i in range(len(psi_init)-1,-1,-1)]
+    psi_inverse = [psi_init[i] for i in range(len(psi_init)-1,-1,-1)]
     plt.figure()
-    plt.plot(psi_inverse)
+    #plt.plot(psi_inverse)
+    plt.plot(r_init[0:len(r_init)-1],psi_init)
     plt.show()
     exit()
     Perturbation_of_inital_state(
@@ -842,7 +844,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    Test_with_matlab_integrate_solution()
+    #Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -853,4 +855,4 @@ if __name__ == "__main__":
 
     #test_if_constraint_diff_is_correct()
     #testing_new_epsilon_matrix()
-    #testing_perturbation_function()
+    testing_perturbation_function()
