@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import progressbar
-
+from Testing_ideas import Epsilon_v2
 
 def Two_D_simulation(
     N:int,k:float,c0:float, dt:float, ds:float
@@ -184,25 +184,25 @@ def Two_D_simulation_V2(
             correction_count += 1
             for i in range(N):
                 ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
                     ebf_val, ebg_val = ebf[beta] ,ebg[beta]
                     
                     K_r += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )
                     
                     K_z += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )
                     
                     K_psi += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )
                     
                 radi[t+1][i] += K_r
@@ -310,25 +310,25 @@ def Two_D_simulation_V3(
             correction_count += 1
             for i in range(N):
                 ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
                     ebf_val, ebg_val = ebf[beta] ,ebg[beta]
                     
                     K_r += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )
                     
                     K_z += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )
                     
                     K_psi += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )
                     
                 radi[t+1][i] += K_r
@@ -388,14 +388,13 @@ def Two_d_simulation_stationary_states(
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
-    ,condition = 1
     ,Tolerence = 1e-15
     ):
 
     Area_old = np.sum(Area)
     Area_new = 0
     lambs_save, nus_save = [], []
-
+    correct_count_list = np.zeros(sim_steps)
     print("Simulation progressbar \n ")
     b = progressbar.ProgressBar(maxval=sim_steps-1)
     b.start()
@@ -416,7 +415,7 @@ def Two_d_simulation_stationary_states(
             if i == N:
                 z_list[t+1][i] = z_list[t][i]
                 radi[t+1][i] = radi[t][i]
-                psi[t+1][i] = psi[t][i]
+                #psi[t+1][i] = psi[t][i]
             if i < N:
                 z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
@@ -436,37 +435,33 @@ def Two_d_simulation_stationary_states(
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
         dA = np.abs(Area_new - Area_old)
-        do_correction = False
-
         Area_compare = [dA]
 
-        if Tolerence < dA:
-            do_correction = True
         correction_count = 0
-        while do_correction == True:
+        while Tolerence < dA:
             correction_count += 1
-            print(correction_count)
+            #print(f"correction count={correction_count}",end="\r")
             for i in range(N):
                 ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
-                    ebf_val, ebg_val = ebf[beta]*1e-3 ,ebg[beta]*1e-3
+                    ebf_val, ebg_val = ebf[beta] ,ebg[beta]
                     
                     K_r += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )
                     
                     K_z += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )
                     
                     K_psi += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )
                     
                 radi[t+1][i] += K_r
@@ -476,19 +471,31 @@ def Two_d_simulation_stationary_states(
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
             dA = np.abs(Area_new - Area_old)
-            if Tolerence > dA or correction_count >= 10:
-                do_correction = False
-                break
+
+            if correction_count >= 100:
+                print(f"too many corrections, we close")
+                exit()
             Area_compare.append(dA)
+        
+        correct_count_list[t] = correction_count
+
+        print(f"dA[end]-dA[0] ={Area_compare[len(Area_compare)-1] - Area_compare[0]} and num correct count ={correction_count}")
         plt.figure()
+        font_size = 15
         #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
         plt.plot(Area_compare,".-")
-        plt.title("testing of correction dA = Area_new - Area_old")
+        plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
+        plt.xlabel("number of corrections for specific t",fontsize=font_size)
+        plt.ylabel("dA",fontsize=font_size)
         plt.show()
+        plt.draw()
+        plt.pause(2)
+        plt.close()
+        exit()
     print("\n")
-    plt.show()
-    #exit()
-
+    plt.figure()
+    plt.plot(correct_count_list,".-")
+    plt.draw()
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],

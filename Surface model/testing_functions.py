@@ -533,7 +533,7 @@ def Test_with_matlab_integrate_solution():
     plt.show()
 
 
-def test_of_sim_varialbes_in_stationary_configuration():
+def test_of_sim_variables_in_stationary_configuration():
     
     c0 = 0.25
     k = 1
@@ -601,25 +601,39 @@ def test_if_constraint_diff_is_correct():
     grad_g_r,grad_g_z,grad_g_psi = [],[],[]
     dfdr,dfdz,dfdpsi = [],[],[]
     dgdr,dgdz,dgdpsi = [],[],[]
-
-    h = 0.1
-    for i in range(len(radi_list)-1):
-        diff_f =(
-                constraint_f(i=i+1,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+    def increase_by_h(x,j):
+        var_list = []
+        for i in range(len(x)):
+            if i == j:
+                var_list.append(x[i]+h)
+            else:
+                var_list.append(x[i])
+        return var_list
+    h = 0.01
+    for i in range(len(psi_list[0])):
+        diff_f_r =(
+                constraint_f(i=i,N=N,psi=psi_list[0],Area=Area_list
+                             ,r= increase_by_h(x=radi_list[0],j=i)
+                             )
                -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
              )
         grad_f_r.append(
-            diff_f/(radi_list[0][i+1] - radi_list[0][i])
+            diff_f_r/h
         )
 
         dfdr.append(
             c_diff_f(
                 i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
-                ,diff_var="r"
-            ))
+                ,diff_var="r")
+                )
         
+        diff_f_z =(
+                constraint_f(i=i,N=N,r= radi_list[0]
+                ,psi=psi_list[0],Area=Area_list)
+               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+             )
         grad_f_z.append(
-            diff_f/(z_list[0][i+1]- z_list[0][i])
+            diff_f_z/h
         )
 
         dfdz.append(
@@ -628,8 +642,14 @@ def test_if_constraint_diff_is_correct():
                 ,diff_var="z"
             ))
         
+        diff_f_psi =(
+                constraint_f(i=i,N=N,r= radi_list[0],Area=Area_list
+                ,psi=increase_by_h(x=psi_list[0],j=i)
+                )
+               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+             )
         grad_f_psi.append(
-            diff_f/(psi_list[0][i+1] - psi_list[0][i])
+            diff_f_psi/h
         )
 
         dfdpsi.append(
@@ -638,44 +658,59 @@ def test_if_constraint_diff_is_correct():
                 ,diff_var="psi"
             ))
 
-    for i in range(len(radi_list)-1):
-        diff_g =(
-                constraint_g(i=i+1,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+    for i in range(len(psi_list[0])):
+        diff_g_r =(
+                constraint_g(i=i,N=N,z=z_list[0],psi=psi_list[0],Area=Area_list
+                             ,r=increase_by_h(x=radi_list[0],j=i)
+                             )
                -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
              )
         grad_g_r.append(
-            diff_g/(radi_list[0][i+1] - radi_list[0][i])
+            diff_g_r/h
         )
 
         dgdr.append(
             c_diff_g(
                 i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var="r"
+                ,diff_var=0
             ))
         
+        diff_g_z =(
+                constraint_g(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                             ,z=increase_by_h(x=z_list[0],j=i)
+                             )
+               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+             )
         grad_g_z.append(
-            diff_g/(z_list[0][i+1]- z_list[0][i])
+            diff_g_z/h
         )
 
         dgdz.append(
             c_diff_g(
                 i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var="z"
+                ,diff_var=1
             ))
         
+        diff_g_psi =(
+                constraint_g(i=i,N=N,r=radi_list[0],Area=Area_list,z=z_list[0]
+                             ,psi=increase_by_h(x=psi_list[0],j=i)
+                             )
+               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+             )
+        
         grad_g_psi.append(
-            diff_g/(psi_list[0][i+1] - psi_list[0][i])
+            diff_g_psi/h
         )
 
         dgdpsi.append(
             c_diff_g(
                 i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var="psi"
+                ,diff_var=2
             ))
 
     fig, ax = plt.subplots(nrows=3,ncols=2)
 
-    ax[0,0].set_title(r" dfdr =$\frac{\partial f}{\partial q}$ and diff_f =$\frac{ f_{i +1 } - f_{i}}{q_{i+1} - q_{i}}$")
+    ax[0,0].set_title(r" dfdr =$\frac{\partial f_{i} }{\partial q_{i}}$ and diff_$f_{i}$ =$\frac{ f_{i}(q_{i} +h) - f_{i}(q_{i})}{h}$")
     ax[0,0].plot(grad_f_r,".-",label="diff_f")
     ax[0,0].plot(dfdr,".-",label="dfdr")
     ax[0,0].legend()
@@ -689,7 +724,7 @@ def test_if_constraint_diff_is_correct():
     ax[2,0].legend()
 
 
-    ax[0,1].set_title(r" dgdr =$\frac{\partial g}{\partial q}$ and diff_g =$\frac{ g_{i+1 } - g_{i}}{q_{i+1} - q_{i}}$")
+    ax[0,1].set_title(r" dgdr =$\frac{\partial g_{i}} {\partial q_{i}}$ and diff_$g_{i}$ =$\frac{ g_{i} (q_{i}+h) - g_{i} (q_{i})}{h}$")
     ax[0,1].plot(grad_g_r,".-",label="diff_g")
     ax[0,1].plot(dgdr,".-",label="dgdr")
     ax[0,1].legend()
@@ -704,6 +739,36 @@ def test_if_constraint_diff_is_correct():
 
     plt.show()
 
+
+def testing_new_epsilon_matrix():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g
+    from Testing_ideas import Epsilon_v2
+    const_args = Two_D_Constants_stationary_state(
+        print_val=True
+        ,show_stationary_state=True
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    
+    t = 0
+    print("old epsilon function")
+    ebf, ebg = Epsilon_values(
+        N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
+        ,print_matrix=True
+                )
+    print(f"ebf={ebf} \n ebg={ebg}")
+    print("new epsilon function")
+    ebf,ebg = Epsilon_v2(
+        N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
+        ,print_matrix=True
+    )
+    print(f"ebf={ebf} \n ebg={ebg}")
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -716,7 +781,7 @@ if __name__ == "__main__":
     #test_area_correction_difference()
     
     #Test_with_matlab_integrate_solution()
-    #test_of_sim_varialbes_in_stationary_configuration()
+    #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
     Two_D_Constants_stationary_state(
@@ -724,4 +789,5 @@ if __name__ == "__main__":
         ,print_val=True
     )"""
 
-    test_if_constraint_diff_is_correct()
+    #test_if_constraint_diff_is_correct()
+    testing_new_epsilon_matrix()

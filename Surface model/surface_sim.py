@@ -209,10 +209,12 @@ def Surface_sim_stationary_state_initial_configuration():
         ,df_name = df_name
         ,num_frames = num_frames
         ,data_path = data_path
-        ,Tolerence=1e-6
+        ,Tolerence=1e-9
+        #,save_data=False
     )
 
     print(f"\n the simulation time={(time.time()-start_time)/60} min \n")
+    
     plot_tot_area()
     plot_Epot_Ekin()
     

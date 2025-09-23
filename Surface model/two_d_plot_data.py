@@ -96,14 +96,19 @@ def plot_Epot_Ekin(data_path="",df_name=""):
                   ,r=r[t],z=z[t],psi=psi[t],Area=Area)
         )
 
+    t_vec = [dt*i for i in range(sim_steps-1)]
+    fontsize = 15
+    plt.figure()
+    plt.plot(t_vec,T,".-")
+    plt.xlabel("time [s]",fontsize=fontsize)
+    plt.ylabel(r"$E_{kin}$",fontsize=fontsize)
+    plt.title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
 
     plt.figure()
-    plt.plot(T)
-    plt.title("E kin")
-
-    plt.figure()
-    plt.plot(S)
-    plt.title("E pot")
+    plt.plot(t_vec,S,".-")
+    plt.xlabel("time [s]",fontsize=fontsize)
+    plt.ylabel(r"$E_{pot}$",fontsize=fontsize)
+    plt.title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)
 
     plt.show()
 

@@ -578,21 +578,28 @@ def Langrange_multi(
 
 
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list):
-    if i > N:
-        print(f"the value of i is to large, in the constraint equation")
+    f = ""
+    if i >= N:
+        print(f"the value of i is to large, in the constraint equation \n"
+              +f"i={i} and N={N}")
         exit()
-    else:
+    if i < N:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
-
+    if f == "":
+        print(f"value of f never took a number")
+        exit()
     return f
 
 def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list):
-    if i > N:
+    g = ""
+    if i >= N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
-    else:
+    if i < N:
         g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
-    
+    if g == "":
+        print(f"value of f new took a number")
+        exit()
     return g
 
 
@@ -601,15 +608,15 @@ def c_diff_f(
         ,r:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi"]
+    diff_var_list = ["r","z","psi",0,1,2]
     df = 0
-    if diff_var == "r":
+    if diff_var == diff_var_list[0] or diff_var == 0:
         df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
         
-    if diff_var == "z":
+    if diff_var == diff_var_list[1]or diff_var == 1:
         df = 0
 
-    if diff_var == "psi":
+    if diff_var == diff_var_list[2] or diff_var == 0:
         df = np.sin(psi[i])*Kronecker(i,j)
         
     if diff_var not in diff_var_list:
@@ -625,15 +632,15 @@ def c_diff_g(
         ,r:list,z:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi"]
+    diff_var_list = ["r","z","psi",0,1,2]
     dg = 0
-    if diff_var == "r":
+    if diff_var == diff_var_list[0] or diff_var == 0:
         dg = np.pi*(z[i+1]-z[i])*(  Kronecker(i+1,j) +Kronecker(i,j)    )/Area[i]
         
-    if diff_var == "z":
+    if diff_var == diff_var_list[1] or diff_var == 1:
         dg = np.pi*(r[i+1]+r[i])*(Kronecker(i+1,j) -Kronecker(i,j))/Area[i]
 
-    if diff_var == "psi":
+    if diff_var == diff_var_list[2] or diff_var == 2:
         dg = -np.cos(psi[i])*Kronecker(i,j)
 
     if diff_var not in diff_var_list:

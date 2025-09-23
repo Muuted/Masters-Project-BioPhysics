@@ -129,8 +129,13 @@ def Two_D_Constants_stationary_state(
         ,show_stationary_state = True
         ):
     """------ constants ---------"""
+    N = 20 #int(L/ds) # 99 + 1 # Number of chain links
+    #m = 1e-6 # grams  :   Mass of each chain link
+    T = 1 #5.45#s  : total time simulated
+    dt = 1e-7 # s time step.
+    sim_steps = int(1e3)# int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  2#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds =  1.5#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
     #Base variables
     c0 = 0.25e0# 0.25e8 # 1/m   : 
@@ -154,13 +159,6 @@ def Two_D_Constants_stationary_state(
     s0, sN = 0, 30*lc
     psi_L = -7.3648e-8
 
-    N = 20 #int(L/ds) # 99 + 1 # Number of chain links
-    #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1 #5.45#s  : total time simulated
-    dt = 1e-7 # s time step.
-    sim_steps = int(1e1)# int(T/dt) # : number of simulation steps
-    
-
     """------ variables list ---------"""
     psi,r,z,dpsidt,lambs,nus = find_init_stationary_state(
         sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
@@ -168,16 +166,21 @@ def Two_D_Constants_stationary_state(
         ,total_points=N
     )
 
-    psi_list = np.zeros(shape=(sim_steps,N+1),dtype=float) # all the angles are just flat
+    psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
     r_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     Area_list = np.zeros(N,dtype=float)
 
     for i in range(N+1):
-        psi_list[0][i] = psi[i]
+        if i < N :
+            psi_list[0][i] = psi[i]
+            Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
+            if Area_list[i] == 0 :
+                print(f"Area[{i}]=0")
+                exit()
         r_list[0][i] = r[i]
         z_list[0][i] = z[i]
-
+    
     if show_stationary_state==True:
         plt.figure()
         font_size = 10
@@ -188,18 +191,19 @@ def Two_D_Constants_stationary_state(
             f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
             ,fontsize=font_size
             )
-        plt.xlim(min(r)*0.95, max(r)*1.05)
-        plt.ylim(-5,max(r)-min(r)-5)
+        #plt.xlim(min(r)*0.95, max(r)*1.05)
+        #plt.ylim(-5,max(r)-min(r)-5)
         #plt.show()
+        #exit()
         plt.draw()
         plt.pause(5)
         plt.close()
 
-    for i in range(N):
+    """for i in range(N):
         Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
         if Area_list[i] == 0 :
             print(f"Area[{i}]=0")
-            exit()
+            exit()"""
     
     if print_val == True:
         print(
