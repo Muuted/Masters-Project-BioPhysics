@@ -723,6 +723,23 @@ def Epsilon_values(
     return epsilon_f, epsilon_g
 
 
+def Perturbation_of_inital_state(
+        points_perturbed:int, ds:float
+        ,r:list,z:list,psi:list
+        ,delta_psi:float = -1e-3
+        ):
+    if points_perturbed > len(psi)-1:
+        print(f"Perturbing too many points \n"
+              +f"len(psi)={len(psi)} and points perturbed={points_perturbed}")
+        exit()
+    i_start = points_perturbed#len(psi)-1 - points_perturbed
+    i_stop = -1#len(psi)-1
+    for i in range(i_start,i_stop,-1):
+        psi[i] += delta_psi
+        r[i] = r[i-1] + np.cos(psi[i])*ds
+        z[i] = z[i-1] + np.sin(psi[i])*ds
+
+    #return r,z,psi
 if __name__ == "__main__":
     a = np.zeros(5)
     print(a)

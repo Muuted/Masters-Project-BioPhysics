@@ -481,6 +481,7 @@ def Test_with_matlab_integrate_solution():
     
     r = ans_odeint.y[1][0:m]
     z = ans_odeint.y[2][0:m]
+    psi = ans_odeint.y[3]
 
     #Then lets load the data from matlab
     matlab_data_path = r"C:\\Users\\AdamSkovbjergKnudsen\\Documents\\GitHub\\Masters-Project-BioPhysics\\Matlab masters project\\saved data\\"    
@@ -491,6 +492,7 @@ def Test_with_matlab_integrate_solution():
     
     r_matlab = df_matlab_data.loc[0][0:m]
     z_matlab = df_matlab_data.loc[4][0:m]
+    psi_matlab = df_matlab_data.loc[1]
     lambs_matlab = df_matlab_data.loc[3]
     
     fig, ax = plt.subplots()
@@ -529,7 +531,18 @@ def Test_with_matlab_integrate_solution():
     plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
     plt.legend(fontsize=20)
     
+    
+    plt.draw()
+    plt.pause(2)
+    plt.close()
 
+    plt.figure()
+    plt.plot(r,psi,label="Python")
+    plt.plot(r_matlab,psi_matlab,label="Matlab")
+    plt.title("compare psi in Python and matlab",fontsize=15)
+    plt.xlabel("r",fontsize=15)
+    plt.ylabel(r"$\psi$",fontsize=15)
+    plt.legend()
     plt.show()
 
 
@@ -709,32 +722,40 @@ def test_if_constraint_diff_is_correct():
             ))
 
     fig, ax = plt.subplots(nrows=3,ncols=2)
-
-    ax[0,0].set_title(r" dfdr =$\frac{\partial f_{i} }{\partial q_{i}}$ and diff_$f_{i}$ =$\frac{ f_{i}(q_{i} +h) - f_{i}(q_{i})}{h}$")
-    ax[0,0].plot(grad_f_r,".-",label="diff_f")
+    font_size= 15
+    ax[0,0].set_title(
+        r"dfdr =$\frac{\partial f_{i} }{\partial q_{i}}$ and diff_$f_{i}$ =$\frac{ f_{i}(q_{i} +h) - f_{i}(q_{i})}{h}$"
+        ,fontsize=font_size
+        )
+    ax[0,0].plot(grad_f_r,"o-",label="diff_f")
     ax[0,0].plot(dfdr,".-",label="dfdr")
     ax[0,0].legend()
     
-    ax[1,0].plot(grad_f_z,".-",label="diff_f")
+    ax[1,0].plot(grad_f_z,"o-",label="diff_f")
     ax[1,0].plot(dfdz,".-",label="dfdz")
     ax[1,0].legend()
 
-    ax[2,0].plot(grad_f_psi,".-",label="diff_f")
+    ax[2,0].plot(grad_f_psi,"o-",label="diff_f")
     ax[2,0].plot(dfdpsi,".-",label=r"dfd$\psi$")
+    ax[2,0].set_xlabel(r"$i$",fontsize=font_size)
     ax[2,0].legend()
 
 
-    ax[0,1].set_title(r" dgdr =$\frac{\partial g_{i}} {\partial q_{i}}$ and diff_$g_{i}$ =$\frac{ g_{i} (q_{i}+h) - g_{i} (q_{i})}{h}$")
-    ax[0,1].plot(grad_g_r,".-",label="diff_g")
+    ax[0,1].set_title(
+        r"dgdr=$\frac{\partial g_{i}}{\partial q_{i}}$ and diff_$g_{i}=\frac{ g_{i} (q_{i}+h) - g_{i} (q_{i})}{h}$"
+        ,fontsize=font_size
+        )
+    ax[0,1].plot(grad_g_r,"o-",label="diff_g")
     ax[0,1].plot(dgdr,".-",label="dgdr")
     ax[0,1].legend()
 
-    ax[1,1].plot(grad_g_z,".-",label="diff_g")
+    ax[1,1].plot(grad_g_z,"o-",label="diff_g")
     ax[1,1].plot(dgdz,".-",label="dgdz")
     ax[1,1].legend()
 
-    ax[2,1].plot(grad_g_psi,".-",label="diff_g")
+    ax[2,1].plot(grad_g_psi,"o-",label="diff_g")
     ax[2,1].plot(dgdpsi,".-",label=r"dgd$\psi$")
+    ax[2,1].set_xlabel(r"$i$",fontsize=font_size)
     ax[2,1].legend()
 
     plt.show()
@@ -769,6 +790,47 @@ def testing_new_epsilon_matrix():
     )
     print(f"ebf={ebf} \n ebg={ebg}")
 
+
+def testing_perturbation_function():
+    from Two_D_functions import Perturbation_of_inital_state
+    from Two_D_constants import Two_D_Constants_stationary_state
+
+    const_args = Two_D_Constants_stationary_state(
+        print_val=True
+        ,show_stationary_state=False
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+
+    r_init,z_init,psi_init =[i for i in radi_list[0]],[i for i in z_list[0]],[i for i in psi_list[0]]
+    psi_inverse = [psi_init[i] for i in range(len(psi_init)-1,-1,-1)]
+    plt.figure()
+    plt.plot(psi_inverse)
+    plt.show()
+    exit()
+    Perturbation_of_inital_state(
+        points_perturbed=4, ds=ds
+        ,r=radi_list[0],z=z_list[0],psi=psi_list[0]
+        ,delta_psi=-1e-1
+    )
+
+    plt.figure()
+    font_size=15
+    plt.plot(r_init,z_init,"o-",label="Unperturbed")
+    plt.plot(radi_list[0],z_list[0],"o-",label="Perturbed")
+    plt.plot(r_init[0],z_init[0],"o",label="start point i=0")
+    plt.xlabel("r",fontsize=font_size)
+    plt.ylabel("z",fontsize=font_size)
+    plt.title("Comparing the Unperturbed state and the Perturbed state",fontsize=font_size)
+    plt.legend()
+    plt.show()
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -780,7 +842,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    #Test_with_matlab_integrate_solution()
+    Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -790,4 +852,5 @@ if __name__ == "__main__":
     )"""
 
     #test_if_constraint_diff_is_correct()
-    testing_new_epsilon_matrix()
+    #testing_new_epsilon_matrix()
+    #testing_perturbation_function()

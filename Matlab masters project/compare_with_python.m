@@ -40,12 +40,15 @@ end
 m
 r = ShapeSolution.y(1,1:m);
 z = ShapeSolution.y(5,1:m);
-
+psi = ShapeSolution.y(2,1:m);
 %r = ShapeSolution.y(1,:);
 %z = ShapeSolution.y(5,:);
 
+figure(1)
 plot(r,z)
-
+%%
+figure(2)
+plot(psi)
 %plot(Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot (r,z) in solution
 %% Making new matrix
 m = length(ShapeSolution.y(1,:))
