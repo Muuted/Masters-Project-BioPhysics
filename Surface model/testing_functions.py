@@ -479,9 +479,9 @@ def Test_with_matlab_integrate_solution():
             break
     print(f"m=",m)
     
-    r = ans_odeint.y[1][0:m]
-    z = ans_odeint.y[2][0:m]
-    psi = ans_odeint.y[3]
+    r = ans_odeint.y[1]#[0:m]
+    z = ans_odeint.y[2]#[0:m]
+    psi = ans_odeint.y[0]#[0:m]
 
     #Then lets load the data from matlab
     matlab_data_path = r"C:\\Users\\AdamSkovbjergKnudsen\\Documents\\GitHub\\Masters-Project-BioPhysics\\Matlab masters project\\saved data\\"    
@@ -519,7 +519,7 @@ def Test_with_matlab_integrate_solution():
     plt.legend(fontsize=20)
     
 
-    r = ans_odeint.y[1]
+    #r = ans_odeint.y[1]
     plt.figure()
     plt.plot(r,ans_odeint.y[4],".-",label="Python")
     plt.plot(r_matlab,lambs_matlab,".-",label="Matlab")
@@ -531,10 +531,6 @@ def Test_with_matlab_integrate_solution():
     plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
     plt.legend(fontsize=20)
     
-    
-    plt.draw()
-    plt.pause(2)
-    plt.close()
 
     plt.figure()
     plt.plot(r,psi,label="Python")
@@ -544,6 +540,7 @@ def Test_with_matlab_integrate_solution():
     plt.ylabel(r"$\psi$",fontsize=15)
     plt.legend()
     plt.show()
+    plt.draw()
 
 
 def test_of_sim_variables_in_stationary_configuration():
@@ -808,27 +805,32 @@ def testing_perturbation_function():
 
 
     r_init,z_init,psi_init =[i for i in radi_list[0]],[i for i in z_list[0]],[i for i in psi_list[0]]
-    psi_inverse = [psi_init[i] for i in range(len(psi_init)-1,-1,-1)]
-    psi_inverse = [psi_init[i] for i in range(len(psi_init)-1,-1,-1)]
-    plt.figure()
-    #plt.plot(psi_inverse)
-    plt.plot(r_init[0:len(r_init)-1],psi_init)
-    plt.show()
-    exit()
+    
     Perturbation_of_inital_state(
-        points_perturbed=4, ds=ds
-        ,r=radi_list[0],z=z_list[0],psi=psi_list[0]
-        ,delta_psi=-1e-1
+        points_perturbed=3, ds=ds
+        ,r=r_init,z=z_init,psi=psi_init
+        ,delta_psi= -1e-6
     )
 
     plt.figure()
     font_size=15
-    plt.plot(r_init,z_init,"o-",label="Unperturbed")
-    plt.plot(radi_list[0],z_list[0],"o-",label="Perturbed")
-    plt.plot(r_init[0],z_init[0],"o",label="start point i=0")
+    plt.plot(radi_list[0],z_list[0],"o-",label="Unperturbed")
+    plt.plot(r_init,z_init,"o-",label="Perturbed")
+    plt.plot(radi_list[0][0],z_list[0][0],"o",label="start point i=0",color="k")
     plt.xlabel("r",fontsize=font_size)
     plt.ylabel("z",fontsize=font_size)
     plt.title("Comparing the Unperturbed state and the Perturbed state",fontsize=font_size)
+    plt.legend()
+
+
+
+    plt.figure()
+    plt.plot(radi_list[0][0:N],psi_list[0],"o-",label="Unperturbed")
+    #plt.plot(r_init[0:N],psi_init,".-",label="r,psi")
+    plt.plot(radi_list[0][0:N],psi_init,".-",label="perturbed")
+    plt.title(r"Pertubation of $\psi$ at the end",fontsize=font_size)
+    plt.xlabel("r",fontsize=font_size)
+    plt.ylabel(r"$\psi$",fontsize=font_size)
     plt.legend()
     plt.show()
 

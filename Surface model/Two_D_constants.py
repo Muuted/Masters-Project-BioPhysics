@@ -196,7 +196,7 @@ def Two_D_Constants_stationary_state(
         #plt.show()
         #exit()
         plt.draw()
-        plt.pause(5)
+        plt.pause(2)
         plt.close()
 
     """for i in range(N):
