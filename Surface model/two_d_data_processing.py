@@ -110,7 +110,6 @@ def tot_area(
     Area = 0
     for i in range(N):
         Area += np.pi*( r[i+1]+ r[i] )*np.sqrt( (r[i+1]- r[i])**2 + (z[i+1]- z[i])**2 )
-
     return Area
 
 

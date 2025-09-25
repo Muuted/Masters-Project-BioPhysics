@@ -393,6 +393,7 @@ def Two_d_simulation_stationary_states(
 
     Area_old = np.sum(Area)
     Area_new = 0
+    
     lambs_save, nus_save = [], []
     correct_count_list = np.zeros(sim_steps)
     print("Simulation progressbar \n ")
@@ -434,11 +435,14 @@ def Two_d_simulation_stationary_states(
                                                     )
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = np.abs(Area_new - Area_old)
-        Area_compare = [dA]
+        dA = Area_new - Area_old
+        Area_compare = []
+        Area_compare.append(dA)
+        r_before = [i for i in radi[t+1]]
+        z_before = [i for i in z_list[t+1]]
 
         correction_count = 0
-        while Tolerence < dA:
+        while Tolerence < abs(dA):
             correction_count += 1
             #print(f"correction count={correction_count}",end="\r")
             for i in range(N):
@@ -468,31 +472,45 @@ def Two_d_simulation_stationary_states(
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
+            if correction_count == 1:
+                r_after = [ i for i in radi[t+1]]
+                z_after = [ i for i in z_list[t+1]]
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-            dA = np.abs(Area_new - Area_old)
-
+            dA = Area_new - Area_old
+            Area_compare.append(dA)
             if correction_count >= 100:
                 print(f"too many corrections, we close")
                 exit()
-            Area_compare.append(dA)
+            
         
         correct_count_list[t] = correction_count
 
         print(f"dA[end]-dA[0] ={Area_compare[len(Area_compare)-1] - Area_compare[0]} and num correct count ={correction_count}")
+        print(f"Area_compare[0]={Area_compare[0]}")
         plt.figure()
         font_size = 15
         #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
         plt.plot(Area_compare,".-")
+        print(f"list Area compare = {Area_compare}")
         plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
         plt.xlabel("number of corrections for specific t",fontsize=font_size)
         plt.ylabel("dA",fontsize=font_size)
+
+
+        plt.figure()
+        plt.plot(r_before,z_before,"o-",label="before")
+        plt.plot(r_after,z_after,".-",label="after")
+        print(f" Checking the total area \n"
+              +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_old} \n"
+              +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_old}")
+        plt.title("check correction")
+        plt.legend()
         plt.show()
-        plt.draw()
-        plt.pause(2)
-        plt.close()
+        
         exit()
     print("\n")
+
     plt.figure()
     plt.plot(correct_count_list,".-")
     plt.draw()

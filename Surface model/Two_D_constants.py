@@ -133,7 +133,7 @@ def Two_D_Constants_stationary_state(
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 #5.45#s  : total time simulated
     dt = 1e-7 # s time step.
-    sim_steps = int(1e3)# int(T/dt) # : number of simulation steps
+    sim_steps = 10#int(1e3)# int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1.5#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole

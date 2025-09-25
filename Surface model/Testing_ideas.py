@@ -1,6 +1,9 @@
 import numpy as np
 from Two_D_functions import Kronecker, c_diff_f,c_diff_g,constraint_f,constraint_g
 
+#import cProfile
+#import re
+
 def c_diff(
         i:int,j:int,N:int
         ,r:list,z:list,psi:list,Area:list
@@ -72,3 +75,17 @@ def Epsilon_v2(
         epsilon_g = x[N:2*N]
 
     return epsilon_f,epsilon_g
+
+
+
+
+"""
+def test_cprofile():
+    A = 0
+    ds = 1
+    for i in range(1000):
+        A += ds
+
+cProfile.run('re.compile("test_cprofile")')#,'restats')
+
+"""
