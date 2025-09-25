@@ -606,156 +606,233 @@ def test_if_constraint_diff_is_correct():
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
+    
+    
 
-    grad_f_r,grad_f_z,grad_f_psi = [],[],[]
-    grad_g_r,grad_g_z,grad_g_psi = [],[],[]
-    dfdr,dfdz,dfdpsi = [],[],[]
-    dgdr,dgdz,dgdpsi = [],[],[]
-    def increase_by_h(x,j):
+    grad_f_r,grad_f_z,grad_f_psi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]
+    grad_g_r,grad_g_z,grad_g_psi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]
+    dfdr,dfdz,dfdpsi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]
+    dgdr,dgdz,dgdpsi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]
+
+    """
+    As h -> 0  the tolerance for the eror can also decrease and still not get any errors.
+    So i think that is evidence that the gradient are correct.
+    """
+    h = 1e-19
+    error_tolerence = 1e-10
+
+    def increase_by_h(dh,x,j):
         var_list = []
         for i in range(len(x)):
             if i == j:
-                var_list.append(x[i]+h)
+                var_list.append(x[i]+dh)
             else:
                 var_list.append(x[i])
         return var_list
-    h = 0.01
-    for i in range(len(psi_list[0])):
-        diff_f_r =(
-                constraint_f(i=i,N=N,psi=psi_list[0],Area=Area_list
-                             ,r= increase_by_h(x=radi_list[0],j=i)
-                             )
-               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        grad_f_r.append(
-            diff_f_r/h
-        )
-
-        dfdr.append(
-            c_diff_f(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
-                ,diff_var="r")
-                )
-        
-        diff_f_z =(
-                constraint_f(i=i,N=N,r= radi_list[0]
-                ,psi=psi_list[0],Area=Area_list)
-               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        grad_f_z.append(
-            diff_f_z/h
-        )
-
-        dfdz.append(
-            c_diff_f(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
-                ,diff_var="z"
-            ))
-        
-        diff_f_psi =(
-                constraint_f(i=i,N=N,r= radi_list[0],Area=Area_list
-                ,psi=increase_by_h(x=psi_list[0],j=i)
-                )
-               -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        grad_f_psi.append(
-            diff_f_psi/h
-        )
-
-        dfdpsi.append(
-            c_diff_f(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
-                ,diff_var="psi"
-            ))
 
     for i in range(len(psi_list[0])):
-        diff_g_r =(
-                constraint_g(i=i,N=N,z=z_list[0],psi=psi_list[0],Area=Area_list
-                             ,r=increase_by_h(x=radi_list[0],j=i)
-                             )
-               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        grad_g_r.append(
-            diff_g_r/h
-        )
+        for j in range(len(psi_list[0])):
+            diff_f_r =(
+                    constraint_f(i=i,N=N,psi=psi_list[0],Area=Area_list
+                                ,r= increase_by_h(dh=h,x=radi_list[0],j=j)
+                                )
+                -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            grad_f_r[i].append(
+                diff_f_r/h
+            )
 
-        dgdr.append(
-            c_diff_g(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var=0
-            ))
-        
-        diff_g_z =(
-                constraint_g(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
-                             ,z=increase_by_h(x=z_list[0],j=i)
-                             )
-               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        grad_g_z.append(
-            diff_g_z/h
-        )
+            dfdr[i].append(
+                c_diff_f(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                    ,diff_var="r")
+                    )
+            
+            diff_f_z =(
+                    constraint_f(i=i,N=N,r= radi_list[0]
+                    ,psi=psi_list[0],Area=Area_list)
+                -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            grad_f_z[i].append(
+                diff_f_z/h
+            )
 
-        dgdz.append(
-            c_diff_g(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var=1
-            ))
-        
-        diff_g_psi =(
-                constraint_g(i=i,N=N,r=radi_list[0],Area=Area_list,z=z_list[0]
-                             ,psi=increase_by_h(x=psi_list[0],j=i)
-                             )
-               -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
-             )
-        
-        grad_g_psi.append(
-            diff_g_psi/h
-        )
+            dfdz[i].append(
+                c_diff_f(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                    ,diff_var="z"
+                ))
+            
+            diff_f_psi =(
+                    constraint_f(i=i,N=N,r= radi_list[0],Area=Area_list
+                    ,psi=increase_by_h(dh=h,x=psi_list[0],j=j)
+                    )
+                -constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            grad_f_psi[i].append(
+                diff_f_psi/h
+            )
 
-        dgdpsi.append(
-            c_diff_g(
-                i=i,j=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                ,diff_var=2
-            ))
+            dfdpsi[i].append(
+                c_diff_f(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                    ,diff_var="psi"
+                ))
 
-    fig, ax = plt.subplots(nrows=3,ncols=2)
-    font_size= 15
-    ax[0,0].set_title(
-        r"dfdr =$\frac{\partial f_{i} }{\partial q_{i}}$ and diff_$f_{i}$ =$\frac{ f_{i}(q_{i} +h) - f_{i}(q_{i})}{h}$"
-        ,fontsize=font_size
-        )
-    ax[0,0].plot(grad_f_r,"o-",label="diff_f")
-    ax[0,0].plot(dfdr,".-",label="dfdr")
-    ax[0,0].legend()
+    for i in range(len(psi_list[0])):
+        for j in range(len(psi_list[0])):
+            diff_g_r =(
+                    constraint_g(i=i,N=N,z=z_list[0],psi=psi_list[0],Area=Area_list
+                                ,r=increase_by_h(dh=h,x=radi_list[0],j=j)
+                                )
+                -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            grad_g_r[i].append(
+                diff_g_r/h
+            )
+
+            dgdr[i].append(
+                c_diff_g(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                    ,diff_var=0
+                ))
+            
+            diff_g_z =(
+                    constraint_g(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
+                                ,z=increase_by_h(dh=h,x=z_list[0],j=j)
+                                )
+                -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            grad_g_z[i].append(
+                diff_g_z/h
+            )
+
+            dgdz[i].append(
+                c_diff_g(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                    ,diff_var=1
+                ))
+            
+            diff_g_psi =(
+                    constraint_g(i=i,N=N,r=radi_list[0],Area=Area_list,z=z_list[0]
+                                ,psi=increase_by_h(dh=h,x=psi_list[0],j=j)
+                                )
+                -constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+                )
+            
+            grad_g_psi[i].append(
+                diff_g_psi/h
+            )
+
+            dgdpsi[i].append(
+                c_diff_g(
+                    i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
+                    ,diff_var=2
+                ))
+
+
+    """ Findig where the gradient are different"""
+    error_index_f_r,error_index_f_z,error_index_f_psi = [[],[]],[[],[]],[[],[]]
+    error_index_g_r,error_index_g_z,error_index_g_psi = [[],[]],[[],[]],[[],[]]
     
-    ax[1,0].plot(grad_f_z,"o-",label="diff_f")
-    ax[1,0].plot(dfdz,".-",label="dfdz")
-    ax[1,0].legend()
+    
 
-    ax[2,0].plot(grad_f_psi,"o-",label="diff_f")
-    ax[2,0].plot(dfdpsi,".-",label=r"dfd$\psi$")
-    ax[2,0].set_xlabel(r"$i$",fontsize=font_size)
-    ax[2,0].legend()
+    for i in range(len(psi_list[0])):
+        for j in range(len(psi_list[0])):
+            """ For the f constraint equations"""
+            if grad_f_r[i][j] != 0 and dfdr[i][j] != 0:
+                if abs(dfdr[i][j]/grad_f_r[i][j]) < 1 - error_tolerence or abs(dfdr[i][j]/grad_f_r[i][j]) > 1 + error_tolerence:
+                    error_index_f_r[0].append(i)
+                    error_index_f_r[1].append(j)
+
+            if grad_f_z[i][j] != 0 and dfdz[i][j] != 0:
+                if abs(dfdz[i][j]/grad_f_z[i][j]) < 1 - error_tolerence or abs(dfdz[i][j]/grad_f_z[i][j]) > 1 + error_tolerence:
+                    error_index_f_z[0].append(i)
+                    error_index_f_z[1].append(j)
+
+            if grad_f_psi[i][j] != 0 and dfdpsi[i][j] != 0:
+                if abs(dfdpsi[i][j]/grad_f_psi[i][j]) < 1 - error_tolerence or abs(dfdpsi[i][j]/grad_f_psi[i][j]) > 1 + error_tolerence:
+                    error_index_f_psi[0].append(i)
+                    error_index_f_psi[1].append(j)
+             
+            """ For the g constraint equations"""
+            if grad_g_r[i][j] != 0 and dgdr[i][j] != 0:
+                if abs(dgdr[i][j]/grad_g_r[i][j]) < 1 - error_tolerence or abs(dgdr[i][j]/grad_g_r[i][j]) > 1 + error_tolerence:
+                    error_index_g_r[0].append(i)
+                    error_index_g_r[1].append(j)
+
+            if grad_g_z[i][j] != 0 and dgdz[i][j] != 0:
+                if abs(dgdz[i][j]/grad_g_z[i][j]) < 1 - error_tolerence or abs(dgdz[i][j]/grad_g_z[i][j]) > 1 + error_tolerence:
+                    error_index_g_z[0].append(i)
+                    error_index_g_z[1].append(j)
+            
+            if grad_g_psi[i][j] != 0 and dgdpsi[i][j] != 0:
+                if abs(dgdpsi[i][j]/grad_g_psi[i][j]) < 1 - error_tolerence or abs(dgdpsi[i][j]/grad_g_psi[i][j]) > 1 + error_tolerence:
+                    error_index_g_psi[0].append(i)
+                    error_index_g_psi[1].append(j)
+        
+    
+    print(
+        f"error index f_r ={error_index_f_r} \n"
+        +f"error index f_z ={error_index_f_z} \n"
+        +f"error index f_psi ={error_index_f_psi} \n"
+        +f"\n"
+        f"error index g_r ={error_index_g_r} \n"
+        +f"error index g_z ={error_index_g_z} \n"
+        +f"error index g_psi ={error_index_g_psi} "
+    )
+    exit()
+    for i in range(N):
+        fig, ax = plt.subplots(nrows=3,ncols=2)
+        
+        #manager = plt.get_current_fig_manager()
+        #manager.resize(*manager.window.maxsize())
+
+        plt.get_current_fig_manager().full_screen_toggle()
+
+        #fig.set_size_inches(w=10,h=10)
+        font_size= 15
+        ax[0,0].set_title(
+            r"dfdr =$\frac{\partial f_{i} }{\partial q_{i}}$ and diff_$f_{i}$ =$\frac{ f_{i}(q_{i} +h) - f_{i}(q_{i})}{h}$"
+            +f" \n i={i}"
+            ,fontsize=font_size
+            )
+        ax[0,0].plot(grad_f_r[i],"o-",label="diff_f")
+        ax[0,0].plot(dfdr[i],".-",label="dfdr")
+        ax[0,0].legend()
+        
+        ax[1,0].plot(grad_f_z[i],"o-",label="diff_f")
+        ax[1,0].plot(dfdz[i],".-",label="dfdz")
+        ax[1,0].legend()
+
+        ax[2,0].plot(grad_f_psi[i],"o-",label="diff_f")
+        ax[2,0].plot(dfdpsi[i],".-",label=r"dfd$\psi$")
+        ax[2,0].set_xlabel(r"$i$",fontsize=font_size)
+        ax[2,0].legend()
 
 
-    ax[0,1].set_title(
-        r"dgdr=$\frac{\partial g_{i}}{\partial q_{i}}$ and diff_$g_{i}=\frac{ g_{i} (q_{i}+h) - g_{i} (q_{i})}{h}$"
-        ,fontsize=font_size
-        )
-    ax[0,1].plot(grad_g_r,"o-",label="diff_g")
-    ax[0,1].plot(dgdr,".-",label="dgdr")
-    ax[0,1].legend()
+        ax[0,1].set_title(
+            r"dgdr=$\frac{\partial g_{i}}{\partial q_{j}}$ and diff_$g_{i}=\frac{ g_{i} (q_{j}+h) - g_{i} (q_{j})}{h}$"
+            +f" \n i={i}"
+            ,fontsize=font_size
+            )
+        ax[0,1].plot(grad_g_r[i],"o-",label="diff_g")
+        ax[0,1].plot(dgdr[i],".-",label="dgdr")
+        ax[0,1].legend()
 
-    ax[1,1].plot(grad_g_z,"o-",label="diff_g")
-    ax[1,1].plot(dgdz,".-",label="dgdz")
-    ax[1,1].legend()
+        ax[1,1].plot(grad_g_z[i],"o-",label="diff_g")
+        ax[1,1].plot(dgdz[i],".-",label="dgdz")
+        ax[1,1].legend()
 
-    ax[2,1].plot(grad_g_psi,"o-",label="diff_g")
-    ax[2,1].plot(dgdpsi,".-",label=r"dgd$\psi$")
-    ax[2,1].set_xlabel(r"$i$",fontsize=font_size)
-    ax[2,1].legend()
+        ax[2,1].plot(grad_g_psi[i],"o-",label="diff_g")
+        ax[2,1].plot(dgdpsi[i],".-",label=r"dgd$\psi$")
+        ax[2,1].set_xlabel(r"$i$",fontsize=font_size)
+        ax[2,1].legend()
 
-    plt.show()
+        #plt.show()
+        plt.draw()
+        plt.pause(5)
+        fig.clear()
 
 
 def testing_new_epsilon_matrix():
@@ -786,6 +863,61 @@ def testing_new_epsilon_matrix():
         ,print_matrix=True
     )
     print(f"ebf={ebf} \n ebg={ebg}")
+
+
+
+def Testing_total_area_function():
+    from two_d_data_processing import tot_area
+    from Two_D_constants import Two_D_Constants_stationary_state
+    flat = False
+
+    if flat  == True:
+        const_args = Two_D_Constants(
+            print_val=True
+        )
+
+        L,r0,N,ds,T,dt = const_args[0:6]
+        k,c0,sim_steps = const_args[6:9]
+        sigma, tau, kG = const_args[9:12]
+        Area, psi_list = const_args[12:14]
+        radi_list,z_list = const_args[14:16]
+
+        """ first lets test if the Area is the same"""
+        
+
+        Area_from_list = np.sum(Area)
+        Area_from_function = tot_area(N=N,r=radi_list[0],z=z_list[0])
+
+        print(
+            f"Area_from_list ={Area_from_list} \n"
+            +f"Area_from_function ={Area_from_function} \n"
+            +f"difference = {Area_from_list-Area_from_function}"
+        )
+    
+    if flat == False:
+        const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=False
+        )
+
+        L,r0,N,ds,T,dt = const_args[0:6]
+        k,c0,sim_steps = const_args[6:9]
+        sigma, tau, kG = const_args[9:12]
+        Area_list, psi_list = const_args[12:14]
+        radi_list,z_list = const_args[14:16]
+
+        """ first lets test if the Area is the same"""
+        Area_from_list = np.sum(Area_list)
+        Area_from_function = tot_area(N=N,r=radi_list[0],z=z_list[0])
+
+        print(
+            f"Area_from_list ={Area_from_list} \n"
+            +f"Area_from_function ={Area_from_function} \n"
+            +f"difference = {Area_from_list-Area_from_function}"
+        )
+
+
+
 
 
 def testing_perturbation_function():
@@ -857,4 +989,5 @@ if __name__ == "__main__":
 
     #test_if_constraint_diff_is_correct()
     #testing_new_epsilon_matrix()
-    testing_perturbation_function()
+    #testing_perturbation_function()
+    Testing_total_area_function()

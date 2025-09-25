@@ -63,25 +63,26 @@ def Two_D_simulation(
                 
             if t%condition==0 and i < N:
                 ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t], z=z_list[t] ,psi=psi[t] ,Area=Area
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
+                
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
                     ebf_val, ebg_val = ebf[beta] ,ebg[beta]
                     
                     K_r += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="r") 
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="r")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )
                     
                     K_z += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="z")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="z")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )
                     
                     K_psi += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t],psi=psi[t],Area=Area,diff_var="psi")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t],psi=psi[t],z=z_list[t],Area=Area,diff_var="psi")
+                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
+                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )
                     
                 radi[t+1][i] += K_r
@@ -389,8 +390,9 @@ def Two_d_simulation_stationary_states(
     ,data_path:str
     ,save_data:bool = True 
     ,Tolerence = 1e-15
+    ,do_correction = True
     ):
-
+    np.set_printoptions(legacy='1.25')
     Area_old = np.sum(Area)
     Area_new = 0
     
@@ -442,13 +444,16 @@ def Two_d_simulation_stationary_states(
         z_before = [i for i in z_list[t+1]]
 
         correction_count = 0
-        while Tolerence < abs(dA):
+        while Tolerence < abs(dA) and do_correction == True:
             correction_count += 1
             #print(f"correction count={correction_count}",end="\r")
-            for i in range(N):
-                ebf, ebg = Epsilon_values(
+            ebf, ebg = Epsilon_values(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
+            """ebf, ebg = Epsilon_v2(
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
+                            )"""
+            for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
                     ebf_val, ebg_val = ebf[beta] ,ebg[beta]
@@ -488,22 +493,30 @@ def Two_d_simulation_stationary_states(
 
         print(f"dA[end]-dA[0] ={Area_compare[len(Area_compare)-1] - Area_compare[0]} and num correct count ={correction_count}")
         print(f"Area_compare[0]={Area_compare[0]}")
+        print(f"list Area compare = {Area_compare}")
+        print(f" Checking the dA \n"
+            +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_old} \n"
+            +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_old} \n"
+            +f" Checking the total area \n"
+            +f"Initial Area = {Area_old} \n"
+            +f"Area no correction = {tot_area(N=N,r=r_before,z=z_before) } \n"
+            +f"Area one correction = {tot_area(N=N,r=r_after,z=z_after)}"
+            )
+        
         plt.figure()
         font_size = 15
         #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
         plt.plot(Area_compare,".-")
-        print(f"list Area compare = {Area_compare}")
+        
         plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
         plt.xlabel("number of corrections for specific t",fontsize=font_size)
         plt.ylabel("dA",fontsize=font_size)
 
 
         plt.figure()
-        plt.plot(r_before,z_before,"o-",label="before")
-        plt.plot(r_after,z_after,".-",label="after")
-        print(f" Checking the total area \n"
-              +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_old} \n"
-              +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_old}")
+        plt.plot(r_before,z_before,"o-",label="No correction")
+        plt.plot(r_after,z_after,".-",label="1 correction")
+    
         plt.title("check correction")
         plt.legend()
         plt.show()
@@ -544,6 +557,8 @@ def Two_d_simulation_stationary_states(
         df.to_pickle(data_path + df_name)
 
 if __name__ == "__main__":
+    pass
+    exit()
     const_args = Two_D_Constants(
         print_val=True
     )

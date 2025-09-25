@@ -1,0 +1,22 @@
+"filename", "language", "Python", "pip requirements", "comment", "blank", "total"
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\Make_movie.py", "Python", 138, 0, 16, 44, 198
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Constants.py", "Python", 63, 0, 12, 16, 91
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Functions.py", "Python", 120, 0, 6, 54, 180
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Simulation.py", "Python", 135, 0, 3, 37, 175
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_sim_function.py", "Python", 59, 0, 8, 13, 80
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\data_processing.py", "Python", 127, 0, 8, 43, 178
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\plot_data.py", "Python", 324, 0, 71, 59, 454
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\plotting_functions.py", "Python", 90, 0, 3, 29, 122
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\requirements.txt", "pip requirements", 0, 16, 0, 1, 17
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Make_movie.py", "Python", -137, 0, -19, -44, -200
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Testing_ideas.py", "Python", -61, 0, -12, -18, -91
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_constants.py", "Python", -184, 0, -24, -35, -243
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_functions.py", "Python", -594, 0, -29, -157, -780
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_simulation_function.py", "Python", -518, 0, -11, -90, -619
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\requirements.txt", "pip requirements", 0, -17, 0, -1, -18
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\surface_sim.py", "Python", -195, 0, -4, -39, -238
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\testing_functions.py", "Python", -736, 0, -70, -187, -993
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_continues_integration.py", "Python", -72, 0, -83, -18, -173
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_data_processing.py", "Python", -131, 0, -8, -36, -175
+"c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_plot_data.py", "Python", -93, 0, -4, -21, -118
+"Total", "-", -1665, -1, -137, -350, -2153
