@@ -393,7 +393,7 @@ def Two_d_simulation_stationary_states(
     ,do_correction = True
     ):
     np.set_printoptions(legacy='1.25')
-    Area_old = np.sum(Area)
+    Area_initial = np.sum(Area)
     Area_new = 0
     
     lambs_save, nus_save = [], []
@@ -437,7 +437,7 @@ def Two_d_simulation_stationary_states(
                                                     )
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_old
+        dA = Area_new - Area_initial
         Area_compare = []
         Area_compare.append(dA)
         r_before = [i for i in radi[t+1]]
@@ -453,52 +453,55 @@ def Two_d_simulation_stationary_states(
             """ebf, ebg = Epsilon_v2(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )"""
+            scaleing = 1
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
-                    ebf_val, ebg_val = ebf[beta] ,ebg[beta]
+                    ebf_val, ebg_val = ebf[beta],ebg[beta]
                     
                     K_r += (
                         ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
                         + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
-                        )
+                        )*scaleing
                     
                     K_z += (
                         ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
                         + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
-                        )
+                        )*scaleing
                     
                     K_psi += (
                         ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
                         + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
-                        )
+                        )*scaleing
                     
                 radi[t+1][i] += K_r
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
+
+                
 
             if correction_count == 1:
                 r_after = [ i for i in radi[t+1]]
                 z_after = [ i for i in z_list[t+1]]
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-            dA = Area_new - Area_old
+            dA = Area_new - Area_initial
             Area_compare.append(dA)
             if correction_count >= 100:
-                print(f"too many corrections, we close")
+                print(f"too many corrections, we close the program")
                 exit()
             
         
         correct_count_list[t] = correction_count
 
-        print(f"dA[end]-dA[0] ={Area_compare[len(Area_compare)-1] - Area_compare[0]} and num correct count ={correction_count}")
+        print(f"dA[end] ={Area_compare[len(Area_compare)-1]} and num correct count ={correction_count}")
         print(f"Area_compare[0]={Area_compare[0]}")
         print(f"list Area compare = {Area_compare}")
         print(f" Checking the dA \n"
-            +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_old} \n"
-            +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_old} \n"
+            +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_initial} \n"
+            +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_initial} \n"
             +f" Checking the total area \n"
-            +f"Initial Area = {Area_old} \n"
+            +f"Initial Area = {Area_initial} \n"
             +f"Area no correction = {tot_area(N=N,r=r_before,z=z_before) } \n"
             +f"Area one correction = {tot_area(N=N,r=r_after,z=z_after)}"
             )
