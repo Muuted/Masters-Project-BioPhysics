@@ -448,12 +448,12 @@ def Two_d_simulation_stationary_states(
         while Tolerence < abs(dA) and do_correction == True:
             correction_count += 1
             #print(f"correction count={correction_count}",end="\r")
-            ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
-                            )
-            """ebf, ebg = Epsilon_v2(
+            """ebf, ebg = Epsilon_values(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )"""
+            ebf, ebg = Epsilon_v2(
+                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
+                            )
             scaleing = 1
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
