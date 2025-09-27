@@ -618,8 +618,8 @@ def test_if_constraint_diff_is_correct():
     As h -> 0  the tolerance for the eror can also decrease and still not get any errors.
     So i think that is evidence that the gradient are correct.
     """
-    h = 1e-19
-    error_tolerence = 1e-10
+    h = 1e-6
+    error_tolerence = 1e-4
 
     def increase_by_h(dh,x,j):
         var_list = []
@@ -735,42 +735,82 @@ def test_if_constraint_diff_is_correct():
     error_index_f_r,error_index_f_z,error_index_f_psi = [[],[]],[[],[]],[[],[]]
     error_index_g_r,error_index_g_z,error_index_g_psi = [[],[]],[[],[]],[[],[]]
     
-    
+    def find_error_index(
+            i,j,error_tol,
+            Delta_constraint
+            ,diff_constraint
+            ):
+        null_val =""
+        return_i ,return_j = null_val,null_val
+        if Delta_constraint[i][j] == 0:
+                if  -error_tol < diff_constraint[i][j] and diff_constraint[i][j] < error_tol:
+                    return_i = null_val
+                    return_j = null_val
+                else:
+                    return_i = i
+                    return_j = j
+        else:
+            if abs(diff_constraint[i][j]/Delta_constraint[i][j]) < 1 - error_tolerence or abs(diff_constraint[i][j]/Delta_constraint[i][j]) > 1 + error_tolerence:
+                return_i = i
+                return_j = j
+        
+        return return_i,return_j, null_val
 
     for i in range(len(psi_list[0])):
         for j in range(len(psi_list[0])):
-            """ For the f constraint equations"""
-            if grad_f_r[i][j] != 0 and dfdr[i][j] != 0:
-                if abs(dfdr[i][j]/grad_f_r[i][j]) < 1 - error_tolerence or abs(dfdr[i][j]/grad_f_r[i][j]) > 1 + error_tolerence:
-                    error_index_f_r[0].append(i)
-                    error_index_f_r[1].append(j)
+            """The f constraint functions"""
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_f_r
+                ,diff_constraint=dfdr)
+            if error_i != null and error_j != null:
+                error_index_f_r[0].append(error_i)
+                error_index_f_r[1].append(error_j)
 
-            if grad_f_z[i][j] != 0 and dfdz[i][j] != 0:
-                if abs(dfdz[i][j]/grad_f_z[i][j]) < 1 - error_tolerence or abs(dfdz[i][j]/grad_f_z[i][j]) > 1 + error_tolerence:
-                    error_index_f_z[0].append(i)
-                    error_index_f_z[1].append(j)
 
-            if grad_f_psi[i][j] != 0 and dfdpsi[i][j] != 0:
-                if abs(dfdpsi[i][j]/grad_f_psi[i][j]) < 1 - error_tolerence or abs(dfdpsi[i][j]/grad_f_psi[i][j]) > 1 + error_tolerence:
-                    error_index_f_psi[0].append(i)
-                    error_index_f_psi[1].append(j)
-             
-            """ For the g constraint equations"""
-            if grad_g_r[i][j] != 0 and dgdr[i][j] != 0:
-                if abs(dgdr[i][j]/grad_g_r[i][j]) < 1 - error_tolerence or abs(dgdr[i][j]/grad_g_r[i][j]) > 1 + error_tolerence:
-                    error_index_g_r[0].append(i)
-                    error_index_g_r[1].append(j)
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_f_z
+                ,diff_constraint=dfdz)
+            if error_i != null and error_j != null:
+                error_index_f_z[0].append(error_i)
+                error_index_f_z[1].append(error_j)
 
-            if grad_g_z[i][j] != 0 and dgdz[i][j] != 0:
-                if abs(dgdz[i][j]/grad_g_z[i][j]) < 1 - error_tolerence or abs(dgdz[i][j]/grad_g_z[i][j]) > 1 + error_tolerence:
-                    error_index_g_z[0].append(i)
-                    error_index_g_z[1].append(j)
-            
-            if grad_g_psi[i][j] != 0 and dgdpsi[i][j] != 0:
-                if abs(dgdpsi[i][j]/grad_g_psi[i][j]) < 1 - error_tolerence or abs(dgdpsi[i][j]/grad_g_psi[i][j]) > 1 + error_tolerence:
-                    error_index_g_psi[0].append(i)
-                    error_index_g_psi[1].append(j)
-        
+
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_f_psi
+                ,diff_constraint=dfdpsi)
+            if error_i != null and error_j != null:
+                error_index_f_psi[0].append(error_i)
+                error_index_f_psi[1].append(error_j)
+
+            """ The g  constraint functions"""
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_g_r
+                ,diff_constraint=dgdr)
+            if error_i != null and error_j != null:
+                error_index_g_r[0].append(error_i)
+                error_index_g_r[1].append(error_j)
+
+
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_g_z
+                ,diff_constraint=dgdz)
+            if error_i != null and error_j != null:
+                error_index_g_z[0].append(error_i)
+                error_index_g_z[1].append(error_j)
+
+
+            error_i, error_j,null = find_error_index(
+                i=i,j=j,error_tol=error_tolerence
+                ,Delta_constraint=grad_g_psi
+                ,diff_constraint=dgdpsi)
+            if error_i != null and error_j != null:
+                error_index_g_psi[0].append(error_i)
+                error_index_g_psi[1].append(error_j)
     
     print(
         f"error index f_r ={error_index_f_r} \n"
@@ -843,7 +883,7 @@ def testing_new_epsilon_matrix():
         print_val=True
         ,show_stationary_state=True
     )
-
+    print("\n \n \n")
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
     sigma, tau, kG = const_args[9:12]
@@ -852,18 +892,27 @@ def testing_new_epsilon_matrix():
     
     t = 0
     print("old epsilon function")
-    ebf, ebg = Epsilon_values(
+    ebf_old, ebg_old, A_original,b_original = Epsilon_values(
         N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
-        ,print_matrix=True
+        ,print_matrix=False
+        ,testing= True
                 )
-    print(f"ebf={ebf} \n ebg={ebg}")
+    
+    #print(f"ebf={ebf} \n ebg={ebg}")
     print("new epsilon function")
-    ebf,ebg = Epsilon_v2(
+    ebf_new,ebg_new, A_new, b_new = Epsilon_v2(
         N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
-        ,print_matrix=True
+        ,print_matrix=False
+        ,testing= True
     )
-    print(f"ebf={ebf} \n ebg={ebg}")
+    #print(f"ebf={ebf} \n ebg={ebg}")
 
+    Diff_A = A_original - A_new
+    print(f"diff = {ebf_old - ebf_new}")
+    print(f"diff = {ebg_old - ebg_new}")
+    print(f"diff ={A_original-A_new}")
+
+    print(f"sum of differenc of A = {np.sum(A_original-A_new)}")
 
 
 def Testing_total_area_function():
@@ -988,6 +1037,6 @@ if __name__ == "__main__":
     )"""
 
     #test_if_constraint_diff_is_correct()
-    #testing_new_epsilon_matrix()
+    testing_new_epsilon_matrix()
     #testing_perturbation_function()
-    Testing_total_area_function()
+    #Testing_total_area_function()

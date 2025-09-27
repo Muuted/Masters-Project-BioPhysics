@@ -2,12 +2,13 @@ import numpy as np
 from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
+from Two_D_functions import Epsilon_v2
 from two_d_data_processing import check_area, tot_area
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import progressbar
-from Testing_ideas import Epsilon_v2
+
 
 def Two_D_simulation(
     N:int,k:float,c0:float, dt:float, ds:float
