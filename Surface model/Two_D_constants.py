@@ -129,7 +129,7 @@ def Two_D_Constants_stationary_state(
         ,show_stationary_state = True
         ):
     """------ constants ---------"""
-    N = 20#int(L/ds) # 99 + 1 # Number of chain links
+    N = 40#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1 #5.45#s  : total time simulated
     dt = 1e-7 # s time step.

@@ -608,7 +608,7 @@ def c_diff_f(
         ,r:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi",0,1,2]
+    diff_var_list = ["r","z","psi"]#,0,1,2]
     df = 0
     if diff_var == diff_var_list[0] or diff_var == 0:
         df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
@@ -632,13 +632,13 @@ def c_diff_g(
         ,r:list,z:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi",0,1,2]
+    diff_var_list = ["r","z","psi"]#,0,1,2]
     dg = 0
     if diff_var == diff_var_list[0] or diff_var == 0:
-        dg = np.pi*(z[i+1]-z[i])*(  Kronecker(i+1,j) +Kronecker(i,j)    )/Area[i]
+        dg = np.pi*(z[i+1]-z[i])*(Kronecker(i+1,j) + Kronecker(i,j))/Area[i]
         
     if diff_var == diff_var_list[1] or diff_var == 1:
-        dg = np.pi*(r[i+1]+r[i])*(Kronecker(i+1,j) -Kronecker(i,j))/Area[i]
+        dg = np.pi*(r[i+1]+r[i])*(Kronecker(i+1,j) - Kronecker(i,j))/Area[i]
 
     if diff_var == diff_var_list[2] or diff_var == 2:
         dg = -np.cos(psi[i])*Kronecker(i,j)
@@ -732,7 +732,7 @@ def c_diff(
         ,diff_var =""
         ):
     
-    diff_var_list = ["r","z","psi",0,1,2]
+    diff_var_list = ["r","z","psi"]#,0,1,2]
 
     if diff_var not in diff_var_list:
         print(f"c diff error in diff_var")
@@ -768,14 +768,19 @@ def Epsilon_v2(
         ):
     A = np.zeros(shape=(2*N,2*N))
     b = np.zeros(2*N)
+    vars = ["r","z","psi"]
     for alpha in range(2*N):
         for beta in range(2*N):
             for n in range(N):
-                A[alpha][beta] += (
+                for variables in vars:
+                    A[alpha][beta] += (
+                        c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)
+                        )
+                """A[alpha][beta] += (
                     c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")
                     +c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")
                     +c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="psi")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="psi")
-                    )
+                    )"""
             
 
         if alpha < N :

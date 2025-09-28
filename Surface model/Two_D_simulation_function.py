@@ -423,27 +423,39 @@ def Two_d_simulation_stationary_states(
             if i < N:
                 z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
-                radi[t+1][i] = radi[t][i] + dt*drdt_func(
-                                                    i=i
-                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                    ,lamb=lambs,nu=nus
-                                                    )
 
-                psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
-                                                    i=i
-                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                    ,lamb=lambs,nu=nus
-                                                    )
+                drdt =drdt_func(
+                            i=i
+                            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                            ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                            ,lamb=lambs,nu=nus
+                            )
+                radi[t+1][i] = radi[t][i] + dt*drdt
+
+                dpsidt = dpsidt_func(
+                                i=i
+                                ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                ,lamb=lambs,nu=nus
+                                )
+                psi[t+1][i] = psi[t][i] + dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_initial
-        Area_compare = []
-        Area_compare.append(dA)
+        dA = Area_new - Area_initial 
+        
+        """ start: Lists and variables for problem finding"""
+        Area_compare = [dA]
+        #Area_compare.append(dA)
+        total_Area_change = [Area_initial, Area_new]
+    
         r_before = [i for i in radi[t+1]]
         z_before = [i for i in z_list[t+1]]
 
+        r_change_values_list = [[] for i in range(N)]
+        z_change_values_list = [[] for i in range(N)]
+        psi_change_values_list = [[] for i in range(N)]
+
+        """ end: Lists and variables for problem finding"""
         correction_count = 0
         while Tolerence < abs(dA) and do_correction == True:
             correction_count += 1
@@ -454,7 +466,7 @@ def Two_d_simulation_stationary_states(
             ebf, ebg = Epsilon_v2(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
-            scaleing = 1
+            scaleing = 1/5
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(N):
@@ -479,7 +491,9 @@ def Two_d_simulation_stationary_states(
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
-                
+                r_change_values_list[i].append(K_r)
+                z_change_values_list[i].append(K_z)
+                psi_change_values_list[i].append(K_psi)                
 
             if correction_count == 1:
                 r_after = [ i for i in radi[t+1]]
@@ -487,17 +501,19 @@ def Two_d_simulation_stationary_states(
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
             dA = Area_new - Area_initial
+            total_Area_change.append(Area_new)
             Area_compare.append(dA)
-            if correction_count >= 100:
+            if correction_count >= 1000:
                 print(f"too many corrections, we close the program")
                 exit()
             
         
         correct_count_list[t] = correction_count
 
+        print(f"Shape of r change values list = {np.shape(r_change_values_list)}")
         print(f"dA[end] ={Area_compare[len(Area_compare)-1]} and num correct count ={correction_count}")
         print(f"Area_compare[0]={Area_compare[0]}")
-        print(f"list Area compare = {Area_compare}")
+        #print(f"list Area compare = {Area_compare}")
         print(f" Checking the dA \n"
             +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_initial} \n"
             +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_initial} \n"
@@ -506,7 +522,7 @@ def Two_d_simulation_stationary_states(
             +f"Area no correction = {tot_area(N=N,r=r_before,z=z_before) } \n"
             +f"Area one correction = {tot_area(N=N,r=r_after,z=z_after)}"
             )
-        
+
         plt.figure()
         font_size = 15
         #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
@@ -523,8 +539,29 @@ def Two_d_simulation_stationary_states(
     
         plt.title("check correction")
         plt.legend()
-        plt.show()
+
+        plt.figure()
+        plt.plot(total_Area_change,".-",label="total area")
+        plt.title(
+            f"Total area of membrane during corrections \n"
+            +f"max={max(total_Area_change)} ,min={min(total_Area_change)} \n " 
+            +f"and max/min={max(total_Area_change)/min(total_Area_change)}"
+            )
         
+        fig, ax = plt.subplots(1,3)
+        for i in range(N):
+            ax[0].plot(r_change_values_list[i],".-",label=f"linknum={i}")
+            ax[0].set_title(f"K_r")
+            ax[0].legend()
+
+            ax[1].plot(z_change_values_list[i],".-",label=f"linknum={i}")
+            ax[1].set_title(f"K_z")
+            ax[1].legend()
+
+            ax[2].plot(psi_change_values_list[i],".-",label=f"linknum={i}")
+            ax[2].set_title(f"K_psi")
+            ax[2].legend()
+        plt.show()
         exit()
     print("\n")
 
