@@ -1067,7 +1067,41 @@ def testing_values_in_epsilon():
         +f"A_44={A44}  and A[3,3]={A_new[3,3]} \n A[3,3]-A_44= {A_new[3,3]-A44} \n \n"
         )
     
+
+
+def testing_initial_angles():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
+    print("\n \n \n")
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=True
+    )
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+    c = ds*1.3
+
+    plt.figure()
+    plt.plot(radi_list[0],z_list[0],"o-",label="initial state")
+    x = [radi_list[0][0], radi_list[0][0] + ds*1.5*np.cos(psi_list[0][0])]
+    y = [z_list[0][0], z_list[0][0] + ds*1.5*np.sin(psi_list[0][0])]
+    plt.plot(x,y,color="k",label="angle test")
+
+    plt.legend()
+    for i in range(N-1):
+        j = i - 1
+        x = [radi_list[0][j], radi_list[0][j] + ds*1.5*np.cos(psi_list[0][j])]
+        y = [z_list[0][j], z_list[0][j] + ds*1.5*np.sin(psi_list[0][j])]
+        plt.plot(x,y,color="k",label="angle test")
     
+    
+    #plt.figure()
+    #plt.plot(radi_list[0][0:N],psi_list[0])
+    plt.show()
 
 if __name__ == "__main__":
     #test_Lagrange_multi()
@@ -1093,4 +1127,5 @@ if __name__ == "__main__":
     #testing_new_epsilon_matrix()
     #testing_perturbation_function()
     #Testing_total_area_function()
-    testing_values_in_epsilon()
+    #testing_values_in_epsilon()
+    testing_initial_angles()

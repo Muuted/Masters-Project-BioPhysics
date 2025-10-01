@@ -160,7 +160,7 @@ def Two_D_Constants_stationary_state(
     psi_L = -7.3648e-8
 
     """------ variables list ---------"""
-    psi,r,z,dpsidt,lambs,nus = find_init_stationary_state(
+    psi,r,z, r_contin, z_contin = find_init_stationary_state(
         sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
         ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
         ,total_points=N
@@ -184,13 +184,15 @@ def Two_D_Constants_stationary_state(
     if show_stationary_state==True:
         plt.figure()
         font_size = 10
-        plt.plot(r_list[0],z_list[0],"o-")
+        plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+        plt.plot(r_contin,z_contin,label="integration")
         plt.xlabel("r",fontsize=font_size)
         plt.ylabel("z",fontsize=font_size)
         plt.title(
             f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
             ,fontsize=font_size
             )
+        plt.legend()
         #plt.xlim(min(r)*0.95, max(r)*1.05)
         #plt.ylim(-5,max(r)-min(r)-5)
         #plt.show()

@@ -157,15 +157,32 @@ def find_init_stationary_state(
     psi_discrete,dpsidt_discrete = [],[]
     lambs_discrete, nus_discrete = [],[]
     for i in index_list:
-        psi_discrete.append(ans_odeint.y[0][i])
+        #psi_discrete.append(ans_odeint.y[0][i])
         r_discrete.append(ans_odeint.y[1][i])
         z_discrete.append(ans_odeint.y[2][i])
         dpsidt_discrete.append(ans_odeint.y[3][i])
         lambs_discrete.append(ans_odeint.y[4][i])
         nus_discrete.append(ans_odeint.y[5][i])
     
-    
-    return psi_discrete,r_discrete,z_discrete,dpsidt_discrete,lambs_discrete,nus_discrete
+    def Get_angle(x1,y1,x2,y2):
+
+        x1 = [x2 - x1]
+        y1 = [y2 - y1]
+
+        psi = np.pi - np.arctan2(y1,x1)[0]
+        return -psi
+
+    for i in range(len(r_discrete)-1):
+        psi_discrete.append(
+            Get_angle(
+                x1=r_discrete[i] ,y1=z_discrete[i]
+                ,x2=r_discrete[i+1] ,y2=z_discrete[i+1]
+                )
+        )
+        
+    r =ans_odeint.y[1][0:m]
+    z = ans_odeint.y[2][0:m]
+    return psi_discrete,r_discrete,z_discrete, r,z #dpsidt_discrete,lambs_discrete,nus_discrete
     
 if __name__ == "__main__":
     #integrate_solution()
