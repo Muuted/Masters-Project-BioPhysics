@@ -608,7 +608,7 @@ def c_diff_f(
         ,r:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi"]#,0,1,2]
+    diff_var_list = ["r","z","psi",0,1,2]
     df = 0
     if diff_var == diff_var_list[0] or diff_var == 0:
         df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
@@ -632,7 +632,7 @@ def c_diff_g(
         ,r:list,z:list,psi:list,Area:list
         ,diff_var:str =""
         ):
-    diff_var_list = ["r","z","psi"]#,0,1,2]
+    diff_var_list = ["r","z","psi",0,1,2]
     dg = 0
     if diff_var == diff_var_list[0] or diff_var == 0:
         dg = np.pi*(z[i+1]-z[i])*(Kronecker(i+1,j) + Kronecker(i,j))/Area[i]
@@ -732,7 +732,7 @@ def c_diff(
         ,diff_var =""
         ):
     
-    diff_var_list = ["r","z","psi"]#,0,1,2]
+    diff_var_list = ["r","z","psi",0,1,2]
 
     if diff_var not in diff_var_list:
         print(f"c diff error in diff_var")

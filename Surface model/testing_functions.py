@@ -690,12 +690,13 @@ def test_if_constraint_diff_is_correct():
             grad_g_r[i].append(
                 diff_g_r/h
             )
-
+            
             dgdr[i].append(
                 c_diff_g(
                     i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                    ,diff_var=0
+                    ,diff_var="r"
                 ))
+            
             
             diff_g_z =(
                     constraint_g(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list
@@ -710,8 +711,9 @@ def test_if_constraint_diff_is_correct():
             dgdz[i].append(
                 c_diff_g(
                     i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                    ,diff_var=1
+                    ,diff_var="z"
                 ))
+            
             
             diff_g_psi =(
                     constraint_g(i=i,N=N,r=radi_list[0],Area=Area_list,z=z_list[0]
@@ -727,7 +729,7 @@ def test_if_constraint_diff_is_correct():
             dgdpsi[i].append(
                 c_diff_g(
                     i=i,j=j,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list,z=z_list[0]
-                    ,diff_var=2
+                    ,diff_var="psi"
                 ))
 
 
