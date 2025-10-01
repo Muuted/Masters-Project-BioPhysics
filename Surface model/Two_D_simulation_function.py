@@ -421,7 +421,7 @@ def Two_d_simulation_stationary_states(
                 radi[t+1][i] = radi[t][i]
                 #psi[t+1][i] = psi[t][i]
             if i < N:
-                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
+                z_list[t+1][i] = z_list[t][i] #+ dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
 
                 drdt =drdt_func(
@@ -430,7 +430,7 @@ def Two_d_simulation_stationary_states(
                             ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
                             ,lamb=lambs,nu=nus
                             )
-                radi[t+1][i] = radi[t][i] + dt*drdt
+                radi[t+1][i] = radi[t][i] #+ dt*drdt
 
                 dpsidt = dpsidt_func(
                                 i=i
@@ -438,10 +438,10 @@ def Two_d_simulation_stationary_states(
                                 ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
                                 ,lamb=lambs,nu=nus
                                 )
-                psi[t+1][i] = psi[t][i] + dt*dpsidt
+                psi[t+1][i] = psi[t][i] #+ dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_initial 
+        dA = Area_new - Area_initial +1
         
         """ start: Lists and variables for problem finding"""
         Area_compare = [dA]
@@ -467,7 +467,7 @@ def Two_d_simulation_stationary_states(
             epsilon = Epsilon_v2(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
-            scaleing = 1#/2
+            scaleing = 1/5
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(2*N):
