@@ -915,6 +915,18 @@ def testing_new_epsilon_matrix():
     print(f"sum of differenc of A = {np.sum(A_original-A_new)}")
 
 
+    print("Using direct calculations to verify the materix")
+    A11 = 4*np.pi**2*( radi_list[0][1]**2 + radi_list[0][0]**2)/Area_list[0] + (np.sin(psi_list[0][0]))**2
+
+    print("A_{11} ="+f"{A11}" + f" and for the matrix value we have A[0,0]={A_new[0,0]}")
+
+    print(
+        f"radi={radi_list[0]} \n"
+        +f"z={z_list[0]} \n"
+        +f"psi={psi_list[0]}"
+    )
+
+
 def Testing_total_area_function():
     from two_d_data_processing import tot_area
     from Two_D_constants import Two_D_Constants_stationary_state
@@ -967,8 +979,6 @@ def Testing_total_area_function():
 
 
 
-
-
 def testing_perturbation_function():
     from Two_D_functions import Perturbation_of_inital_state
     from Two_D_constants import Two_D_Constants_stationary_state
@@ -1016,6 +1026,47 @@ def testing_perturbation_function():
     plt.show()
 
 
+def testing_values_in_epsilon():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=False
+    )
+    print("\n \n \n")
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    
+    t = 0    
+    #print(f"ebf={ebf} \n ebg={ebg}")
+    print("new epsilon function")
+    ebf_new,ebg_new, A_new, b_new = Epsilon_v2(
+        N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
+        ,print_matrix=False
+        ,testing= True
+    )
+
+
+    print("Using direct calculations to verify the materix")
+    A11 = 4*np.pi**2*( radi_list[0][1]**2 + radi_list[0][0]**2)/Area_list[0]**2 + (np.sin(psi_list[0][0]))**2
+    A12 = -4*np.pi**2*(radi_list[0][1]**2)/(Area_list[0]*Area_list[1])
+    A13 = 2*np.pi**2*(z_list[0][1]-z_list[0][0])*(radi_list[0][1]-radi_list[0][0])/Area_list[0]**2 - np.cos(psi_list[0][0])*np.sin(psi_list[0][0])
+    zz = (z_list[0][2] - z_list[0][1])**2
+    rr = (radi_list[0][2] + radi_list[0][1])**2 
+    A44 = np.pi**2*( zz + rr)/Area_list[1]**2 + np.cos(psi_list[0][1])**2
+    print(
+        "\n \n A_{11} ="+f"{A11}" + f" and for the matrix value we have A[0,0]={A_new[0,0]} \n"
+        +f" A[0,0]-A_11 ={A_new[0,0]-A11} \n \n"
+        +f"A_12={A12}  and A[0,1]={A_new[0,1]} \n A[0,1]-A_12= {A_new[0,1]-A12} \n \n"
+        +f"A_12={A13}  and A[0,2]={A_new[0,2]} \n A[0,1]-A_12= {A_new[0,2]-A13} \n \n"
+        +f"A_44={A44}  and A[3,3]={A_new[3,3]} \n A[3,3]-A_44= {A_new[3,3]-A44} \n \n"
+        )
+    
+    
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1037,6 +1088,7 @@ if __name__ == "__main__":
     )"""
 
     #test_if_constraint_diff_is_correct()
-    testing_new_epsilon_matrix()
+    #testing_new_epsilon_matrix()
     #testing_perturbation_function()
     #Testing_total_area_function()
+    testing_values_in_epsilon()
