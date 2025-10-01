@@ -1087,8 +1087,8 @@ if __name__ == "__main__":
         ,print_val=True
     )"""
 
-    #test_if_constraint_diff_is_correct()
+    test_if_constraint_diff_is_correct()
     #testing_new_epsilon_matrix()
     #testing_perturbation_function()
     #Testing_total_area_function()
-    testing_values_in_epsilon()
+    #testing_values_in_epsilon()
