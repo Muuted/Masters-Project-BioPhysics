@@ -2,7 +2,7 @@ import numpy as np
 from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
-from Two_D_functions import Epsilon_v2
+from Two_D_functions import Epsilon_v2, c_diff
 from two_d_data_processing import check_area, tot_area
 import matplotlib.pyplot as plt
 import os
@@ -463,28 +463,32 @@ def Two_d_simulation_stationary_states(
             """ebf, ebg = Epsilon_values(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )"""
-            ebf, ebg = Epsilon_v2(
+            #ebf, ebg = Epsilon_v2(
+            epsilon = Epsilon_v2(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
-            scaleing = 1/5
+            scaleing = 1#/2
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
-                for beta in range(N):
-                    ebf_val, ebg_val = ebf[beta],ebg[beta]
+                for beta in range(2*N):
+                    #ebf_val, ebg_val = ebf[beta],ebg[beta]
                     
                     K_r += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
+                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
+                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
+                        epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )*scaleing
                     
                     K_z += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
+                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
+                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
+                        epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )*scaleing
                     
                     K_psi += (
-                        ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
-                        + ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
+                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
+                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
+                        epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )*scaleing
                     
                 radi[t+1][i] += K_r

@@ -769,7 +769,7 @@ def Epsilon_v2(
     A = np.zeros(shape=(2*N,2*N))
     b = np.zeros(2*N)
     vars = ["r","z","psi"]
-    print(f"in epsilon")
+    
     for alpha in range(2*N):
         for beta in range(2*N):
             for n in range(N):
@@ -779,10 +779,10 @@ def Epsilon_v2(
                         )
                     A[alpha][beta] += a
                    
-                    if alpha==0 and beta == 1:
+                    """if alpha==0 and beta == 1:
                         print(
                             f"var ={variables} and n={n} and a={a}"
-                        )
+                        )"""
                 """A[alpha][beta] += (
                     c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")
                     +c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")
@@ -810,7 +810,7 @@ def Epsilon_v2(
     if testing == True:
         return epsilon_f,epsilon_g, A, b
     else:
-        return epsilon_f,epsilon_g
+        return x#epsilon_f,epsilon_g
 
 
 
