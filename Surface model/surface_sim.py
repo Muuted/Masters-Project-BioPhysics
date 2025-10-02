@@ -219,6 +219,7 @@ def Surface_sim_stationary_state_initial_configuration():
     plot_tot_area()
     plot_Epot_Ekin()
     
+    #plt.draw()
     plt.show()
     Make_frames(
         data_path=data_path

@@ -65,7 +65,7 @@ def plot_Epot_Ekin(data_path="",df_name=""):
         df_name, fps_movie ,num_frames = path_args[4:7]
 
     const_args = Two_D_Constants(
-        print_val=True
+        print_val=False
     )
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
