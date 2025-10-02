@@ -441,7 +441,7 @@ def Two_d_simulation_stationary_states(
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_initial 
+        dA = Area_new - Area_initial #+1
         
         """ start: Lists and variables for problem finding"""
         Area_compare = [dA]
@@ -507,8 +507,10 @@ def Two_d_simulation_stationary_states(
             dA = Area_new - Area_initial
             total_Area_change.append(Area_new)
             Area_compare.append(dA)
-            if correction_count >= 1000:
-                print(f"too many corrections, we close the program")
+            corr_max = 100
+            if correction_count >= corr_max:
+                print(f"{corr_max} corrections, is too many corrections, we close the program. ")
+                #break
                 exit()
             
         
@@ -566,7 +568,7 @@ def Two_d_simulation_stationary_states(
             ax[2].set_title(f"K_psi")
             ax[2].legend()
         plt.show()
-        exit()
+        #exit()
     print("\n")
 
     plt.figure()

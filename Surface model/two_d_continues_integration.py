@@ -175,8 +175,8 @@ def find_init_stationary_state(
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
             Get_angle(
-                x1=r_discrete[i] ,y1=z_discrete[i]
-                ,x2=r_discrete[i+1] ,y2=z_discrete[i+1]
+                x1=r_discrete[i+1] ,y1=z_discrete[i+1]
+                ,x2=r_discrete[i] ,y2=z_discrete[i]
                 )
         )
         

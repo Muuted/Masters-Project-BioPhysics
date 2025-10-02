@@ -1071,7 +1071,6 @@ def testing_values_in_epsilon():
 
 def testing_initial_angles():
     from Two_D_constants import Two_D_Constants_stationary_state
-    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
     print("\n \n \n")
     const_args = Two_D_Constants_stationary_state(
         print_val=False
@@ -1087,22 +1086,63 @@ def testing_initial_angles():
 
     plt.figure()
     plt.plot(radi_list[0],z_list[0],"o-",label="initial state")
-    x = [radi_list[0][0], radi_list[0][0] + ds*1.5*np.cos(psi_list[0][0])]
-    y = [z_list[0][0], z_list[0][0] + ds*1.5*np.sin(psi_list[0][0])]
+    x = [radi_list[0][1], radi_list[0][1] + ds*1.5*np.cos(psi_list[0][0])]
+    y = [z_list[0][1], z_list[0][1] + ds*1.5*np.sin(psi_list[0][0])]
     plt.plot(x,y,color="k",label="angle test")
+    plt.plot(x[0],y[0],color="g",marker=".")
 
     plt.legend()
-    for i in range(N-1):
-        j = i - 1
-        x = [radi_list[0][j], radi_list[0][j] + ds*1.5*np.cos(psi_list[0][j])]
-        y = [z_list[0][j], z_list[0][j] + ds*1.5*np.sin(psi_list[0][j])]
+    for i in range(1,N):
+        j = i 
+        x = [radi_list[0][j+1], radi_list[0][j+1] + ds*1.5*np.cos(psi_list[0][j])]
+        y = [z_list[0][j+1], z_list[0][j+1] + ds*1.5*np.sin(psi_list[0][j])]
         plt.plot(x,y,color="k",label="angle test")
+        plt.plot(x[0],y[0],color="g",marker=".")
     
     
     #plt.figure()
     #plt.plot(radi_list[0][0:N],psi_list[0])
     plt.show()
 
+
+def testing_if_constraints_are_true():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
+    print("\n \n \n")
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=True
+    )
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+    Tol= 1e-5
+
+    f_cons, i_count_f = [],[]
+    g_cons ,i_count_g = [], []
+    for i in range(N):
+        f = constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
+        if f < - Tol or f > Tol :
+            i_count_f.append(i)
+            f_cons.append(f)
+
+        g = constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
+        if g < - Tol or g > Tol :
+            i_count_g.append(i)
+            g_cons.append(g)
+    
+
+    plt.figure()
+    plt.plot(i_count_f,f_cons,".-",label="f")
+    plt.plot(i_count_g,g_cons,".-",label="g")
+    plt.title(
+        f"N={N}, len(f)={len(f_cons)} and len(g)={len(g_cons)}"
+    )
+    plt.legend()
+    plt.show()
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1129,3 +1169,4 @@ if __name__ == "__main__":
     #Testing_total_area_function()
     #testing_values_in_epsilon()
     testing_initial_angles()
+    #testing_if_constraints_are_true()
