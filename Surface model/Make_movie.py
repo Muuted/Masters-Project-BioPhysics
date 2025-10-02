@@ -135,7 +135,7 @@ def Make_frames(
     rmin,rmax = np.min([np.min(i) for i in r]), np.max([np.max(i) for i in r])
     zmin, zmax = np.min([np.min(i) for i in z]) , np.max([np.max(i) for i in z])
     k = 0
-    print("\n Plotting progressbar")
+    print("\n Making frames progressbar")
     b = progressbar.ProgressBar(maxval=len(frame_vec)-1)
     b.start()
     for t in frame_vec:
@@ -162,7 +162,7 @@ def Make_frames(
         fig.savefig(figs_save_path +f"{k}")
         fig.clear()
         k += 1
-    
+    b.finish()
     plt.close()
     print("\n")
 

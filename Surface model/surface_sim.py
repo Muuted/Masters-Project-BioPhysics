@@ -1,5 +1,6 @@
 import pandas as pd
 import time
+import matplotlib.pyplot as plt
 from Two_D_constants import Two_D_Constants, Two_D_paths, Two_D_Constants_stationary_state
 from Two_D_simulation_function import Two_D_simulation, Two_D_simulation_V2, Two_d_simulation_stationary_states
 from Make_movie import Make_frames, Make_video
@@ -210,7 +211,7 @@ def Surface_sim_stationary_state_initial_configuration():
         ,num_frames = num_frames
         ,data_path = data_path
         ,Tolerence=1e-10
-        ,save_data=False
+        ,save_data=True
     )
 
     print(f"\n the simulation time={(time.time()-start_time)/60} min \n")
@@ -218,6 +219,7 @@ def Surface_sim_stationary_state_initial_configuration():
     plot_tot_area()
     plot_Epot_Ekin()
     
+    plt.show()
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path

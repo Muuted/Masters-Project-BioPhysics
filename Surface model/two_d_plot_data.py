@@ -36,7 +36,7 @@ def plot_tot_area(data_path="",df_name=""):
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
     fig, ax=plt.subplots()
-    plt.plot(time,Area_change,'.')
+    plt.plot(time,Area_change,'.-')
     plt.xlabel("time [s]")
     plt.ylabel("total area")
     plt.title(
@@ -50,10 +50,11 @@ def plot_tot_area(data_path="",df_name=""):
         dA[t] = Area_change[t+1] - Area_change[t]
 
     fig, ax = plt.subplots()
-    plt.plot(dA[0:sim_steps-1],'.')
+    plt.plot(dA[0:sim_steps-1],'.-')
     ax.ticklabel_format(useOffset=False)
     plt.title("Change in Area")
-    plt.show()
+    plt.draw()
+    #plt.show()
     
 def plot_Epot_Ekin(data_path="",df_name=""):
 
@@ -110,7 +111,8 @@ def plot_Epot_Ekin(data_path="",df_name=""):
     plt.ylabel(r"$E_{pot}$",fontsize=fontsize)
     plt.title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)
 
-    plt.show()
+    plt.draw()
+    #plt.show()
 
 
 if __name__ == "__main__":

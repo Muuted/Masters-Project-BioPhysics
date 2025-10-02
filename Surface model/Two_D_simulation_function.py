@@ -392,13 +392,14 @@ def Two_d_simulation_stationary_states(
     ,save_data:bool = True 
     ,Tolerence = 1e-15
     ,do_correction = True
+    ,area_testing = False
     ):
     np.set_printoptions(legacy='1.25')
     Area_initial = np.sum(Area)
     Area_new = 0
     
     lambs_save, nus_save = [], []
-    correct_count_list = np.zeros(sim_steps)
+    correct_count_list = np.zeros(sim_steps-1)
     print("Simulation progressbar \n ")
     b = progressbar.ProgressBar(maxval=sim_steps-1)
     b.start()
@@ -423,7 +424,6 @@ def Two_d_simulation_stationary_states(
             if i < N:
                 z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
-
                 drdt =drdt_func(
                             i=i
                             ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
@@ -443,27 +443,25 @@ def Two_d_simulation_stationary_states(
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
         dA = Area_new - Area_initial #+1
         
-        """ start: Lists and variables for problem finding"""
-        Area_compare = [dA]
-        #Area_compare.append(dA)
-        total_Area_change = [Area_initial, Area_new]
-    
-        r_before = [i for i in radi[t+1]]
-        z_before = [i for i in z_list[t+1]]
+        if area_testing == True:
+            """ start: Lists and variables for problem finding"""
+            Area_compare = [dA]
+            #Area_compare.append(dA)
+            total_Area_change = [Area_initial, Area_new]
+        
+            r_before = [i for i in radi[t+1]]
+            z_before = [i for i in z_list[t+1]]
 
-        r_change_values_list = [[] for i in range(N)]
-        z_change_values_list = [[] for i in range(N)]
-        psi_change_values_list = [[] for i in range(N)]
+            r_change_values_list = [[] for i in range(N)]
+            z_change_values_list = [[] for i in range(N)]
+            psi_change_values_list = [[] for i in range(N)]
 
-        """ end: Lists and variables for problem finding"""
+            """ end: Lists and variables for problem finding"""
+        
         correction_count = 0
         while Tolerence < abs(dA) and do_correction == True:
             correction_count += 1
-            print(f"correction count={correction_count}",end="\r")
-            """ebf, ebg = Epsilon_values(
-                    N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
-                            )"""
-            #ebf, ebg = Epsilon_v2(
+            #print(f"correction count={correction_count}",end="\r")
             epsilon = Epsilon_v2(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
                             )
@@ -471,23 +469,16 @@ def Two_d_simulation_stationary_states(
             for i in range(N):      
                 K_r,K_z,K_psi = 0,0,0
                 for beta in range(2*N):
-                    #ebf_val, ebg_val = ebf[beta],ebg[beta]
                     
                     K_r += (
-                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="r") 
-                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="r")
                         )*scaleing
                     
                     K_z += (
-                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="z")
-                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="z")
                         )*scaleing
                     
                     K_psi += (
-                        #ebf_val*c_diff_f(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],Area=Area,diff_var="psi")
-                        #+ ebg_val*c_diff_g(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         epsilon[beta]*c_diff(i=beta,j=i,N=N,r=radi[t+1],psi=psi[t+1],z=z_list[t+1],Area=Area,diff_var="psi")
                         )*scaleing
                     
@@ -495,18 +486,22 @@ def Two_d_simulation_stationary_states(
                 z_list[t+1][i] += K_z
                 psi[t+1][i] += K_psi
 
-                r_change_values_list[i].append(K_r)
-                z_change_values_list[i].append(K_z)
-                psi_change_values_list[i].append(K_psi)                
+                if area_testing == True:
+                    r_change_values_list[i].append(K_r)
+                    z_change_values_list[i].append(K_z)
+                    psi_change_values_list[i].append(K_psi)                
 
-            if correction_count == 1:
-                r_after = [ i for i in radi[t+1]]
-                z_after = [ i for i in z_list[t+1]]
+                    if correction_count == 1:
+                        r_after = [ i for i in radi[t+1]]
+                        z_after = [ i for i in z_list[t+1]]
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
             dA = Area_new - Area_initial
-            total_Area_change.append(Area_new)
-            Area_compare.append(dA)
+
+            if area_testing == True:
+                total_Area_change.append(Area_new)
+                Area_compare.append(dA)
+
             corr_max = 100
             if correction_count >= corr_max:
                 print(f"{corr_max} corrections, is too many corrections, we close the program. ")
@@ -516,64 +511,67 @@ def Two_d_simulation_stationary_states(
         
         correct_count_list[t] = correction_count
 
-        print(f"Shape of r change values list = {np.shape(r_change_values_list)}")
-        print(f"dA[end] ={Area_compare[len(Area_compare)-1]} and num correct count ={correction_count}")
-        print(f"Area_compare[0]={Area_compare[0]}")
-        #print(f"list Area compare = {Area_compare}")
-        print(f" Checking the dA \n"
-            +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_initial} \n"
-            +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_initial} \n"
-            +f" Checking the total area \n"
-            +f"Initial Area = {Area_initial} \n"
-            +f"Area no correction = {tot_area(N=N,r=r_before,z=z_before) } \n"
-            +f"Area one correction = {tot_area(N=N,r=r_after,z=z_after)}"
-            )
+        if area_testing == True:
+            print(f"Shape of r change values list = {np.shape(r_change_values_list)}")
+            print(f"dA[end] ={Area_compare[len(Area_compare)-1]} and num correct count ={correction_count}")
+            print(f"Area_compare[0]={Area_compare[0]}")
+            #print(f"list Area compare = {Area_compare}")
+            print(f" Checking the dA \n"
+                +f"dA before = {tot_area(N=N,r=r_before,z=z_before) -Area_initial} \n"
+                +f"dA After = {tot_area(N=N,r=r_after,z=z_after)-Area_initial} \n"
+                +f" Checking the total area \n"
+                +f"Initial Area = {Area_initial} \n"
+                +f"Area no correction = {tot_area(N=N,r=r_before,z=z_before) } \n"
+                +f"Area one correction = {tot_area(N=N,r=r_after,z=z_after)}"
+                )
 
-        plt.figure()
-        font_size = 15
-        #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
-        plt.plot(Area_compare,".-")
+            plt.figure()
+            font_size = 15
+            #plt.plot(0,Area_old,"o",label=r"$Area_{init}$")
+            plt.plot(Area_compare,".-")
+            
+            plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
+            plt.xlabel("number of corrections for specific t",fontsize=font_size)
+            plt.ylabel("dA",fontsize=font_size)
+
+
+            plt.figure()
+            plt.plot(r_before,z_before,"o-",label="No correction")
+            plt.plot(r_after,z_after,".-",label="1 correction")
         
-        plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
-        plt.xlabel("number of corrections for specific t",fontsize=font_size)
-        plt.ylabel("dA",fontsize=font_size)
+            plt.title("check correction")
+            plt.legend()
 
+            plt.figure()
+            plt.plot(total_Area_change,".-",label="total area")
+            plt.title(
+                f"Total area of membrane during corrections \n"
+                +f"max={max(total_Area_change)} ,min={min(total_Area_change)} \n " 
+                +f"and max/min={max(total_Area_change)/min(total_Area_change)}"
+                )
+            
+            fig, ax = plt.subplots(1,3)
+            for i in range(N):
+                ax[0].plot(r_change_values_list[i],".-",label=f"linknum={i}")
+                ax[0].set_title(f"K_r")
+                ax[0].legend()
 
-        plt.figure()
-        plt.plot(r_before,z_before,"o-",label="No correction")
-        plt.plot(r_after,z_after,".-",label="1 correction")
+                ax[1].plot(z_change_values_list[i],".-",label=f"linknum={i}")
+                ax[1].set_title(f"K_z")
+                ax[1].legend()
+
+                ax[2].plot(psi_change_values_list[i],".-",label=f"linknum={i}")
+                ax[2].set_title(f"K_psi")
+                ax[2].legend()
+            plt.show()
+            #exit()
     
-        plt.title("check correction")
-        plt.legend()
-
-        plt.figure()
-        plt.plot(total_Area_change,".-",label="total area")
-        plt.title(
-            f"Total area of membrane during corrections \n"
-            +f"max={max(total_Area_change)} ,min={min(total_Area_change)} \n " 
-            +f"and max/min={max(total_Area_change)/min(total_Area_change)}"
-            )
-        
-        fig, ax = plt.subplots(1,3)
-        for i in range(N):
-            ax[0].plot(r_change_values_list[i],".-",label=f"linknum={i}")
-            ax[0].set_title(f"K_r")
-            ax[0].legend()
-
-            ax[1].plot(z_change_values_list[i],".-",label=f"linknum={i}")
-            ax[1].set_title(f"K_z")
-            ax[1].legend()
-
-            ax[2].plot(psi_change_values_list[i],".-",label=f"linknum={i}")
-            ax[2].set_title(f"K_psi")
-            ax[2].legend()
-        plt.show()
-        #exit()
+    b.finish()
     print("\n")
 
     plt.figure()
     plt.plot(correct_count_list,".-")
-    plt.draw()
+    plt.show()
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],
