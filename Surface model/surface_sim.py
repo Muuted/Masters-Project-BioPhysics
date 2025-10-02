@@ -178,7 +178,9 @@ def Surface_sim_Area_condition():
     )
     
 
-def Surface_sim_stationary_state_initial_configuration():
+def Surface_sim_stationary_state_initial_configuration(
+        do_simulation=True
+    ):
     print("\n \nNow Running the surface simulation from stationary configurations \n \n")
 
     const_args = Two_D_Constants_stationary_state(
@@ -199,25 +201,32 @@ def Surface_sim_stationary_state_initial_configuration():
     df_name, fps_movie ,num_frames = path_args[4:7]
 
     start_time = time.time()
-    Two_d_simulation_stationary_states(
-        N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
-        ,kG=kG ,tau=tau ,sim_steps=sim_steps
-        ,L=L, r0=r0
-        ,Area=Area_list
-        ,psi=psi_list
-        ,radi=radi_list
-        ,z_list=z_list
-        ,df_name = df_name
-        ,num_frames = num_frames
-        ,data_path = data_path
-        ,Tolerence=1e-10
-        ,save_data=True
-    )
+    if do_simulation == True:
+        Two_d_simulation_stationary_states(
+            N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
+            ,kG=kG ,tau=tau ,sim_steps=sim_steps
+            ,L=L, r0=r0
+            ,Area=Area_list
+            ,psi=psi_list
+            ,radi=radi_list
+            ,z_list=z_list
+            ,df_name = df_name
+            ,num_frames = num_frames
+            ,data_path = data_path
+            ,Tolerence=1e-10
+            ,save_data=True
+        )
 
     print(f"\n the simulation time={(time.time()-start_time)/60} min \n")
     
-    plot_tot_area()
-    plot_Epot_Ekin()
+    plot_tot_area(
+        data_path=data_path
+        ,df_name=df_name
+    )
+    plot_Epot_Ekin(
+        data_path=data_path
+        ,df_name=df_name
+    )
     
     #plt.draw()
     plt.show()
@@ -238,4 +247,6 @@ if __name__ == "__main__":
     #surface_sim_find_c0()
     #Surface_sim()
     #Surface_sim_Area_condition()
-    Surface_sim_stationary_state_initial_configuration()
+    Surface_sim_stationary_state_initial_configuration(
+        #do_simulation=False
+    )

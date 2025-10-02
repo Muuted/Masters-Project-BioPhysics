@@ -130,14 +130,15 @@ def Two_D_Constants_stationary_state(
         ,pause_timer = 2
         ):
     """------ constants ---------"""
-    N = 20#40#int(L/ds) # 99 + 1 # Number of chain links
+    N = 40#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 0.1 #5.45#s  : total time simulated
-    dt = 1e-5 # s time step.
-    sim_steps =  10 #int(T/dt) # : number of simulation steps
+    T = 1 #5.45#s  : total time simulated
+    dt = 1e-2 # s time step.
+    sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1.5#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
+
     #Base variables
     c0 = 0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus

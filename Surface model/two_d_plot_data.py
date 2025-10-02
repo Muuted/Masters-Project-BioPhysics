@@ -12,10 +12,8 @@ import matplotlib.pyplot as plt
 def plot_tot_area(data_path="",df_name=""):
 
     if data_path == "" and df_name== "":
-        path_args = Two_D_paths()
-        data_path, fig_save_path = path_args[0:2]
-        video_save_path,video_fig_path = path_args[2:4]
-        df_name, fps_movie ,num_frames = path_args[4:7]
+        print(f" No paths were given in the plot_tot_area function")
+        exit()
 
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
@@ -56,22 +54,13 @@ def plot_tot_area(data_path="",df_name=""):
     plt.draw()
     #plt.show()
     
-def plot_Epot_Ekin(data_path="",df_name=""):
+def plot_Epot_Ekin(
+        data_path="",df_name=""
+        ):
 
     if data_path == "" and df_name== "":
-        path_args = Two_D_paths()
-        data_path, fig_save_path = path_args[0:2]
-        video_save_path,video_fig_path = path_args[2:4]
-        df_name, fps_movie ,num_frames = path_args[4:7]
-
-    const_args = Two_D_Constants(
-        print_val=False
-    )
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
+        print(f" No paths were given, in the plot_Epot_Ekin function")
+        exit()
 
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
@@ -82,9 +71,13 @@ def plot_Epot_Ekin(data_path="",df_name=""):
     Area = df_sim['area list'][0]
     N = df_sim["N"][0]
     c0 = df_sim["c0"][0]
+    k = df_sim['k'][0]
+    kG = df_sim['kG'][0]
+    sigma = df_sim['sigma'][0]
+    tau = df_sim['tau'][0]
     dt = df_sim["dt"][0]
     sim_steps = df_sim["sim_steps"][0]
-
+    
     T = []
     S = []
 
@@ -113,6 +106,9 @@ def plot_Epot_Ekin(data_path="",df_name=""):
 
     plt.draw()
     #plt.show()
+
+
+
 
 
 if __name__ == "__main__":
