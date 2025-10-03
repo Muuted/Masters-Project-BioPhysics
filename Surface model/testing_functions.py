@@ -1082,11 +1082,14 @@ def testing_initial_angles():
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    c = ds*1.5
+    c = -ds*1.5
 
     plt.figure()
     plt.plot(radi_list[0],z_list[0],"o-",label="initial state")
 
+    #psi_list[0] = [i + np.pi for i in psi_list[0]]
+    
+    print(f"init angle = {psi_list[0][0]}")
     x = [
         radi_list[0][1]
         , radi_list[0][1] + c*np.cos(psi_list[0][0])

@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-
-
 def dSds(s,S,k,sigma,c0):
     psi, r, z,n,lambs,nus,A = S
     #k,kG,sigma,c0 = p
@@ -22,80 +20,6 @@ def dSds(s,S,k,sigma,c0):
     dAds = 2*np.pi*r
 
     return [dpsids ,drds ,dzds ,dnds ,dlambs_ds ,dnu_ds ,dAds]
-
-"""
-def integrate_solution():
-    const_args = Two_D_Constants(
-        print_val=True
-    )
-
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    
-    
-    #args list
-    sigma_c = k*c0**2
-    k_c = k
-    kG = -0.75*k
-    tau_c = k*c0
-    c0_c = 0.25
-    lc = 1/np.sqrt(0.5 + sigma_c)
-
-    # making the dimless variables.
-    c0 = c0/c0_c
-    tau = 1 #tau/tau_c
-    sigma = 0.1 #sigma/sigma_c
-    k = k/k_c
-
-    args_list = (k ,kG ,sigma ,c0)
-    
-    #initial values 
-    psi_L = -7.3648e-8
-    r_L =  20 #(tau*lc**2/k)*1.01
-    z_L = 0
-    n_L = (psi_L/kv(1,r_L/lc))*( -kv(0,r_L/lc) - kv(1,r_L/lc)/(r_L/lc)    )
-    lambs_L = (k*c0**2/2 + sigma)*r_L
-    nus_L = 0 # nu(s_1) = nu(s_2) = 0 from that we know the outer value
-    A = 0#2*np.pi*( r_L**2 - r0**2  )
-    
-    #initial values list
-    init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
-    
-
-    #The integration start and stop
-    s0 ,sN = 0 ,r_L + 10
-
-    #The integration part.
-    ans_odeint = scipy.integrate.solve_ivp(
-        dSds,
-        t_span = [sN ,s0],
-        t_eval = np.linspace(start=sN,stop=s0,num=100),
-        y0 = init_conditions,
-        args = args_list
-    )
-
-    print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
-    print(ans_odeint)
-
-    r = ans_odeint.y[1]
-    z = ans_odeint.y[2]
-
-    m = 0
-    for i in range(len(ans_odeint.y[5])-1):
-        if ans_odeint.y[5][i] < tau:
-            #print(f"==tau found and i={i}")
-            m = i
-            #break
-    print(f"m={m}")
-    r = ans_odeint.y[1][0:m]
-    z = ans_odeint.y[2][0:m]
-    fig, ax = plt.subplots()
-    plt.plot(r,z,"-")
-    plt.xlabel("r")
-    plt.ylabel("z")
-    plt.show()
-"""
 
 def descritize_sim_results(r,z,ds,max_num_points=""):
     j=len(r)-1
@@ -114,8 +38,11 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
     return index_list
 
 def Get_angle(x1,y1,x2,y2):
-    x1 = [x2 - x1]
-    y1 = [y2 - y1]
+    """
+    x1,y1 is closer to the free edge along the membrane
+    """
+    x1 = [x1 - x2]
+    y1 = [y1 - y2]
     psi = np.pi - np.arctan2(y1,x1)[0]
     #psi += -np.pi
     return -psi
@@ -183,12 +110,6 @@ def find_init_stationary_state(
         dpsidt_discrete.append(ans_odeint.y[3][i])
         lambs_discrete.append(ans_odeint.y[4][i])
         nus_discrete.append(ans_odeint.y[5][i])
-    
-    def Get_angle_in(x1,y1,x2,y2):
-        x1 = [x2 - x1]
-        y1 = [y2 - y1]
-        psi = np.pi - np.arctan2(y1,x1)[0]
-        return -psi
 
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
@@ -197,8 +118,8 @@ def find_init_stationary_state(
                 ,x2=r_discrete[i+1] ,y2=z_discrete[i+1]
                 )
         )
-        
-    r =ans_odeint.y[1][0:m]
+    
+    r = ans_odeint.y[1][0:m]
     z = ans_odeint.y[2][0:m]
     return psi_discrete,r_discrete,z_discrete, r,z #dpsidt_discrete,lambs_discrete,nus_discrete
     
