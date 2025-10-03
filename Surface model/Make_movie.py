@@ -141,9 +141,11 @@ def Make_frames(
     for t in frame_vec:
         b.update(k)
         plt.plot(r[t],z[t],'-o')
-        plt.xlim([max(r[0]) - ds*(N+1), max(r[0])])
-        #plt.xlim([rmin-ds,rmax])
-        plt.ylim([-ds*10,ds*10])
+        xmax = max(r[0])
+        xmin = 0
+        #plt.xlim([max(r[0]) - ds*(20), max(r[0])])
+        plt.xlim([xmin,xmax])
+        plt.ylim([-ds, xmax -ds])
         #plt.ylim([zmin*0.99,zmax*1.01])
         plt.xlabel(f"x")
         plt.ylabel(f"z")

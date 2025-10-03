@@ -200,7 +200,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name + f"dt={dt} and N={N}"
+    df_name += f"dt={dt} and N={N}"
     start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(

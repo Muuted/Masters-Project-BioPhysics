@@ -38,13 +38,10 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
     return index_list
 
 def Get_angle(x1,y1,x2,y2):
-    """
-    x1,y1 is closer to the free edge along the membrane
-    """
+    """ x1,y1 is closer to the free edge along the membrane"""
     x1 = [x1 - x2]
     y1 = [y1 - y2]
     psi = np.pi - np.arctan2(y1,x1)[0]
-    #psi += -np.pi
     return -psi
 
 def find_init_stationary_state(
