@@ -200,6 +200,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
+    df_name + f"dt={dt} and N={N}"
     start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -217,7 +218,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,save_data=True
         )
 
-    print(f"\n the simulation time={(time.time()-start_time)/60} min \n")
+    print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     
     plot_tot_area(
         data_path=data_path

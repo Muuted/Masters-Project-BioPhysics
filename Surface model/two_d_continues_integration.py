@@ -6,6 +6,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+def Get_angle(x1,y1,x2,y2):
+    x1 = [x2 - x1]
+    y1 = [y2 - y1]
+
+    psi = np.pi - np.arctan2(y1,x1)[0]
+    
+    return -psi
+
 def dSds(s,S,k,sigma,c0):
     psi, r, z,n,lambs,nus,A = S
     #k,kG,sigma,c0 = p
@@ -130,13 +138,25 @@ def find_init_stationary_state(
     #initial values list
     init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
     #The integration part.
+    def edge_tension(t,y,tau):
+        return tau - y[4]
+    
+    def edge_ratio(t,y,k,kG):
+        dpsidt_1 = y[3]
+        psi_1 = y[0]
+        r_1 = y[1]
+        alpha = kG/k
+        val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
+        return val
+    
     ans_odeint = scipy.integrate.solve_ivp(
-        dSds,
-        t_span = [sN ,s0],
-        t_eval = np.linspace(start=sN,stop=s0,num=10003),
-        y0 = init_conditions,
-        args = args_list,
-        method="LSODA"
+        dSds
+        ,t_span = [sN ,s0]
+        ,t_eval = np.linspace(start=sN,stop=s0,num=10000)
+        ,y0 = init_conditions
+        ,args = args_list
+        ,method="LSODA"
+        #,events=(edge_tension,edge_ratio)
     )
 
     m = len(ans_odeint.y[0])-1
@@ -164,19 +184,19 @@ def find_init_stationary_state(
         lambs_discrete.append(ans_odeint.y[4][i])
         nus_discrete.append(ans_odeint.y[5][i])
     
-    def Get_angle(x1,y1,x2,y2):
+    """def Get_angle(x1,y1,x2,y2):
 
         x1 = [x2 - x1]
         y1 = [y2 - y1]
 
         psi = np.pi - np.arctan2(y1,x1)[0]
-        return -psi
+        return -psi"""
 
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
             Get_angle(
-                x1=r_discrete[i+1] ,y1=z_discrete[i+1]
-                ,x2=r_discrete[i] ,y2=z_discrete[i]
+                x1=r_discrete[i] ,y1=z_discrete[i]
+                ,x2=r_discrete[i+1] ,y2=z_discrete[i+1]
                 )
         )
         

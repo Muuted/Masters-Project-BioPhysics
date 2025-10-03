@@ -130,13 +130,13 @@ def Two_D_Constants_stationary_state(
         ,pause_timer = 2
         ):
     """------ constants ---------"""
-    N = 40#int(L/ds) # 99 + 1 # Number of chain links
+    N = 20#80#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 2 #5.45#s  : total time simulated
-    dt = 1e-2 # s time step.
+    T = 0.1 #5.45#s  : total time simulated
+    dt = 1e-3 # s time step.
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  1.5/2#1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds =  1.5#0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
@@ -188,8 +188,8 @@ def Two_D_Constants_stationary_state(
         font_size = 10
         plt.plot(r_contin,z_contin,marker=".",label="integration")
         plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
-        plt.xlim(min(r_contin)-1, max(r_contin)+1)
-        ceil = max(r_contin)-min(r_contin) + 2
+        plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
+        ceil = max(r_list[0])-min(r_list[0]) + 2
         plt.ylim(-ceil/10, 9*ceil/10)
         plt.xlabel("r",fontsize=font_size)
         plt.ylabel("z",fontsize=font_size)
@@ -246,4 +246,5 @@ if __name__ == "__main__":
     #Two_D_Constants(print_val=True)
     Two_D_Constants_stationary_state(
         show_stationary_state=True
+        ,pause_timer=10
     )

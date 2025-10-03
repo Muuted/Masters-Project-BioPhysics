@@ -1082,20 +1082,28 @@ def testing_initial_angles():
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-    c = ds*1.3
+    c = ds*1.5
 
     plt.figure()
     plt.plot(radi_list[0],z_list[0],"o-",label="initial state")
-    x = [radi_list[0][1], radi_list[0][1] + ds*1.5*np.cos(psi_list[0][0])]
-    y = [z_list[0][1], z_list[0][1] + ds*1.5*np.sin(psi_list[0][0])]
+
+    x = [
+        radi_list[0][1]
+        , radi_list[0][1] + c*np.cos(psi_list[0][0])
+        ]
+    y = [
+        z_list[0][1]
+        , z_list[0][1] + c*np.sin(psi_list[0][0])
+        ]
+
     plt.plot(x,y,color="k",label="angle test")
     plt.plot(x[0],y[0],color="g",marker=".")
 
     plt.legend()
     for i in range(1,N):
         j = i 
-        x = [radi_list[0][j+1], radi_list[0][j+1] + ds*1.5*np.cos(psi_list[0][j])]
-        y = [z_list[0][j+1], z_list[0][j+1] + ds*1.5*np.sin(psi_list[0][j])]
+        x = [radi_list[0][j+1], radi_list[0][j+1] + c*np.cos(psi_list[0][j])]
+        y = [z_list[0][j+1], z_list[0][j+1] + c*np.sin(psi_list[0][j])]
         plt.plot(x,y,color="k",label="angle test")
         plt.plot(x[0],y[0],color="g",marker=".")
     
@@ -1119,6 +1127,7 @@ def testing_if_constraints_are_true():
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
+    #psi_list[0] = [i + np.pi for i in psi_list[0]]
     Tol= 1e-5
 
     f_cons, i_count_f = [],[]
@@ -1143,6 +1152,67 @@ def testing_if_constraints_are_true():
     )
     plt.legend()
     plt.show()
+
+def testing_arctan2_function():
+    from two_d_continues_integration import Get_angle
+    theta = [0, round(np.pi/4,2), round(np.pi/2,2) , round(3*np.pi/4,2), round(np.pi,2)]
+    print(f"Possible  \n angles = [0, np.pi/4, np.pi/2 ,3*np.pi/4, np.pi] \n angles = {theta}")
+
+    def draw_circle(r,a=0,b=0):
+        x = []
+        dr = 0.01
+        y_pos, y_neg = [],[]
+        for i in np.arange(-r,r+dr,dr):
+            x.append(i)
+            #print(f"np.sqrt( r**2 - (i-a)**2) and i = {i}")
+            if i == -r or i == r:
+                y_pos.append(0)
+                y_neg.append(0)
+            elif i < -r or i > r:
+                y_pos.append(0)
+                y_neg.append(0)
+            else:
+                y = abs(np.sqrt( r**2 - (i-a)**2) + b)
+                y_pos.append(y)
+                y_neg.append(-y)
+
+        return x, y_pos,y_neg
+    
+    c = 1
+    ang = 3*np.pi/4
+    p1 = [1,1]
+    p1 = [0,0]
+    p2 = [p1[0] + c*np.cos(ang) ,   p1[1] + np.sin(ang)]
+    
+
+    #fig,ax = plt.subplots(1,2)
+    plt.figure()
+
+    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], "o-",label="start points")
+
+    x = [p1[0] - p1[0]  , p2[0] - p1[0]  ]
+    y = [p1[1] - p1[0]  ,   p2[1] - p1[1]]
+    plt.plot(x,y, "o-",label="moved points")
+
+    x_circ, y_pos_circ,y_neg_circ = draw_circle(r=0.5)
+
+    plt.plot(x_circ,y_pos_circ,"k")
+    plt.plot(x_circ,y_neg_circ,"k")
+    theta = np.arctan2(y[1],x[1])
+    psi = Get_angle(
+        x1=p1[0],y1=p1[1]
+        ,x2=p2[0],y2=p2[1]
+    )
+    print(f"theta = {round(theta,2)}")
+    print(f"psi = {round(psi,2)}")
+    print(f"that-pi = {round(theta-np.pi,2)}")
+
+    plt.legend()
+    plt.grid()
+    plt.xlim(-1.2,1.2)
+    plt.ylim(-1.2,1.2)
+    plt.show()
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1168,5 +1238,6 @@ if __name__ == "__main__":
     #testing_perturbation_function()
     #Testing_total_area_function()
     #testing_values_in_epsilon()
-    testing_initial_angles()
-    #testing_if_constraints_are_true()
+    #testing_initial_angles()
+    testing_if_constraints_are_true()
+    #testing_arctan2_function()
