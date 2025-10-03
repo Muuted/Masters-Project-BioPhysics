@@ -1238,6 +1238,6 @@ if __name__ == "__main__":
     #testing_perturbation_function()
     #Testing_total_area_function()
     #testing_values_in_epsilon()
-    #testing_initial_angles()
+    testing_initial_angles()
     testing_if_constraints_are_true()
     #testing_arctan2_function()

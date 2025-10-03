@@ -149,13 +149,6 @@ def E_kin(
     return Ekin
 
 
-def Get_angle(x1,y1,x2,y2):
-    x1 = [x2 - x1]
-    y1 = [y2 - y1]
-
-    psi = np.pi - np.arctan2(y1,x1)[0]
-    return -psi
-
 if __name__ == "__main__":
     exit()
     """const_args = Two_D_Constants(

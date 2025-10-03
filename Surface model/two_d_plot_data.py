@@ -93,17 +93,17 @@ def plot_Epot_Ekin(
     t_vec = [dt*i for i in range(sim_steps-1)]
     fontsize = 15
     
-    fig, ax = plt.subpltos(2,1)
+    fig, ax = plt.subplots(2,1)
     ax[0].plot(t_vec,T,".-")
-    ax[0].xlabel("time [s]",fontsize=fontsize)
-    ax[0].ylabel(r"$E_{kin}$",fontsize=fontsize)
-    ax[0].title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
+    ax[0].set_xlabel("time [s]",fontsize=fontsize)
+    ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
+    ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend()
     #plt.figure()
     ax[1].plot(t_vec,S,".-")
-    ax[1].xlabel("time [s]",fontsize=fontsize)
-    ax[1].ylabel(r"$E_{pot}$",fontsize=fontsize)
-    ax[1].title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)
+    ax[1].set_xlabel("time [s]",fontsize=fontsize)
+    ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
+    ax[1].set_title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)
     ax[1].legend()
 
     plt.draw()

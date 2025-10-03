@@ -6,13 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def Get_angle(x1,y1,x2,y2):
-    x1 = [x2 - x1]
-    y1 = [y2 - y1]
 
-    psi = np.pi - np.arctan2(y1,x1)[0]
-    
-    return -psi
 
 def dSds(s,S,k,sigma,c0):
     psi, r, z,n,lambs,nus,A = S
@@ -119,6 +113,12 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
     #print(f"index_list={index_list}")
     return index_list
 
+def Get_angle(x1,y1,x2,y2):
+    x1 = [x2 - x1]
+    y1 = [y2 - y1]
+    psi = np.pi - np.arctan2(y1,x1)[0]
+    #psi += -np.pi
+    return -psi
 
 def find_init_stationary_state(
         sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds
@@ -184,13 +184,11 @@ def find_init_stationary_state(
         lambs_discrete.append(ans_odeint.y[4][i])
         nus_discrete.append(ans_odeint.y[5][i])
     
-    """def Get_angle(x1,y1,x2,y2):
-
+    def Get_angle_in(x1,y1,x2,y2):
         x1 = [x2 - x1]
         y1 = [y2 - y1]
-
         psi = np.pi - np.arctan2(y1,x1)[0]
-        return -psi"""
+        return -psi
 
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
