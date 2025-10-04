@@ -128,12 +128,13 @@ def Two_D_Constants_stationary_state(
         print_val=False
         ,show_stationary_state = True
         ,pause_timer = 2
+        ,start_flat = False
         ):
     """------ constants ---------"""
-    N = 30#int(L/ds) # 99 + 1 # Number of chain links
+    N = 25#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 20 #5.45#s  : total time simulated
-    dt = 1e-2 # s time step.
+    T = 1 #5.45#s  : total time simulated
+    dt = 1e-4 # s time step.
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1.5 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
@@ -161,57 +162,65 @@ def Two_D_Constants_stationary_state(
     s0, sN = 0, 30*lc
     psi_L = -7.3648e-8
 
-    """------ variables list ---------"""
-    psi,r,z, r_contin, z_contin = find_init_stationary_state(
-        sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
-        ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
-        ,total_points=N
-    )
-
+    #Creating lists for the variables.
     psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
     r_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     Area_list = np.zeros(N,dtype=float)
 
-    for i in range(N+1):
-        if i < N :
-            psi_list[0][i] = psi[i]
-            Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
+    #Initiating the inital state of the membrane
+    if start_flat == True:
+        for i in range(N+1):
+           r_list[0][i] = r0 + i*ds
+    
+        for i in range(N):
+            Area_list[i] =  np.pi*( r_list[0][i+1]**2 - r_list[0][i]**2 )
             if Area_list[i] == 0 :
                 print(f"Area[{i}]=0")
                 exit()
-        r_list[0][i] = r[i]
-        z_list[0][i] = z[i]
-    
-    if show_stationary_state==True:
-        plt.figure()
-        font_size = 10
-        plt.plot(r_contin,z_contin,marker=".",label="integration")
-        plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
-        plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
-        ceil = max(r_list[0])-min(r_list[0]) + 2
-        plt.ylim(-ceil/10, 9*ceil/10)
-        plt.xlabel("r",fontsize=font_size)
-        plt.ylabel("z",fontsize=font_size)
-        plt.title(
-            f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
-            ,fontsize=font_size
-            )
-        plt.legend()
-        #plt.xlim(min(r)*0.95, max(r)*1.05)
-        #plt.ylim(-5,max(r)-min(r)-5)
-        #plt.show()
-        #exit()
-        plt.draw()
-        plt.pause(pause_timer)
-        plt.close()
+    else:
+        """------ variables list ---------"""
+        psi,r,z, r_contin, z_contin = find_init_stationary_state(
+            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
+            ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+            ,total_points=N
+        )
 
-    """for i in range(N):
-        Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
-        if Area_list[i] == 0 :
-            print(f"Area[{i}]=0")
-            exit()"""
-    
+        for i in range(N+1):
+            if i < N :
+                psi_list[0][i] = psi[i]
+                Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
+                if Area_list[i] == 0 :
+                    print(f"Area[{i}]=0")
+                    exit()
+            r_list[0][i] = r[i]
+            z_list[0][i] = z[i]
+        
+        if show_stationary_state==True:
+            plt.figure()
+            font_size = 10
+            plt.plot(r_contin,z_contin,marker=".",label="integration")
+            plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+            plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
+            ceil = max(r_list[0])-min(r_list[0]) + 2
+            plt.ylim(-ceil/10, 9*ceil/10)
+            plt.xlabel("r",fontsize=font_size)
+            plt.ylabel("z",fontsize=font_size)
+            plt.title(
+                f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
+                ,fontsize=font_size
+                )
+            plt.legend()
+            #plt.xlim(min(r)*0.95, max(r)*1.05)
+            #plt.ylim(-5,max(r)-min(r)-5)
+            #plt.show()
+            #exit()
+            plt.draw()
+            plt.pause(pause_timer)
+            plt.close()
+
+
+        
     if print_val == True:
         print(
             f" \n \n"

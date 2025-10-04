@@ -144,9 +144,12 @@ def Make_frames(
         xmax = max(r[0])
         xmin = 0
         #plt.xlim([max(r[0]) - ds*(20), max(r[0])])
-        plt.xlim([xmin,xmax])
-        plt.ylim([-ds, xmax -ds])
+        #plt.xlim([xmin,xmax])
+        #plt.ylim([-ds, xmax -ds])
         #plt.ylim([zmin*0.99,zmax*1.01])
+        plt.xlim(min(r[0])-1, max(r[0])+1)
+        ceil = max(r[0])-min(r[0]) + 2
+        plt.ylim(-ceil/10, 9*ceil/10)
         plt.xlabel(f"x")
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt}s  \n and frame ={k} of {len(frame_vec)}")
