@@ -186,6 +186,7 @@ def Surface_sim_stationary_state_initial_configuration(
     const_args = Two_D_Constants_stationary_state(
         print_val=True
         ,show_stationary_state=True
+        #,start_flat=True
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]

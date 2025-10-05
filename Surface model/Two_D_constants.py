@@ -133,15 +133,15 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 25#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1 #5.45#s  : total time simulated
-    dt = 1e-4 # s time step.
+    T = 10 #5.45#s  : total time simulated
+    dt = 1e-2 # s time step.
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1.5 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
-    c0 = 0.25e0# 0.25e8 # 1/m   : 
+    c0 = 1e0 #0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
@@ -178,6 +178,29 @@ def Two_D_Constants_stationary_state(
             if Area_list[i] == 0 :
                 print(f"Area[{i}]=0")
                 exit()
+        
+        if show_stationary_state==True:
+            plt.figure()
+            font_size = 10
+            #plt.plot(r_contin,z_contin,marker=".",label="integration")
+            plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+            plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
+            ceil = max(r_list[0])-min(r_list[0]) + 2
+            plt.ylim(-ceil/10, 9*ceil/10)
+            plt.xlabel("r",fontsize=font_size)
+            plt.ylabel("z",fontsize=font_size)
+            plt.title(
+                f"Quick peak at the neck configuration before dynanic simulation"
+                ,fontsize=font_size
+                )
+            plt.legend()
+            #plt.xlim(min(r)*0.95, max(r)*1.05)
+            #plt.ylim(-5,max(r)-min(r)-5)
+            #plt.show()
+            #exit()
+            plt.draw()
+            plt.pause(pause_timer)
+            plt.close()
     else:
         """------ variables list ---------"""
         psi,r,z, r_contin, z_contin = find_init_stationary_state(
