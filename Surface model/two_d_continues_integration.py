@@ -26,7 +26,7 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
     index_list = [j]
     for i in range(len(r)-1,0,-1):
         dist = np.sqrt( (r[j]-r[i])**2 + (z[j]-z[i])**2)
-        if dist > ds:
+        if dist >= ds:
             #r_return.append(r[i-1])
             index_list.append(i-1)
             j = i-1
@@ -96,7 +96,7 @@ def find_init_stationary_state(
         ,ds = ds
         ,max_num_points = total_points
         )
-    
+
     r_discrete,z_discrete = [],[]
     psi_discrete,dpsidt_discrete = [],[]
     lambs_discrete, nus_discrete = [],[]

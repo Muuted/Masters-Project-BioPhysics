@@ -790,9 +790,9 @@ def Epsilon_v2(
                     )"""
             
 
-        if alpha < N :
+        if 0 <= alpha < N :
             b[alpha] = -constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
-        if alpha >= N :
+        if N <= alpha < 2*N :
             b[alpha] = -constraint_g(i=alpha%N,N=N,r=r,z=z,psi=psi,Area=Area)
 
     
@@ -800,17 +800,19 @@ def Epsilon_v2(
         print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
         print("b:",b)
         x = np.linalg.solve(A,b)
-        epsilon_f = x[0:N]
-        epsilon_g = x[N:2*N]
+        #epsilon_f = x[0:N]
+        #epsilon_g = x[N:2*N]
     else:
         x = np.linalg.solve(A,b)
-        epsilon_f = x[0:N]
-        epsilon_g = x[N:2*N]
+        #epsilon_f = x[0:N]
+        #epsilon_g = x[N:2*N]
 
     if testing == True:
+        epsilon_f = x[0:N]
+        epsilon_g = x[N:2*N]
         return epsilon_f,epsilon_g, A, b
     else:
-        return x#epsilon_f,epsilon_g
+        return x
 
 
 

@@ -180,13 +180,14 @@ def Surface_sim_Area_condition():
 
 def Surface_sim_stationary_state_initial_configuration(
         do_simulation=True
+        ,start_from_flat= False
     ):
     print("\n \nNow Running the surface simulation from stationary configurations \n \n")
 
     const_args = Two_D_Constants_stationary_state(
         print_val=True
         ,show_stationary_state=True
-        #,start_flat=True
+        ,start_flat=start_from_flat
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -201,8 +202,8 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f"- dt={dt} and N={N}"
-    start_time = time.time()
+    df_name += f" dt={dt} and N={N}"
+    #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
             N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
@@ -215,12 +216,12 @@ def Surface_sim_stationary_state_initial_configuration(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence=1e-5
+            ,Tolerence=1e-10
             ,save_data=True
         )
 
-    print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
-    
+    #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
+    """
     plot_tot_area(
         data_path=data_path
         ,df_name=df_name
@@ -242,13 +243,24 @@ def Surface_sim_stationary_state_initial_configuration(
         ,input_path=figs_for_video_path
         ,video_name= df_name
         ,fps=fps_movie
-    )
+    )"""
     
     
 if __name__ == "__main__":
     #surface_sim_find_c0()
     #Surface_sim()
     #Surface_sim_Area_condition()
+    import cProfile, pstats, io
+    from pstats import SortKey
+    pr = cProfile.Profile()
+    pr.enable()
     Surface_sim_stationary_state_initial_configuration(
         #do_simulation=False
+        #start_from_flat=False
     )
+    pr.disable()
+    s = io.StringIO()
+    sortby = SortKey.CUMULATIVE#SortKey.NAME#SortKey.CUMULATIVE
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats(20)
+    print(s.getvalue())

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import progressbar
-
+import time
 
 def Two_D_simulation(
     N:int,k:float,c0:float, dt:float, ds:float
@@ -395,6 +395,8 @@ def Two_d_simulation_stationary_states(
     ,area_testing = False
     ):
     np.set_printoptions(legacy='1.25')
+    start_time = time.time()
+
     Area_initial = np.sum(Area)
     Area_new = 0
     
@@ -505,6 +507,15 @@ def Two_d_simulation_stationary_states(
             corr_max = 100
             if correction_count >= corr_max:
                 print(f"{corr_max} corrections, is too many corrections, we close the program. ")
+                print(
+                    f"\n At interuption: the simulation time={round((time.time()-start_time)/60,3)} min \n"
+                    +f"And t={t} of {sim_steps} \n"
+                    +f"and time={t*dt} [s] at stopping")
+                plt.figure()
+                plt.plot(radi[t],z_list[t],"o-",label="at t")
+                plt.plot(radi[t+1],z_list[t+1],"o-",label="at t+1")
+                plt.legend()
+                plt.show()
                 #break
                 exit()
             
@@ -568,7 +579,7 @@ def Two_d_simulation_stationary_states(
     
     b.finish()
     print("\n")
-
+    print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     plt.figure()
     plt.plot(correct_count_list,".-")
     plt.show()
