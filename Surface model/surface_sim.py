@@ -221,7 +221,7 @@ def Surface_sim_stationary_state_initial_configuration(
         )
 
     #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
-    """
+    
     plot_tot_area(
         data_path=data_path
         ,df_name=df_name
@@ -243,7 +243,7 @@ def Surface_sim_stationary_state_initial_configuration(
         ,input_path=figs_for_video_path
         ,video_name= df_name
         ,fps=fps_movie
-    )"""
+    )
     
     
 if __name__ == "__main__":

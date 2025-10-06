@@ -820,7 +820,7 @@ def Epsilon_v2(
 def Perturbation_of_inital_state(
         points_perturbed:int, ds:float
         ,r:list,z:list,psi:list
-        ,delta_psi:float = -1e-3
+        ,delta_psi:float = -1
         ):
     if points_perturbed > len(psi)-1:
         print(f"Perturbing too many points \n"
@@ -834,11 +834,17 @@ def Perturbation_of_inital_state(
 
     for i in range(i_start,i_stop,-1):
         #r[i] = r[i+1] - (psi[i]/abs(psi[i]))*np.cos(psi[i])*ds
-        z[i] = z[i+1] + (psi[i]/abs(psi[i]))*np.sin(psi[i])*ds
-        r[i] = r[i+1] + np.cos(psi[i])*ds
-        #z[i] = z[i+1] + np.sin(psi[i])*ds
+        #z[i] = z[i+1] + (psi[i]/abs(psi[i]))*np.sin(psi[i] +np.pi)*ds
+        r[i] = r[i+1] + np.cos(psi[i]+np.pi)*ds
+        z[i] = z[i+1] + np.sin(psi[i]+np.pi)*ds
 
     #return r,z,psi
+
+
+
+
+
+
 if __name__ == "__main__":
     a = np.zeros(5)
     print(a)

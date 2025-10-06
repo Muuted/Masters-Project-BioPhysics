@@ -65,14 +65,14 @@ def find_init_stationary_state(
     def edge_tension(t,y,tau):
         return tau - y[4]
     
-    def edge_ratio(t,y,k,kG):
+    def edge_ratio(t,y):
         dpsidt_1 = y[3]
         psi_1 = y[0]
         r_1 = y[1]
-        alpha = kG/k
+        alpha = -0.75#kG/k
         val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
         return val
-    
+
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
         ,t_span = [sN ,s0]
@@ -81,8 +81,9 @@ def find_init_stationary_state(
         ,args = args_list
         ,method="LSODA"
         #,events=(edge_tension,edge_ratio)
+        #,rtol=1e-10
+        ,atol=1e-10
     )
-
     m = len(ans_odeint.y[0])-1
     if find_edge_condition == True:        
         for i in range(0,len(ans_odeint.y[0])-1):

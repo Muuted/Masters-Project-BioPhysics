@@ -465,7 +465,8 @@ def Test_with_matlab_integrate_solution():
         #t_eval = np.linspace(start=sN,stop=s0,num=5003),
         y0 = init_conditions,
         args = args_list,
-        method="LSODA"#"RK45"
+        method="LSODA",#"RK45",
+        atol=1e-6
     )
 
     #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
@@ -1000,9 +1001,10 @@ def testing_perturbation_function():
     r_init,z_init,psi_init =[i for i in radi_list[0]],[i for i in z_list[0]],[i for i in psi_list[0]]
     
     Perturbation_of_inital_state(
-        points_perturbed=3, ds=ds
+        points_perturbed=N-1
+        ,ds=ds
         ,r=r_init,z=z_init,psi=psi_init
-        ,delta_psi= -1e-6
+        ,delta_psi= 5e-2
     )
 
     plt.figure()
@@ -1216,6 +1218,23 @@ def testing_arctan2_function():
     plt.ylim(-1.2,1.2)
     plt.show()
 
+def testing_integration_with_events():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
+    print("\n \n \n")
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=True
+        ,pause_timer=10
+    )
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1227,7 +1246,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    #Test_with_matlab_integrate_solution()
+    Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -1241,6 +1260,7 @@ if __name__ == "__main__":
     #testing_perturbation_function()
     #Testing_total_area_function()
     #testing_values_in_epsilon()
-    testing_initial_angles()
-    testing_if_constraints_are_true()
+    #testing_initial_angles()
+    #testing_if_constraints_are_true()
     #testing_arctan2_function()
+    #testing_integration_with_events()
