@@ -458,15 +458,28 @@ def Test_with_matlab_integrate_solution():
     #The integration start and stop
     s0 ,sN = 0,(r_L + 10)
 
+    def edge_tension(t,y):
+        #tau = 1
+        return 1 - y[4]
+    
+    def edge_ratio(t,y):
+        dpsidt_1 = y[3]
+        psi_1 = y[0]
+        r_1 = y[1]
+        alpha = -0.75#kG/k
+        val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
+        return val
+    
     #The integration part.
     ans_odeint = scipy.integrate.solve_ivp(
-        dSds,
-        t_span = [sN ,s0],
+        dSds
+        ,t_span = [sN ,s0]
         #t_eval = np.linspace(start=sN,stop=s0,num=5003),
-        y0 = init_conditions,
-        args = args_list,
-        method="LSODA",#"RK45",
-        atol=1e-6
+        ,y0 = init_conditions
+        ,args = args_list
+        ,method="LSODA"#"RK45",
+        ,atol=1e-10
+        ,events=(edge_tension,edge_ratio)
     )
 
     #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
