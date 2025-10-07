@@ -514,6 +514,7 @@ def Two_d_simulation_stationary_states(
                 plt.figure()
                 plt.plot(radi[t],z_list[t],"o-",label="at t")
                 plt.plot(radi[t+1],z_list[t+1],"o-",label="at t+1")
+                plt.plot(radi[0],z_list[0],"o-",label="at start t=0")
                 plt.legend()
                 plt.show()
                 #break
