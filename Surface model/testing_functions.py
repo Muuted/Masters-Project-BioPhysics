@@ -1014,10 +1014,10 @@ def testing_perturbation_function():
     r_init,z_init,psi_init =[i for i in radi_list[0]],[i for i in z_list[0]],[i for i in psi_list[0]]
     
     Perturbation_of_inital_state(
-        points_perturbed=N-1
+        points_perturbed=4 #N-1
         ,ds=ds
         ,r=r_init,z=z_init,psi=psi_init
-        ,delta_psi= 5e-2
+        ,delta_psi= 5e-1
     )
 
     plt.figure()
@@ -1116,7 +1116,13 @@ def testing_initial_angles():
 
     plt.plot(x,y,color="k",label="angle test")
     plt.plot(x[0],y[0],color="g",marker=".")
-
+    plt.xlabel("r",fontsize=15)
+    plt.ylabel("z",fontsize=15)
+    plt.title(
+        r"Line segment from the $\psi_{i}$ for a given (r,z) point"
+        +f"\n to test if the angles are correct"
+        ,fontsize=15
+        )
     plt.legend()
     for i in range(1,N):
         j = i 
@@ -1146,18 +1152,18 @@ def testing_if_constraints_are_true():
     radi_list,z_list = const_args[14:16]
 
     #psi_list[0] = [i + np.pi for i in psi_list[0]]
-    Tol= 1e-5
+    Tol= 1e-20
 
     f_cons, i_count_f = [],[]
     g_cons ,i_count_g = [], []
     for i in range(N):
         f = constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
-        if f < - Tol or f > Tol :
+        if f < -Tol or f > Tol :
             i_count_f.append(i)
             f_cons.append(f)
 
         g = constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
-        if g < - Tol or g > Tol :
+        if g < -Tol or g > Tol :
             i_count_g.append(i)
             g_cons.append(g)
     
@@ -1166,8 +1172,11 @@ def testing_if_constraints_are_true():
     plt.plot(i_count_f,f_cons,".-",label="f")
     plt.plot(i_count_g,g_cons,".-",label="g")
     plt.title(
-        f"N={N}, len(f)={len(f_cons)} and len(g)={len(g_cons)}"
+        f"values of f,g that are non-zero \n"
+        +f"N={N}, len(f)={len(f_cons)} and len(g)={len(g_cons)}"
     )
+    plt.xlabel("index i")
+    plt.ylabel("")
     plt.legend()
     plt.show()
 
@@ -1248,6 +1257,43 @@ def testing_integration_with_events():
 
 
 
+def testing_for_no_correction_on_initial_state():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Two_D_functions import Epsilon_v2,c_diff,Epsilon_values
+    print("\n \n \n")
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=True
+    )
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    
+    t=0
+    epsilon = Epsilon_v2(
+            N=N, r=radi_list[t], z=z_list[t] ,psi=psi_list[t] ,Area=Area_list
+                    )
+    
+    efb = epsilon[0:N]
+    egb = epsilon[N:2*N]
+    i_list = [i for i in range(N)]
+    plt.figure()
+    plt.plot(i_list,efb,".-",label=r"$\epsilon_{f,i}$")
+    plt.plot(i_list,egb,".-",label=r"$\epsilon_{g,i}$")
+    plt.xlabel("i")
+    plt.ylabel(r"$\epsilon_{i}$")
+    plt.title(
+        r"Values of the $\epsilon_\beta$ multipliers found for area correction "
+        +f"\n on the initial state"
+        )
+    plt.legend()
+    plt.show()
+
+
+    print(f"epsilon vec = {epsilon}")
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1259,7 +1305,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    Test_with_matlab_integrate_solution()
+    #Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -1277,3 +1323,4 @@ if __name__ == "__main__":
     #testing_if_constraints_are_true()
     #testing_arctan2_function()
     #testing_integration_with_events()
+    testing_for_no_correction_on_initial_state()

@@ -82,7 +82,7 @@ def find_init_stationary_state(
         ,method="LSODA"
         #,events=(edge_tension,edge_ratio)
         ,rtol=1e-10
-        ,atol=1e-10
+        ,atol=1e-50
     )
     m = len(ans_odeint.y[0])-1
     if find_edge_condition == True:        
