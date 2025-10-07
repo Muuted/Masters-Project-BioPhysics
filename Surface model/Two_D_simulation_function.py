@@ -542,7 +542,7 @@ def Two_d_simulation_stationary_states(
             plt.plot(Area_compare,".-")
             
             plt.title("testing of correction dA = Area_new - Area_initial \n" +f"tolerence={Tolerence} and dA_final={dA}",fontsize=font_size)
-            plt.xlabel("number of corrections for specific t",fontsize=font_size)
+            plt.xlabel(f"number of corrections for specific t={t}",fontsize=font_size)
             plt.ylabel("dA",fontsize=font_size)
 
 

@@ -218,6 +218,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,data_path = data_path
             ,Tolerence=1e-10
             ,save_data=True
+            #,area_testing=True
         )
 
     #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
