@@ -459,18 +459,6 @@ def Test_with_matlab_integrate_solution():
     #The integration start and stop
     s0 ,sN = 0,(r_L + 10)
 
-    def edge_tension(t,y):
-        #tau = 1
-        return 1 - y[4]
-    
-    def edge_ratio(t,y):
-        dpsidt_1 = y[3]
-        psi_1 = y[0]
-        r_1 = y[1]
-        alpha = -0.75#kG/k
-        val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
-        return val
-    
     #The integration part.
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
@@ -480,7 +468,6 @@ def Test_with_matlab_integrate_solution():
         ,args = args_list
         ,method="LSODA"#"RK45",
         ,atol=1e-10
-        #,events=(edge_tension,edge_ratio)
     )
 
     #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
@@ -1276,17 +1263,111 @@ def testing_arctan2_function():
 def testing_integration_with_events():
     from Two_D_constants import Two_D_Constants_stationary_state
     from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g, Epsilon_v2
+    from two_d_continues_integration import dSds, descritize_sim_results,find_init_stationary_state
     print("\n \n \n")
     const_args = Two_D_Constants_stationary_state(
         print_val=False
         ,show_stationary_state=True
-        ,pause_timer=10
+        ,pause_timer=0.1
     )
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
     sigma, tau, kG = const_args[9:12]
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
+
+    #args list
+    sigma_c = k*c0**2
+    k_c = k
+    kG = -0.75*k
+    tau_c = k*c0
+    c0_c = c0
+
+    # making the dimless variables.
+    c0 = c0/c0_c
+    tau = 1#tau/tau_c #1
+    sigma = 0.1#sigma/sigma_c #0.1
+    k = k/k_c
+    #kG = -0.75*k
+
+    #args_list = (k ,sigma ,c0)
+    args_list = (k ,sigma ,c0 ,tau ,kG)
+    
+    #initial values
+    lc = 1/np.sqrt(0.5 + sigma) # characterisitic length in the aymptotic regime.
+    psi_L = -7.3648e-8 
+    r_L =  20.0 #(tau*lc**2/k)*1.01
+    z_L = 0.0
+    n_L = (psi_L/kv(1,r_L/lc))*( -kv(0,r_L/lc) - kv(1,r_L/lc)/(r_L/lc))/lc# 5.8973e-08 #
+    
+    lambs_L = (k*c0**2/2 + sigma)*r_L
+    print(lambs_L)
+    nus_L = 0 # nu(s_1) = nu(s_2) = 0 from that we know the outer value
+    A = 0#2*np.pi*( r_L**2 - r0**2  )
+    print(
+        f"nL={n_L}  ,   lambs_L={lambs_L}  \n"
+        +f"lc={lc}  ,   k={k}   ,   c0 = {c0}   ,   sigma={sigma} \n"
+        +f" p2D ={r_L/lc}"
+        )
+    #initial values list
+    init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
+    
+
+    #The integration start and stop
+    s0 ,sN = 0,(r_L + 10)
+
+    def dSds_test(s,S,k,sigma,c0,tau,kG):
+        psi, r, z,n,lambs,nus,A = S
+        #k,kG,sigma,c0 = p
+        a,b =tau, kG
+        drds = np.cos(psi)
+        dzds = np.sin(psi)
+        dlambs_ds = (k/2)*( (n-c0)**2 -np.sin(psi)**2/r**2) + sigma
+        dnu_ds = 0
+
+        dpsids  = n 
+        dnds = np.sin(psi)*np.cos(psi)/r**2 - n*np.cos(psi)/r + lambs*np.sin(psi)/r #- nus*np.cos(psi)/(k*r)
+
+        dAds = 2*np.pi*r
+
+        return [dpsids ,drds ,dzds ,dnds ,dlambs_ds ,dnu_ds ,dAds]
+    def edge_tension(t,y,k,sigma,c0,tau,kG):
+        #tau = 1
+        return tau - y[4]
+    
+    def edge_ratio(t,y,k,sigma,c0,tau,kG):
+        dpsidt_1 = y[3]
+        psi_1 = y[0]
+        r_1 = y[1]
+        alpha = kG/k
+        val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
+        return val
+    
+    #edge_ratio.terminal = True
+    #edge_tension.terminal = True
+    #The integration part.
+    ans_odeint = scipy.integrate.solve_ivp(
+        dSds_test
+        ,t_span = [sN ,s0]
+        ,t_eval = np.linspace(start=sN,stop=s0,num=10003)
+        ,y0 = init_conditions
+        ,args = args_list
+        ,method="LSODA"#"RK45"
+        ,atol=1e-10
+        ,events=(edge_tension,edge_ratio)
+    )
+
+    psi = ans_odeint.y[0]
+    r = ans_odeint.y[1]
+    z = ans_odeint.y[2]
+    dpsidt = ans_odeint.y[3]
+    lambs = ans_odeint.y[4]
+    nus = ans_odeint.y[5]
+
+    print(ans_odeint.t_events)
+    plt.figure()
+    plt.plot(r,z)
+    plt.show()
 
 
 
@@ -1338,7 +1419,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    Test_with_matlab_integrate_solution()
+    #Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -1355,5 +1436,5 @@ if __name__ == "__main__":
     #testing_initial_angles()
     #testing_if_constraints_are_true()
     #testing_arctan2_function()
-    #testing_integration_with_events()
+    testing_integration_with_events()
     #testing_for_no_correction_on_initial_state()
