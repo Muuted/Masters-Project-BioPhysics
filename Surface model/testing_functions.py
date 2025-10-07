@@ -12,6 +12,7 @@ import os
 import progressbar
 import scipy
 from scipy.special import kv
+np.set_printoptions(legacy='1.25')
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
@@ -474,12 +475,12 @@ def Test_with_matlab_integrate_solution():
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
         ,t_span = [sN ,s0]
-        #t_eval = np.linspace(start=sN,stop=s0,num=5003),
+        ,t_eval = np.linspace(start=sN,stop=s0,num=5003)
         ,y0 = init_conditions
         ,args = args_list
         ,method="LSODA"#"RK45",
         ,atol=1e-10
-        ,events=(edge_tension,edge_ratio)
+        #,events=(edge_tension,edge_ratio)
     )
 
     #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
@@ -493,6 +494,17 @@ def Test_with_matlab_integrate_solution():
             break
     print(f"m=",m)
     
+    r1 = ans_odeint.y[1][0:m]
+    z1 = ans_odeint.y[2][0:m]
+    psi1 = ans_odeint.y[0][0:m]
+
+    plt.figure()
+    plt.plot(r1,z1,label="membrane")
+    plt.title(r"with stopping condition $\lambda( s_1 ) = \tau $ with atol")
+    plt.xlabel("r",fontsize=15)
+    plt.ylabel("z",fontsize=15)
+    plt.legend()
+
     r = ans_odeint.y[1]#[0:m]
     z = ans_odeint.y[2]#[0:m]
     psi = ans_odeint.y[0]#[0:m]
@@ -539,8 +551,7 @@ def Test_with_matlab_integrate_solution():
     plt.plot(r_matlab,lambs_matlab,".-",label="Matlab")
     plt.hlines(y=tau,xmin=min(r),xmax=max(r),label=r"$\tau$="+f"{tau}")
 
-
-    plt.title(r"$\lambda$ or tD Lagrange multiplier")
+    plt.title(r"$\lambda$ or tD Lagrange multiplier with atol")
     plt.xlabel("r",fontsize=20)
     plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
     plt.legend(fontsize=20)
@@ -1148,27 +1159,49 @@ def testing_if_constraints_are_true():
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
     sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
+    #Area_list, psi_list = const_args[12:14]
+    #radi_list,z_list = const_args[14:16]
 
-    #psi_list[0] = [i + np.pi for i in psi_list[0]]
-    Tol= 1e-20
+    path_args = Two_D_paths()
+    data_path, fig_save_path = path_args[0:2]
+    video_save_path,figs_for_video_path = path_args[2:4]
+    df_name, fps_movie ,num_frames = path_args[4:7]
 
-    f_cons, i_count_f = [],[]
-    g_cons ,i_count_g = [], []
-    for i in range(N):
-        f = constraint_f(i=i,N=N,r=radi_list[0],psi=psi_list[0],Area=Area_list)
-        if f < -Tol or f > Tol :
-            i_count_f.append(i)
-            f_cons.append(f)
+    df_name += f" dt={dt} and N={N}"
 
-        g = constraint_g(i=i,N=N,r=radi_list[0],z=z_list[0],psi=psi_list[0],Area=Area_list)
-        if g < -Tol or g > Tol :
-            i_count_g.append(i)
-            g_cons.append(g)
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    #exit()
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
+    psi = df_sim['psi'][0]
+    Area = df_sim['area list'][0]
+    sim_steps = df_sim["sim_steps"][0]
+    Tol= 1e-8
+
+    f_cons, i_count_f = [[] for t in range(sim_steps)]  ,[[] for t in range(sim_steps)]
+    g_cons ,i_count_g = [[] for t in range(sim_steps)]  ,[[] for t in range(sim_steps)]
+    for t in range(sim_steps-1):
+        for i in range(N):
+            f = constraint_f(i=i,N=N,r=r[t],psi=psi[t],Area=Area)
+            if f < -Tol or f > Tol :
+                i_count_f[t].append(i)
+                f_cons[t].append(f)
+
+            g = constraint_g(i=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area)
+            if g < -Tol or g > Tol :
+                i_count_g[t].append(i)
+                g_cons[t].append(g)
     
-
-    plt.figure()
+    print(f"len(f[0])={len(f_cons[0])}")
+    error_count = 0
+    for t in range(sim_steps):
+        if len(i_count_f[t]) >0:
+            error_count += 1
+            print(f"i_f={i_count_f[t]}")
+    print(f"error count ={error_count} of {sim_steps} time steps")
+    print(f"for a Tolerance of {Tol}")
+    """plt.figure()
     plt.plot(i_count_f,f_cons,".-",label="f")
     plt.plot(i_count_g,g_cons,".-",label="g")
     plt.title(
@@ -1178,7 +1211,7 @@ def testing_if_constraints_are_true():
     plt.xlabel("index i")
     plt.ylabel("")
     plt.legend()
-    plt.show()
+    plt.show()"""
 
 def testing_arctan2_function():
     from two_d_continues_integration import Get_angle
@@ -1305,7 +1338,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    #Test_with_matlab_integrate_solution()
+    Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     """from Two_D_constants import Two_D_Constants_stationary_state
@@ -1323,4 +1356,4 @@ if __name__ == "__main__":
     #testing_if_constraints_are_true()
     #testing_arctan2_function()
     #testing_integration_with_events()
-    testing_for_no_correction_on_initial_state()
+    #testing_for_no_correction_on_initial_state()
