@@ -1344,7 +1344,7 @@ def testing_integration_with_events():
         return val
     
     #edge_ratio.terminal = True
-    #edge_tension.terminal = True
+    edge_tension.terminal = True
     #The integration part.
     ans_odeint = scipy.integrate.solve_ivp(
         dSds_test
@@ -1363,6 +1363,14 @@ def testing_integration_with_events():
     dpsidt = ans_odeint.y[3]
     lambs = ans_odeint.y[4]
     nus = ans_odeint.y[5]
+    dpsidt_1 = dpsidt[0]
+    psi_1 = psi[0]
+    r_1 = r[0]
+    alpha = kG/k
+    
+    print(
+    f"test ={(1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha}"
+    )
 
     print(ans_odeint.t_events)
     plt.figure()
