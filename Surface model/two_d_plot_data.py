@@ -94,13 +94,13 @@ def plot_Epot_Ekin(
     fontsize = 15
     
     fig, ax = plt.subplots(2,1)
-    ax[0].plot(t_vec,T,".-")
+    ax[0].plot(t_vec,T,".-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
     ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend()
     #plt.figure()
-    ax[1].plot(t_vec,S,".-")
+    ax[1].plot(t_vec,S,".-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
     ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
     ax[1].set_title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)

@@ -399,7 +399,6 @@ def Two_d_simulation_stationary_states(
     start_time = time.time()
 
     Area_initial = np.sum(Area)
-    Area_new = 0
     
     lambs_save, nus_save = [], []
     correct_count_list = np.zeros(sim_steps-1)
@@ -444,7 +443,7 @@ def Two_d_simulation_stationary_states(
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = 0#Area_new - Area_initial #+1
+        dA = Area_new - Area_initial #+1
         do_correction = False
         constraint_err = check_constraints_truth(
             N=N,r=radi[t+1],z=z_list[t+1],psi=psi[t+1],Area=Area,tol=Tolerence
@@ -504,7 +503,7 @@ def Two_d_simulation_stationary_states(
                         z_after = [ i for i in z_list[t+1]]
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-            dA = 0#Area_new - Area_initial
+            dA = Area_new - Area_initial
             constraint_err = check_constraints_truth(N=N,r=radi[t+1],z=z_list[t+1],psi=psi[t+1],Area=Area,tol=Tolerence)
             do_correction = False
             if Tolerence < abs(dA) or constraint_err == True:

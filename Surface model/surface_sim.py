@@ -201,7 +201,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" dt={dt} and N={N}"
+    df_name += f" dt={dt} and N={N} and ds={ds}"
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -232,7 +232,7 @@ def Surface_sim_stationary_state_initial_configuration(
     )
     
     #plt.draw()
-    #plt.show()
+    plt.show()
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path
@@ -245,17 +245,18 @@ def Surface_sim_stationary_state_initial_configuration(
         ,fps=fps_movie
     )
 
-    plt.show()
+    #plt.show()
     
-    
-if __name__ == "__main__":
-    #surface_sim_find_c0()
-    #Surface_sim()
-    #Surface_sim_Area_condition()
+
+def Speed_diagnosing():
     import cProfile, pstats, io
     from pstats import SortKey
     pr = cProfile.Profile()
     pr.enable()
+
+    #surface_sim_find_c0()
+    #Surface_sim()
+    #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         #do_simulation=False
         #start_from_flat=False
@@ -266,3 +267,14 @@ if __name__ == "__main__":
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats(20)
     print(s.getvalue())
+    
+if __name__ == "__main__":
+    #surface_sim_find_c0()
+    #Surface_sim()
+    #Surface_sim_Area_condition()
+    Surface_sim_stationary_state_initial_configuration(
+        #do_simulation=False
+        #start_from_flat=False
+    )
+
+    #Speed_diagnosing()
