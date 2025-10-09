@@ -763,9 +763,9 @@ def c_diff(
 
 def Epsilon_v2(
         N:int,r:list,z:list,psi:list,Area:list
-        ,print_matrix = False
-        ,testing= False
-        ):
+        ,print_matrix:bool = False
+        ,testing:bool= False
+        )->list:
     A = np.zeros(shape=(2*N,2*N))
     b = np.zeros(2*N)
     vars = ["r","z","psi"]
@@ -842,6 +842,18 @@ def Perturbation_of_inital_state(
 
 
 
+
+def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->bool:
+    err = False
+    for i in range(N):
+        f = constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
+        g = constraint_g(i=i,N=N,r=r,z=z,psi=psi,Area=Area)
+
+        if tol < abs(f) or tol < abs(g):
+            err = True
+            break
+
+    return err
 
 
 

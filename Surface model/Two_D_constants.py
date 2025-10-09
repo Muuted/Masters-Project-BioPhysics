@@ -133,13 +133,13 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 20#int(L/ds) # 99 + 1 # Number of chain links
+    N = 40#int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 10#10 #5.45#s  : total time simulated
     dt = 1e-2 # s time step. 
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  1.5 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds =  1.5/2 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
@@ -206,11 +206,10 @@ def Two_D_Constants_stationary_state(
     else:
         """------ variables list ---------"""
         psi,r,z, r_contin, z_contin = find_init_stationary_state(
-            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
+            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds, kG=kG
             ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
             ,total_points = N
         )
-
         
         for i in range(N+1):
             if i < N :
@@ -225,8 +224,9 @@ def Two_D_Constants_stationary_state(
         if show_stationary_state==True:
             plt.figure()
             font_size = 10
-            plt.plot(r_contin,z_contin,marker=".",label="integration")
+            #plt.plot(r_contin,z_contin,marker="",label="integration")
             plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+            plt.plot(r_contin,z_contin,linestyle="--",marker="",color="k",label="integration")
             plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
             ceil = max(r_list[0])-min(r_list[0]) + 2
             plt.ylim(-ceil/10, 9*ceil/10)
@@ -257,8 +257,8 @@ def Two_D_Constants_stationary_state(
             + f"    k = {k}  sim units \n "
             + f"    c0 = {c0}  sim units \n "
             + f"    kG = {kG}  sim units \n "
-            + f"    sigma = {sigma}  sim units \n "
-            + f"    tau = {tau}  sim units \n "
+            + f"    sigma = {sigma:0.1e}  sim units \n "
+            + f"    tau = {tau:0.1e}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
             + f"    gamma(i!=0) = {gamma(2)} unit?  \n "
@@ -266,7 +266,8 @@ def Two_D_Constants_stationary_state(
             + f"    Sim steps = {sim_steps:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
         )
-        
+    
+    #c0 = 0
     args = [
         L,r0,N,ds,T,dt
         ,k,c0,sim_steps

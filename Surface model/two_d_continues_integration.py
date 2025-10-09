@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def dSds(s,S,k,sigma,c0):
+def dSds(s,S,k,sigma,c0,tau,kG):#,k,sigma,c0):
     psi, r, z,n,lambs,nus,A = S
     #k,kG,sigma,c0 = p
     drds = np.cos(psi)
@@ -20,6 +20,17 @@ def dSds(s,S,k,sigma,c0):
     dAds = 2*np.pi*r
 
     return [dpsids ,drds ,dzds ,dnds ,dlambs_ds ,dnu_ds ,dAds]
+
+def edge_tension(t,y,k,sigma,c0,tau,kG):
+        return tau - y[4]
+    
+def edge_ratio(t,y,k,sigma,c0,tau,kG):
+    dpsidt_1 = y[3]
+    psi_1 = y[0]
+    r_1 = y[1]
+    alpha = kG/k
+    val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
+    return val
 
 def descritize_sim_results(r,z,ds,max_num_points=""):
     j=len(r)-1
@@ -45,7 +56,7 @@ def Get_angle(x1,y1,x2,y2):
     return -psi
 
 def find_init_stationary_state(
-        sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds
+        sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds,kG
         ,total_points = ""
         ,find_edge_condition = True
         ):
@@ -58,21 +69,13 @@ def find_init_stationary_state(
     A = 0 #2*np.pi*( r_L**2 - r0**2  )
 
     #constants
-    args_list = (k ,sigma ,c0)
+    #args_list = (k ,sigma ,c0)
+    args_list = (k,sigma,c0,tau,kG)
     #initial values list
     init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
     #The integration part.
-    def edge_tension(t,y,tau):
-        return tau - y[4]
     
-    def edge_ratio(t,y):
-        dpsidt_1 = y[3]
-        psi_1 = y[0]
-        r_1 = y[1]
-        alpha = -0.75#kG/k
-        val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
-        return val
-
+    edge_tension.terminal = True
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
         ,t_span = [sN ,s0]
@@ -80,20 +83,40 @@ def find_init_stationary_state(
         ,y0 = init_conditions
         ,args = args_list
         ,method="LSODA"
-        #,events=(edge_tension,edge_ratio)
         ,rtol=1e-10
-        ,atol=1e-50
+        ,atol=1e-20
+        ,events=(edge_tension,edge_ratio)
     )
-    m = len(ans_odeint.y[0])-1
+    psi = ans_odeint.y[0]
+    r = ans_odeint.y[1]
+    z = ans_odeint.y[2]
+    dpsidt = ans_odeint.y[3]
+    lambs = ans_odeint.y[4]
+    nus = ans_odeint.y[5]
+    
+    dpsidt_1 = dpsidt[len(r)-1]
+    psi_1 = psi[len(r)-1]
+    r_1 = r[len(r)-1]
+    alpha = kG/k
+    
+    print(
+    f"test ={(1-dpsidt_1)*r_1/np.sin(psi_1)-1 - alpha}"
+    )
+
+    #print(f"t events = ",ans_odeint.t_events)
+    #print(f"y events = ",ans_odeint.y_events[0])
+    #print(f"y events = ",ans_odeint.y_events[1])
+
+    """m = len(ans_odeint.y[0])-1
     if find_edge_condition == True:        
         for i in range(0,len(ans_odeint.y[0])-1):
             if ans_odeint.y[4][i] < tau: # lambda = ans_odeint.y[4]
                 m = i
-                break
+                break"""
     
     index_list = descritize_sim_results(
-        r = ans_odeint.y[1][0:m]
-        ,z = ans_odeint.y[2][0:m]
+        r = ans_odeint.y[1]#[0:m]
+        ,z = ans_odeint.y[2]#[0:m]
         ,ds = ds
         ,max_num_points = total_points
         )
@@ -117,8 +140,8 @@ def find_init_stationary_state(
                 )
         )
     
-    r = ans_odeint.y[1][0:m]
-    z = ans_odeint.y[2][0:m]
+    r = ans_odeint.y[1]#[0:m]
+    z = ans_odeint.y[2]#[0:m]
     return psi_discrete,r_discrete,z_discrete, r,z #dpsidt_discrete,lambs_discrete,nus_discrete
     
 if __name__ == "__main__":

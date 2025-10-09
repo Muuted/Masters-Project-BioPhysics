@@ -2,8 +2,9 @@ import numpy as np
 from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
-from Two_D_functions import Epsilon_v2, c_diff
+from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
 from two_d_data_processing import check_area, tot_area
+
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
@@ -391,7 +392,7 @@ def Two_d_simulation_stationary_states(
     ,data_path:str
     ,save_data:bool = True 
     ,Tolerence = 1e-15
-    ,do_correction = True
+    #,do_correction = True
     ,area_testing = False
     ):
     np.set_printoptions(legacy='1.25')
@@ -443,8 +444,13 @@ def Two_d_simulation_stationary_states(
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_initial #+1
-        
+        dA = 0#Area_new - Area_initial #+1
+        do_correction = False
+        constraint_err = check_constraints_truth(
+            N=N,r=radi[t+1],z=z_list[t+1],psi=psi[t+1],Area=Area,tol=Tolerence
+        )
+        if Tolerence < abs(dA) or constraint_err == True:
+            do_correction = True
         if area_testing == True:
             """ start: Lists and variables for problem finding"""
             Area_compare = [dA]
@@ -461,7 +467,7 @@ def Two_d_simulation_stationary_states(
             """ end: Lists and variables for problem finding"""
         
         correction_count = 0
-        while Tolerence < abs(dA) and do_correction == True:
+        while do_correction == True:
             correction_count += 1
             #print(f"correction count={correction_count}",end="\r")
             epsilon = Epsilon_v2(
@@ -498,8 +504,12 @@ def Two_d_simulation_stationary_states(
                         z_after = [ i for i in z_list[t+1]]
 
             Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-            dA = Area_new - Area_initial
-
+            dA = 0#Area_new - Area_initial
+            constraint_err = check_constraints_truth(N=N,r=radi[t+1],z=z_list[t+1],psi=psi[t+1],Area=Area,tol=Tolerence)
+            do_correction = False
+            if Tolerence < abs(dA) or constraint_err == True:
+                do_correction = True
+            
             if area_testing == True:
                 total_Area_change.append(Area_new)
                 Area_compare.append(dA)
@@ -582,8 +592,10 @@ def Two_d_simulation_stationary_states(
     print("\n")
     print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     plt.figure()
-    plt.plot(correct_count_list,".-")
-    plt.show()
+    plt.plot([i*dt for i in range(sim_steps-1)],correct_count_list,".-")
+    plt.title("Number of corrections for each t")
+    plt.xlabel("t [s]")
+    #plt.show()
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],

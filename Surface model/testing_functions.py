@@ -1363,9 +1363,9 @@ def testing_integration_with_events():
     dpsidt = ans_odeint.y[3]
     lambs = ans_odeint.y[4]
     nus = ans_odeint.y[5]
-    dpsidt_1 = dpsidt[0]
-    psi_1 = psi[0]
-    r_1 = r[0]
+    dpsidt_1 = dpsidt[len(r)-1]
+    psi_1 = psi[len(r)-1]
+    r_1 = r[len(r)-1]
     alpha = kG/k
     
     print(
@@ -1374,6 +1374,7 @@ def testing_integration_with_events():
 
     print(ans_odeint.t_events)
     plt.figure()
+    plt.plot(r[len(r)-1],z[len(r)-1],marker="o")
     plt.plot(r,z)
     plt.show()
 

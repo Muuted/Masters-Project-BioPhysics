@@ -196,7 +196,6 @@ def Surface_sim_stationary_state_initial_configuration(
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
 
-
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
@@ -216,7 +215,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence=1e-5
+            ,Tolerence=1e-10
             ,save_data=True
             #,area_testing=True
         )
@@ -233,7 +232,7 @@ def Surface_sim_stationary_state_initial_configuration(
     )
     
     #plt.draw()
-    plt.show()
+    #plt.show()
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path
@@ -245,6 +244,8 @@ def Surface_sim_stationary_state_initial_configuration(
         ,video_name= df_name
         ,fps=fps_movie
     )
+
+    plt.show()
     
     
 if __name__ == "__main__":
