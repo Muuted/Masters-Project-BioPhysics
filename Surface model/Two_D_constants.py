@@ -133,10 +133,10 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 40 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1#10 #5.45#s  : total time simulated
-    dt = 5e-3 # s time step. 
+    dt = 1e-2 # s time step. 
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds =  1.5/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
