@@ -513,7 +513,7 @@ def Two_d_simulation_stationary_states(
                 total_Area_change.append(Area_new)
                 Area_compare.append(dA)
 
-            corr_max = 100
+            corr_max = 20
             if correction_count >= corr_max:
                 print(f"{corr_max} corrections, is too many corrections, we close the program. ")
                 print(
@@ -525,6 +525,11 @@ def Two_d_simulation_stationary_states(
                 plt.plot(radi[t+1],z_list[t+1],"o-",label="at t+1")
                 plt.plot(radi[0],z_list[0],"o-",label="at start t=0")
                 plt.legend()
+
+                plt.figure()
+                plt.plot([i*dt for i in range(len(correct_count_list)-1)],correct_count_list,".-")
+                plt.title("Number of corrections for each t")
+                plt.xlabel("t [s]")
                 plt.show()
                 #break
                 exit()
