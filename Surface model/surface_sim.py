@@ -221,18 +221,6 @@ def Surface_sim_stationary_state_initial_configuration(
         )
 
     #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
-    
-    plot_tot_area(
-        data_path=data_path
-        ,df_name=df_name
-    )
-    plot_Epot_Ekin(
-        data_path=data_path
-        ,df_name=df_name
-    )
-    
-    #plt.draw()
-    plt.show()
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path
@@ -245,7 +233,24 @@ def Surface_sim_stationary_state_initial_configuration(
         ,fps=fps_movie
     )
 
+    plot_tot_area(
+        data_path=data_path
+        ,df_name=df_name
+        ,output_path=video_save_path
+    )
+    plot_Epot_Ekin(
+        data_path=data_path
+        ,df_name=df_name
+        ,output_path=video_save_path
+    )
+    
+    #plt.draw()
     #plt.show()
+    
+  
+    #plt.close()
+
+    plt.show()
     
 
 def Speed_diagnosing():
@@ -273,8 +278,8 @@ if __name__ == "__main__":
     #Surface_sim()
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
-        #do_simulation=False
-        #start_from_flat=False
+        #do_simulation=False,
+        start_from_flat=True
     )
 
     #Speed_diagnosing()

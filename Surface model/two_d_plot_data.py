@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 
 
     
-def plot_tot_area(data_path="",df_name=""):
+def plot_tot_area(
+        data_path:str,df_name:str,output_path:str
+        ):
 
     if data_path == "" and df_name== "":
         print(f" No paths were given in the plot_tot_area function")
         exit()
-
+    save_name = df_name.replace(".avi","")
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
     
@@ -34,33 +36,52 @@ def plot_tot_area(data_path="",df_name=""):
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
     fig, ax=plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(time,Area_change,'.-')
     plt.xlabel("time [s]")
     plt.ylabel("total area")
     plt.title(
-        f"Ratio of Amax=Amin={Aratio} \n "
+        f"Ratio of Amax/Amin={Aratio} \n "
         +f"Amax - AMin={Amax-Amin}"
         )
     ax.ticklabel_format(useOffset=False)
     
+    plt.draw()
+    plt.pause(0.1)
+    save_name_1 =save_name + "Total area over time"
+    plt.savefig(output_path + save_name_1+ ".png")
+
+
+
+
     dA = np.zeros(sim_steps-1)
     for t in range(sim_steps-1):
         dA[t] = Area_change[t+1] - Area_change[t]
 
+
     fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(dA[0:sim_steps-1],'.-')
     ax.ticklabel_format(useOffset=False)
     plt.title("Change in Area")
     plt.draw()
-    #plt.show()
+    #plt.show(block=False)
+    plt.pause(0.1)
     
+    save_name_2 = save_name + "Change in area over time"
+    plt.savefig(output_path + save_name_2+ ".png")
+    
+
 def plot_Epot_Ekin(
-        data_path="",df_name=""
+        data_path:str,df_name:str,output_path:str
         ):
 
-    if data_path == "" and df_name== "":
+    if data_path == "" or df_name== "" or output_path=="":
         print(f" No paths were given, in the plot_Epot_Ekin function")
         exit()
+    save_name = df_name.replace(".avi","")
 
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
@@ -91,9 +112,12 @@ def plot_Epot_Ekin(
         )
 
     t_vec = [dt*i for i in range(sim_steps-1)]
-    fontsize = 15
+    fontsize = 10
     
     fig, ax = plt.subplots(2,1)
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+
     ax[0].plot(t_vec,T,".-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
     ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
@@ -103,10 +127,15 @@ def plot_Epot_Ekin(
     ax[1].plot(t_vec,S,".-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
     ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
-    ax[1].set_title("Potential energy \n" +f"min(E_pot)={min(S)} \n" +r"$\Delta E_{pot}$="+f"{max(S)-min(S)}",fontsize=fontsize)
+    ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)
     ax[1].legend()
 
+
     plt.draw()
+    plt.pause(0.1)
+    save_name += "potential and kinetic energy"
+    plt.savefig(output_path + save_name + ".png")
+    
     #plt.show()
 
 

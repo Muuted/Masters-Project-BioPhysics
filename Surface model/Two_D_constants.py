@@ -25,7 +25,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start flat c0=0 N=20 tau=0\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -132,7 +132,7 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 10#10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
@@ -245,7 +245,11 @@ def Two_D_Constants_stationary_state(
             plt.close()
 
 
-        
+    
+    #c0 = 0
+    #kG = 0
+    #tau=0
+
     if print_val == True:
         print(
             f" \n \n"
@@ -266,8 +270,7 @@ def Two_D_Constants_stationary_state(
             + f" ------------------------------------------------------ \n \n "
         )
     
-    #c0 = 0
-    #kG = 0
+   
     args = [
         L,r0,N,ds,T,dt
         ,k,c0,sim_steps
