@@ -26,7 +26,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start curved dt test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -134,13 +134,13 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 30#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 10#10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds =  1.5#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds =  1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
@@ -245,7 +245,7 @@ def Two_D_Constants_stationary_state(
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
             + f"    Total length of surface L={L} sim units \n "
-            + f"    number of chain links : {N} \n " 
+            + f"    number of chain links N: {N} \n " 
             + f"    r0 = {r0} sim units \n "
             + f"    k = {k}  sim units \n "
             + f"    c0 = {c0:.1e}  sim units \n "
@@ -275,6 +275,6 @@ if __name__ == "__main__":
     #Two_D_Constants(print_val=True)
     Two_D_Constants_stationary_state(
         show_stationary_state=True
-        ,pause_timer=10
+        ,pause_timer=300
         ,start_flat=False
     )

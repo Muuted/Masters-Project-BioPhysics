@@ -397,16 +397,20 @@ def Two_d_simulation_stationary_states(
     ):
     np.set_printoptions(legacy='1.25')
     start_time = time.time()
-
+    end_sim = False
     Area_initial = np.sum(Area)
     
     lambs_save, nus_save = [], []
     correct_count_list = np.zeros(sim_steps-1)
     print("Simulation progressbar \n ")
-    b = progressbar.ProgressBar(maxval=sim_steps-1)
-    b.start()
+    #b = progressbar.ProgressBar(maxval=sim_steps-1)
+    #b.start()
     for t in range(sim_steps-1):
-        b.update(t)
+        #b.update(t)
+        if end_sim == True:
+            break
+        if t%((sim_steps-1)/100) == 0 :
+            print(f"completion : {round(t/((sim_steps-1)/100),1)}%      time since start = {round((time.time()-start_time)/60,3)} min", end="\r")
         t1,t2 = t%2, (t+1)%2
         
         lambs,nus = Langrange_multi(
@@ -527,12 +531,43 @@ def Two_d_simulation_stationary_states(
                 plt.legend()
 
                 plt.figure()
-                plt.plot([i*dt for i in range(len(correct_count_list)-1)],correct_count_list,".-")
+                plt.plot([i*dt for i in range(len(correct_count_list))],correct_count_list,".-")
                 plt.title("Number of corrections for each t")
                 plt.xlabel("t [s]")
                 plt.show()
-                #break
-                exit()
+                
+                if save_data == True:
+                    df = pd.DataFrame({
+                        'psi': [psi],
+                        "r": [radi],
+                        "z": [z_list],
+                        "area list": [Area],
+                        'lambs': [lambs_save],
+                        'nus': [nus_save],
+                        "L" : L,
+                        "r0": r0,
+                        "N": N,
+                        "c0": c0,
+                        "k": k,
+                        "kG": kG,
+                        "sigma": sigma,
+                        "tau": tau,
+                        "sim_steps": sim_steps,
+                        "dt": dt,
+                        "ds": ds,
+                        "gam(i=0)": gamma(0),
+                        "gam(i>0)": gamma(5),
+                        "correction count": [correction_count],
+                        "tolerence":Tolerence,
+                        "sim completion":False
+                                    })
+
+
+                    if not os.path.exists(data_path):
+                        os.makedirs(data_path)
+                    df.to_pickle(data_path + df_name)
+                end_sim == True
+                break
             
         
         correct_count_list[t] = correction_count
@@ -600,7 +635,7 @@ def Two_d_simulation_stationary_states(
     plt.title("Number of corrections for each t")
     plt.xlabel("t [s]")
     #plt.show()
-    
+
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],
@@ -623,7 +658,8 @@ def Two_d_simulation_stationary_states(
             "gam(i=0)": gamma(0),
             "gam(i>0)": gamma(5),
             "correction count": [correction_count],
-            "tolerence":Tolerence
+            "tolerence":Tolerence,
+            "sim completion":True
                         })
 
 
