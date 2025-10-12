@@ -1,14 +1,15 @@
 from two_d_continues_integration import find_init_stationary_state
+from Two_D_functions import Perturbation_of_inital_state,gamma
 import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-def gamma(i):
+"""def gamma(i):
     gam = 1e0# standard 1e0
     if i==0:
         return gam/2
     if i > 0:
-        return gam
+        return gam"""
 
 def mass(i:int ,Area:list):
     rho = 1
@@ -25,13 +26,13 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start flat c0=0 N=20 tau=0\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start curved dt test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
     figs_for_video_path = save_path +"figures for video\\"
 
-
+    
     """------ Saved files names  ---------"""
     df_name= "2D surface"
     fps_movie = 24
@@ -125,14 +126,15 @@ def Two_D_Constants(
 
 
 def Two_D_Constants_stationary_state(
-        print_val=False
-        ,show_stationary_state = True
-        ,pause_timer = 2
-        ,start_flat = False
+        print_val:bool=False
+        ,show_stationary_state:bool = True
+        ,pause_timer:float = 2
+        ,start_flat:bool = False
+        ,perturb:bool = False
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 20#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 30#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 10#10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
@@ -173,35 +175,6 @@ def Two_D_Constants_stationary_state(
     if start_flat == True:
         for i in range(N+1):
            r_list[0][i] = r0 + i*ds
-    
-        for i in range(N):
-            Area_list[i] =  np.pi*( r_list[0][i+1]**2 - r_list[0][i]**2 )
-            if Area_list[i] == 0 :
-                print(f"Area[{i}]=0")
-                exit()
-        
-        if show_stationary_state==True:
-            plt.figure()
-            font_size = 10
-            #plt.plot(r_contin,z_contin,marker=".",label="integration")
-            plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
-            plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
-            ceil = max(r_list[0])-min(r_list[0]) + 2
-            plt.ylim(-ceil/10, 9*ceil/10)
-            plt.xlabel("r",fontsize=font_size)
-            plt.ylabel("z",fontsize=font_size)
-            plt.title(
-                f"Quick peak at the neck configuration before dynanic simulation"
-                ,fontsize=font_size
-                )
-            plt.legend()
-            #plt.xlim(min(r)*0.95, max(r)*1.05)
-            #plt.ylim(-5,max(r)-min(r)-5)
-            #plt.show()
-            #exit()
-            plt.draw()
-            plt.pause(pause_timer)
-            plt.close()
     else:
         """------ variables list ---------"""
         psi,r,z, r_contin, z_contin = find_init_stationary_state(
@@ -213,42 +186,59 @@ def Two_D_Constants_stationary_state(
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]
-                Area_list[i] =  np.pi*(r[i+1] + r[i])*np.sqrt((r[i+1] - r[i])**2 + (z[i+1] - z[i])**2)
-                if Area_list[i] == 0 :
-                    print(f"Area[{i}]=0")
-                    exit()
             r_list[0][i] = r[i]
             z_list[0][i] = z[i]
         
-        if show_stationary_state==True:
-            plt.figure()
-            font_size = 10
-            #plt.plot(r_contin,z_contin,marker="",label="integration")
-            plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+    if perturb == True:
+        Perturbation_of_inital_state(
+            points_perturbed=10, ds=ds
+            ,r=r_list[0]
+            ,z=z_list[0]
+            ,psi=psi_list[0]
+            ,delta_psi=-0.05
+            ,flat=start_flat
+        )
+
+    for i in range(N+1):
+        if i < N :
+            Area_list[i] =  np.pi*(r_list[0][i+1] + r_list[0][i])*np.sqrt((r_list[0][i+1] - r_list[0][i])**2 + (z_list[0][i+1] - z_list[0][i])**2)
+            if Area_list[i] == 0 :
+                print(f"Area[{i}]=0")
+                exit()
+        
+    
+    if show_stationary_state==True:
+        plt.figure()
+        font_size = 10
+        #plt.plot(r_contin,z_contin,marker="",label="integration")
+        plt.plot(r_list[0],z_list[0],"o-",label="Discreet")
+        plt.plot(r_list[0][0],z_list[0][0],"o",color="k",label="s1")
+        plt.plot(r_list[0][len(r_list[0])-1],z_list[0][len(r_list[0])-1],"o",color="y",label="s2")
+        if start_flat == False:
             plt.plot(r_contin,z_contin,linestyle="--",marker="",color="k",label="integration")
-            plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
-            ceil = max(r_list[0])-min(r_list[0]) + 2
-            plt.ylim(-ceil/10, 9*ceil/10)
-            plt.xlabel("r",fontsize=font_size)
-            plt.ylabel("z",fontsize=font_size)
-            plt.title(
-                f"Quick peak at the neck configuration before dynanic simulation \n len(r)={len(r)}"
-                ,fontsize=font_size
-                )
-            plt.legend()
-            #plt.xlim(min(r)*0.95, max(r)*1.05)
-            #plt.ylim(-5,max(r)-min(r)-5)
-            #plt.show()
-            #exit()
-            plt.draw()
-            plt.pause(pause_timer)
-            plt.close()
+        plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
+        ceil = max(r_list[0])-min(r_list[0]) + 2
+        plt.ylim(-ceil/10, 9*ceil/10)
+        plt.xlabel("r",fontsize=font_size)
+        plt.ylabel("z",fontsize=font_size)
+        plt.title(
+            f"Quick peak at the neck configuration before dynanic simulation "
+            ,fontsize=font_size
+            )
+        plt.legend()
+        #plt.xlim(min(r)*0.95, max(r)*1.05)
+        #plt.ylim(-5,max(r)-min(r)-5)
+        #plt.show()
+        #exit()
+        plt.draw()
+        plt.pause(pause_timer)
+        plt.close()
 
 
     
     #c0 = 0
     #kG = 0
-    #tau=0
+    #tau *= 3
 
     if print_val == True:
         print(
@@ -258,8 +248,8 @@ def Two_D_Constants_stationary_state(
             + f"    number of chain links : {N} \n " 
             + f"    r0 = {r0} sim units \n "
             + f"    k = {k}  sim units \n "
-            + f"    c0 = {c0}  sim units \n "
-            + f"    kG = {kG}  sim units \n "
+            + f"    c0 = {c0:.1e}  sim units \n "
+            + f"    kG = {kG:.1e}  sim units \n "
             + f"    sigma = {sigma:0.1e}  sim units \n "
             + f"    tau = {tau:0.1e}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
@@ -286,4 +276,5 @@ if __name__ == "__main__":
     Two_D_Constants_stationary_state(
         show_stationary_state=True
         ,pause_timer=10
+        ,start_flat=False
     )

@@ -1,8 +1,15 @@
 import numpy as np
-from Two_D_constants import Two_D_Constants, gamma
+#from Two_D_constants import gamma
 #import os
 #import pandas as pd
 #import progressbar
+
+def gamma(i):
+    gam = 1e0# standard 1e0
+    if i==0:
+        return gam/2
+    if i > 0:
+        return gam
 
 
 def Delta_s(A:list,r:list,i:int):
@@ -821,24 +828,25 @@ def Perturbation_of_inital_state(
         points_perturbed:int, ds:float
         ,r:list,z:list,psi:list
         ,delta_psi:float = -1
+        ,flat = False
         ):
     if points_perturbed > len(psi)-1:
         print(f"Perturbing too many points \n"
               +f"len(psi)={len(psi)} and points perturbed={points_perturbed}")
         exit()
     i_start = points_perturbed#len(psi)-1 - points_perturbed
-    i_stop = -1#len(psi)-1
-    #for i in range(i_start,i_stop,-1):
-    for i in range(0,points_perturbed):
-        psi[i] += delta_psi
+    i_stop = -1
+
+    if flat == True:
+        for i in range(0,points_perturbed):
+            psi[i] += delta_psi*(points_perturbed -i)
+    if flat == False:
+        for i in range(0,points_perturbed):
+            psi[i] += delta_psi
 
     for i in range(i_start,i_stop,-1):
-        #r[i] = r[i+1] - (psi[i]/abs(psi[i]))*np.cos(psi[i])*ds
-        #z[i] = z[i+1] + (psi[i]/abs(psi[i]))*np.sin(psi[i] +np.pi)*ds
         r[i] = r[i+1] + np.cos(psi[i]+np.pi)*ds
         z[i] = z[i+1] + np.sin(psi[i]+np.pi)*ds
-
-    #return r,z,psi
 
 
 
@@ -858,35 +866,6 @@ def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->b
 
 
 if __name__ == "__main__":
-    a = np.zeros(5)
-    print(a)
-    exit()
-    const_args = Two_D_Constants(
-        print_val=True
-    )
-
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    
-    radi_list = [L + r0 - i*ds for i in range(N,-1,-1)]
-    zz_list = [0 for i in range(N,-1,-1)]
-
-    print(
-        f"radi shape = {np.shape(radi_list)} \n"
-        +f"z shape = {np.shape(zz_list)} \n"
-        +f"psi shape = {np.shape(psi_list)} \n"
-        f"Area shape = {np.shape(Area_list)} \n"
-    )
-    #exit()
-    lambs,nus = Langrange_multi(
-        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area_list
-        ,psi=psi_list[0]
-        ,radi=radi_list
-        ,z_list=zz_list
-        ,print_matrix=True
-    )
+    pass
 
     

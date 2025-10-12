@@ -152,7 +152,7 @@ def Make_frames(
         plt.ylim(-ceil/10, 9*ceil/10)
         plt.xlabel(f"x")
         plt.ylabel(f"z")
-        plt.title(f"Dynamics for time={t*dt}s  \n and frame ={k} of {len(frame_vec)}")
+        plt.title(f"Dynamics for time={t*dt:.7f}s  \n and frame ={k} of {len(frame_vec)}")
         
         plt.text(0.88, 0.95, textstr
                  ,transform=ax.transAxes

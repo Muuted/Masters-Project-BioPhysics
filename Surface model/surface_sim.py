@@ -179,15 +179,17 @@ def Surface_sim_Area_condition():
     
 
 def Surface_sim_stationary_state_initial_configuration(
-        do_simulation=True
-        ,start_from_flat= False
+        do_simulation:bool = True
+        ,start_from_flat:bool = False
+        ,do_perturbation:bool = False
     ):
-    print("\n \nNow Running the surface simulation from stationary configurations \n \n")
+    print("\n Now Running the surface simulation from stationary configurations \n")
 
     const_args = Two_D_Constants_stationary_state(
         print_val=True
         ,show_stationary_state=True
         ,start_flat=start_from_flat
+        ,perturb=do_perturbation
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -201,7 +203,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" dt={dt} and N={N} and ds={ds} c0={c0} kG={kG}"
+    df_name += f" N={N} and ds={ds}"#f" ds={dt}and N={N} and ds={ds} c0={c0} kG={kG}"
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -221,6 +223,7 @@ def Surface_sim_stationary_state_initial_configuration(
         )
 
     #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
+    
     Make_frames(
         data_path=data_path
         ,figs_save_path=figs_for_video_path
@@ -232,17 +235,18 @@ def Surface_sim_stationary_state_initial_configuration(
         ,video_name= df_name
         ,fps=fps_movie
     )
-
-    plot_tot_area(
-        data_path=data_path
-        ,df_name=df_name
-        ,output_path=video_save_path
-    )
+    
     plot_Epot_Ekin(
         data_path=data_path
         ,df_name=df_name
         ,output_path=video_save_path
     )
+    plot_tot_area(
+        data_path=data_path
+        ,df_name=df_name
+        ,output_path=video_save_path
+    )
+    
     
     #plt.draw()
     #plt.show()
@@ -278,8 +282,9 @@ if __name__ == "__main__":
     #Surface_sim()
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
-        #do_simulation=False,
-        start_from_flat=True
+        do_simulation=True
+        ,start_from_flat=False
+        ,do_perturbation=False
     )
 
     #Speed_diagnosing()

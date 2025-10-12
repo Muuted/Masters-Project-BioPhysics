@@ -30,7 +30,7 @@ def plot_tot_area(
     Area_change= np.zeros(sim_steps)
     time = np.zeros(sim_steps)
     for t in range(sim_steps):
-        Area_change[t] += tot_area(N=N,r=r[t],z=z[t])
+        Area_change[t] = tot_area(N=N,r=r[t],z=z[t])
         time[t] = t*dt
 
     Amin, Amax = min(Area_change) ,max(Area_change)
@@ -48,10 +48,10 @@ def plot_tot_area(
     ax.ticklabel_format(useOffset=False)
     
     plt.draw()
-    plt.pause(0.1)
-    save_name_1 =save_name + "Total area over time"
-    plt.savefig(output_path + save_name_1+ ".png")
-
+    plt.pause(0.2)
+    save_name_1 = save_name + "Atot"# Total area over time"
+    plt.savefig(output_path + save_name_1 + ".png")
+    plt.pause(0.2)
 
 
 
@@ -64,15 +64,14 @@ def plot_tot_area(
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot(dA[0:sim_steps-1],'.-')
-    ax.ticklabel_format(useOffset=False)
+    #ax.ticklabel_format(useOffset=False)
     plt.title("Change in Area")
     plt.draw()
-    #plt.show(block=False)
-    plt.pause(0.1)
-    
-    save_name_2 = save_name + "Change in area over time"
-    plt.savefig(output_path + save_name_2+ ".png")
-    
+    plt.pause(0.3)
+    save_name_2 = save_name + " dA"
+    plt.savefig(output_path + save_name_2 + ".png")
+
+    plt.pause(0.3)
 
 def plot_Epot_Ekin(
         data_path:str,df_name:str,output_path:str
@@ -133,8 +132,9 @@ def plot_Epot_Ekin(
 
     plt.draw()
     plt.pause(0.1)
-    save_name += "potential and kinetic energy"
-    plt.savefig(output_path + save_name + ".png")
+    save_name_1 = "potential and kinetic energy" + df_name 
+    save_name_1 = df_name +" S&T"
+    plt.savefig(output_path + save_name_1 +".png")
     
     #plt.show()
 

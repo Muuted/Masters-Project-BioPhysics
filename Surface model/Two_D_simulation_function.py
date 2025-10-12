@@ -1,6 +1,6 @@
 import numpy as np
-from Two_D_constants import Two_D_Constants, gamma, Two_D_paths
-from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func
+from Two_D_constants import Two_D_Constants, Two_D_paths
+from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func, gamma
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
 from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
 from two_d_data_processing import check_area, tot_area
@@ -600,6 +600,7 @@ def Two_d_simulation_stationary_states(
     plt.title("Number of corrections for each t")
     plt.xlabel("t [s]")
     #plt.show()
+    
     if save_data == True:
         df = pd.DataFrame({
             'psi': [psi],
