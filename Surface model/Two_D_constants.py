@@ -26,7 +26,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start flat tau=tau N=40 c0=2\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -134,9 +134,9 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 20#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 40#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 10#10 #5.45#s  : total time simulated
+    T = 4#10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
     sim_steps =  int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
@@ -144,7 +144,7 @@ def Two_D_Constants_stationary_state(
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
-    c0 = 0.25e0# 0.25e8 # 1/m   : 
+    c0 = 2#0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
@@ -238,7 +238,7 @@ def Two_D_Constants_stationary_state(
     
     #c0 = 0
     #kG = 0
-    #tau *= 3
+    #tau = 0
 
     if print_val == True:
         print(

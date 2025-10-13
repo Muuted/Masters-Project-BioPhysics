@@ -398,6 +398,7 @@ def Two_d_simulation_stationary_states(
     np.set_printoptions(legacy='1.25')
     start_time = time.time()
     end_sim = False
+    print_scale = (sim_steps-2)/1000
     Area_initial = np.sum(Area)
     
     lambs_save, nus_save = [], []
@@ -409,16 +410,16 @@ def Two_d_simulation_stationary_states(
         #b.update(t)
         if end_sim == True:
             break
-        if t%((sim_steps-1)/100) == 0 :
-            print(f"completion : {round(t/((sim_steps-1)/100),1)}%      time since start = {round((time.time()-start_time)/60,3)} min", end="\r")
+        if int(t%print_scale) == 0 :
+            print(f"completion : {round(t/(print_scale*10),1)}%      time since start = {round((time.time()-start_time)/60,3)} min", end="\r")
         t1,t2 = t%2, (t+1)%2
         
         lambs,nus = Langrange_multi(
-        N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area
-        ,psi=psi[t]
-        ,radi=radi[t]
-        ,z_list=z_list[t]
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                ,Area=Area
+                ,psi=psi[t]
+                ,radi=radi[t]
+                ,z_list=z_list[t]
             )
         lambs_save.append(lambs)
         nus_save.append(nus)
@@ -566,7 +567,7 @@ def Two_d_simulation_stationary_states(
                     if not os.path.exists(data_path):
                         os.makedirs(data_path)
                     df.to_pickle(data_path + df_name)
-                end_sim == True
+                end_sim = True
                 break
             
         
@@ -627,7 +628,7 @@ def Two_d_simulation_stationary_states(
             plt.show()
             #exit()
     
-    b.finish()
+    #b.finish()
     print("\n")
     print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     plt.figure()
