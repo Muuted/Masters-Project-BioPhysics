@@ -411,7 +411,7 @@ def Two_d_simulation_stationary_states(
         if end_sim == True:
             break
         if int(t%print_scale) == 0 :
-            print(f"completion : {round(t/(print_scale*10),1)}%      time since start = {round((time.time()-start_time)/60,3)} min", end="\r")
+            print(f"completion : {round(t/(print_scale*10),1)}%      time since start = {round((time.time()-start_time)/60,3):.4f} min", end="\r")
         t1,t2 = t%2, (t+1)%2
         
         lambs,nus = Langrange_multi(

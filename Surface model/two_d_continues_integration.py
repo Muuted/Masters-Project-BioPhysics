@@ -46,6 +46,7 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
                     break
             
     #print(f"index_list={index_list}")
+    print("len index list =",len(index_list))
     return index_list
 
 def Get_angle(x1,y1,x2,y2):

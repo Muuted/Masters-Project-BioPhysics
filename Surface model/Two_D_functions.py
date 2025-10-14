@@ -36,15 +36,12 @@ def Q_function(
         )
         a1 = a11*(a12**2)
 
-        a2 = - k*(psi[i+1]-psi[i])/(radi[i+1] +radi[i])*a12
+        a2 = - (k*(psi[i+1]-psi[i])/(radi[i+1] +radi[i]))*a12
 
         a31 = k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2)
         a3 = a31*a12 - tau
 
         a4 = - sigma*Area[i]*radi[i+1]/(np.pi*(radi[i+1]+radi[i])**2)
-
-        a5 = 0#kG*(psi[i+1]-psi[i])*np.sin(psi[i])/radi[i]**2
-
 
     if 0 < i < N-1:
         
@@ -71,45 +68,43 @@ def Q_function(
         a5 = k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2)*a32
 
         a6 = -sigma*(
-            Area[i]*radi[i+1] / (radi[i+1] + radi[i])**2
-            -Area[i-1]*radi[i-1] / (radi[i] + radi[i-1])**2
+            Area[i]*radi[i+1] / ((radi[i+1] + radi[i])**2)
+          - Area[i-1]*radi[i-1] / ((radi[i] + radi[i-1])**2)
         )
-        
-        a7 = 0#kG*(psi[i+1]-psi[i])*np.sin(psi[i])/radi[i]**2
 
     if i == N-1:
-        a11 = (k*Area[i-1])/(2*np.pi*(radi[i]+radi[i-1]**2))
+        a11 = (k*Area[i-1])/(2*np.pi*(radi[i]+radi[i-1])**2)
         a12 =(
             np.pi*(psi[i]-psi[i-1])*(radi[i]+radi[i-1])/Area[i-1]
             +np.sin(psi[i-1])/radi[i-1] 
             -c0
         )**2
-        a1 = a11*a12
+        a1 = a11*(a12**2)
 
         a21 = - k*(psi[i]-psi[i-1])/(radi[i] + radi[i-1])
-        a22 = (
-            np.pi*(psi[i]-psi[i-1])*(radi[i] + radi[i-1]) 
+        """a22 = (
+            np.pi*(psi[i]-psi[i-1])*(radi[i] + radi[i-1])/Area[i-1]
             +np.sin(psi[i-1])/radi[i-1] 
             -c0
-        )
-        a2 = a21*a22 
+        )"""
+        a2 = a21*a12
         
 
-        a31 = (k*Area[i])/(2*np.pi*(radi[i+1]+radi[i]**2))
+        a31 = (k*Area[i])/(2*np.pi*(radi[i+1]+radi[i])**2)
         a32 = (
             -np.pi*psi[i]*(radi[i+1]+radi[i])/Area[i]
             +np.sin(psi[i])/radi[i] 
             -c0
         )
-        a3 = a31*a32**2
+        a3 = a31*(a32**2)
 
         a41 = k*psi[i]/(radi[i+1]+radi[i])
-        a42 =a32
-        a4 = a41*a42
+        #a42 =a32
+        a4 = a41*a32
 
         a51 = k*Area[i]*np.sin(psi[i])/(np.pi*radi[i]**2*(radi[i+1]+radi[i]))
-        a52 = a32
-        a5 = a51*a52
+        #a52 = a32
+        a5 = a51*a32
 
         a6 = -sigma*(
             Area[i]*radi[i+1]/(radi[i+1]+radi[i])**2
@@ -120,7 +115,7 @@ def Q_function(
 
     a = a1 + a2 + a3 + a4 + a5 + a6 + a7
     
-    return a/gamma(i)
+    return a
 
 
 
@@ -130,12 +125,13 @@ def drdt_func(
         ,lamb:list , nu:list, z_list:list
         ):
     a1,a2,a3 = 0,0,0
+    a11 ,a12 ,a21 ,a22 ,a31 ,a32 =0,0,0,0,0,0
 
     if i == 0:
         a11 = -2*np.pi*radi[i]*lamb[i]/Area[i]
         a12 = np.pi*nu[i]*(z_list[i+1] - z_list[i])/Area[i]
 
-        a1 = a11+ a12
+        a1 = a11 + a12
 
     if 0 < i < N-1:
         a21 = 2*np.pi*radi[i]*(
@@ -144,7 +140,7 @@ def drdt_func(
 
         a22 = np.pi*(
             nu[i-1]*(z_list[i] - z_list[i-1])/Area[i-1]
-            +nu[i]*(z_list[i+1] - z_list[i])/Area[i]
+          + nu[i]*(z_list[i+1] - z_list[i])/Area[i]
         )
         a2 = a21 + a22
 
@@ -163,8 +159,9 @@ def drdt_func(
                                         ,sigma=sigma,kG=kG,tau=tau
                                         ,Area=Area,psi=psi,radi=radi
                                     )
+                                    
     
-    return drdt
+    return drdt/gamma(i)
 
 
 def drdt_RungeKutta_4(
@@ -184,7 +181,7 @@ def dzdt_func(
     if i > 0 :
         dzdt = np.pi*(
             nu[i-1]*(radi[i] + radi[i-1])/Area[i-1]
-            -nu[i]*(radi[i+1] + radi[i])/Area[i]
+          - nu[i]*(radi[i+1] + radi[i])/Area[i]
         )/gamma(i)
     
     return dzdt
@@ -199,7 +196,7 @@ def dpsidt_func(  i,N,k,c0, sigma, kG, tau
         ,Area:list,psi:list,radi:list
         ,lamb:list , nu:list, z_list:list
         ):
-    
+    a1 ,a2 ,a3 = 0,0,0
     if i < N-1 :
         dzdt_i_next = dzdt_func(i=i+1,Area=Area,radi=radi,nu=nu)
         dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
@@ -219,10 +216,10 @@ def dpsidt_func(  i,N,k,c0, sigma, kG, tau
             )
         
         a1 = (radi[i+1] + radi[i])*np.cos(psi[i])
-        a2 = (z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i+1]*np.sin(psi[i])
-        a3 =(z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i]*np.sin(psi[i])
+        a2 = (z_list[i+1] - z_list[i])*np.cos(psi[i]) - 2*radi[i+1]*np.sin(psi[i])
+        a3 = (z_list[i+1] - z_list[i])*np.cos(psi[i]) + 2*radi[i]*np.sin(psi[i])
 
-        dpsidt = np.pi*(   a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
+        dpsidt = np.pi*(  a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
 
     if i == N-1:
         dzdt_i = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
@@ -233,10 +230,10 @@ def dpsidt_func(  i,N,k,c0, sigma, kG, tau
             ,lamb=lamb,nu=nu
             )
         
-        a1 = (radi[i+1] + radi[i])*np.cos(psi[i])
-        a3 =(z_list[i+1]-z_list[i])*np.cos(psi[i]) - 2*radi[i]*np.sin(psi[i])
+        a1 = -(radi[i+1] + radi[i])*np.cos(psi[i])
+        a3 = -z_list[i]*np.cos(psi[i]) + 2*radi[i]*np.sin(psi[i])
 
-        dpsidt = np.pi*( -a1*dzdt_i  + a3*drdt_i )/Area[i]
+        dpsidt = np.pi*( a1*dzdt_i  + a3*drdt_i )/Area[i]
 
     return dpsidt
 

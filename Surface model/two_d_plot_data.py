@@ -136,7 +136,37 @@ def plot_Epot_Ekin(
     save_name_1 = df_name +" S&T"
     plt.savefig(output_path + save_name_1 +".png")
     
-    #plt.show()
+    
+
+
+    fig, ax = plt.subplots()
+    font_size= 15
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    plt.plot(
+        r[0],z[0]
+        ,marker="o",linestyle="-"
+        ,color="k"
+        ,label="intial positions"
+        )
+    if r[sim_steps-1].all() == 0:
+        plt.plot(
+        r[sim_steps-1],z[sim_steps-1]
+        ,marker="o",linestyle="--"
+        ,color="g"
+        ,label="Error occured, and end isnt there"
+        )
+    else:
+        plt.plot(
+        r[sim_steps-1],z[sim_steps-1]
+        ,marker="o",linestyle="--"
+        ,color="g"
+        ,label="end positions"
+        )
+    plt.xlabel("r",fontsize=font_size)
+    plt.ylabel("z",fontsize=font_size)
+    plt.title("show difference from start and end positions")
+    plt.legend()
 
 
 
