@@ -36,8 +36,8 @@ def plot_tot_area(
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
     fig, ax=plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
     plt.plot(time,Area_change,'.-')
     plt.xlabel("time [s]")
     plt.ylabel("total area")
@@ -61,8 +61,8 @@ def plot_tot_area(
 
 
     fig, ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
     plt.plot(dA[0:sim_steps-1],'.-')
     #ax.ticklabel_format(useOffset=False)
     plt.title("Change in Area")
@@ -114,8 +114,8 @@ def plot_Epot_Ekin(
     fontsize = 10
     
     fig, ax = plt.subplots(2,1)
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
 
     ax[0].plot(t_vec,T,".-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
@@ -137,12 +137,10 @@ def plot_Epot_Ekin(
     plt.savefig(output_path + save_name_1 +".png")
     
     
-
-
     fig, ax = plt.subplots()
     font_size= 15
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
     plt.plot(
         r[0],z[0]
         ,marker="o",linestyle="-"
@@ -167,6 +165,9 @@ def plot_Epot_Ekin(
     plt.ylabel("z",fontsize=font_size)
     plt.title("show difference from start and end positions")
     plt.legend()
+
+    save_name_1 = df_name + "init and end"
+    plt.savefig(output_path + save_name_1 +".png")
 
 
 

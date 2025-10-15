@@ -204,7 +204,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" N={N} and ds={ds}"# c0={c0} tau={tau}"#f" ds={dt}and N={N} and ds={ds} c0={c0} kG={kG}"
+    df_name += f" N={N} and ds={ds}" # c0={c0} tau={tau}"#f" ds={dt}and N={N} and ds={ds} c0={c0} kG={kG}"
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -284,7 +284,7 @@ if __name__ == "__main__":
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         do_simulation = True
-        ,start_from_flat = False
+        ,start_from_flat = True
         ,do_perturbation = False
         ,make_movie = True
     )

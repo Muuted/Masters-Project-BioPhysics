@@ -26,7 +26,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" +"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Test of error corrections\\start flat c=c0 tau=0\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -140,11 +140,11 @@ def Two_D_Constants_stationary_state(
     dt = 1e-2# s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds = 1.49#< 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.499# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
-    c0 = 0.25e0# 0.25e8 # 1/m   : 
+    c0 = 2#0.25e0# 0.25e8 # 1/m   : 
     k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
@@ -238,7 +238,7 @@ def Two_D_Constants_stationary_state(
     
     #c0 = 0
     #kG = 0
-    #tau = 0
+    tau = 0
 
     if print_val == True:
         print(
@@ -248,10 +248,10 @@ def Two_D_Constants_stationary_state(
             + f"    number of chain links N: {N} \n " 
             + f"    r0 = {r0} sim units \n "
             + f"    k = {k}  sim units \n "
-            + f"    c0 = {c0:.1e}  sim units \n "
             + f"    kG = {kG:.1e}  sim units \n "
-            + f"    sigma = {sigma:0.1e}  sim units \n "
+            + f"    c0 = {c0:.1e}  sim units \n "
             + f"    tau = {tau:0.1e}  sim units \n "
+            + f"    sigma = {sigma:0.1e}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
             + f"    gamma(i!=0) = {gamma(2)} unit?  \n "

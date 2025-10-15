@@ -129,8 +129,8 @@ def Make_frames(
     #fig.canvas.manager.window.full_screen_toggle()
     #mng = plt.get_current_fig_manager()
     #mng.full_screen_toggle()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
 
     rmin,rmax = np.min([np.min(i) for i in r]), np.max([np.max(i) for i in r])
     zmin, zmax = np.min([np.min(i) for i in z]) , np.max([np.max(i) for i in z])
@@ -154,11 +154,11 @@ def Make_frames(
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt:.7f}s  \n and frame ={k} of {len(frame_vec)}")
         
-        plt.text(0.88, 0.95, textstr
+        plt.text(0.7, 0.95, textstr
                  ,transform=ax.transAxes
-                 , fontsize=14
+                 ,fontsize=12
                  ,verticalalignment='top'
-                 , bbox=props
+                 ,bbox=props
                  )
 
         plt.draw()
