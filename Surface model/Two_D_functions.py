@@ -482,7 +482,8 @@ def Langrange_multi(
                 A[i][j] = lamb_i_next + lamb_i + lamb_i_before + nu_i_next + nu_i + nu_i_before #lambs + nus
             
 
-            #---------------- calc b vals -------------------------     
+        #---------------- calc b vals -------------------------     
+        
         if i < N - 1 :   
             Q_i_next = Q_function(
                 i=i+1
@@ -526,51 +527,51 @@ def Langrange_multi(
         if i > N - 1:
             if i == N :
                 b11 = -k*(
-                    np.pi*(psi[i%N+1] - psi[i%N])*(radi[i%N+1]+radi[i%N])/Area[i%N]
-                    +np.sin(psi[i%N])/radi[i%N] - c0
+                    np.pi*(psi[l+1] - psi[l])*(radi[l+1]+radi[l])/Area[l]
+                    +np.sin(psi[l])/radi[l] - c0
                 )*(
-                    1 - Area[i%N]*np.cos(psi[i%N])/(np.pi*radi[i%N]*(radi[i%N+1] + radi[i%N]))
+                    1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
                 )
-                b12 = -kG*(  np.sin(psi[i%N]) - ( psi[i%N+1] - psi[i%N] )*np.cos(psi[i%N])  )
+                b12 = -kG*(  np.sin(psi[l]) - ( psi[l+1] - psi[l] )*np.cos(psi[l])  )
                 
                 b1 = b11 + b12
             if N < i < 2*N -1:
                 b21 = -k*(
-                    np.pi*(psi[i%N+1] - psi[i%N])*(radi[i%N+1]+radi[i%N])/Area[i%N]
-                    +np.sin(psi[i%N])/radi[i%N] - c0
+                    np.pi*(psi[l+1] - psi[l])*(radi[l+1]+radi[l])/Area[l]
+                    +np.sin(psi[l])/radi[l] - c0
                 )*(
-                    1 - Area[i%N]*np.cos(psi[i%N])/( np.pi*radi[i%N]*( radi[i%N+1] + radi[i%N] ) )
+                    1 - Area[l]*np.cos(psi[l])/( np.pi*radi[l]*( radi[l+1] + radi[l] ) )
                 )
             
                 b22 =  k*(
-                    np.pi*( psi[i%N] - psi[i%N-1] )*( radi[i%N] + radi[i%N-1] )/Area[i%N-1]
-                    +np.sin(psi[i%N-1])/radi[i%N-1] - c0
+                    np.pi*( psi[l] - psi[l-1] )*( radi[l] + radi[l-1] )/Area[l-1]
+                    +np.sin(psi[l-1])/radi[l-1] - c0
                 )
                 
                 b23 = -kG*(
-                    np.sin(psi[i%N]) - np.sin(psi[i%N-1])
-                    - (psi[i%N+1] - psi[i%N] )*np.cos(psi[i%N])
+                    np.sin(psi[l]) - np.sin(psi[l-1])
+                    - (psi[l+1] - psi[l] )*np.cos(psi[l])
                 )
 
                 b1 = b21 + b22 + b23
             
             if i == 2*N -1:
                 b21 = -k*(
-                    -np.pi*psi[i%N]*(radi[i%N+1]+radi[i%N])/Area[i%N]
-                    + np.sin(psi[i%N])/radi[i%N] - c0
+                    -np.pi*psi[l]*(radi[l+1]+radi[l])/Area[l]
+                    + np.sin(psi[l])/radi[l] - c0
                 )*(
-                    1 - Area[i%N]*np.cos(psi[i%N])/(np.pi*radi[i%N]*(radi[i%N+1] + radi[i%N]))
+                    1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
                 )
             
                 b22 =  k*(
-                    np.pi*(psi[i%N] - psi[i%N-1])*(radi[i%N]+radi[i%N-1])/Area[i%N-1]
-                    + np.sin(psi[i%N-1])/radi[i%N-1] - c0
+                    np.pi*(psi[l] - psi[l-1])*(radi[l]+radi[l-1])/Area[l-1]
+                    + np.sin(psi[l-1])/radi[l-1] - c0
                 )
                 
                 b23 = -kG*(
-                    np.sin(psi[i%N]) 
-                    - np.sin(psi[i%N-1])
-                    + psi[i%N]*np.cos(psi[i%N])
+                    np.sin(psi[l]) 
+                    - np.sin(psi[l-1])
+                    + psi[l]*np.cos(psi[l])
                 )
 
                 b1 = b21 + b22 + b23
