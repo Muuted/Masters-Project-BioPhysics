@@ -21,7 +21,22 @@ def Kronecker(i,j):
     if i != j:
         return 0
 
-def Q_function(
+def B_function(
+        i,N,c0,Area:list,psi:list,radi:list
+        ):
+    B = ""
+    if i < N-1:
+        B = np.pi*(psi[i+1]-psi[i])*(radi[i+1]+radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
+    if i == N-1:
+        B = -np.pi*psi[i]*(radi[i+1]+radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
+
+    if B == "":
+        print(f"B function never took a value")
+        exit()
+
+    return B
+
+def Q_function_V1(
         i,N,k,c0, sigma, kG, tau
         ,Area:list,psi:list,radi:list
         ):
@@ -36,10 +51,15 @@ def Q_function(
         )
         a1 = a11*(a12**2)
 
+        
         a2 = - (k*(psi[i+1]-psi[i])/(radi[i+1] +radi[i]))*a12
 
-        a31 = k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2)
-        a3 = a31*a12 - tau
+        a31 = k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2) 
+        
+        a32 = - k*Area[i]/(2*np.pi*(radi[i+1]+radi[i]))
+
+        a3 = a31*a12 + a32*(a12**2) - tau
+
 
         a4 = - sigma*Area[i]*radi[i+1]/(np.pi*(radi[i+1]+radi[i])**2)
 
@@ -65,9 +85,12 @@ def Q_function(
 
         a4 = -k*(psi[i+1]-psi[i])/(radi[i+1]+radi[i])*a32
 
+        
         a5 = k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2)*a32
 
-        a6 = -sigma*(
+        a6 = -k *Area[i]/(2*np.pi*(radi[i+1] + radi[i]))*(a32**2)
+
+        a7 = -sigma*(
             Area[i]*radi[i+1] / ((radi[i+1] + radi[i])**2)
           - Area[i-1]*radi[i-1] / ((radi[i] + radi[i-1])**2)
         )
@@ -82,14 +105,8 @@ def Q_function(
         a1 = a11*(a12**2)
 
         a21 = - k*(psi[i]-psi[i-1])/(radi[i] + radi[i-1])
-        """a22 = (
-            np.pi*(psi[i]-psi[i-1])*(radi[i] + radi[i-1])/Area[i-1]
-            +np.sin(psi[i-1])/radi[i-1] 
-            -c0
-        )"""
         a2 = a21*a12
         
-
         a31 = (k*Area[i])/(2*np.pi*(radi[i+1]+radi[i])**2)
         a32 = (
             -np.pi*psi[i]*(radi[i+1]+radi[i])/Area[i]
@@ -106,17 +123,87 @@ def Q_function(
         #a52 = a32
         a5 = a51*a32
 
-        a6 = -sigma*(
+        a6 = -k*Area[i]/(np.pi*(radi[i+1]+radi[i]))*(a32**2)
+
+        a7 = -sigma*(
             Area[i]*radi[i+1]/(radi[i+1]+radi[i])**2
             -Area[i-1]*radi[i-1]/(radi[i]+radi[i-1])**2
         )
 
-        a7 = 0#- kG*psi[i]*np.sin(psi[i])/radi[i]**2
 
     a = a1 + a2 + a3 + a4 + a5 + a6 + a7
     
     return a
 
+
+def Q_function(
+        i,N,k,c0, sigma, kG, tau
+        ,Area:list,psi:list,radi:list
+        ):
+    a,a1,a2,a3,a4,a5,a6,a7 = 0,0,0,0,0,0,0,0
+    if i == 0:
+        B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        Bpow2 = B**2
+
+        a1 = ( k*Area[i]/(2*np.pi*(radi[i+1] + radi[i])**2 ) )*Bpow2
+
+        a2 = -( k*(psi[i+1]-psi[i])/(radi[i+1] + radi[i]) )*B
+
+        a3 = ( k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2) )*B
+
+        a4 = - ( k*Area[i]/(2*np.pi*( radi[i+1] + radi[i]) ) )*Bpow2
+
+        a5 = -sigma*Area[i]*radi[i+1]/(np.pi*(radi[i+1]+radi[i])**2 )
+
+        a6 = - tau
+
+    if 0 < i < N-1:
+        
+        B_before = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        Bpow2 = B**2
+
+        a1 = ( k*Area[i-1]/(2*np.pi*(radi[i] + radi[i-1])**2 ) )*(B_before**2)
+
+        a2 = -( k*(psi[i] - psi[i-1])/(radi[i] + radi[i-1] ) )*B_before
+
+        a3 = ( k*Area[i]/( 2*np.pi*( radi[i+1] + radi[i] )**2 ) )*Bpow2
+
+        a4 = -( k*( psi[i+1] - psi[i] )/(radi[i+1] + radi[i] ) )*B
+
+        a5 = ( k*Area[i]*np.sin(psi[i])/( np.pi*(radi[i+1] + radi[i] )*radi[i]**2 ) )*B
+
+        a6 = -( k*Area[i]/(2*np.pi*(radi[i+1] + radi[i]) ) )*Bpow2
+
+        a7 = - sigma*(
+            Area[i]*radi[i+1]/(radi[i+1] + radi[i])**2 - Area[i-1]*radi[i-1]/(radi[i]+radi[i-1])**2
+        )
+
+
+    if i == N-1:
+        B_before = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        Bpow2 = B**2
+
+        a1 = ( k*Area[i-1]/(2*np.pi*(radi[i] + radi[i-1])**2 ) )*(B_before**2)
+
+        a2 = -( k*(psi[i] - psi[i-1])/(radi[i] + radi[i-1] ) )*B_before
+
+        a3 = ( k*Area[i]/( 2*np.pi*( radi[i+1] + radi[i] )**2 ) )*Bpow2
+
+        a4 =  (k* psi[i] /(radi[i+1] + radi[i] )) *B
+
+        a5 = ( k*Area[i]*np.sin(psi[i])/( np.pi*(radi[i+1] + radi[i] )*radi[i]**2 ) )*B 
+
+        a6 = -( k*Area[i]/( 2*np.pi*( radi[i+1]+radi[i] ) ) )*Bpow2
+
+        a7 =  - sigma*(
+            Area[i]*radi[i+1]/(radi[i+1] + radi[i])**2 - Area[i-1]*radi[i-1]/(radi[i]+radi[i-1])**2
+        )
+
+    a = a1 + a2 + a3 + a4 + a5 + a6 + a7
+    
+    return a
 
 
 def drdt_func(
@@ -483,7 +570,7 @@ def Langrange_multi(
             
 
         #---------------- calc b vals -------------------------     
-        
+
         if i < N - 1 :   
             Q_i_next = Q_function(
                 i=i+1
@@ -531,22 +618,24 @@ def Langrange_multi(
                     +np.sin(psi[l])/radi[l] - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
-                )
+                )*radi[l]
+
                 b12 = -kG*(  np.sin(psi[l]) - ( psi[l+1] - psi[l] )*np.cos(psi[l])  )
                 
                 b1 = b11 + b12
+                
             if N < i < 2*N -1:
                 b21 = -k*(
                     np.pi*(psi[l+1] - psi[l])*(radi[l+1]+radi[l])/Area[l]
                     +np.sin(psi[l])/radi[l] - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/( np.pi*radi[l]*( radi[l+1] + radi[l] ) )
-                )
+                )*radi[l]
             
                 b22 =  k*(
                     np.pi*( psi[l] - psi[l-1] )*( radi[l] + radi[l-1] )/Area[l-1]
                     +np.sin(psi[l-1])/radi[l-1] - c0
-                )
+                )*radi[l-1]
                 
                 b23 = -kG*(
                     np.sin(psi[l]) - np.sin(psi[l-1])
@@ -561,12 +650,12 @@ def Langrange_multi(
                     + np.sin(psi[l])/radi[l] - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
-                )
+                )*radi[l]
             
                 b22 =  k*(
                     np.pi*(psi[l] - psi[l-1])*(radi[l]+radi[l-1])/Area[l-1]
                     + np.sin(psi[l-1])/radi[l-1] - c0
-                )
+                )*radi[l-1]
                 
                 b23 = -kG*(
                     np.sin(psi[l]) 

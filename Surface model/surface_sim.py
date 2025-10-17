@@ -223,6 +223,7 @@ def Surface_sim_stationary_state_initial_configuration(
             #,area_testing=True
         )
 
+    #plt.show()
     #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     if make_movie == True:
         Make_frames(
