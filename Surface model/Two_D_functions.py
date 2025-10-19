@@ -33,7 +33,16 @@ def B_function(
     if B == "":
         print(f"B function never took a value")
         exit()
+    return B
 
+def B_before_function(
+        i,N,c0,Area:list,psi:list,radi:list
+        ):
+    B = ""
+    B = np.pi*(psi[i]-psi[i-1])*(radi[i]+radi[i-1])/Area[i-1] + np.sin(psi[i-1])/radi[i-1] - c0
+    if B == "":
+        print(f"B function never took a value")
+        exit()
     return B
 
 def Q_function_V1(
@@ -151,15 +160,15 @@ def Q_function(
 
         a3 = ( k*Area[i]*np.sin(psi[i])/(np.pi*(radi[i+1]+radi[i])*radi[i]**2) )*B
 
-        a4 = - ( k*Area[i]/(2*np.pi*( radi[i+1] + radi[i]) ) )*Bpow2
+        a4 = - ( k*Area[i]/(2*np.pi*( radi[i+1] + radi[i]) ) )*Bpow2 
 
-        a5 = -sigma*Area[i]*radi[i+1]/(np.pi*(radi[i+1]+radi[i])**2 )
+        a5 = - tau
 
-        a6 = - tau
+        a6 = -sigma*Area[i]*radi[i+1]/(np.pi*(radi[i+1]+radi[i])**2 )
 
     if 0 < i < N-1:
         
-        B_before = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        B_before = B_before_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         Bpow2 = B**2
 
@@ -181,7 +190,7 @@ def Q_function(
 
 
     if i == N-1:
-        B_before = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
+        B_before = B_before_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         Bpow2 = B**2
 
@@ -381,6 +390,9 @@ def Langrange_multi(
             n = i%N + N
             nu_i_next ,nu_i ,nu_i_before = 0,0,0
             lamb_i_next ,lamb_i ,lamb_i_before = 0,0,0
+            b11,b12,b13 =0,0,0
+            b21,b22,b23 =0,0,0
+            b31,b32,b33 =0,0,0
             lambs, nus = 0,0
             # The first N equations
             if i == 0:
@@ -559,7 +571,7 @@ def Langrange_multi(
                 if i%N == j:
                     lamb_i = np.sin(psi[l])#*Kronecker(i%N,j)
                 #lambs = lamb_i_next + lamb_i + lamb_i_before
-                if n==j:
+                if n == j:
                     nu_i = - np.cos(psi[l])#*Kronecker(n,j)
                 #nus = nu_i_next + nu_i + nu_i_before
 
@@ -615,7 +627,8 @@ def Langrange_multi(
             if i == N :
                 b11 = -k*(
                     np.pi*(psi[l+1] - psi[l])*(radi[l+1]+radi[l])/Area[l]
-                    +np.sin(psi[l])/radi[l] - c0
+                    +np.sin(psi[l])/radi[l] 
+                    - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
                 )*radi[l]
@@ -627,43 +640,48 @@ def Langrange_multi(
             if N < i < 2*N -1:
                 b21 = -k*(
                     np.pi*(psi[l+1] - psi[l])*(radi[l+1]+radi[l])/Area[l]
-                    +np.sin(psi[l])/radi[l] - c0
+                    +np.sin(psi[l])/radi[l] 
+                    - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/( np.pi*radi[l]*( radi[l+1] + radi[l] ) )
                 )*radi[l]
             
                 b22 =  k*(
                     np.pi*( psi[l] - psi[l-1] )*( radi[l] + radi[l-1] )/Area[l-1]
-                    +np.sin(psi[l-1])/radi[l-1] - c0
+                    +np.sin(psi[l-1])/radi[l-1]
+                    - c0
                 )*radi[l-1]
                 
                 b23 = -kG*(
-                    np.sin(psi[l]) - np.sin(psi[l-1])
+                    np.sin(psi[l])
+                    - np.sin(psi[l-1])
                     - (psi[l+1] - psi[l] )*np.cos(psi[l])
                 )
 
                 b1 = b21 + b22 + b23
             
             if i == 2*N -1:
-                b21 = -k*(
+                b31 = -k*(
                     -np.pi*psi[l]*(radi[l+1]+radi[l])/Area[l]
-                    + np.sin(psi[l])/radi[l] - c0
+                    + np.sin(psi[l])/radi[l] 
+                    - c0
                 )*(
                     1 - Area[l]*np.cos(psi[l])/(np.pi*radi[l]*(radi[l+1] + radi[l]))
                 )*radi[l]
             
-                b22 =  k*(
+                b32 =  k*(
                     np.pi*(psi[l] - psi[l-1])*(radi[l]+radi[l-1])/Area[l-1]
-                    + np.sin(psi[l-1])/radi[l-1] - c0
+                    + np.sin(psi[l-1])/radi[l-1] 
+                    - c0
                 )*radi[l-1]
                 
-                b23 = -kG*(
+                b33 = -kG*(
                     np.sin(psi[l]) 
                     - np.sin(psi[l-1])
                     + psi[l]*np.cos(psi[l])
                 )
 
-                b1 = b21 + b22 + b23
+                b1 = b31 + b32 + b33
         
         if print_matrix == True:
             b[i] = '{:.0e}'.format(b1)

@@ -125,7 +125,7 @@ def E_pot(
         Epot += (
             (k*Area[i]/(2*np.pi*(r[i+1]+r[i])))*(
                 np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
-                )**2
+                )**2*r[i]
             + sigma*Area[i]*r[i]/(np.pi*(r[i+1]+r[i]))
             + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
         )
