@@ -619,7 +619,7 @@ def Langrange_multi(
             b1 = (
                  Q_i*(
                     np.pi*(
-                        2*radi[i]*np.cos(psi[i]) - z_list[i]*np.sin(psi[i]) 
+                         z_list[i]*np.sin(psi[i])  + 2*radi[i]*np.cos(psi[i]) 
                         )/(gamma(i)*Area[i])
                 )
             )

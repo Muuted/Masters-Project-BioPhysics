@@ -26,7 +26,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Test of error corrections\\start flat tau=0\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Test of error corrections\\start curved\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -136,7 +136,7 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20#60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 30 #10 #5.45#s  : total time simulated
+    T = 1.5 #10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
