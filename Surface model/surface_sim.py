@@ -284,10 +284,10 @@ if __name__ == "__main__":
     #Surface_sim()
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
-        do_simulation = True
+        do_simulation = False
         ,start_from_flat = False
         ,do_perturbation = False
-        ,make_movie = True
+        ,make_movie = False
     )
 
     #Speed_diagnosing()

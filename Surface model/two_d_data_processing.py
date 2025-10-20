@@ -121,14 +121,23 @@ def E_pot(
         ):
     Atot = np.sum(Area)
     Epot = tau*r[0] - sigma*Atot/(2*np.pi)
-    for i in range(N-1):
-        Epot += (
-            (k*Area[i]/(2*np.pi*(r[i+1]+r[i])))*(
-                np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
-                )**2*r[i]
-            + sigma*Area[i]*r[i]/(np.pi*(r[i+1]+r[i]))
-            + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
-        )
+    for i in range(N):
+        if i < N -1:
+            Epot += (
+                (k*Area[i]/(2*np.pi*(r[i+1]+r[i])))*(
+                    np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
+                    )**2*r[i]
+                + sigma*Area[i]*r[i]/(np.pi*(r[i+1]+r[i]))
+                + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
+            )
+        if i == N -1 :
+            Epot += (
+                (k*Area[i]/(2*np.pi*(r[i+1]+r[i])))*(
+                    np.pi*(-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
+                    )**2*r[i]
+                + sigma*Area[i]*r[i]/(np.pi*(r[i+1]+r[i]))
+                + kG*(-psi[i])*np.sin(psi[i])
+            )
 
     return Epot
 

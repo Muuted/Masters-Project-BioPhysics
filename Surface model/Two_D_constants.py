@@ -136,7 +136,7 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20#60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1.5 #10 #5.45#s  : total time simulated
+    T = 3 #10 #5.45#s  : total time simulated
     dt = 1e-2# s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
@@ -237,7 +237,7 @@ def Two_D_Constants_stationary_state(
 
     
     #c0 = 0
-    tau = 0
+    #tau = 0
 
     if print_val == True:
         print(
