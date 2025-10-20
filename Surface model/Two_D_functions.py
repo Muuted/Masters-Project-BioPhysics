@@ -551,7 +551,7 @@ def Langrange_multi(
                 #lambs = lamb_i_next + lamb_i + lamb_i_before
                 #---------- nu ----------------------------------
                 if n == j:
-                    nu_i = -(np.pi**2/(gamma(l)*Area[l]**2))*(
+                    nu_i = (np.pi**2/(gamma(l)*Area[l]**2))*(
                          ( (radi[l+1] + radi[l])**2 + z_list[l]**2 )*np.sin(psi[l])
                         + 2*radi[l]*z_list[l]*np.cos(psi[l])
                     )#*Kronecker(n,j)
@@ -617,7 +617,7 @@ def Langrange_multi(
             )
 
             b1 = (
-                - Q_i*(
+                 Q_i*(
                     np.pi*(
                         2*radi[i]*np.cos(psi[i]) - z_list[i]*np.sin(psi[i]) 
                         )/(gamma(i)*Area[i])
