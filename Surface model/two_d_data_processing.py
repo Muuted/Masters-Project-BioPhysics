@@ -113,7 +113,7 @@ def tot_area(
     return Area
 
 
-def E_pot(
+def E_pot_original(
         N:int, k:float, kG:float ,sigma:float 
         ,tau:float ,c0:float
         ,r:list,z:list,psi:list
@@ -141,11 +141,35 @@ def E_pot(
 
     return Epot
 
+def E_pot(
+        N:int, k:float, kG:float ,sigma:float 
+        ,tau:float ,c0:float
+        ,r:list,z:list,psi:list
+        ,Area:list
+        ):
+    Epot = tau*r[0]
+    for i in range(N):
+        if i < N -1:
+            Epot += (
+                (k*Area[i]/(4*np.pi))*(
+                    np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
+                    )**2
+                + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
+            )
+        if i == N -1 :
+            Epot += (
+                (k*Area[i]/(4*np.pi))*(
+                    np.pi*(-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
+                    )**2
+                - kG*psi[i]*np.sin(psi[i])
+            )
+
+    return Epot
 
 def E_kin(
-    N:int, t:int, dt:float
-    ,r:list ,z:list ,Area:list
-):
+        N:int, t:int, dt:float
+        ,r:list ,z:list ,Area:list
+        ):
     Ekin = 0
     for i in range(N):
         m = mass(i=i,Area=Area)
