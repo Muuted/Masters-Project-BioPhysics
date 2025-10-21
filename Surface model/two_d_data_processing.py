@@ -149,14 +149,14 @@ def E_pot(
         ):
     Epot = tau*r[0]
     for i in range(N):
-        if i < N -1:
+        if i < N - 1:
             Epot += (
                 (k*Area[i]/(4*np.pi))*(
                     np.pi*(psi[i+1]-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0
                     )**2
                 + kG*(psi[i+1]-psi[i])*np.sin(psi[i])
             )
-        if i == N -1 :
+        if i == N - 1 :
             Epot += (
                 (k*Area[i]/(4*np.pi))*(
                     np.pi*(-psi[i])*(r[i+1]+r[i])/Area[i] + np.sin(psi[i])/r[i] - c0

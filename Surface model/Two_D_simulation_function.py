@@ -431,7 +431,7 @@ def Two_d_simulation_stationary_states(
             if i < N:
                 z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
-                drdt =drdt_func(
+                drdt = drdt_func(
                             i=i
                             ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
                             ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
@@ -448,7 +448,7 @@ def Two_d_simulation_stationary_states(
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
             
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
-        dA = Area_new - Area_initial #+1
+        dA = Area_new - Area_initial 
         do_correction = False
         constraint_err = check_constraints_truth(
             N=N,r=radi[t+1],z=z_list[t+1],psi=psi[t+1],Area=Area,tol=Tolerence
