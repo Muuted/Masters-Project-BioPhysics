@@ -388,6 +388,7 @@ def Two_d_simulation_stationary_states(
     ,sim_steps:int, L:float, r0:float
     ,radi:list,z_list:list
     ,Area:list,psi:list
+    ,r_unperturb:list ,z_unperturb:list
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
@@ -642,6 +643,8 @@ def Two_d_simulation_stationary_states(
             'psi': [psi],
             "r": [radi],
             "z": [z_list],
+            "r unperturbed": [r_unperturb],
+            "z unperturbed": [z_unperturb],
             "area list": [Area],
             'lambs': [lambs_save],
             'nus': [nus_save],

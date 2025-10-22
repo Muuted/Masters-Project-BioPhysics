@@ -87,6 +87,8 @@ def plot_Epot_Ekin(
     #exit()
     r = df_sim['r'][0]
     z = df_sim['z'][0]
+    r_unperturbed = df_sim['r unperturbed'][0]
+    z_unperturbed = df_sim['z unperturbed'][0]
     psi = df_sim['psi'][0]
     Area = df_sim['area list'][0]
     N = df_sim["N"][0]
@@ -141,6 +143,12 @@ def plot_Epot_Ekin(
     font_size= 15
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
+    plt.plot(
+        r_unperturbed,z_unperturbed
+        ,marker="o",linestyle="-"
+        ,color="b"
+        ,label="Unperturbed initial pos"
+        )
     plt.plot(
         r[0],z[0]
         ,marker="o",linestyle="-"

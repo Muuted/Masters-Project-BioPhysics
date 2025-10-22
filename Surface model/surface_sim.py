@@ -198,6 +198,8 @@ def Surface_sim_stationary_state_initial_configuration(
     sigma, tau, kG = const_args[9:12]
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
+    r_unperturbed, z_unperturbed = const_args[16:18]
+
 
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
@@ -215,6 +217,8 @@ def Surface_sim_stationary_state_initial_configuration(
             ,psi=psi_list
             ,radi=radi_list
             ,z_list=z_list
+            ,r_unperturb=r_unperturbed
+            ,z_unperturb=z_unperturbed
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
@@ -285,9 +289,9 @@ if __name__ == "__main__":
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         do_simulation = True
-        ,start_from_flat = False
-        ,do_perturbation = False
-        ,make_movie = False
+        ,start_from_flat = True
+        ,do_perturbation = True
+        ,make_movie = True
     )
 
     #Speed_diagnosing()

@@ -26,7 +26,7 @@ def mass(i:int ,Area:list):
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Test of error corrections\\start curved\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Verification\\start flat perturbed c0=0\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -134,13 +134,13 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 40#60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20#60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 0.2 #10 #5.45#s  : total time simulated 
-    dt = 1e-3# s time step. 
+    T = 20 #10 #5.45#s  : total time simulated 
+    dt = 1e-2# s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds = 1.5/1.6# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.5# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
@@ -189,14 +189,17 @@ def Two_D_Constants_stationary_state(
             r_list[0][i] = r[i]
             z_list[0][i] = z[i]
         
+    r_unperturb = [i for i in r_list[0]]
+    z_unperturb = [i for i in z_list[0]]
     if perturb == True:
         Perturbation_of_inital_state(
-            points_perturbed=10, ds=ds
+            points_perturbed=7
+            ,ds=ds
             ,r=r_list[0]
             ,z=z_list[0]
             ,psi=psi_list[0]
-            ,delta_psi=-0.05
-            ,flat=start_flat
+            ,delta_psi= -0.1
+            #,flat=start_flat
         )
 
     for i in range(N+1):
@@ -219,6 +222,8 @@ def Two_D_Constants_stationary_state(
         plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
         ceil = max(r_list[0])-min(r_list[0]) + 2
         plt.ylim(-ceil/10, 9*ceil/10)
+        #plt.xlim(3,83)
+        #plt.ylim(-10,70)
         plt.xlabel("r",fontsize=font_size)
         plt.ylabel("z",fontsize=font_size)
         plt.title(
@@ -236,7 +241,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    #c0 = 0
+    c0 = 0
     #tau = 0
 
     if print_val == True:
@@ -266,6 +271,7 @@ def Two_D_Constants_stationary_state(
         ,sigma,tau,kG
         ,Area_list
         ,psi_list, r_list ,z_list
+        ,r_unperturb,z_unperturb
         ]
 
     return args
@@ -276,4 +282,5 @@ if __name__ == "__main__":
         show_stationary_state=True
         ,pause_timer=300
         ,start_flat=False
+        ,perturb=True
     )

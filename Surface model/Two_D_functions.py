@@ -1298,13 +1298,16 @@ def Perturbation_of_inital_state(
     i_start = points_perturbed#len(psi)-1 - points_perturbed
     i_stop = -1
 
-    if flat == True:
-        for i in range(0,points_perturbed):
-            psi[i] += delta_psi*(points_perturbed -i)
+    """
     if flat == False:
         for i in range(0,points_perturbed):
+            psi[i] += delta_psi*(points_perturbed -i)
+    if flat == True:
+        for i in range(0,points_perturbed):
             psi[i] += delta_psi
-
+    """
+    for i in range(0,points_perturbed):
+            psi[i] += delta_psi*(points_perturbed -i)
     for i in range(i_start,i_stop,-1):
         r[i] = r[i+1] + np.cos(psi[i]+np.pi)*ds
         z[i] = z[i+1] + np.sin(psi[i]+np.pi)*ds
