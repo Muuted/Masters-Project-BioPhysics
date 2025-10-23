@@ -1,11 +1,22 @@
 import numpy as np
-from Two_D_constants import Two_D_Constants, gamma, Two_D_paths, mass
-from Two_D_functions import Delta_s
+#from Two_D_constants import Two_D_Constants, gamma, Two_D_paths, mass
+#from Two_D_functions import Delta_s
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import progressbar
 
+def mass(i:int ,Area:list):
+    rho = 1
+    m = -1
+    if i == 0:
+        m = rho*Area[i]/2
+    if i > 0:
+        m = rho*( Area[i]+ Area[i-1])/2
+    if m == -1:
+        print("We have got the wrong correct mass, in the mass function")
+        exit()
+    return m
 
 def check_area(
         t:int,N:int,r:list,z:list,Area:list

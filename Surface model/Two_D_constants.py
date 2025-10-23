@@ -11,17 +11,7 @@ import matplotlib.pyplot as plt
     if i > 0:
         return gam"""
 
-def mass(i:int ,Area:list):
-    rho = 1
-    m = -1
-    if i == 0:
-        m = rho*Area[i]/2
-    if i > 0:
-        m = rho*( Area[i]+ Area[i-1])/2
-    if m == -1:
-        print("We have got the wrong correct mass, in the mass function")
-        exit()
-    return m
+
 
 def Two_D_paths():
     """------ paths ---------"""
@@ -188,28 +178,29 @@ def Two_D_Constants_stationary_state(
                 psi_list[0][i] = psi[i]
             r_list[0][i] = r[i]
             z_list[0][i] = z[i]
-        
-    r_unperturb = [i for i in r_list[0]]
-    z_unperturb = [i for i in z_list[0]]
-    if perturb == True:
-        Perturbation_of_inital_state(
-            points_perturbed=7
-            ,ds=ds
-            ,r=r_list[0]
-            ,z=z_list[0]
-            ,psi=psi_list[0]
-            ,delta_psi= -0.1
-            #,flat=start_flat
-        )
-
+    
     for i in range(N+1):
         if i < N :
             Area_list[i] =  np.pi*(r_list[0][i+1] + r_list[0][i])*np.sqrt((r_list[0][i+1] - r_list[0][i])**2 + (z_list[0][i+1] - z_list[0][i])**2)
             if Area_list[i] == 0 :
                 print(f"Area[{i}]=0")
                 exit()
-        
-    
+
+    r_unperturb = [i for i in r_list[0]]
+    z_unperturb = [i for i in z_list[0]]
+    if perturb == True:
+        Perturbation_of_inital_state(
+            points_perturbed=7
+            ,ds=ds, N=N
+            ,r=r_list[0]
+            ,z=z_list[0]
+            ,psi=psi_list[0]
+            ,Area=Area_list
+            ,delta_psi= -0.01
+            #,flat=start_flat
+        )
+
+
     if show_stationary_state==True:
         plt.figure()
         font_size = 10
@@ -219,6 +210,8 @@ def Two_D_Constants_stationary_state(
         plt.plot(r_list[0][len(r_list[0])-1],z_list[0][len(r_list[0])-1],"o",color="y",label="s2")
         if start_flat == False:
             plt.plot(r_contin,z_contin,linestyle="--",marker="",color="k",label="integration")
+        if perturb == True:
+            plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
         plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
         ceil = max(r_list[0])-min(r_list[0]) + 2
         plt.ylim(-ceil/10, 9*ceil/10)

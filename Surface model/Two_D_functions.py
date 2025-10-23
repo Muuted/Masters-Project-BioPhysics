@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from two_d_data_processing import tot_area
 #from Two_D_constants import gamma
 #import os
 #import pandas as pd
@@ -1283,14 +1285,87 @@ def Epsilon_v2(
         return x
 
 
+def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->bool:
+    err = False
+    for i in range(N):
+        f = constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
+        g = constraint_g(i=i,N=N,r=r,z=z,psi=psi,Area=Area)
 
+        if tol < abs(f) or tol < abs(g):
+            err = True
+            break
+
+    return err
+
+
+def Make_variable_corrections(
+        N:int
+        ,r:list,z:list,psi:list
+        ,Area:list
+        ,Tolerence:float = 1e-10
+        ,corr_max:int = 20
+):
+    Area_initial = np.sum(Area)
+    Area_new = tot_area(N=N,r=r,z=z)
+    dA = Area_new - Area_initial 
+    do_correction = False
+    constraint_err = check_constraints_truth(
+        N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence
+    )
+    if Tolerence < abs(dA) or constraint_err == True:
+        do_correction = True
+    correction_count = 0
+    while do_correction == True:
+        correction_count += 1
+        print(f"correction count={correction_count}",end="\r")
+        epsilon = Epsilon_v2(
+                N=N, r=r, z=z ,psi=psi ,Area=Area
+                        )
+        scaleing = 1
+        for i in range(N):      
+            K_r,K_z,K_psi = 0,0,0
+            for beta in range(2*N):
+                
+                K_r += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
+                    )*scaleing
+                
+                K_z += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
+                    )*scaleing
+                
+                K_psi += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
+                    )*scaleing
+                
+            r[i] += K_r
+            z[i] += K_z
+            psi[i] += K_psi
+
+        Area_new = tot_area(N=N,r=r,z=z)
+        dA = Area_new - Area_initial
+        constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+        do_correction = False
+        if Tolerence < abs(dA) or constraint_err == True:
+            do_correction = True
+
+        
+        if correction_count >= corr_max:
+            print(f"{corr_max} corrections, is too many corrections, we close the program. ")
 
 def Perturbation_of_inital_state(
-        points_perturbed:int, ds:float
+        points_perturbed:int
+        , ds:float, N:int
         ,r:list,z:list,psi:list
+        ,Area:list
         ,delta_psi:float = -1
         ,flat = False
+        ,Tolerence:float = 1e-10
         ):
+    
+    r_unperturb = [i for i in r]
+    z_unperturb = [i for i in z]
+
     if points_perturbed > len(psi)-1:
         print(f"Perturbing too many points \n"
               +f"len(psi)={len(psi)} and points perturbed={points_perturbed}")
@@ -1298,6 +1373,7 @@ def Perturbation_of_inital_state(
     i_start = points_perturbed#len(psi)-1 - points_perturbed
     i_stop = -1
 
+    
     """
     if flat == False:
         for i in range(0,points_perturbed):
@@ -1311,21 +1387,72 @@ def Perturbation_of_inital_state(
     for i in range(i_start,i_stop,-1):
         r[i] = r[i+1] + np.cos(psi[i]+np.pi)*ds
         z[i] = z[i+1] + np.sin(psi[i]+np.pi)*ds
+    
+    r_perturb = [i for i in r]
+    z_perturb = [i for i in z]
+
+
+    Make_variable_corrections(N=N,r=r,z=z,psi=psi,Area=Area)
+    """
+    Area_initial = np.sum(Area)
+    Area_new = tot_area(N=N,r=r,z=z)
+    dA = Area_new - Area_initial 
+    do_correction = False
+    constraint_err = check_constraints_truth(
+        N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence
+    )
+    if Tolerence < abs(dA) or constraint_err == True:
+        do_correction = True
+    correction_count = 0
+    while do_correction == True:
+        correction_count += 1
+        print(f"correction count={correction_count}",end="\r")
+        epsilon = Epsilon_v2(
+                N=N, r=r, z=z ,psi=psi ,Area=Area
+                        )
+        scaleing = 1
+        for i in range(N):      
+            K_r,K_z,K_psi = 0,0,0
+            for beta in range(2*N):
+                
+                K_r += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
+                    )*scaleing
+                
+                K_z += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
+                    )*scaleing
+                
+                K_psi += (
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
+                    )*scaleing
+                
+            r[i] += K_r
+            z[i] += K_z
+            psi[i] += K_psi
+
+        Area_new = tot_area(N=N,r=r,z=z)
+        dA = Area_new - Area_initial
+        constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+        do_correction = False
+        if Tolerence < abs(dA) or constraint_err == True:
+            do_correction = True
+
+        corr_max = 20
+        if correction_count >= corr_max:
+            print(f"{corr_max} corrections, is too many corrections, we close the program. ")
+        """
 
 
 
+    plt.figure()
+    plt.plot(r_perturb,z_perturb,"-o",label="perturbed not corrected")
+    plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
+    plt.plot(r,z,"-o",label="perturbed and corrected")
+    plt.legend()
+    #plt.draw()
 
-def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->bool:
-    err = False
-    for i in range(N):
-        f = constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
-        g = constraint_g(i=i,N=N,r=r,z=z,psi=psi,Area=Area)
 
-        if tol < abs(f) or tol < abs(g):
-            err = True
-            break
-
-    return err
 
 
 

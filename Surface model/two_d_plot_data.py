@@ -116,8 +116,8 @@ def plot_Epot_Ekin(
     fontsize = 10
     
     fig, ax = plt.subplots(2,1)
-    #wm = plt.get_current_fig_manager()
-    #wm.window.state('zoomed')
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
 
     ax[0].plot(t_vec,T,".-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
@@ -141,8 +141,8 @@ def plot_Epot_Ekin(
     
     fig, ax = plt.subplots()
     font_size= 15
-    #wm = plt.get_current_fig_manager()
-    #wm.window.state('zoomed')
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(
         r_unperturbed,z_unperturbed
         ,marker="o",linestyle="-"
