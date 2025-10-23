@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Verification\\start flat perturbed c0=0\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Test\\start flat\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -124,10 +124,10 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 20#60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 40 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 20 #10 #5.45#s  : total time simulated 
-    dt = 1e-2# s time step. 
+    T = 10 #10 #5.45#s  : total time simulated 
+    dt = 1e-2 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
     ds = 1.5# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
@@ -196,7 +196,7 @@ def Two_D_Constants_stationary_state(
             ,z=z_list[0]
             ,psi=psi_list[0]
             ,Area=Area_list
-            ,delta_psi= -0.01
+            ,delta_psi= -0.02
             ,show_initial_condi=True
         )
 
@@ -234,7 +234,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    c0 = 0
+    #c0 = 0
     #tau = 0
 
     if print_val == True:
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     #Two_D_Constants(print_val=True)
     Two_D_Constants_stationary_state(
         show_stationary_state=True
-        ,pause_timer=3
+        ,pause_timer=300
         ,start_flat=False
-        ,perturb=True
+        ,perturb=False
     )

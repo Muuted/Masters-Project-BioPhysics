@@ -97,6 +97,8 @@ def Make_frames(
     
     r = df_sim['r'][0]
     z = df_sim['z'][0]
+    r_unperturbed = df_sim['r unperturbed'][0]
+    z_unperturbed = df_sim['z unperturbed'][0]
     dt = df_sim['dt'][0]
     ds = df_sim['ds'][0]
     L = df_sim["L"][0]
@@ -140,7 +142,8 @@ def Make_frames(
     b.start()
     for t in frame_vec:
         b.update(k)
-        plt.plot(r[t],z[t],'-o')
+        plt.plot(r_unperturbed,z_unperturbed,"-o",label="unperturbed state")
+        plt.plot(r[t],z[t],'-o',label="dynamics")
         xmax = max(r[0])
         xmin = 0
         #plt.xlim([max(r[0]) - ds*(20), max(r[0])])
@@ -153,7 +156,7 @@ def Make_frames(
         plt.xlabel(f"x")
         plt.ylabel(f"z")
         plt.title(f"Dynamics for time={t*dt:.7f}s  \n and frame ={k} of {len(frame_vec)}")
-        
+        plt.legend()
         plt.text(0.7, 0.95, textstr
                  ,transform=ax.transAxes
                  ,fontsize=12
