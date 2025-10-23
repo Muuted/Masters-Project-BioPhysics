@@ -1301,13 +1301,13 @@ def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->b
 def Make_variable_corrections(
         N:int
         ,r:list,z:list,psi:list
-        ,Area:list
+        ,Area:list, Area_init:float
         ,Tolerence:float = 1e-10
         ,corr_max:int = 20
-):
-    Area_initial = np.sum(Area)
+    ):
+
     Area_new = tot_area(N=N,r=r,z=z)
-    dA = Area_new - Area_initial 
+    dA = Area_new - Area_init 
     do_correction = False
     constraint_err = check_constraints_truth(
         N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence
@@ -1317,7 +1317,7 @@ def Make_variable_corrections(
     correction_count = 0
     while do_correction == True:
         correction_count += 1
-        print(f"correction count={correction_count}",end="\r")
+        #print(f"correction count={correction_count}",end="\r")
         epsilon = Epsilon_v2(
                 N=N, r=r, z=z ,psi=psi ,Area=Area
                         )
@@ -1343,7 +1343,7 @@ def Make_variable_corrections(
             psi[i] += K_psi
 
         Area_new = tot_area(N=N,r=r,z=z)
-        dA = Area_new - Area_initial
+        dA = Area_new - Area_init
         constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
         do_correction = False
         if Tolerence < abs(dA) or constraint_err == True:
@@ -1352,6 +1352,10 @@ def Make_variable_corrections(
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
+            exit()
+
+    return correction_count
+
 
 def Perturbation_of_inital_state(
         points_perturbed:int
@@ -1361,6 +1365,7 @@ def Perturbation_of_inital_state(
         ,delta_psi:float = -1
         ,flat = False
         ,Tolerence:float = 1e-10
+        ,show_initial_condi:bool = False
         ):
     
     r_unperturb = [i for i in r]
@@ -1391,66 +1396,17 @@ def Perturbation_of_inital_state(
     r_perturb = [i for i in r]
     z_perturb = [i for i in z]
 
-
-    Make_variable_corrections(N=N,r=r,z=z,psi=psi,Area=Area)
-    """
     Area_initial = np.sum(Area)
-    Area_new = tot_area(N=N,r=r,z=z)
-    dA = Area_new - Area_initial 
-    do_correction = False
-    constraint_err = check_constraints_truth(
-        N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence
-    )
-    if Tolerence < abs(dA) or constraint_err == True:
-        do_correction = True
-    correction_count = 0
-    while do_correction == True:
-        correction_count += 1
-        print(f"correction count={correction_count}",end="\r")
-        epsilon = Epsilon_v2(
-                N=N, r=r, z=z ,psi=psi ,Area=Area
-                        )
-        scaleing = 1
-        for i in range(N):      
-            K_r,K_z,K_psi = 0,0,0
-            for beta in range(2*N):
-                
-                K_r += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
-                    )*scaleing
-                
-                K_z += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
-                    )*scaleing
-                
-                K_psi += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
-                    )*scaleing
-                
-            r[i] += K_r
-            z[i] += K_z
-            psi[i] += K_psi
+    corr_count = Make_variable_corrections(N=N,r=r,z=z,psi=psi,Area=Area,Area_init=Area_initial)
 
-        Area_new = tot_area(N=N,r=r,z=z)
-        dA = Area_new - Area_initial
-        constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
-        do_correction = False
-        if Tolerence < abs(dA) or constraint_err == True:
-            do_correction = True
-
-        corr_max = 20
-        if correction_count >= corr_max:
-            print(f"{corr_max} corrections, is too many corrections, we close the program. ")
-        """
-
-
-
-    plt.figure()
-    plt.plot(r_perturb,z_perturb,"-o",label="perturbed not corrected")
-    plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
-    plt.plot(r,z,"-o",label="perturbed and corrected")
-    plt.legend()
-    #plt.draw()
+    print(f"number of corrections need = {corr_count}")
+    if show_initial_condi == True:
+        plt.figure()
+        plt.plot(r_perturb,z_perturb,"-o",label="perturbed not corrected")
+        plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
+        plt.plot(r,z,"-o",label="perturbed and corrected")
+        plt.legend()
+        plt.draw()
 
 
 

@@ -197,7 +197,7 @@ def Two_D_Constants_stationary_state(
             ,psi=psi_list[0]
             ,Area=Area_list
             ,delta_psi= -0.01
-            #,flat=start_flat
+            ,show_initial_condi=True
         )
 
 
@@ -230,7 +230,7 @@ def Two_D_Constants_stationary_state(
         #exit()
         plt.draw()
         plt.pause(pause_timer)
-        plt.close()
+        plt.close("all")
 
 
     
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     #Two_D_Constants(print_val=True)
     Two_D_Constants_stationary_state(
         show_stationary_state=True
-        ,pause_timer=300
+        ,pause_timer=3
         ,start_flat=False
         ,perturb=True
     )

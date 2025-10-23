@@ -3,6 +3,7 @@ from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func, gamma
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
 from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
+from Two_D_functions import Make_variable_corrections
 from two_d_data_processing import check_area, tot_area
 
 import matplotlib.pyplot as plt
@@ -447,7 +448,10 @@ def Two_d_simulation_stationary_states(
                                 ,lamb=lambs,nu=nus
                                 )
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
-            
+        
+
+
+        """       
         Area_new = tot_area(N=N,r=radi[t+1],z=z_list[t+1])
         dA = Area_new - Area_initial 
         do_correction = False
@@ -457,7 +461,7 @@ def Two_d_simulation_stationary_states(
         if Tolerence < abs(dA) or constraint_err == True:
             do_correction = True
         if area_testing == True:
-            """ start: Lists and variables for problem finding"""
+            # start: Lists and variables for problem finding
             Area_compare = [dA]
             #Area_compare.append(dA)
             total_Area_change = [Area_initial, Area_new]
@@ -469,7 +473,7 @@ def Two_d_simulation_stationary_states(
             z_change_values_list = [[] for i in range(N)]
             psi_change_values_list = [[] for i in range(N)]
 
-            """ end: Lists and variables for problem finding"""
+            #end: Lists and variables for problem finding
         
         correction_count = 0
         while do_correction == True:
@@ -537,43 +541,21 @@ def Two_d_simulation_stationary_states(
                 plt.title("Number of corrections for each t")
                 plt.xlabel("t [s]")
                 plt.show()
-                
-                if save_data == True:
-                    df = pd.DataFrame({
-                        'psi': [psi],
-                        "r": [radi],
-                        "z": [z_list],
-                        "area list": [Area],
-                        'lambs': [lambs_save],
-                        'nus': [nus_save],
-                        "L" : L,
-                        "r0": r0,
-                        "N": N,
-                        "c0": c0,
-                        "k": k,
-                        "kG": kG,
-                        "sigma": sigma,
-                        "tau": tau,
-                        "sim_steps": sim_steps,
-                        "dt": dt,
-                        "ds": ds,
-                        "gam(i=0)": gamma(0),
-                        "gam(i>0)": gamma(5),
-                        "correction count": [correction_count],
-                        "tolerence":Tolerence,
-                        "sim completion":False
-                                    })
-
-
-                    if not os.path.exists(data_path):
-                        os.makedirs(data_path)
-                    df.to_pickle(data_path + df_name)
                 end_sim = True
                 break
+            """
             
         
+        correction_count = Make_variable_corrections(
+            N=N
+            ,r=radi[t+1] ,z=z_list[t+1], psi=psi[t+1] 
+            ,Area=Area ,Area_init=Area_initial
+            ,Tolerence=Tolerence
+            ,corr_max=20
+        )
         correct_count_list[t] = correction_count
-
+        
+        """
         if area_testing == True:
             print(f"Shape of r change values list = {np.shape(r_change_values_list)}")
             print(f"dA[end] ={Area_compare[len(Area_compare)-1]} and num correct count ={correction_count}")
@@ -626,7 +608,7 @@ def Two_d_simulation_stationary_states(
                 ax[2].plot(psi_change_values_list[i],".-",label=f"linknum={i}")
                 ax[2].set_title(f"K_psi")
                 ax[2].legend()
-            plt.show()
+            plt.show()"""
             #exit()
     
     #b.finish()
