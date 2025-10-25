@@ -195,25 +195,3 @@ def E_kin(
 
 if __name__ == "__main__":
     exit()
-    """const_args = Two_D_Constants(
-        print_val=True
-    )
-
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
-
-    #sim_steps = 3
-
-    path_args = Two_D_paths()
-    data_path, fig_save_path = path_args[0:2]
-    video_save_path,video_fig_path = path_args[2:4]
-    df_name, fps_movie ,num_frames = path_args[4:7]
-
-    rotate_coords(
-        df_name=df_name,data_path=data_path
-    )
-
-    """

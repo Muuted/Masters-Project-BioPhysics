@@ -1247,18 +1247,7 @@ def Epsilon_v2(
                     a = (
                         c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)
                         )
-                    A[alpha][beta] += a
-                   
-                    """if alpha==0 and beta == 1:
-                        print(
-                            f"var ={variables} and n={n} and a={a}"
-                        )"""
-                """A[alpha][beta] += (
-                    c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="r")
-                    +c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="z")
-                    +c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="psi")*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var="psi")
-                    )"""
-            
+                    A[alpha][beta] += a            
 
         if 0 <= alpha < N :
             b[alpha] = -constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
@@ -1378,15 +1367,6 @@ def Perturbation_of_inital_state(
     i_start = points_perturbed#len(psi)-1 - points_perturbed
     i_stop = -1
 
-    
-    """
-    if flat == False:
-        for i in range(0,points_perturbed):
-            psi[i] += delta_psi*(points_perturbed -i)
-    if flat == True:
-        for i in range(0,points_perturbed):
-            psi[i] += delta_psi
-    """
     for i in range(0,points_perturbed):
             psi[i] += delta_psi*(points_perturbed -i)
     for i in range(i_start,i_stop,-1):

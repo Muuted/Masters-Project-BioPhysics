@@ -406,10 +406,7 @@ def Two_d_simulation_stationary_states(
     lambs_save, nus_save = [], []
     correct_count_list = np.zeros(sim_steps-1)
     print("Simulation progressbar \n ")
-    #b = progressbar.ProgressBar(maxval=sim_steps-1)
-    #b.start()
     for t in range(sim_steps-1):
-        #b.update(t)
         if end_sim == True:
             break
         if int(t%print_scale) == 0 :

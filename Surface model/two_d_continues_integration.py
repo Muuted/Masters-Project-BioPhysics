@@ -44,9 +44,6 @@ def descritize_sim_results(r,z,ds,max_num_points=""):
             if max_num_points != "":
                 if len(index_list) > max_num_points:
                     break
-            
-    #print(f"index_list={index_list}")
-    print("len index list =",len(index_list))
     return index_list
 
 def Get_angle(x1,y1,x2,y2):
@@ -100,21 +97,6 @@ def find_init_stationary_state(
     r_1 = r[len(r)-1]
     alpha = kG/k
     
-    print(
-    f"test ={(1-dpsidt_1)*r_1/np.sin(psi_1)-1 - alpha}"
-    )
-
-    #print(f"t events = ",ans_odeint.t_events)
-    #print(f"y events = ",ans_odeint.y_events[0])
-    #print(f"y events = ",ans_odeint.y_events[1])
-
-    """m = len(ans_odeint.y[0])-1
-    if find_edge_condition == True:        
-        for i in range(0,len(ans_odeint.y[0])-1):
-            if ans_odeint.y[4][i] < tau: # lambda = ans_odeint.y[4]
-                m = i
-                break"""
-    
     index_list = descritize_sim_results(
         r = ans_odeint.y[1]#[0:m]
         ,z = ans_odeint.y[2]#[0:m]
@@ -126,7 +108,6 @@ def find_init_stationary_state(
     psi_discrete,dpsidt_discrete = [],[]
     lambs_discrete, nus_discrete = [],[]
     for i in index_list:
-        #psi_discrete.append(ans_odeint.y[0][i])
         r_discrete.append(ans_odeint.y[1][i])
         z_discrete.append(ans_odeint.y[2][i])
         dpsidt_discrete.append(ans_odeint.y[3][i])
@@ -143,7 +124,7 @@ def find_init_stationary_state(
     
     r = ans_odeint.y[1]#[0:m]
     z = ans_odeint.y[2]#[0:m]
-    return psi_discrete,r_discrete,z_discrete, r,z #dpsidt_discrete,lambs_discrete,nus_discrete
+    return psi_discrete,r_discrete,z_discrete, r,z
     
 if __name__ == "__main__":
     #integrate_solution()
