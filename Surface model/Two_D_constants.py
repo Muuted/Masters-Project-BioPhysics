@@ -124,13 +124,13 @@ def Two_D_Constants_stationary_state(
         ):
     np.set_printoptions(legacy='1.25')
     """------ constants ---------"""
-    N = 60 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 55 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1 #10 #5.45#s  : total time simulated 
-    dt = 5e-3 #s time step. 
+    T = 5 #10 #5.45#s  : total time simulated 
+    dt = 1e-2 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds = 1.5/2# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.5# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
 
     #Base variables
@@ -242,9 +242,9 @@ def Two_D_Constants_stationary_state(
         print(
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
-            + f"    Total length of surface L={L} sim units \n "
+            #+ f"    Total length of surface L={L} sim units \n "
             + f"    number of chain links N: {N} \n " 
-            + f"    r0 = {r0} sim units \n "
+            #+ f"    r0 = {r0} sim units \n "
             + f"    k = {k}  sim units \n "
             + f"    kG = {kG:.1e}  sim units \n "
             + f"    c0 = {c0:.1e}  sim units \n "
