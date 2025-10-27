@@ -20,12 +20,14 @@ def plot_tot_area(
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
     
+    #print(df_sim.info())
     r = df_sim['r'][0]
     z = df_sim['z'][0]
     N = df_sim["N"][0]
     c0 = df_sim["c0"][0]
     dt = df_sim["dt"][0]
     sim_steps = df_sim["sim_steps"][0]
+    corr_count = df_sim["correction count"][0]
 
     Area_change= np.zeros(sim_steps)
     time = np.zeros(sim_steps)
@@ -50,6 +52,20 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.2)
     save_name_1 = save_name + "Atot"# Total area over time"
+    plt.savefig(output_path + save_name_1 + ".png")
+    plt.pause(0.2)
+
+
+
+    fig,ax = plt.subplots()
+    plt.plot(corr_count)
+    plt.title("correction counts pr time")
+    plt.xlabel("t[s]")
+    plt.ylabel("number of variables corrections")
+
+    plt.draw()
+    plt.pause(0.2)
+    save_name_1 = save_name + " var corr"# Total area over time"
     plt.savefig(output_path + save_name_1 + ".png")
     plt.pause(0.2)
 

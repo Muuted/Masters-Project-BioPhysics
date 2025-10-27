@@ -645,7 +645,7 @@ def Two_d_simulation_stationary_states(
             "ds": ds,
             "gam(i=0)": gamma(0),
             "gam(i>0)": gamma(5),
-            "correction count": [correction_count],
+            "correction count": [correct_count_list],
             "tolerence":Tolerence,
             "sim completion":True
                         })
