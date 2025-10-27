@@ -11,7 +11,7 @@ def dSds(s,S,k,sigma,c0,tau,kG):#,k,sigma,c0):
     #k,kG,sigma,c0 = p
     drds = np.cos(psi)
     dzds = np.sin(psi)
-    dlambs_ds = (k/2)*( (n-c0)**2 -np.sin(psi)**2/r**2) + sigma
+    dlambs_ds = (k/2)*( (n-c0)**2 - np.sin(psi)**2/r**2) + sigma
     dnu_ds = 0
 
     dpsids  = n 
@@ -21,16 +21,6 @@ def dSds(s,S,k,sigma,c0,tau,kG):#,k,sigma,c0):
 
     return [dpsids ,drds ,dzds ,dnds ,dlambs_ds ,dnu_ds ,dAds]
 
-def edge_tension(t,y,k,sigma,c0,tau,kG):
-        return tau - y[4]
-    
-def edge_ratio(t,y,k,sigma,c0,tau,kG):
-    dpsidt_1 = y[3]
-    psi_1 = y[0]
-    r_1 = y[1]
-    alpha = kG/k
-    val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
-    return val
 
 def descritize_sim_results(r,z,ds,max_num_points=""):
     j=len(r)-1
@@ -53,6 +43,18 @@ def Get_angle(x1,y1,x2,y2):
     psi = np.pi - np.arctan2(y1,x1)[0]
     return -psi
 
+def edge_tension(t,y,k,sigma,c0,tau,kG):
+        return tau - y[4]
+    
+def edge_ratio(t,y,k,sigma,c0,tau,kG):
+    dpsidt_1 = y[3]
+    psi_1 = y[0]
+    r_1 = y[1]
+    alpha = kG/k
+    val = (1-dpsidt_1)*r_1/np.sin(psi_1)-1 + alpha
+    return val
+
+
 def find_init_stationary_state(
         sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds,kG
         ,total_points = ""
@@ -62,7 +64,7 @@ def find_init_stationary_state(
     #initial values
     lc = 1/np.sqrt(c0**2/2 + sigma/k) # characterisitic length in the aymptotic regime.
     n_L = (psi_L/kv(1,r_L/lc))*( -kv(0,r_L/lc) - kv(1,r_L/lc)/(r_L/lc))/lc
-    lambs_L = (k*c0**2/2 + sigma)*r_L
+    lambs_L = (k*c0**2/2 + sigma )*r_L
     nus_L = 0 # nu(s_1) = nu(s_2) = 0 from that we know the outer value
     A = 0 #2*np.pi*( r_L**2 - r0**2  )
 

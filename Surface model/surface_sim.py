@@ -199,8 +199,9 @@ def Surface_sim_stationary_state_initial_configuration(
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
     r_unperturbed, z_unperturbed = const_args[16:18]
+    eta = const_args[18]
 
-
+    
     path_args = Two_D_paths()
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
@@ -210,7 +211,7 @@ def Surface_sim_stationary_state_initial_configuration(
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
-            N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds
+            N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
             ,kG=kG ,tau=tau ,sim_steps=sim_steps
             ,L=L, r0=r0
             ,Area=Area_list
@@ -222,7 +223,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence=1e-5
+            ,Tolerence=1e-5#-10
             ,save_data=True
             #,area_testing=True
         )
@@ -281,10 +282,10 @@ if __name__ == "__main__":
     #Surface_sim()
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
-        do_simulation = False#True
+        do_simulation = True
         ,start_from_flat = False
         ,do_perturbation = False
-        ,make_movie = False #True
+        ,make_movie = True
     )
 
     #Speed_diagnosing()

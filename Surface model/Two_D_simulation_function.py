@@ -385,7 +385,7 @@ def Two_D_simulation_V3(
 
 def Two_d_simulation_stationary_states(
     N:int,k:float,c0:float, dt:float, ds:float
-    ,sigma:float,kG:float,tau:float
+    ,sigma:float,kG:float,tau:float, eta:float
     ,sim_steps:int, L:float, r0:float
     ,radi:list,z_list:list
     ,Area:list,psi:list
@@ -419,7 +419,8 @@ def Two_d_simulation_stationary_states(
         t1,t2 = t%2, (t+1)%2
         
         lambs,nus = Langrange_multi(
-                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                N=N,k=k,c0=c0,sigma=sigma
+                ,kG=kG,tau=tau,ds=ds,eta=eta
                 ,Area=Area
                 ,psi=psi[t]
                 ,radi=radi[t]
@@ -433,11 +434,11 @@ def Two_d_simulation_stationary_states(
                 radi[t+1][i] = radi[t][i]
                 #psi[t+1][i] = psi[t][i]
             if i < N:
-                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
+                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,ds=ds,eta=eta,Area=Area,radi=radi[t],nu=nus)
 
                 drdt = drdt_func(
                             i=i
-                            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta
                             ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
                             ,lamb=lambs,nu=nus
                             )
@@ -445,7 +446,7 @@ def Two_d_simulation_stationary_states(
 
                 dpsidt = dpsidt_func(
                                 i=i
-                                ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta
                                 ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
                                 ,lamb=lambs,nu=nus
                                 )

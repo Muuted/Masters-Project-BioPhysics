@@ -603,7 +603,7 @@ def test_of_sim_variables_in_stationary_configuration():
     plt.show()
    
 
-def test_if_constraint_diff_is_correct():
+def test_gradient_of_constraints():
     from Two_D_constants import Two_D_Constants_stationary_state
     from Two_D_functions import Epsilon_values,constraint_f,constraint_g, c_diff_f,c_diff_g
 
@@ -1416,6 +1416,10 @@ def testing_for_no_correction_on_initial_state():
 
 
     print(f"epsilon vec = {epsilon}")
+
+
+def testing_gradient_for_S():
+    pass
 
 if __name__ == "__main__":
     #test_Lagrange_multi()

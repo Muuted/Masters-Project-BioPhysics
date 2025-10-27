@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Test ds vs dt\\start curved\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Test SI units\\start curved\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -123,19 +123,22 @@ def Two_D_Constants_stationary_state(
         ,perturb:bool = False
         ):
     np.set_printoptions(legacy='1.25')
+
     """------ constants ---------"""
-    N = 55 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 5 #10 #5.45#s  : total time simulated 
-    dt = 1e-2 #s time step. 
+    T = 0.1 #10 #5.45#s  : total time simulated 
+    dt = 5e-5 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100 #1e-6 # micrometers  :  Total length of line
-    ds = 1.5# 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.5#e-8#e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
-
+    dpsi_perturb = -0.02
+    
     #Base variables
-    c0 = 0.25e0# 0.25e8 # 1/m   : 
-    k = 1 #1e-12#  8e-20 # J    :  Mean curvature modulus
+    eta = 1#e-3 # SI: kg /(ms)
+    c0 = 0.25#e8#0.25e0# 0.25e8 # 1/m   : 
+    k = 1#8e-20 #1e-12#  8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
     lc = 1/c0
@@ -152,7 +155,7 @@ def Two_D_Constants_stationary_state(
     kG = -0.75*k
     rs2 = 20*lc 
     zs2 = 0
-    s0, sN = 0, 30*lc
+    s0, sN = 0, 50*lc
     psi_L = -7.3648e-8
 
     #Creating lists for the variables.
@@ -196,7 +199,7 @@ def Two_D_Constants_stationary_state(
             ,z=z_list[0]
             ,psi=psi_list[0]
             ,Area=Area_list
-            ,delta_psi= -0.02
+            ,delta_psi= dpsi_perturb
             ,show_initial_condi=True
         )
 
@@ -212,8 +215,8 @@ def Two_D_Constants_stationary_state(
             plt.plot(r_contin,z_contin,linestyle="--",marker="",color="k",label="integration")
         if perturb == True:
             plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
-        plt.xlim(min(r_list[0])-1, max(r_list[0])+1)
-        ceil = max(r_list[0])-min(r_list[0]) + 2
+        plt.xlim(min(r_list[0])-ds, max(r_list[0])+ds)
+        ceil = max(r_list[0]) - min(r_list[0]) + 2*ds
         plt.ylim(-ceil/10, 9*ceil/10)
         #plt.xlim(3,83)
         #plt.ylim(-10,70)
@@ -245,6 +248,7 @@ def Two_D_Constants_stationary_state(
             #+ f"    Total length of surface L={L} sim units \n "
             + f"    number of chain links N: {N} \n " 
             #+ f"    r0 = {r0} sim units \n "
+            + f"    eta = {eta:.1e} sim units \n "
             + f"    k = {k}  sim units \n "
             + f"    kG = {kG:.1e}  sim units \n "
             + f"    c0 = {c0:.1e}  sim units \n "
@@ -252,7 +256,7 @@ def Two_D_Constants_stationary_state(
             + f"    sigma = {sigma:0.1e}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
-            + f"    gamma(i!=0) = {gamma(2)} unit?  \n "
+            + f"    gamma(i!=0) = {gamma(i=2,ds=ds,eta=eta)} unit?  \n "
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
@@ -266,6 +270,7 @@ def Two_D_Constants_stationary_state(
         ,Area_list
         ,psi_list, r_list ,z_list
         ,r_unperturb,z_unperturb
+        ,eta
         ]
 
     return args
