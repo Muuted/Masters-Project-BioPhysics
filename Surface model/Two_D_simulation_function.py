@@ -554,7 +554,7 @@ def Two_d_simulation_stationary_states(
             ,r=radi[t+1] ,z=z_list[t+1], psi=psi[t+1] 
             ,Area=Area ,Area_init=Area_initial
             ,Tolerence=Tolerence
-            ,corr_max=20
+            ,corr_max=100
         )
         correct_count_list[t] = correction_count
         
@@ -644,8 +644,8 @@ def Two_d_simulation_stationary_states(
             "sim_steps": sim_steps,
             "dt": dt,
             "ds": ds,
-            "gam(i=0)": gamma(0),
-            "gam(i>0)": gamma(5),
+            "gam(i=0)": gamma(0,ds=ds,eta=eta),
+            "gam(i>0)": gamma(2,ds=ds,eta=eta),
             "correction count": [correct_count_list],
             "tolerence":Tolerence,
             "sim completion":True

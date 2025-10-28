@@ -15,7 +15,7 @@ def dSds(s,S,k,sigma,c0,tau,kG):#,k,sigma,c0):
     dnu_ds = 0
 
     dpsids  = n 
-    dnds = np.sin(psi)*np.cos(psi)/r**2 - n*np.cos(psi)/r + lambs*np.sin(psi)/r #- nus*np.cos(psi)/(k*r)
+    dnds = np.sin(psi)*np.cos(psi)/r**2 - n*np.cos(psi)/r + lambs*np.sin(psi)/(k*r) #- nus*np.cos(psi)/(k*r)
 
     dAds = 2*np.pi*r
 

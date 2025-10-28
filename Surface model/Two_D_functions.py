@@ -1297,14 +1297,14 @@ def Make_variable_corrections(
         ,corr_max:int = 20
     ):
 
-    Area_new = tot_area(N=N,r=r,z=z)
-    dA = Area_new - Area_init 
-    do_correction = False
-    constraint_err = check_constraints_truth(
-        N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence
-    )
-    if Tolerence < abs(dA) or constraint_err == True:
-        do_correction = True
+    #Area_new = tot_area(N=N,r=r,z=z)
+    #dA = Area_new - Area_init 
+    #do_correction = False
+    do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+
+    #if Tolerence < abs(dA) or constraint_err == True:
+    #if constraint_err == True:
+    #do_correction = True
     correction_count = 0
     while do_correction == True:
         correction_count += 1
@@ -1333,13 +1333,13 @@ def Make_variable_corrections(
             z[i] += K_z
             psi[i] += K_psi
 
-        Area_new = tot_area(N=N,r=r,z=z)
-        dA = Area_new - Area_init
-        constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
-        do_correction = False
-        if Tolerence < abs(dA) or constraint_err == True:
-            do_correction = True
-
+        #Area_new = tot_area(N=N,r=r,z=z)
+        #dA = Area_new - Area_init
+        #constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+        do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+        #do_correction = False
+        #if Tolerence < abs(dA) or constraint_err == True:
+        #   do_correction = True
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
