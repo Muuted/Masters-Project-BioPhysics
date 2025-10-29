@@ -554,7 +554,7 @@ def Two_d_simulation_stationary_states(
             ,r=radi[t+1] ,z=z_list[t+1], psi=psi[t+1] 
             ,Area=Area ,Area_init=Area_initial
             ,Tolerence=Tolerence
-            ,corr_max=100
+            ,corr_max=20
         )
         correct_count_list[t] = correction_count
         

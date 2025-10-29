@@ -150,8 +150,8 @@ def Make_frames(
         #plt.xlim([xmin,xmax])
         #plt.ylim([-ds, xmax -ds])
         #plt.ylim([zmin*0.99,zmax*1.01])
-        plt.xlim(min(r[0])-1, max(r[0])+1)
-        ceil = max(r[0])-min(r[0]) + 2
+        plt.xlim(min(r[0])-ds, max(r[0])+ds)
+        ceil = max(r[0])-min(r[0]) + 2*ds
         plt.ylim(-ceil/10, 9*ceil/10)
         plt.xlabel(f"x")
         plt.ylabel(f"z")
