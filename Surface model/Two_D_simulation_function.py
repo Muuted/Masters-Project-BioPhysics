@@ -402,7 +402,7 @@ def Two_d_simulation_stationary_states(
     print_scale = (sim_steps-2)/1000
     Area_initial = np.sum(Area)
     
-    lambs_save, nus_save = [], []
+    #lambs_save, nus_save = [], []
     correct_count_list = np.zeros(sim_steps-1)
     print("Simulation progressbar \n ")
     for t in range(sim_steps-1):
@@ -423,8 +423,8 @@ def Two_d_simulation_stationary_states(
                 ,radi=radi[t]
                 ,z_list=z_list[t]
             )
-        lambs_save.append(lambs)
-        nus_save.append(nus)
+        #lambs_save.append(lambs)
+        #nus_save.append(nus)
 
         for i in range(N+1):
             if i == N:
@@ -630,8 +630,8 @@ def Two_d_simulation_stationary_states(
             "r unperturbed": [r_unperturb],
             "z unperturbed": [z_unperturb],
             "area list": [Area],
-            'lambs': [lambs_save],
-            'nus': [nus_save],
+            #'lambs': [lambs_save],
+            #'nus': [nus_save],
             "L" : L,
             "r0": r0,
             "N": N,

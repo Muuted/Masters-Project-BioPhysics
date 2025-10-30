@@ -287,8 +287,8 @@ if __name__ == "__main__":
         do_simulation = True
         ,start_from_flat = False
         ,do_perturbation = False
-        ,make_movie = False#True
-        ,make_plots= False #True
+        ,make_movie = True
+        ,make_plots= True
     )
 
     #Speed_diagnosing()

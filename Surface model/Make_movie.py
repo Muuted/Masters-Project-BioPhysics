@@ -82,7 +82,7 @@ def Make_frames(
         data_path: str
         ,figs_save_path: str
         ,df_name: str
-        ,tot_frames: int = 216
+        ,tot_frames: int = 500
         ):
 
     if not os.path.exists(figs_save_path):

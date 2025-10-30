@@ -1049,25 +1049,25 @@ def Langrange_multi(
     return lamb_return,nu_return
 
 
-def constraint_f(i:int,N:int,r:list,psi:list,Area:list):
+def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
     f = ""
-    if i >= N:
+    if i > N:
         print(f"the value of i is to large, in the constraint equation \n"
               +f"i={i} and N={N}")
         exit()
-    if i < N:
+    if i <= N:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
     if f == "":
         print(f"value of f never took a number")
         exit()
     return f
 
-def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list):
+def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
     g = ""
-    if i >= N:
+    if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
-    if i < N:
+    if i <= N:
         g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
     if g == "":
         print(f"value of f new took a number")
@@ -1079,22 +1079,28 @@ def c_diff_f(
         i:int,j:int,N:int
         ,r:list,psi:list,Area:list
         ,diff_var:str =""
-        ):
+        )-> float:
     diff_var_list = ["r","z","psi",0,1,2]
+   
     df = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
-        df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
-        
+        df = 0
+        if i + 1 == j:
+         df = 2*np.pi*r[i+1]*Kronecker(i+1,j)/Area[i] #- r[i]*Kronecker(i,j))/Area[i]
+        if i == j :
+            df = -2*np.pi*r[i]/Area[i]
     if diff_var == diff_var_list[1]or diff_var == 1:
         df = 0
 
     if diff_var == diff_var_list[2] or diff_var == 0:
-        df = np.sin(psi[i])*Kronecker(i,j)
+        df = 0
+        if i == j:
+            df = np.sin(psi[i])#*Kronecker(i,j)
         
     if diff_var not in diff_var_list:
-            #Error handling
-            print(f"wrong diff variable of either (r,z,psi) error in c_diff_f")
-            exit()
+        #Error handling
+        print(f"wrong diff variable of either (r,z,psi) error in c_diff_f")
+        exit()
     if df == "":
         print("df never took value")
         exit()
@@ -1104,18 +1110,27 @@ def c_diff_f(
 def c_diff_g(
         i:int,j:int,N:int
         ,r:list,z:list,psi:list,Area:list
-        ,diff_var:str =""
-        ):
+        ,diff_var:str = ""
+        )-> float:
+    
     diff_var_list = ["r","z","psi",0,1,2]
     dg = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
-        dg = np.pi*(z[i+1]-z[i])*(Kronecker(i+1,j) + Kronecker(i,j))/Area[i]
+        dg = 0
+        if i + 1 == j or i == j:
+            dg = np.pi*(z[i+1]-z[i])/Area[i]
         
     if diff_var == diff_var_list[1] or diff_var == 1: 
-        dg = np.pi*(r[i+1]+ r[i])*(Kronecker(i+1,j) - Kronecker(i,j))/Area[i]
+        dg = 0
+        if i+1 == j:
+            dg = np.pi*(r[i+1] + r[i])/Area[i]
+        if i == j:
+            dg = -np.pi*(r[i+1] + r[i])/Area[i]
 
     if diff_var == diff_var_list[2] or diff_var == 2:
-        dg = -np.cos(psi[i])*Kronecker(i,j)
+        dg = 0
+        if i == j:
+            dg = -np.cos(psi[i])
 
     if diff_var not in diff_var_list:
             #Error handling
@@ -1217,18 +1232,18 @@ def c_diff(
 
     if 0 <= i < N :
         c_diff_val = c_diff_f(
-            i=i%N,j=j%N,N=N
-            ,r=r,psi=psi
-            ,Area=Area
-            ,diff_var=diff_var
-            )
+                i=i,j=j,N=N
+                ,r=r,psi=psi
+                ,Area=Area
+                ,diff_var=diff_var
+                )
     if  N <= i < 2*N :
         c_diff_val =c_diff_g(
-            i=i%N,j=j%N,N=N
-            ,r=r,z=z,psi=psi
-            ,Area=Area
-            ,diff_var=diff_var
-            )
+                i=i%N,j=j,N=N
+                ,r=r,z=z,psi=psi
+                ,Area=Area
+                ,diff_var=diff_var
+                )
 
     if c_diff_val == "":
         print(f"Error c_diff_val didnt take a value because i={i}")
@@ -1242,18 +1257,17 @@ def Epsilon_v2(
         ,print_matrix:bool = False
         ,testing:bool= False
         )->list:
-    A = np.zeros(shape=(2*N,2*N))
+    A = np.zeros(shape=(2*N,2*N),dtype=float)
     b = np.zeros(2*N)
     vars = ["r","z","psi"]
     
     for alpha in range(2*N):
         for beta in range(2*N):
+            a = 0
             for n in range(N):
                 for variables in vars:
-                    a = (
-                        c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)
-                        )
-                    A[alpha][beta] += a            
+                    a += c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)                    
+            A[alpha][beta] = a            
 
         if 0 <= alpha < N :
             b[alpha] = -constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
@@ -1304,13 +1318,25 @@ def Make_variable_corrections(
 
     #Area_new = tot_area(N=N,r=r,z=z)
     #dA = Area_new - Area_init 
-    #do_correction = False
-    do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+    do_correction = False
+    do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi ,Area=Area,tol=Tolerence)
 
-    #if Tolerence < abs(dA) or constraint_err == True:
+    
+    #if Tolerence < abs(dA) :#or constraint_err == True:
+        #do_correction = True
     #if constraint_err == True:
     #do_correction = True
+    #print("")
     correction_count = 0
+    """if t > 6:
+        for i in range(N):
+            print(f"corr ={correction_count}    r[i={i}] ={r[i]}    z[i={i}]={z[i]}     psi[i={i}]={psi[i]}  ")
+
+        plt.figure()
+        plt.plot(r,z,"-o",label=f"{correction_count}")
+        plt.xlim(min(r),max(r))
+        plt.ylim(min(z),max(z))"""
+
     while do_correction == True:
         correction_count += 1
         #print(f"correction count={correction_count}",end="\r")
@@ -1323,34 +1349,46 @@ def Make_variable_corrections(
             for beta in range(2*N):
                 
                 K_r += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="r")
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="r")
                     )*scaleing
                 
                 K_z += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="z")
                     )*scaleing
                 
                 K_psi += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
+                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
                     )*scaleing
                 
             r[i] += K_r
             z[i] += K_z
             psi[i] += K_psi
 
-            if t > 6:
-                print(f"new r[i={i}] ={r[i]} and correction count = {correction_count}")
+            """if t > 6 :#and i == 1:
+                if i%N== 0:
+                    print(f"max(epsilon) ={max(epsilon)}")
+                    plt.plot(r,z,".-",label=f"{correction_count}")
+                print(f"corr ={correction_count}    r[i={i}] ={r[i]}    z[i={i}]={z[i]}     psi[i={i}]={psi[i]}  ")"""
+                
+
+                
         #Area_new = tot_area(N=N,r=r,z=z)
         #dA = Area_new - Area_init
         #constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
         do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
         #do_correction = False
-        #if Tolerence < abs(dA) or constraint_err == True:
-        #   do_correction = True
+        #if Tolerence < abs(dA):# or constraint_err == True:
+            #do_correction = True
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
             exit()
+
+    if r[0] != r[0]:
+        print(t)
+        #plt.legend()
+        #plt.show()
+        exit()
 
     return correction_count
 

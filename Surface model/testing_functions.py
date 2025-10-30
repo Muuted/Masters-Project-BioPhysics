@@ -1637,7 +1637,7 @@ def find_overflow_error():
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
 
-    print(radi_list)    
+    print(radi_list[1])    
 
     exit()
     corr_count = df_sim["correction count"][0]
