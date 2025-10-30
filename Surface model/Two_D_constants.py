@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Test new units\\not SI\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "Test Overflow\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -127,18 +127,18 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
-    dt = 1e-3 #5e-11 #s time step. 
+    T = 3e-8/2# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    dt = 1e-9 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
-    L = 100 #1e-6 # micrometers  :  Total length of line
-    ds = 1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
-    r0 = 5 #50 #0.5e-6 # micrometer  :   radius of hole
+    L = 100.0 #1e-6 # micrometers  :  Total length of line
+    ds = 1.5e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    r0 = 5.0 #50 #0.5e-6 # micrometer  :   radius of hole
     dpsi_perturb = -0.02
     
     #Base variables
-    eta = 1/1.5 #e-3 #e-3 # SI: kg /(ms)
-    c0 = 0.25#e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
-    k = 1#8e-20 #1 # 8e-20 # J    :  Mean curvature modulus
+    eta = 1.0e-3 #e-3 # SI: kg /(ms)
+    c0 = 0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
+    k = 8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
     lc = 1/c0
@@ -184,11 +184,13 @@ def Two_D_Constants_stationary_state(
     
     for i in range(N+1):
         if i < N :
-            Area_list[i] =  np.pi*(r_list[0][i+1] + r_list[0][i])*np.sqrt((r_list[0][i+1] - r_list[0][i])**2 + (z_list[0][i+1] - z_list[0][i])**2)
+            Area_list[i] =  np.pi*(r_list[0][i+1] + r_list[0][i])*np.sqrt( (r_list[0][i+1] - r_list[0][i])**2 + (z_list[0][i+1] - z_list[0][i])**2 )
             if Area_list[i] == 0 :
                 print(f"Area[{i}]=0")
                 exit()
-
+    minA = min(Area_list)
+    #Area_list = [i/minA for i in Area_list]
+    print(Area_list)
     r_unperturb = [i for i in r_list[0]]
     z_unperturb = [i for i in z_list[0]]
     if perturb == True:
@@ -240,7 +242,7 @@ def Two_D_Constants_stationary_state(
     #c0 = 0
     #tau = 0
 
-    print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
+    #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
     if print_val == True:
         print(
             f" \n \n"

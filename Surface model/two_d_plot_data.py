@@ -38,6 +38,7 @@ def plot_tot_area(
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
     fig, ax=plt.subplots()
+    
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
     plt.plot(time,Area_change,'.-')
@@ -58,7 +59,7 @@ def plot_tot_area(
 
 
     fig,ax = plt.subplots()
-    plt.plot(corr_count)
+    plt.plot([i*dt for i in range(len(corr_count))],corr_count,".-")
     plt.title("correction counts pr time")
     plt.xlabel("t[s]")
     plt.ylabel("number of variables corrections")
@@ -79,9 +80,11 @@ def plot_tot_area(
     fig, ax = plt.subplots()
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
-    plt.plot(dA[0:sim_steps-1],'.-')
+    plt.plot([i*dt for i in range(len(dA))],dA[0:sim_steps-1],'.-')
     #ax.ticklabel_format(useOffset=False)
     plt.title("Change in Area")
+    plt.xlabel("t [s]")
+    plt.ylabel("Area")
     plt.draw()
     plt.pause(0.3)
     save_name_2 = save_name + " dA"
@@ -116,32 +119,33 @@ def plot_Epot_Ekin(
     dt = df_sim["dt"][0]
     sim_steps = df_sim["sim_steps"][0]
     
-    T = []
-    S = []
+    T = np.zeros(sim_steps-1)
+    S = np.zeros(sim_steps)
 
     for t in range(sim_steps-1):
-        T.append(
+        T[t ]= (
             E_kin(N=N,t=t,dt=dt,r=r,z=z,Area=Area)
             )
-        S.append(
+        S[t] = (
             E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
                   ,r=r[t],z=z[t],psi=psi[t],Area=Area)
         )
 
-    t_vec = [dt*i for i in range(sim_steps-1)]
+    t_vec_T = [dt*i for i in range(sim_steps-1)]
+    t_vec_S = [dt*i for i in range(sim_steps)]
     fontsize = 10
     
     fig, ax = plt.subplots(2,1)
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
 
-    ax[0].plot(t_vec,T,".-",label="Kinetic energy")
+    ax[0].plot(t_vec_T,T,".-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
     ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend()
     #plt.figure()
-    ax[1].plot(t_vec,S,".-",label="Potential energy")
+    ax[1].plot(t_vec_S,S,".-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
     ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
     ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)

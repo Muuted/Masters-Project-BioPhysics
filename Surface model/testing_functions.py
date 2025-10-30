@@ -1364,7 +1364,7 @@ def testing_gradient_of_constraints():
         +f"error index g_z ={error_index_g_z} \n"
         +f"error index g_psi ={error_index_g_psi} "
     )
-    """
+    
     for i in range(N):
         fig, ax = plt.subplots(nrows=3,ncols=2)
         
@@ -1416,7 +1416,7 @@ def testing_gradient_of_constraints():
         plt.draw()
         plt.pause(5)
         fig.clear()
-    """
+    
 
 def testing_gradient_for_S():
     from Two_D_functions import Q_function,B_function
@@ -1605,6 +1605,57 @@ def testing_gradient_for_S():
     print(f"len(error r)={len(error_index_S_r[0])}")
     print(f"len(error psi)={len(error_index_S_psi[0])}")
 
+
+def find_overflow_error():
+    from Two_D_functions import Q_function,B_function
+    from two_d_data_processing import E_pot
+    from Two_D_constants import Two_D_Constants_stationary_state
+
+    const_args = Two_D_Constants_stationary_state(
+        print_val=False
+        ,show_stationary_state=False
+        ,start_flat=False
+        ,perturb=False
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    r_unperturbed, z_unperturbed = const_args[16:18]
+    eta = const_args[18]
+
+
+    path_args = Two_D_paths()
+    data_path, fig_save_path = path_args[0:2]
+    video_save_path,figs_for_video_path = path_args[2:4]
+    df_name, fps_movie ,num_frames = path_args[4:7]
+
+    df_name += f" N,ds,dt,T={N,ds,dt,T}" # c0={c0} tau={tau}"#f" ds={dt}and N={N} and ds={ds} c0={c0} kG={kG}"
+
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+
+    print(radi_list)    
+
+    exit()
+    corr_count = df_sim["correction count"][0]
+    time = [i*dt for i in range(sim_steps-1)]
+    float_count = 0
+    for t in range(sim_steps-1):
+        for i in range(N):
+            if isinstance(radi_list[t][i],float) != True:
+                print(f"radi_list[t][i]={radi_list[t][i]}")
+            if isinstance(radi_list[t][i],float):
+                float_count += 1
+    
+        if radi_list[t].all() == 0:
+            print(f"t={t*dt}")
+            print(f"radi={radi_list[t]}")
+            exit()
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1631,5 +1682,8 @@ if __name__ == "__main__":
     #testing_integration_with_events()
     #testing_for_no_correction_on_initial_state()
 
-    testing_gradient_of_constraints()
-    testing_gradient_for_S()
+    #testing_gradient_of_constraints()
+    #testing_gradient_for_S()
+
+
+    find_overflow_error()

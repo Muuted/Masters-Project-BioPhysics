@@ -1081,7 +1081,7 @@ def c_diff_f(
         ,diff_var:str =""
         ):
     diff_var_list = ["r","z","psi",0,1,2]
-    df = 0
+    df = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
         df = 2*np.pi*(r[i+1]*Kronecker(i+1,j) - r[i]*Kronecker(i,j))/Area[i]
         
@@ -1095,7 +1095,9 @@ def c_diff_f(
             #Error handling
             print(f"wrong diff variable of either (r,z,psi) error in c_diff_f")
             exit()
-
+    if df == "":
+        print("df never took value")
+        exit()
     return df
 
 
@@ -1105,12 +1107,12 @@ def c_diff_g(
         ,diff_var:str =""
         ):
     diff_var_list = ["r","z","psi",0,1,2]
-    dg = 0
+    dg = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
         dg = np.pi*(z[i+1]-z[i])*(Kronecker(i+1,j) + Kronecker(i,j))/Area[i]
         
-    if diff_var == diff_var_list[1] or diff_var == 1:
-        dg = np.pi*(r[i+1]+r[i])*(Kronecker(i+1,j) - Kronecker(i,j))/Area[i]
+    if diff_var == diff_var_list[1] or diff_var == 1: 
+        dg = np.pi*(r[i+1]+ r[i])*(Kronecker(i+1,j) - Kronecker(i,j))/Area[i]
 
     if diff_var == diff_var_list[2] or diff_var == 2:
         dg = -np.cos(psi[i])*Kronecker(i,j)
@@ -1119,7 +1121,9 @@ def c_diff_g(
             #Error handling
             print(f"wrong diff variable of either (r,z,psi) error in c_diff_g")
             exit()
-
+    if dg == "":
+        print("dg never took value")
+        exit()
     return dg
 
 
@@ -1140,12 +1144,12 @@ def Epsilon_values(
             K = 0
             if alpha < N and beta < N:
                 K = 0
-                for j in range(N):
+                for j in range(N):                    
                     K += (
                         c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="r")
                         +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="z")
                         +c_diff_f(i=l,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")*c_diff_f(i=n,j=j,N=N,r=r,psi=psi,Area=Area,diff_var="psi")
-                    )
+                    )                
                    
             if alpha < N and beta >= N:
                 K = 0
@@ -1173,7 +1177,7 @@ def Epsilon_values(
                         + c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="z")
                         + c_diff_g(i=l,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")*c_diff_g(i=n,j=j,N=N,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
                     )
-            
+
             A[alpha][beta] = K
             
         if alpha < N:
@@ -1196,7 +1200,7 @@ def Epsilon_values(
     if testing == True:
         return epsilon_f,epsilon_g, A, b
     else:
-        return epsilon_f,epsilon_g
+        return x
 
 def c_diff(
         i:int,j:int,N:int
@@ -1295,6 +1299,7 @@ def Make_variable_corrections(
         ,Area:list, Area_init:float
         ,Tolerence:float = 1e-10
         ,corr_max:int = 20
+        ,t=""
     ):
 
     #Area_new = tot_area(N=N,r=r,z=z)
@@ -1333,6 +1338,8 @@ def Make_variable_corrections(
             z[i] += K_z
             psi[i] += K_psi
 
+            if t > 6:
+                print(f"new r[i={i}] ={r[i]} and correction count = {correction_count}")
         #Area_new = tot_area(N=N,r=r,z=z)
         #dA = Area_new - Area_init
         #constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
