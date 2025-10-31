@@ -224,7 +224,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence=1e-5#-10
+            ,Tolerence=1e-5#-5#-10
             ,save_data=True
             #,area_testing=True
         )

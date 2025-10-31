@@ -1364,14 +1364,15 @@ def testing_gradient_of_constraints():
         +f"error index g_z ={error_index_g_z} \n"
         +f"error index g_psi ={error_index_g_psi} "
     )
-    
+    exit()
+    fig, ax = plt.subplots(nrows=3,ncols=2)
+    plt.get_current_fig_manager().full_screen_toggle()
     for i in range(N):
-        fig, ax = plt.subplots(nrows=3,ncols=2)
         
         #manager = plt.get_current_fig_manager()
         #manager.resize(*manager.window.maxsize())
 
-        plt.get_current_fig_manager().full_screen_toggle()
+       
 
         #fig.set_size_inches(w=10,h=10)
         font_size= 15
@@ -1438,8 +1439,8 @@ def testing_gradient_for_S():
     r_unperturbed, z_unperturbed = const_args[16:18]
     eta = const_args[18]
 
-    grad_S_r,grad_S_psi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]
-    dSdr,dSdpsi = [[] for i in range(len(psi_list[0]))],[[] for i in range(len(psi_list[0]))]    
+    grad_S_r,grad_S_psi = [],[]
+    dSdr,dSdpsi = [],[]
     
     h = 1e-8
     error_tolerence = 1e-3
@@ -1454,26 +1455,33 @@ def testing_gradient_for_S():
         return var_list
     
     def find_error_index(
-            i,j,error_tol,
+            j,error_tol,
             Delta_constraint
             ,diff_constraint
             ):
         null_val =""
         return_i ,return_j = null_val,null_val
-        if Delta_constraint[i][j] == 0:
-                if  -error_tol < diff_constraint[i][j] and diff_constraint[i][j] < error_tol:
+        if Delta_constraint[j] == 0:
+                if  -error_tol < diff_constraint[j] and diff_constraint[j] < error_tol:
                     return_i = null_val
                     return_j = null_val
                 else:
                     return_i = i
                     return_j = j
         else:
-            if abs(diff_constraint[i][j]/Delta_constraint[i][j]) < 1 - error_tolerence or abs(diff_constraint[i][j]/Delta_constraint[i][j]) > 1 + error_tolerence:
+            if abs(diff_constraint[j]/Delta_constraint[j]) < 1 - error_tolerence or abs(diff_constraint[j]/Delta_constraint[j]) > 1 + error_tolerence:
                 return_i = i
                 return_j = j
         
         return return_i,return_j, null_val
     
+    def determine_error(i,dfdq,grad_f_q,tol):
+        if tol < abs(dfdq - grad_f_q ):
+            return i
+        else:
+            return ""
+        
+        
     def dSdpsi_func(i,N,c0,k,kG,r,psi,Area):
         return_val = ""
         if i == 0:
@@ -1529,75 +1537,91 @@ def testing_gradient_for_S():
 
     
     # Finding the two gradient for r
-    for i in range(N):
-        for j in range(N):
-            # Finding the dS_i_dr_j parts
-            dSdr[i].append(
-                -Q_function(i=j,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                            ,Area=Area_list,psi=psi_list[0],radi=radi_list[0])
+    
+    for j in range(N):
+        # Finding the dS_i_dr_j parts
+        dSdr.append(
+            -Q_function(i=j,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                        ,Area=Area_list,psi=psi_list[0],radi=radi_list[0])
             )
 
-            Si_rj_h = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
-                ,z=z_list[0],psi=psi_list[0],Area=Area_list
-                ,r=increase_by_h(dh=h,x=radi_list[0],j=j)
+        Si_rj_h = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
+            ,Area=Area_list,z=z_list[0],psi=psi_list[0]
+            ,r=increase_by_h(dh=h,x=radi_list[0],j=j)
             )
 
-            Si_rj = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0,z=z_list[0],psi=psi_list[0],Area=Area_list
-                ,r=radi_list[0]
+        Si_rj = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0,z=z_list[0],psi=psi_list[0],Area=Area_list
+            ,r=radi_list[0]
             )
 
-            grad_S_r[i].append(
-                (Si_rj_h - Si_rj)/h
+        grad_S_r.append(
+            (Si_rj_h - Si_rj)/h
             )
 
-            # Fidning the dS_i_dpsi_j parts.
-            dSdpsi[i].append(
-               dSdpsi_func(i=j,N=N,c0=c0,k=k,kG=kG
-                       ,r=radi_list[0] ,psi=psi_list[0],Area=Area_list)
-                    )
+        # Fidning the dS_i_dpsi_j parts.
+        dSdpsi.append(
+            dSdpsi_func(i=j,N=N,c0=c0,k=k,kG=kG
+                    ,r=radi_list[0] ,psi=psi_list[0],Area=Area_list)
+                )
 
-            Si_psij_h = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
-                ,z=z_list[0]
-                ,psi=increase_by_h(dh=h,x=psi_list[0],j=j)
-                ,Area=Area_list
-                ,r=radi_list[0]
+        Si_psij_h = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
+            ,z=z_list[0]
+            ,psi=increase_by_h(dh=h,x=psi_list[0],j=j)
+            ,Area=Area_list
+            ,r=radi_list[0]
+        )
+
+        Si_psij = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
+                        ,z=z_list[0],psi=psi_list[0],r=radi_list[0]
+                        ,Area=Area_list
+                        )
+
+        grad_S_psi.append(
+            (Si_psij_h - Si_psij)/h
             )
 
-            Si_psij = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
-                            ,z=z_list[0],psi=psi_list[0],r=radi_list[0]
-                            ,Area=Area_list
-                            )
 
-            grad_S_psi[i].append(
-                (Si_psij_h - Si_psij)/h
-            )
 
-    """ Findig where the gradient are different"""
+    # Finding errors
+    error_index_S_r,error_index_S_psi = [],[]
+    for j in range(N):
+
+        err_r = determine_error(i=j,dfdq=dSdr[j] ,grad_f_q=grad_S_r[j],tol=error_tolerence)
+        if err_r != "":
+            error_index_S_r.append(err_r)
+        
+        err_psi = determine_error(i=j,dfdq=dSdpsi[j],grad_f_q=grad_S_psi[j],tol=error_tolerence)
+        if err_psi != "":
+            error_index_S_psi.append(err_psi)
+    print(f"dSdr err ={error_index_S_r}")
+    print(f"dSdpsi err ={error_index_S_psi}")
+    
+    # Findig where the gradient are different 
     error_index_S_r,error_index_S_psi = [[],[]],[[],[]]
-    for i in range(N):
-        for j in range(N):
-            """The r derivative functions"""
-            error_i_r, error_j_r,null_r = find_error_index(
-                i=i,j=j
-                ,error_tol=error_tolerence
-                ,Delta_constraint=grad_S_r
-                ,diff_constraint=dSdr
-                )
-            if error_i_r != null_r and error_j_r != null_r:
-                error_index_S_r[0].append(error_i_r)
-                error_index_S_r[1].append(error_j_r)
+    i = 0
+    for j in range(N):
+        """The r derivative functions"""
+        error_i_r, error_j_r,null_r = find_error_index(
+            j=j
+            ,error_tol=error_tolerence
+            ,Delta_constraint=grad_S_r
+            ,diff_constraint=dSdr
+            )
+        if error_i_r != null_r and error_j_r != null_r:
+            error_index_S_r[0].append(error_i_r)
+            error_index_S_r[1].append(error_j_r)
 
-            
-            """The psi derivative functions"""
-            error_i_psi, error_j_psi,null_psi = find_error_index(
-                i=i,j=j
-                ,error_tol=error_tolerence
-                ,Delta_constraint=grad_S_psi
-                ,diff_constraint=dSdpsi
-                )
-            if error_i_psi != null_psi and error_j_psi != null_psi:
-                error_index_S_psi[0].append(error_i_psi)
-                error_index_S_psi[1].append(error_j_psi)
+        
+        """The psi derivative functions"""
+        error_i_psi, error_j_psi,null_psi = find_error_index(
+            j=j
+            ,error_tol=error_tolerence
+            ,Delta_constraint=grad_S_psi
+            ,diff_constraint=dSdpsi
+            )
+        if error_i_psi != null_psi and error_j_psi != null_psi:
+            error_index_S_psi[0].append(error_i_psi)
+            error_index_S_psi[1].append(error_j_psi)
 
 
     print(f"index list for error in dSdr = {error_index_S_r}")
@@ -1670,7 +1694,6 @@ if __name__ == "__main__":
     #Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
-
     #test_if_constraint_diff_is_correct()
     #testing_new_epsilon_matrix()
     #testing_perturbation_function()
@@ -1682,8 +1705,8 @@ if __name__ == "__main__":
     #testing_integration_with_events()
     #testing_for_no_correction_on_initial_state()
 
-    #testing_gradient_of_constraints()
+    testing_gradient_of_constraints()
     #testing_gradient_for_S()
 
 
-    find_overflow_error()
+    #find_overflow_error()

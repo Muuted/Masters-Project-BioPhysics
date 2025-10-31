@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Test Overflow\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "init config\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -127,18 +127,18 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 20#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
-    dt = 1e-3#1e-11 #5e-11 #s time step. 
+    T = 3e-7#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    dt = 1e-11#1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
-    ds = 0.3#1.5#0.3#1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.5e-2#8#0.3#1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5.0 #50 #0.5e-6 # micrometer  :   radius of hole
     dpsi_perturb = -0.02
     
     #Base variables
-    eta = 1.0/ds#e-3 #e-3 # SI: kg /(ms)
-    c0 = 1#0.25#e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
-    k = 1#8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
+    eta = 1.0#e-3 #e-3 # SI: kg /(ms)
+    c0 = 25#0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
+    k = 80 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
     
     # scaling parameters
     lc = 1/c0
@@ -256,6 +256,7 @@ def Two_D_Constants_stationary_state(
             + f"    sigma = {sigma:0.1e}  sim units \n "
             + f"    ds = {ds:0.1e} sim units \n "
             + f"    dt = {dt:0.1e} s \n "
+            + f"    eta = {eta:0.1e} s \n "
             + f"    gamma(i!=0) = {gamma(i=2,ds=ds,eta=eta)} unit?  \n "
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "

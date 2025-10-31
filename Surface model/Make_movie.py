@@ -117,7 +117,7 @@ def Make_frames(
         f"c0={c0:0.1e}",
         f"N={N}",
         f"gam(i>1)={gam2}",
-        r" $ T_{tot} $ =" + f"{T_tot}s",
+        r" $ T_{tot} $ =" + f"{T_tot:0.2e}s",
     ))
 
     if int(np.shape(r)[0]/tot_frames) < 2:
@@ -155,7 +155,8 @@ def Make_frames(
         plt.ylim(-ceil/10, 9*ceil/10)
         plt.xlabel(f"x")
         plt.ylabel(f"z")
-        plt.title(f"Dynamics for time={t*dt:.7f}s  \n and frame ={k} of {len(frame_vec)}")
+        sig_dig = 1/dt
+        plt.title(f"Dynamics for time={t*dt:0.2e}s  \n and frame ={k} of {len(frame_vec)}")
         plt.legend()
         plt.text(0.7, 0.95, textstr
                  ,transform=ax.transAxes

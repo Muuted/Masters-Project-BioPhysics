@@ -1385,7 +1385,7 @@ def Make_variable_corrections(
             exit()
 
     if r[0] != r[0]:
-        print(t)
+        print(f"t={t}")
         #plt.legend()
         #plt.show()
         exit()
