@@ -410,14 +410,22 @@ def test_area_correction_difference():
 
 
 def Test_with_matlab_integrate_solution():
+    from Two_D_constants import Two_D_Constants_stationary_state
 
-    const_args = Two_D_Constants(
-        print_val=False
+    const_args = Two_D_Constants_stationary_state(
+        print_val=True
+        ,show_stationary_state=True
+        ,start_flat=False
+        ,perturb=False
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
     k,c0,sim_steps = const_args[6:9]
     sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    r_unperturbed, z_unperturbed = const_args[16:18]
+    eta = const_args[18]
     
     
     #args list
@@ -434,7 +442,7 @@ def Test_with_matlab_integrate_solution():
     k = k/k_c
     #kG = -0.75*k
 
-    args_list = (k ,sigma ,c0)
+    args_list = (k,sigma,c0,tau,kG)#(k ,sigma ,c0)
     
     #initial values
     lc = 1/np.sqrt(0.5 + sigma) # characterisitic length in the aymptotic regime.
@@ -444,7 +452,6 @@ def Test_with_matlab_integrate_solution():
     n_L = (psi_L/kv(1,r_L/lc))*( -kv(0,r_L/lc) - kv(1,r_L/lc)/(r_L/lc))/lc# 5.8973e-08 #
     
     lambs_L = (k*c0**2/2 + sigma)*r_L
-    print(lambs_L)
     nus_L = 0 # nu(s_1) = nu(s_2) = 0 from that we know the outer value
     A = 0#2*np.pi*( r_L**2 - r0**2  )
     print(
@@ -467,7 +474,7 @@ def Test_with_matlab_integrate_solution():
         ,y0 = init_conditions
         ,args = args_list
         ,method="LSODA"#"RK45",
-        ,atol=1e-10
+        ,atol=1e-20
     )
 
     #print(f"y =[r ,z ,psi ,dpsids ,lambda ,nu ,A]")
@@ -507,8 +514,13 @@ def Test_with_matlab_integrate_solution():
     z_matlab = df_matlab_data.loc[4][0:m]
     psi_matlab = df_matlab_data.loc[1]
     lambs_matlab = df_matlab_data.loc[3]
-    
+
+
+    save_path = "C:\\Users\\AdamSkovbjergKnudsen\\Desktop\\skole\\1 Tidligere semestre\\Kandidat speciale\\Figures\\"
+
     fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(r,z,".-"
              ,label="Python results"
              )
@@ -530,10 +542,13 @@ def Test_with_matlab_integrate_solution():
         +r"$c_0$"+f"={c0}"
         )
     plt.legend(fontsize=20)
+    #plt.savefig(save_path + "")
     
 
     #r = ans_odeint.y[1]
     plt.figure()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(r,ans_odeint.y[4],".-",label="Python")
     plt.plot(r_matlab,lambs_matlab,".-",label="Matlab")
     plt.hlines(y=tau,xmin=min(r),xmax=max(r),label=r"$\tau$="+f"{tau}")
@@ -542,15 +557,37 @@ def Test_with_matlab_integrate_solution():
     plt.xlabel("r",fontsize=20)
     plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
     plt.legend(fontsize=20)
+    plt.savefig(save_path + "constraint_multi_lambda_comparision_tau=1.png")
+    plt.savefig(save_path + "constraint_multi_lambda_comparision_tau=1.svg")
+
     
+    plt.figure()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    plt.plot(r,ans_odeint.y[4],".-",label="Python")
+    plt.plot(r_matlab,lambs_matlab,".-",label="Matlab")
+    plt.hlines(y=tau,xmin=min(r),xmax=max(r),label=r"$\tau$="+f"{tau}")
+
+    plt.title(r"$\lambda$ or tD Lagrange multiplier with atol")
+    plt.xlabel("r",fontsize=20)
+    plt.ylabel(r"$\lambda$ or tD in matlab",fontsize=20)
+    plt.xlim(0.1,2.6)
+    plt.ylim(-1,1.6)
+    plt.legend(fontsize=15,loc="lower right")
+    plt.savefig(save_path + "constraint_multi_lambda_comparision_tau=1_zoomed.png")
+    plt.savefig(save_path + "constraint_multi_lambda_comparision_tau=1_zoomed.svg")
+
 
     plt.figure()
-    plt.plot(r,psi,label="Python")
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    plt.plot(r,psi,".-",label="Python")
     plt.plot(r_matlab,psi_matlab,label="Matlab")
     plt.title("compare psi in Python and matlab",fontsize=15)
     plt.xlabel("r",fontsize=15)
     plt.ylabel(r"$\psi$",fontsize=15)
     plt.legend()
+    #plt.savefig(save_path + "")
     plt.show()
     plt.draw()
 
@@ -1691,7 +1728,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    #Test_with_matlab_integrate_solution()
+    Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     #test_if_constraint_diff_is_correct()
@@ -1705,7 +1742,7 @@ if __name__ == "__main__":
     #testing_integration_with_events()
     #testing_for_no_correction_on_initial_state()
 
-    testing_gradient_of_constraints()
+    #testing_gradient_of_constraints()
     #testing_gradient_for_S()
 
 
