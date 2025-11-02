@@ -411,6 +411,7 @@ def Two_d_simulation_stationary_states(
             print(f"completion : {round(t/(print_scale*10),1)}%"
                   +f"   time since start = {time_since_start:.4f} min"
                   +f"   estimated time left = {(time_since_start/(t+1))*(sim_steps-t):.2f} min"
+                  +f"       {((time_since_start/(t+1))*(sim_steps-t))/60:.2f} hours"
                   , end="\r"
                   )
         #t1,t2 = t%2, (t+1)%2
