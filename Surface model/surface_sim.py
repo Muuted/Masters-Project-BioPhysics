@@ -256,7 +256,10 @@ def Surface_sim_stationary_state_initial_configuration(
             ,output_path=video_save_path
         )
 
-        plt.show()
+        #plt.show()
+        plt.draw()
+        plt.pause(5)
+        plt.close("all")
     
 
 def Speed_diagnosing():
