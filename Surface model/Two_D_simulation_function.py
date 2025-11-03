@@ -616,12 +616,10 @@ def Two_d_simulation_stationary_states(
     
     #b.finish()
     print("\n")
-    print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
-    plt.figure()
-    plt.plot([i*dt for i in range(sim_steps-1)],correct_count_list,".-")
-    plt.title("Number of corrections for each t")
-    plt.xlabel("t [s]")
-    #plt.show()
+    print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n"
+          +f"round((time.time()-start_time)/60**2,3) hours"
+          )
+    
 
     if save_data == True:
         df = pd.DataFrame({

@@ -258,7 +258,7 @@ def Surface_sim_stationary_state_initial_configuration(
 
         #plt.show()
         plt.draw()
-        plt.pause(5)
+        plt.pause(120)
         plt.close("all")
     
 
