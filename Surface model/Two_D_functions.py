@@ -829,7 +829,7 @@ def Langrange_multi(
 
                     nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l,ds=ds,eta=eta)*Area[l]**2) # *Kronecker(n,j)"""
 
-                    nu_i_1 = np.pi**2*(radi[l+1]+radi[l])**2/(  gamma(i=l,ds=ds,eta=eta)*Area[l]**2 )
+                    nu_i_1 = np.pi**2*(radi[l+1]+radi[l])**2*( 1/gamma(i=l+1,ds=ds,eta=eta) + 1/gamma(i=l,ds=ds,eta=eta))/Area[l]**2 
 
                     nu_i_2 = np.pi**2*(
                         ( (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*(z_list[l+1]-z_list[l])
