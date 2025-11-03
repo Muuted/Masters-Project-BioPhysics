@@ -890,7 +890,7 @@ def Langrange_multi(
                         -(radi[l+1] + radi[l])*(radi[l] + radi[l-1])*np.sin(psi[l])
                     )#*Kronecker(n-1,j)
 
-                #nus = nu_i_next + nu_i + nu_i_before
+                #nus = nu_i_next + nu_i + nu_i_before 
             
             if i == N-2:#### do this ########## do this ############ do this ######################################################          
                 if i+1 == j:

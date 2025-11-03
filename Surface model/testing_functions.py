@@ -1728,7 +1728,7 @@ if __name__ == "__main__":
     #test_Area_diff_dt()
     #test_area_correction_difference()
     
-    Test_with_matlab_integrate_solution()
+    #Test_with_matlab_integrate_solution()
     #test_of_sim_variables_in_stationary_configuration()
 
     #test_if_constraint_diff_is_correct()
@@ -1743,7 +1743,7 @@ if __name__ == "__main__":
     #testing_for_no_correction_on_initial_state()
 
     #testing_gradient_of_constraints()
-    #testing_gradient_for_S()
+    testing_gradient_for_S()
 
 
     #find_overflow_error()
