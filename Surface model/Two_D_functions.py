@@ -780,18 +780,27 @@ def Langrange_multi(
                     )#*Kronecker(i+1,j)
                 
                 if i == j:
-                    lamb_i = (
+                    """lamb_i = (
                         -2*np.pi**2*(
                             (z_list[l+1] - z_list[l] )*radi[l]*np.sin(psi[l]) 
                             - 2*radi[l]**2*np.cos(psi[l])
                         )/(gamma(l,ds=ds,eta=eta)*Area[l]**2)
-                    )#*Kronecker(i,j)
+                    )#*Kronecker(i,j)"""
+                    lamb_i_1 = 2*np.pi**2*(
+                        (z_list[l+1] -z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l])
+                    )/(gamma(i=l+1,ds=ds,eta=eta)*Area[l]**2)
+
+                    lamb_i_2 = -np.pi**2*(                        
+                        (z_list[l+1] -z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
+                    )/(gamma(i=l,ds=ds,eta=eta)*Area[l]**2)
+                    
+                    lamb_i = lamb_i_1 + lamb_i_2
 
                 #lambs = lamb_i_next + lamb_i
 
                 #---------------- calc nu vals -------------------------
                 if n+1== j:
-                    nu_i_next_1 = (
+                    """nu_i_next_1 = (
                         (   (z_list[l+1] - z_list[l] )*np.sin(psi[l])  
                             +2*radi[l+1]*np.cos(psi[l]) 
                         )*(z_list[l+2]-z_list[l+1])
@@ -801,17 +810,36 @@ def Langrange_multi(
                         (radi[l+1] + radi[l])*(radi[l+2] + radi[l+1])*np.sin(psi[l])
                     )#/(gamma(l+1)*Area[l+1]*Area[l])
 
-                    nu_i_next = np.pi**2*(nu_i_next_1 + nu_i_next_2)/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])#*Kronecker(n+1,j)
+                    nu_i_next = np.pi**2*(nu_i_next_1 + nu_i_next_2)/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])#*Kronecker(n+1,j)"""
+
+                    nu_i_next_1 = -np.pi**2*(radi[l+1]+radi[l])*(radi[l+2]+radi[l+1])*np.sin(psi[l])
+                    
+                    nu_i_next_2 = np.pi**2*(
+                        ( (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*(z_list[l+2]-z_list[l+1])
+                    )
+                    
+                    nu_i_next = (nu_i_next_1 + nu_i_next_2)/(gamma(i=l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])
 
                 if n == j :
-                    nu_i_1 = (radi[l+1] + radi[l])**2*np.sin(psi[l])
+                    """nu_i_1 = (radi[l+1] + radi[l])**2*np.sin(psi[l])
 
                     nu_i_2 =(
                         (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
                     )*(z_list[l+1]-z_list[l])
 
-                    nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l,ds=ds,eta=eta)*Area[l]**2) # *Kronecker(n,j)
+                    nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l,ds=ds,eta=eta)*Area[l]**2) # *Kronecker(n,j)"""
 
+                    nu_i_1 = np.pi**2*(radi[l+1]+radi[l])**2/(  gamma(i=l,ds=ds,eta=eta)*Area[l]**2 )
+
+                    nu_i_2 = np.pi**2*(
+                        ( (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*(z_list[l+1]-z_list[l])
+                    )/( gamma(i=l+1,ds=ds,eta=eta)*Area[l]**2 )
+
+                    nu_i_3 = np.pi**2*(
+                        ((z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l]))*(z_list[l+1]-z_list[l])
+                    )/( gamma(i=l,ds=ds,eta=eta)*Area[l]**2 )
+
+                    nu_i = (nu_i_1 + nu_i_2 + nu_i_3)
                 #nus = nu_i_next + nu_i
             
             if 0 < i < N-2:
@@ -969,9 +997,9 @@ def Langrange_multi(
                     ,tau=tau,Area=Area,psi=psi,radi=radi
                 )
 
-                b11 = ( z_list[l+1]-z_list[l])*np.sin(psi[l])  + 2*radi[l+1]*np.cos(psi[l])
+                b11 = ( z_list[l+1] - z_list[l])*np.sin(psi[l])  + 2*radi[l+1]*np.cos(psi[l])
 
-                b12 = (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
+                b12 = (z_list[l+1] - z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
 
                 b1 = -np.pi*b11*Q_i_next/(gamma(l+1,ds=ds,eta=eta)*Area[l]) - np.pi*b12*Q_i/(gamma(l+1,ds=ds,eta=eta)*Area[l])
                 
@@ -985,7 +1013,7 @@ def Langrange_multi(
                 b11 =  z_list[l]*np.sin(psi[l])  + 2*radi[l]*np.cos(psi[i]) 
                 b1 = np.pi*b11*Q_i/(gamma(l,ds=ds,eta=eta)*Area[l])
                 
-        if i >= N :
+        if i > N - 1:
             if i == N :
                 b11 = k*Area[l]/(2*np.pi)
                 b12 = B_function(i=l,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
@@ -996,12 +1024,12 @@ def Langrange_multi(
                 b1 = b11*b12*b13 + kG*b21
                 
             if N < i < 2*N -1:
-                b11 = k*(radi[l] + radi[l-1])/2
+                b11 = k*(radi[l] + radi[l-1])/2 
                 b12 = B_function(i=l-1 ,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
 
                 b21 = k*Area[l]/(2*np.pi)
                 b22 = B_function(i=l,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
-                b23 = -np.pi*(radi[l+1] + radi[l])/Area[l] + np.cos(psi[l])/radi[l]
+                b23 = -np.pi*(radi[l+1] + radi[l])/Area[l] + np.cos(psi[l])/radi[l] 
 
                 b31 = kG*( 
                     np.sin(psi[l-1]) - np.sin(psi[l]) 
