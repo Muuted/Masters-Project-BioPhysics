@@ -780,12 +780,6 @@ def Langrange_multi(
                     )#*Kronecker(i+1,j)
                 
                 if i == j:
-                    """lamb_i = (
-                        -2*np.pi**2*(
-                            (z_list[l+1] - z_list[l] )*radi[l]*np.sin(psi[l]) 
-                            - 2*radi[l]**2*np.cos(psi[l])
-                        )/(gamma(l,ds=ds,eta=eta)*Area[l]**2)
-                    )#*Kronecker(i,j)"""
                     lamb_i_1 = 2*np.pi**2*(
                         (z_list[l+1] -z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l])
                     )/(gamma(i=l+1,ds=ds,eta=eta)*Area[l]**2)
@@ -824,7 +818,7 @@ def Langrange_multi(
                     """nu_i_1 = (radi[l+1] + radi[l])**2*np.sin(psi[l])
 
                     nu_i_2 =(
-                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
+                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*ra   di[l]*np.cos(psi[l])
                     )*(z_list[l+1]-z_list[l])
 
                     nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l,ds=ds,eta=eta)*Area[l]**2) # *Kronecker(n,j)"""
@@ -890,7 +884,7 @@ def Langrange_multi(
                         -(radi[l+1] + radi[l])*(radi[l] + radi[l-1])*np.sin(psi[l])
                     )#*Kronecker(n-1,j)
 
-                #nus = nu_i_next + nu_i + nu_i_before 
+                #nus = nu_i_next + nu_i + nu_i_before
             
             if i == N-2:#### do this ########## do this ############ do this ######################################################          
                 if i+1 == j:
