@@ -764,6 +764,14 @@ def Langrange_multi(
             n = i%N + N
             nu_i_next ,nu_i ,nu_i_before = 0,0,0
             lamb_i_next ,lamb_i ,lamb_i_before = 0,0,0
+            lamb_i_11,lamb_i_12,lamb_i_13 = 0,0,0
+            lamb_i_before_11,lamb_i_before_12,lamb_i_before_13 = 0,0,0
+            nu_i_next_1,nu_i_next_2,nu_i_next_3 =0,0,0
+            nu_i_1,nu_i_2,nu_i_3 =0,0,0
+            nu_i_before_1,nu_i_before_2,nu_i_before_3=0,0,0
+            nu_i_next_11,nu_i_next_12,nu_i_next_13 =0,0,0
+            nu_i_11,nu_i_12, nu_i_13 =0,0,0
+            nu_i_before_11,nu_i_before_12,nu_i_before_13 =0,0,0
             b11,b12,b13 =0,0,0
             b21,b22,b23 =0,0,0
             b31,b32,b33 =0,0,0
@@ -780,60 +788,39 @@ def Langrange_multi(
                     )#*Kronecker(i+1,j)
                 
                 if i == j:
-                    lamb_i_1 = 2*np.pi**2*(
-                        (z_list[l+1] -z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l])
-                    )/(gamma(i=l+1,ds=ds,eta=eta)*Area[l]**2)
+                    lamb_i_11 = (z_list[l+1] - z_list[l])*np.sin(psi[l])
+                    lamb_i_12 = radi[l+1]/gamma(i=l+1,ds=ds,eta=eta) - radi[l]/gamma(i=l,ds=ds,eta=eta) 
+                    lamb_i_1 = lamb_i_11*lamb_i_12
 
-                    lamb_i_2 = -np.pi**2*(                        
-                        (z_list[l+1] -z_list[l])*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l])
-                    )/(gamma(i=l,ds=ds,eta=eta)*Area[l]**2)
-                    
-                    lamb_i = lamb_i_1 + lamb_i_2
+                    lamb_i_21 = 2*np.cos(psi[l])
+                    lamb_i_22 = radi[l+1]**2/gamma(i=l+1,ds=ds,eta=eta) + radi[l]**2/gamma(i=l,ds=ds,eta=eta) 
+                    lamb_i_2 = lamb_i_21*lamb_i_22
 
-                #lambs = lamb_i_next + lamb_i
+                    lamb_i = 2*np.pi**2*(  lamb_i_1 + lamb_i_2  )/(Area[l]**2)
+
 
                 #---------------- calc nu vals -------------------------
                 if n+1== j:
-                    """nu_i_next_1 = (
-                        (   (z_list[l+1] - z_list[l] )*np.sin(psi[l])  
-                            +2*radi[l+1]*np.cos(psi[l]) 
-                        )*(z_list[l+2]-z_list[l+1])
-                    )#/(gamma(l+1)*Area[l+1]*Area[l])
+                    nu_i_next_11 = (z_list[l+1] - z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l])
+                    nu_i_next_12 = z_list[l+2] - z_list[l+1]
+                    nu_i_next_1 = nu_i_next_11*nu_i_next_12
 
-                    nu_i_next_2 = -(
-                        (radi[l+1] + radi[l])*(radi[l+2] + radi[l+1])*np.sin(psi[l])
-                    )#/(gamma(l+1)*Area[l+1]*Area[l])
+                    nu_i_next_2 = - (radi[l+1] + radi[l])*(radi[l+2]  + radi[l+1])*np.sin(psi[l])
 
-                    nu_i_next = np.pi**2*(nu_i_next_1 + nu_i_next_2)/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])#*Kronecker(n+1,j)"""
-
-                    nu_i_next_1 = -np.pi**2*(radi[l+1]+radi[l])*(radi[l+2]+radi[l+1])*np.sin(psi[l])
+                    nu_i_next = np.pi**2*(nu_i_next_1 + nu_i_next_2 )/(gamma(i=l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])
                     
-                    nu_i_next_2 = np.pi**2*(
-                        ( (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*(z_list[l+2]-z_list[l+1])
-                    )
-                    
-                    nu_i_next = (nu_i_next_1 + nu_i_next_2)/(gamma(i=l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])
-
                 if n == j :
-                    """nu_i_1 = (radi[l+1] + radi[l])**2*np.sin(psi[l])
 
-                    nu_i_2 =(
-                        (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*ra   di[l]*np.cos(psi[l])
-                    )*(z_list[l+1]-z_list[l])
+                    nu_i_11 = ( (radi[l+1]+radi[l+1])**2 + (z_list[l+1] - z_list[l])**2 )*np.sin(psi[l])
+                    nu_i_12 = 1/gamma(i=l+1,ds=ds,eta=eta) + 1/gamma(i=l,ds=ds,eta=eta)
+                    nu_i_1 = nu_i_11*nu_i_12
 
-                    nu_i = np.pi**2*(nu_i_1 + nu_i_2)/(gamma(l,ds=ds,eta=eta)*Area[l]**2) # *Kronecker(n,j)"""
+                    nu_i_21 = 2*(z_list[i+1] - z_list[l])*np.cos(psi[l])
+                    nu_i_22 = radi[l+1]/gamma(i=l+1,ds=ds,eta=eta) - radi[l]/gamma(i=l,ds=ds,eta=eta)
+                    nu_i_2 = nu_i_21*nu_i_21
 
-                    nu_i_1 = np.pi**2*(radi[l+1]+radi[l])**2*( 1/gamma(i=l+1,ds=ds,eta=eta) + 1/gamma(i=l,ds=ds,eta=eta))/Area[l]**2 
+                    nu_i = np.pi**2 *(nu_i_1 + nu_i_2)/Area[l]**2
 
-                    nu_i_2 = np.pi**2*(
-                        ( (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*(z_list[l+1]-z_list[l])
-                    )/( gamma(i=l+1,ds=ds,eta=eta)*Area[l]**2 )
-
-                    nu_i_3 = np.pi**2*(
-                        ((z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l]))*(z_list[l+1]-z_list[l])
-                    )/( gamma(i=l,ds=ds,eta=eta)*Area[l]**2 )
-
-                    nu_i = (nu_i_1 + nu_i_2 + nu_i_3)
                 #nus = nu_i_next + nu_i
             
             if 0 < i < N-2:
