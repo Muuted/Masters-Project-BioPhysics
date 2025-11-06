@@ -1457,7 +1457,7 @@ def testing_gradient_of_constraints():
     
 
 def testing_gradient_for_S():
-    from Two_D_functions import Q_function,B_function
+    from Two_D_functions import Q_function,B_function, dSdpsi_func
     from two_d_data_processing import E_pot
     from Two_D_constants import Two_D_Constants_stationary_state
 
@@ -1517,60 +1517,6 @@ def testing_gradient_for_S():
             return i
         else:
             return ""
-        
-        
-    def dSdpsi_func(i,N,c0,k,kG,r,psi,Area):
-        return_val = ""
-        if i == 0:
-            a11 = k*Area[i]/(2*np.pi)
-            a12 = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=r)
-            a13 = (
-                -np.pi*(r[i+1]+r[i])/Area[i] + np.cos(psi[i])/r[i]
-                )
-            a21 = kG*(
-                -np.sin(psi[i]) + (psi[i+1]-psi[i])*np.cos(psi[i])
-            )
-            return_val = (
-                a11*a12*a13 + a21
-            )
-
-        if 0 < i < N-1 :
-            a11 = k*(r[i]+r[i-1])/2
-            a12 = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=r)
-            
-            a21 = k*Area[i]/(2*np.pi)
-            a22 = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=r)
-            a23 = (
-                -np.pi*(r[i+1]+r[i])/Area[i] + np.cos(psi[i])/r[i]
-                )
-            a31 = kG*(
-              np.sin(psi[i-1])  -np.sin(psi[i]) + (psi[i+1]-psi[i])*np.cos(psi[i])
-            )
-            return_val = (
-                a11*a12 + a21*a22*a23 + a31
-            )
-
-        if i == N - 1 :
-            a11 = k*(r[i]+r[i-1])/2
-            a12 = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=r)
-            
-            a21 = k*Area[i]/(2*np.pi)
-            a22 = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=r)
-            a23 = (
-                -np.pi*(r[i+1]+r[i])/Area[i] + np.cos(psi[i])/r[i]
-                )
-            a31 = kG*(
-              np.sin(psi[i-1])  -np.sin(psi[i]) - psi[i]*np.cos(psi[i])
-            )
-            return_val = (
-                a11*a12 + a21*a22*a23 + a31
-            )
-        
-        if return_val == "":
-            print("return val never took value")
-            exit()
-
-        return return_val
 
     
     # Finding the two gradient for r

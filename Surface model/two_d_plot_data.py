@@ -197,6 +197,15 @@ def plot_Epot_Ekin(
     save_name_1 = df_name + "init and end"
     plt.savefig(output_path + save_name_1 +".png")
 
+    #plt.close("all")
+    plt.figure()
+    i = 3
+    dr0dt = [r[t+1,i]- r[t,i] for t in range(sim_steps-1)]
+    plt.plot(t_vec,dr0dt,label="psi[N]")
+    plt.title(r" $\frac{dr_0}{dt}$ for for alll time" +f" \n dr_idt[end]={dr0dt[len(dr0dt)-1]:0.3e} and "+r"$\Delta$"+f"dr_idt ={max(dr0dt) - min(dr0dt):0.3e}")
+    #plt.show()
+    #exit()
+
 
 
 
