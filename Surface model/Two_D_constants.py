@@ -125,13 +125,13 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
-    N = 40 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e-7#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
-    dt = 1e-11#1e-11 #5e-11 #s time step. 
+    T = 5e-7#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    dt = 1e-10#1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
-    ds = 1.5e-2/2#8#0.3#1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
+    ds = 1.5e-2#8#0.3#1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5.0 #50 #0.5e-6 # micrometer  :   radius of hole
     dpsi_perturb = 0.01
     num_pertub = 7#int((N-1)/2)

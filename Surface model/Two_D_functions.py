@@ -723,15 +723,20 @@ def Langrange_multi(
                 
                 #---------- nu ----------------------------------
                 if n+1 == j:
-                    nu_i_next = np.pi**2*(
+                    nu_i_next_1 = 2*radi[l+1]*(z_list[l+2] - z_list[l+1])*np.cos(psi[l])
+                    nu_i_next_2 = (z_list[l+1] - z_list[l] - (radi[l+2] + radi[l+1])*(radi[l+1] + radi[l]) )*np.sin(psi[l]) 
+
+                    """nu_i_next = np.pi**2*(
                         2*radi[l+1]*(z_list[l+2] - z_list[l+1])*np.cos(psi[l])
                         +(z_list[l+1] - z_list[l] - (radi[l+2] + radi[l+1])*(radi[l+1] + radi[l]) )*np.sin(psi[l])
-                    )/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l]) # *Kronecker(n+1,j)
+                    )/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l]) # *Kronecker(n+1,j)"""
+
+                    nu_i_next = np.pi**2*( nu_i_next_1 + nu_i_next_2 )/( gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l] )
                 
                 if n == j:
                     nu_i_1 = 1/gamma(l+1,ds=ds,eta=eta) + 1/gamma(l,ds=ds,eta=eta)
                     nu_i_2 =( 
-                        (radi[l+1]+ radi[l])**2#/gamma(l+1,ds=ds,eta=eta) 
+                        (radi[l+1]+ radi[l])**2 #/gamma(l+1,ds=ds,eta=eta) 
                         + (z_list[l+1] - z_list[l])**2
                         )
 
@@ -742,12 +747,20 @@ def Langrange_multi(
                     )/(Area[l]**2)
 
                 if n-1 == j:
-                    nu_i_before = np.pi**2/(gamma(l,ds=ds,eta=eta)*Area[l]*Area[l-1])*(
+                    nu_i_before_11 = (z_list[l+1] - z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
+                    nu_i_before_12 =   z_list[l] - z_list[l-1]
+                    nu_i_before_1 = nu_i_before_11*nu_i_before_12
+
+                    nu_i_before_2 = -(radi[l+1] + radi[l])*(radi[l]+radi[l-1])*np.sin(psi[l])
+
+                    nu_i_before = np.pi**2*(    nu_i_before_1 + nu_i_before_2 )/( gamma(i=l,ds=ds,eta=eta)*Area[l]*Area[l-1] )
+
+                    """nu_i_before = np.pi**2/(gamma(l,ds=ds,eta=eta)*Area[l]*Area[l-1])*(
                         (
                             (z_list[l+1] - z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l])
                         )*(z_list[l] - z_list[l-1])
                         -(radi[l+1] + radi[l])*(radi[l] + radi[l-1])*np.sin(psi[l])
-                    )#*Kronecker(n-1,j)
+                    )#*Kronecker(n-1,j)"""
 
                 #nus = nu_i_next + nu_i + nu_i_before
             
@@ -774,7 +787,7 @@ def Langrange_multi(
                 if n+1 == j:
                     nu_i_next_1 = (radi[l+2] + radi[l+1])*(radi[l+1] + radi[l])*np.sin(psi[l])
                     
-                    nu_i_next_2 = ((z_list[l+1]- z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]))*z_list[l+1]
+                    nu_i_next_2 = ( (z_list[l+1]- z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l]) )*z_list[l+1]
 
                     nu_i_next = -np.pi**2*( nu_i_next_1 + nu_i_next_2)/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])
 
@@ -790,7 +803,7 @@ def Langrange_multi(
                 if n-1 == j:
                     nu_i_before_1 = (
                         (z_list[l+1]-z_list[l])*np.sin(psi[l]) - 2*radi[l]*np.cos(psi[l]) 
-                    )*(z_list[l]-z_list[l-1])
+                    )*( z_list[l] - z_list[l-1]   )
 
                     nu_i_before_2 = -(radi[l+1] + radi[l])*(radi[l] + radi[l-1])*np.sin(psi[l])
                     
@@ -812,18 +825,23 @@ def Langrange_multi(
                 #lambs = lamb_i_next + lamb_i + lamb_i_before
                 #---------- nu ----------------------------------
                 if n == j:
-                    nu_i = (np.pi**2/(gamma(l,ds=ds,eta=eta)*Area[l]**2))*(
+                    nu_i_1 = (radi[l+1]+radi[l])**2*np.sin(psi[l]) 
+                    nu_i_2 = z_list[l]**2*np.sin(psi[l])
+                    nu_i_3 = 2*z_list[l]*radi[l]*np.cos(psi[l])
+
+                    nu_i = np.pi**2*( nu_i_1 + nu_i_2 + nu_i_3 )/(  gamma(i=l,ds=ds,eta=eta)*Area[l]**2 )
+
+                    """nu_i = (np.pi**2/(gamma(l,ds=ds,eta=eta)*Area[l]**2))*(
                          ( (radi[l+1] + radi[l])**2 + z_list[l]**2 )*np.sin(psi[l])
                         + 2*radi[l]*z_list[l]*np.cos(psi[l])
-                    )#*Kronecker(n,j)
+                    )#*Kronecker(n,j)"""
                 if n-1 == j:
                     nu_i_before_1 = (radi[l+1] + radi[l])*(radi[l] + radi[l-1])*np.sin(psi[l])
-                    nu_i_before_2 = (z_list[l]*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l]))*(z_list[l] - z_list[l-1 ])
-
+                    nu_i_before_2 = ( z_list[l]*np.sin(psi[l]) + 2*radi[l]*np.cos(psi[l]) )*(z_list[l] - z_list[l-1 ])
 
                     nu_i_before = -np.pi**2*(
                         nu_i_before_1 + nu_i_before_2
-                    )/(gamma(l,ds=ds,eta=eta)*Area[l]*Area[l-1]) # *Kronecker(n-1,j)
+                    )/(gamma(i=l,ds=ds,eta=eta)*Area[l]*Area[l-1]) # *Kronecker(n-1,j)
 
                 #nus = nu_i_next + nu_i + nu_i_before
             # The 2nd N equations. where l is the shifted index
@@ -870,9 +888,9 @@ def Langrange_multi(
                 )
 
                 b11 =  z_list[l]*np.sin(psi[l])  + 2*radi[l]*np.cos(psi[i]) 
-                b1 = np.pi*b11*Q_i/(gamma(l,ds=ds,eta=eta)*Area[l])
+                b1 = np.pi*b11*Q_i/( gamma(l,ds=ds,eta=eta)*Area[l] )
                 
-        if N-1 <i < 2*N:
+        if N-1 < i < 2*N:
             b1 = dSdpsi_func(
                 i=l
                 ,N=N,c0=c0,k=k,kG=kG
