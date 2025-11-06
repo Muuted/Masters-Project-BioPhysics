@@ -702,15 +702,15 @@ def Langrange_multi(
                 if i+1==j :
                     #print(f"l={l} and j={j} and i ={i}")
                     lamb_i_next = -(
-                        (2*np.pi**2*radi[l+1]/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l]))*(
+                        (2*np.pi**2*radi[l+1])*(
                             (z_list[l+1]-z_list[l])*np.sin(psi[l]) + 2*radi[l+1]*np.cos(psi[l])
-                        )
+                        )/(gamma(l+1,ds=ds,eta=eta)*Area[l+1]*Area[l])
                     )#*Kronecker(i+1,j)
 
                 if i == j:
-                    lamb_i_1 = (z_list[l+1]-z_list[l])*np.sin(psi[l])*( radi[l+1]/gamma(l+1,ds=ds,eta=eta) - radi[l]/gamma(l,ds=ds,eta=eta) )
+                    lamb_i_1 = (z_list[l+1]-z_list[l])*np.sin(psi[l])*( radi[l+1]/gamma(i=l+1,ds=ds,eta=eta) - radi[l]/gamma(i=l,ds=ds,eta=eta) )
                     
-                    lamb_i_2 = 2*np.cos(psi[l])*( radi[l+1]**2/gamma(l+1,ds=ds,eta=eta) + radi[l]**2/gamma(l,ds=ds,eta=eta) ) 
+                    lamb_i_2 = 2*np.cos(psi[l])*( radi[l+1]**2/gamma(i=l+1,ds=ds,eta=eta) + radi[l]**2/gamma(i=l,ds=ds,eta=eta) ) 
 
                     lamb_i = 2*np.pi**2*(lamb_i_1 + lamb_i_2)/(Area[l]**2)
 
