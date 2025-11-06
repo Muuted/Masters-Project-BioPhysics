@@ -238,7 +238,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    c0 *= 2
+    #c0 *= 2
     #tau = 0
 
     #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")

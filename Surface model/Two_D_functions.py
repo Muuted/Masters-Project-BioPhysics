@@ -874,7 +874,10 @@ def Langrange_multi(
                 
                 if n == j:
                     nu_i_1 = 1/gamma(l+1,ds=ds,eta=eta) + 1/gamma(l,ds=ds,eta=eta)
-                    nu_i_2 = (radi[l+1]+ radi[l])**2/gamma(l+1,ds=ds,eta=eta) + (z_list[l+1] - z_list[l])**2
+                    nu_i_2 =( 
+                        (radi[l+1]+ radi[l])**2#/gamma(l+1,ds=ds,eta=eta) 
+                        + (z_list[l+1] - z_list[l])**2
+                        )
 
                     nu_i_3 = radi[l+1]/gamma(l+1,ds=ds,eta=eta) - radi[l]/gamma(l,ds=ds,eta=eta)
 
