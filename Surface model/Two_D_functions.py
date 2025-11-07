@@ -150,9 +150,9 @@ def dzdt_func(
 
 def  dzdt_RungeKutta_4(i,dt,Area:list,radi:list, nu:list):
     
-    dzdt_1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nus)
+    dzdt_1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
-    dzdt_2 = dzdt_func(i=i,Area=Area,radi=radi,nu=nus)
+    dzdt_2 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
 def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float, ds:float ,eta:float
         ,Area:list,psi:list,radi:list
@@ -200,7 +200,7 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
     return dpsidt
 
 def dPsidt_RungeKutta_4(
-        i,N,k,c0,sigma,kG,tau
+        i,N,k,c0,sigma,kG,tau,dt
         ,Area,radi,z_list
         ,lambs,nus
         ,psi

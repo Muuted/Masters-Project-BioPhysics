@@ -1480,13 +1480,13 @@ def testing_gradient_for_S():
     dSdr,dSdpsi = [],[]
     
     h = 1e-8
-    error_tolerence = 1e-3
+    error_tolerence = 1e-4
 
     def increase_by_h(dh,x,j):
         var_list = []
         for i in range(len(x)):
             if i == j:
-                var_list.append(x[i]+dh)
+                var_list.append(x[i] + dh)
             else:
                 var_list.append(x[i])
         return var_list
@@ -1513,7 +1513,9 @@ def testing_gradient_for_S():
         return return_i,return_j, null_val
     
     def determine_error(i,dfdq,grad_f_q,tol):
-        if tol < abs(dfdq - grad_f_q ):
+        val =  abs( dfdq - grad_f_q )
+        #print(f"val={val}")
+        if tol < val:
             return i
         else:
             return ""
@@ -1530,7 +1532,7 @@ def testing_gradient_for_S():
 
         Si_rj_h = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
             ,Area=Area_list,z=z_list[0],psi=psi_list[0]
-            ,r=increase_by_h(dh=h,x=radi_list[0],j=j)
+            ,r = increase_by_h(dh=h,x=radi_list[0],j=j)
             )
 
         Si_rj = E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0,z=z_list[0],psi=psi_list[0],Area=Area_list
@@ -1576,41 +1578,11 @@ def testing_gradient_for_S():
         err_psi = determine_error(i=j,dfdq=dSdpsi[j],grad_f_q=grad_S_psi[j],tol=error_tolerence)
         if err_psi != "":
             error_index_S_psi.append(err_psi)
+
+        #print(f"err_r:{err_r} and err_psi:{err_psi}")
     print(f"dSdr err ={error_index_S_r}")
     print(f"dSdpsi err ={error_index_S_psi}")
     
-    # Findig where the gradient are different 
-    error_index_S_r,error_index_S_psi = [[],[]],[[],[]]
-    i = 0
-    for j in range(N):
-        """The r derivative functions"""
-        error_i_r, error_j_r,null_r = find_error_index(
-            j=j
-            ,error_tol=error_tolerence
-            ,Delta_constraint=grad_S_r
-            ,diff_constraint=dSdr
-            )
-        if error_i_r != null_r and error_j_r != null_r:
-            error_index_S_r[0].append(error_i_r)
-            error_index_S_r[1].append(error_j_r)
-
-        
-        """The psi derivative functions"""
-        error_i_psi, error_j_psi,null_psi = find_error_index(
-            j=j
-            ,error_tol=error_tolerence
-            ,Delta_constraint=grad_S_psi
-            ,diff_constraint=dSdpsi
-            )
-        if error_i_psi != null_psi and error_j_psi != null_psi:
-            error_index_S_psi[0].append(error_i_psi)
-            error_index_S_psi[1].append(error_j_psi)
-
-
-    print(f"index list for error in dSdr = {error_index_S_r}")
-    print(f"index list for error in dSdpsi = {error_index_S_psi}")
-    print(f"len(error r)={len(error_index_S_r[0])}")
-    print(f"len(error psi)={len(error_index_S_psi[0])}")
 
 
 def find_overflow_error():
