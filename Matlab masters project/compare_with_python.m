@@ -4,10 +4,10 @@ clear all;
 
 
 %% My simulation units variables
-c0 = 0.25;
+c0 = 0.25;%1.0;%.25;
 k  = 1.;
 sigma = k*(c0^2); 
-tau = 0.1;
+tau = 1;%0.1;
 
 %% The  dimless units conversions.
 lc = 1/c0;

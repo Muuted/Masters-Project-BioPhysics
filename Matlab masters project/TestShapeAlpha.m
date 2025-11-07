@@ -6,9 +6,9 @@
 clc
 clearvars;
 % input parameters:
-alpha_target=-0.75;
-tauD=1;
-sigmaD=0.1;
+alpha_target = -0.75;
+tauD = 1;
+sigmaD = 0.1;
 %
 % Calling ShapeAlpha to generate solution
 [Result]=ShapeAlpha(alpha_target,tauD,sigmaD);
