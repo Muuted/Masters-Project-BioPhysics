@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "test if still\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "test new kG\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -139,7 +139,7 @@ def Two_D_Constants_stationary_state(
     #Base variables
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
     c0 = 25 #0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
-    k = 2*80 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
+    k = 80*2 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
     kG = -0.75*k
 
     # scaling parameters
@@ -172,12 +172,13 @@ def Two_D_Constants_stationary_state(
            r_list[0][i] = r0 + i*ds
     else:
         """------ variables list ---------"""
-        psi,r,z, r_contin, z_contin = find_init_stationary_state(
+        psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
             sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds, kG=kG
             ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
             ,total_points = N
         )
-        
+        print(f"{(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0]) - 1} and alpha={alpha}")
+        kG = k*(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]
@@ -241,6 +242,7 @@ def Two_D_Constants_stationary_state(
     
     #c0 *= 2
     #tau = 0
+    
 
     #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
     if print_val == True:
@@ -284,6 +286,6 @@ if __name__ == "__main__":
         show_stationary_state=True
         ,pause_timer=300
         ,start_flat=False
-        ,perturb=True
+        ,perturb=False#True
         ,print_val=True
     )
