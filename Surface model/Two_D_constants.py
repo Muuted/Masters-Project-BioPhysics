@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "test new kG\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "test  kG=-k\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -158,7 +158,7 @@ def Two_D_Constants_stationary_state(
     rs2 = 20*lc 
     zs2 = 0
     s0, sN = 0, 50*lc
-    psi_L = -2.836237310547577e-08#-7.3648e-8
+    psi_L = -2.836237310547577e-8#-7.36475216445153e-8
 
     #Creating lists for the variables.
     psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
@@ -178,7 +178,7 @@ def Two_D_Constants_stationary_state(
             ,total_points = N
         )
         print(f"{(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0]) - 1} and alpha={alpha}")
-        kG = k*(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
+        kG = -k#*(-1.9574)#alpha    #(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]

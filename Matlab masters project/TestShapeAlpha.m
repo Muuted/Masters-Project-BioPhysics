@@ -34,12 +34,29 @@ for k=1:R % loop over crossings t=tau
         plottext{4}=['DeltaSA=' num2str(Result(k,p).DeltaSA)];
         plottext{5}=['Area=' num2str(Result(k,p).Area)];
         text(mean(xlim),mean(ylim)+0.25*range(ylim),plottext)
+        
+        m = length( Result(k,p).Y(1) );
+        
+        r_11 = Result(k,p).Y(1,m);
+        psi_11 = Result(k,p).Y(2,m);
+        dpsidt_11 = Result(k,p).Y(3,m);
+        
+        r_1 = Result(k,p).ShapeSolution.ye(1,k);
+        psi_1 = Result(k,p).ShapeSolution.ye(2,k);
+        dpsidt_1 = Result(k,p).ShapeSolution.ye(3,k);
+        
+        a11 = (1 - dpsidt_11)*r_11/sin(psi_11)  - 1 
+        a1 = (1 - dpsidt_1)*r_1/sin(psi_1)  - 1 
         else
             continue
         end
     end
 end
-%
+
+
+
+
+
 %% plot both neck shape solutions of Result in same plot:
 figure()
 [R,C]=size(Result);

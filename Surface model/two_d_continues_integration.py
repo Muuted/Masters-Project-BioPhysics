@@ -51,7 +51,7 @@ def edge_ratio(t,y,k,sigma,c0,tau,kG):
     psi_1 = y[0]
     r_1 = y[1]
     alpha = kG/k
-    val = (c0-dpsidt_1)*r_1/np.sin(psi_1)-1 - alpha
+    val = (c0-dpsidt_1)*r_1/np.sin(psi_1) - 1 - alpha
     return val
 
 
@@ -76,15 +76,16 @@ def find_init_stationary_state(
     #The integration part.
     
 
-    edge_tension.terminal = True
+    #edge_tension.terminal = True
     #edge_ratio.terminal = True
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
         ,t_span = [sN ,s0]
-        ,t_eval = np.linspace(start=sN,stop=s0,num=100000)
+        ,t_eval = np.linspace(start=sN,stop=s0,num=10000)
         ,y0 = init_conditions
         ,args = args_list
         ,method = "LSODA"
+        #,dense_out = True
         ,rtol = 1e-13
         ,atol = 1e-20
         ,events = (edge_tension,edge_ratio)
@@ -96,7 +97,18 @@ def find_init_stationary_state(
     dpsidt = ans_odeint.y[3]
     lambs = ans_odeint.y[4]
     nus = ans_odeint.y[5]
+
+    events_t = ans_odeint.t_events
+    events_y = ans_odeint.y_events
+
     
+        
+    
+    #print(f"events_t={events_t}")
+    #print(f"events_y[0]={events_y[0]}")
+    #print(f"events_y[1]={events_y[1]}")
+    #print(len(events_y[0]))
+    #print(len(events_y[1]))
     
     dpsidt_1 = dpsidt[len(r)-1]
     psi_1 = psi[len(r)-1]
@@ -107,7 +119,7 @@ def find_init_stationary_state(
     alpha_1 = ( c0 - dpsidt_1 )*r_1/(np.sin(psi_1)) - 1
     
     print(f"alpha = {alpha_1:0.2e} and kG/k ={alpha}")
-    print(f"lambda_1 = {lambs_1} and tau={tau}")
+    #print(f"lambda_1 = {lambs_1} and tau={tau}")
     
     index_list = descritize_sim_results(
         r = ans_odeint.y[1]
@@ -134,12 +146,25 @@ def find_init_stationary_state(
                 )
         )
 
-    """plt.figure()
-    plt.plot(r_discrete,z_discrete,"o-",label="discreet")
+    plt.figure()
+    #plt.plot(r_discrete,z_discrete,"o-",label="discreet")
     plt.plot(r,z,label="contin")
     plt.plot(r_1,z_1,"o",label="start point")
+    for j in range(2):
+        for i in range(len(events_t[0])):
+            r1 = events_y[j][i][1]
+            z1 = events_y[j][i][2]
+            psi1 = events_y[j][i][0]
+            dpsidt1 = events_y[j][i][3]
+            lambs1 = events_y[j][i][4]
+            print(f"alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1}  and tau={lambs1}")
+            if j == 0:
+                plt.plot(r1,z1,"o",label=f"events lambda-tau={lambs1-tau:.1e} and alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}")
+            elif j == 1:
+                plt.plot(r1,z1,"o",label=f"events alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}  and lambda-tau={lambs1-tau:.1e}")
     plt.legend()
-    plt.show()"""
+    plt.show()
+    exit()
     return psi_discrete,r_discrete,z_discrete, r,z, alpha_1
     
 if __name__ == "__main__":

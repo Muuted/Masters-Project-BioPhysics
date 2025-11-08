@@ -2,29 +2,29 @@ clc;
 clearvars;
 clear all;
 
-
-%% My simulation units variables
-c0 = 25;%1.0;%.25;
-k  = 80 ;
-sigma = k*(c0^2); 
-tau = 1;%0.1;
-
-%% The  dimless units conversions.
-lc = 1/c0;
-sigma_c = k*(c0^2);
-tau_c = k*c0;
-c0_c = c0;
-k_c = k;
+% 
+% %% My simulation units variables
+% c0 = 25;%1.0;%.25;
+% k  = 80 ;
+% sigma = k*(c0^2); 
+% tau = 1;%0.1;
+% 
+% %% The  dimless units conversions.
+% lc = 1/c0;
+% sigma_c = k*(c0^2);
+% tau_c = k*c0;
+% c0_c = c0;
+% k_c = k;
 
 %% The dimless units
 clc
 "the dimless units"
-k = k/k_c;
+k = 2;%1;%k/k_c;
 tauD =  1;%tau/tau_c %1
-sigmaD = 0.1%sigma/sigma_c ;%0.1
-c0 = c0/c0_c;
+sigmaD = 0.1;%sigma/sigma_c ;%0.1
+c0 = 1;%c0/c0_c;
 r2D = 20;%tau*1.01/(k*c0^2)%20
-psi2 = -7.3648e-8; % -2.8362e-8
+psi2 = -2.83623731054758e-8 ;%-7.36475216445153e-8; % -2.83623731054758e-8
 
 %% Finding the solution
 
@@ -37,7 +37,7 @@ for i= 1:length(ShapeSolution.y(1,:))
         break
     end
 end
-m
+m;
 r = ShapeSolution.y(1,1:m);
 z = ShapeSolution.y(5,1:m);
 psi = ShapeSolution.y(2,1:m);
@@ -49,17 +49,17 @@ dpsidt = ShapeSolution.y(3,1:m);
 figure(1)
 plot(r,z)
 %%
-figure(2)
-plot(psi)
+%figure(2)
+%plot(psi)
 %plot(Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot (r,z) in solution
 %%
 %%
-a = (c0 - dpsidt(m))*r(m)/sin(psi(m)) - 1
+a = (c0 - dpsidt(m))*r(m)/sin(psi(m)) - 1 
 
 %% Making new matrix
-m = length(ShapeSolution.y(1,:))
+m = length(ShapeSolution.y(1,:));
 save_matrix = zeros(6,m);
-size(save_matrix)
+size(save_matrix);
 for i=2:6
     for j=1:m
         save_matrix(i,j) = ShapeSolution.y(i-1,j);
