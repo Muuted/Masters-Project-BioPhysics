@@ -4,8 +4,8 @@ clear all;
 
 
 %% My simulation units variables
-c0 = 0.25;%1.0;%.25;
-k  = 1.;
+c0 = 25;%1.0;%.25;
+k  = 80 ;
 sigma = k*(c0^2); 
 tau = 1;%0.1;
 
@@ -20,8 +20,8 @@ k_c = k;
 clc
 "the dimless units"
 k = k/k_c;
-tauD= 1%tau/tau_c %1
-sigmaD= 0.1%sigma/sigma_c ;%0.1
+tauD =  1;%tau/tau_c %1
+sigmaD = 0.1%sigma/sigma_c ;%0.1
 c0 = c0/c0_c;
 r2D = 20;%tau*1.01/(k*c0^2)%20
 psi2 = -7.3648e-8; % -2.8362e-8
@@ -41,8 +41,10 @@ m
 r = ShapeSolution.y(1,1:m);
 z = ShapeSolution.y(5,1:m);
 psi = ShapeSolution.y(2,1:m);
+dpsidt = ShapeSolution.y(3,1:m);
 %r = ShapeSolution.y(1,:);
 %z = ShapeSolution.y(5,:);
+
 
 figure(1)
 plot(r,z)
@@ -50,6 +52,10 @@ plot(r,z)
 figure(2)
 plot(psi)
 %plot(Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot (r,z) in solution
+%%
+%%
+a = (c0 - dpsidt(m))*r(m)/sin(psi(m)) - 1
+
 %% Making new matrix
 m = length(ShapeSolution.y(1,:))
 save_matrix = zeros(6,m);
