@@ -76,7 +76,7 @@ def find_init_stationary_state(
     #The integration part.
     
 
-    #edge_tension.terminal = True
+    edge_tension.terminal = True
     #edge_ratio.terminal = True
     ans_odeint = scipy.integrate.solve_ivp(
         dSds
@@ -101,9 +101,6 @@ def find_init_stationary_state(
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
 
-    
-        
-    
     #print(f"events_t={events_t}")
     #print(f"events_y[0]={events_y[0]}")
     #print(f"events_y[1]={events_y[1]}")
@@ -146,10 +143,12 @@ def find_init_stationary_state(
                 )
         )
 
+    """
     plt.figure()
     #plt.plot(r_discrete,z_discrete,"o-",label="discreet")
     plt.plot(r,z,label="contin")
     plt.plot(r_1,z_1,"o",label="start point")
+    
     for j in range(2):
         for i in range(len(events_t[0])):
             r1 = events_y[j][i][1]
@@ -165,6 +164,7 @@ def find_init_stationary_state(
     plt.legend()
     plt.show()
     exit()
+    # """
     return psi_discrete,r_discrete,z_discrete, r,z, alpha_1
     
 if __name__ == "__main__":
