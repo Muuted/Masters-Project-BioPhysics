@@ -18,32 +18,34 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     ):
     print("\n Now Running the surface simulation from stationary configurations \n")
 
-    const_args = Two_D_Constants_stationary_state(
-        print_val=True
-        ,show_stationary_state=True
-        ,start_flat=start_from_flat
-        ,perturb=do_perturbation
-    )
 
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
-    r_unperturbed, z_unperturbed = const_args[16:18]
-    eta = const_args[18]
-
-    
-    path_args = Two_D_paths()
-    data_path, fig_save_path = path_args[0:2]
-    video_save_path,figs_for_video_path = path_args[2:4]
-    df_name, fps_movie ,num_frames = path_args[4:7]
-
-    kG_list = [-(1-0.05)*k, -k, -1.05*k,-1.1*k , -1.15*k]
+    kG_list = [ -(1-0.05), -1, -1.05,-1.1 , -1.15]
 
     for i in range(len(kG_list)):
-        kG = kG_list[i]
-        df_name += f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
+        const_args = Two_D_Constants_stationary_state(
+            print_val=True
+            ,show_stationary_state=True
+            ,start_flat=start_from_flat
+            ,perturb=do_perturbation
+        )
+
+        L,r0,N,ds,T,dt = const_args[0:6]
+        k,c0,sim_steps = const_args[6:9]
+        sigma, tau, kG = const_args[9:12]
+        Area_list, psi_list = const_args[12:14]
+        radi_list,z_list = const_args[14:16]
+        r_unperturbed, z_unperturbed = const_args[16:18]
+        eta = const_args[18]
+
+        
+        path_args = Two_D_paths()
+        data_path, fig_save_path = path_args[0:2]
+        video_save_path,figs_for_video_path = path_args[2:4]
+        df_name_ref, fps_movie ,num_frames = path_args[4:7]
+
+        kG = k*kG_list[i]
+        print(f"i={i} and kG ={kG_list[i]}*k")
+        df_name = df_name_ref + f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
         #start_time = time.time()
         if do_simulation == True:
             Two_d_simulation_stationary_states(
