@@ -139,8 +139,8 @@ def Two_D_Constants_stationary_state(
     #Base variables
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
     c0 = 25 #0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
-    k = 80*2 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
-    kG = -1.4*k #-0.75*k
+    k = 80 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
+    kG = -0.9*k#-1.4*k #-0.75*k
 
     # scaling parameters
     lc = 1/c0
@@ -178,7 +178,7 @@ def Two_D_Constants_stationary_state(
             ,total_points = N
         )
         print(f"{(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0]) - 1} and alpha={alpha}")
-        #kG = -k#*(-1.9574)#alpha    #(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
+        #kG = k*alpha    #(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]

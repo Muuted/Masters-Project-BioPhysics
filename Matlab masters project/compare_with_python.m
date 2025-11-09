@@ -18,7 +18,7 @@ clear all;
 
 %% The dimless units
 clc
-"the dimless units"
+"the dimless units" 
 k = 2;%1;%k/k_c;
 tauD =  1;%tau/tau_c %1
 sigmaD = 0.1;%sigma/sigma_c ;%0.1
@@ -29,7 +29,8 @@ psi2 = -2.83623731054758e-8 ;%-7.36475216445153e-8; % -2.83623731054758e-8
 %% Finding the solution
 clc
 [ShapeSolution,alpha,r0D] = Shape(r2D,psi2,tauD,sigmaD);
-NPoints = 100;
+NPoints = 2000;
+k = 1
 SD = linspace(ShapeSolution.x(1),ShapeSolution.xe(k),NPoints); % make equally spaced S-points from s_start to s_end in the solution generated.
 Y = deval(ShapeSolution,SD);
 m = 0;
@@ -64,14 +65,17 @@ lambds = Y(4,:);
 lambds_ori = ShapeSolution.y(4,1:m1);
 
 
-
+%%
+len_ori = length(r_ori)
+len_interpo = length(r)
 figure(1)
-plot(r_ori, z_ori)
+plot(r_ori, z_ori,".-")
 hold on;
-plot(r,z)
+plot(r,z,".-")
 hold on;
 plot(r(m),z(m),"or")
 legend("ori","interpolation","m point")
+
 %%
 %figure(2)
 %plot(psi)
