@@ -178,6 +178,8 @@ def Surface_sim_Area_condition():
     )
     
 
+
+
 def Surface_sim_stationary_state_initial_configuration(
         do_simulation:bool = True
         ,start_from_flat:bool = False
@@ -208,7 +210,7 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" N,ds,dt,T,tau,c0={N,ds,dt,T,tau,c0}" # c0={c0} tau={tau}"#f" ds={dt}and N={N} and ds={ds} c0={c0} kG={kG}"
+    df_name += f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -229,13 +231,12 @@ def Surface_sim_stationary_state_initial_configuration(
             #,area_testing=True
         )
 
-    #plt.show()
-    #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
     if make_movie == True:
         Make_frames(
             data_path=data_path
             ,figs_save_path=figs_for_video_path
             ,df_name=df_name
+            ,tot_frames= 50
         )
         Make_video(
             output_path=video_save_path
@@ -257,9 +258,6 @@ def Surface_sim_stationary_state_initial_configuration(
         )
 
         plt.show()
-        #plt.draw()
-        #plt.pause(120)
-        #plt.close("all")
     
 
 def Speed_diagnosing():
