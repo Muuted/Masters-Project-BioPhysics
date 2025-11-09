@@ -29,7 +29,7 @@ psi2 = -2.83623731054758e-8 ;%-7.36475216445153e-8; % -2.83623731054758e-8
 %% Finding the solution
 clc
 [ShapeSolution,alpha,r0D] = Shape(r2D,psi2,tauD,sigmaD);
-NPoints = 100;
+NPoints = 3000;
 SD = linspace(ShapeSolution.x(1),ShapeSolution.xe(k),NPoints); % make equally spaced S-points from s_start to s_end in the solution generated.
 Y = deval(ShapeSolution,SD);
 m = 0;
@@ -78,17 +78,19 @@ legend("ori","interpolation","m point")
 %plot(Result(k,p).Y(1,:),Result(k,p).Y(5,:)) % plot (r,z) in solution
 %%
 %%
-"interpolation"
+"-"
 a_m = (c0 - dpsidt(m))*r(m)/sin(psi(m)) - 1 
 lambs_m = lambds(m)
 l = length(r);
 a_l = (c0 - dpsidt(l))*r(l)/sin(psi(l)) - 1 
 lambs_l = lambds(l)
 %%
-"Shape Solutions results"
-a_m_ori = (c0 - dpsidt_ori(m1))*r_ori(m1)/sin(psi_ori(m1)) - 1 
-lambs_m_ori = lambds_ori(m1)
-
+"-"
+a_m = (c0 - dpsidt_ori(m))*r_ori(m)/sin(psi_ori(m)) - 1 
+lambs_m = lambds_ori(m)
+l = length(r);
+a_l = (c0 - dpsidt_ori(l))*r_ori(l)/sin(psi_ori(l)) - 1 
+lambs_l = lambds(l)
 %% Making new matrix
 m = length(ShapeSolution.y(1,:));
 save_matrix = zeros(6,m);

@@ -35,12 +35,15 @@ for k=1:R % loop over crossings t=tau
         plottext{5}=['Area=' num2str(Result(k,p).Area)];
         text(mean(xlim),mean(ylim)+0.25*range(ylim),plottext)
         
-        m = length( Result(k,p).Y(1) );
+        m = length( Result(k,p).Y(1,:) );
         
         r_11 = Result(k,p).Y(1,m);
+        z_11 = Result(k,p).Y(5,m);
         psi_11 = Result(k,p).Y(2,m);
         dpsidt_11 = Result(k,p).Y(3,m);
+        lambda = Result(k,p).Y(4,m)
         
+        plot(r_11,z_11,"or")
         r_1 = Result(k,p).ShapeSolution.ye(1,k);
         psi_1 = Result(k,p).ShapeSolution.ye(2,k);
         dpsidt_1 = Result(k,p).ShapeSolution.ye(3,k);
