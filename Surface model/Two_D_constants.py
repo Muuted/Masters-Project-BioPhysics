@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "test  kG=-k\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "tuning kG\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -140,7 +140,7 @@ def Two_D_Constants_stationary_state(
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
     c0 = 25 #0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
     k = 80*2 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
-    kG = -k#-0.75*k
+    kG = -1.4*k #-0.75*k
 
     # scaling parameters
     lc = 1/c0
