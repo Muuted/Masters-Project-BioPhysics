@@ -81,7 +81,7 @@ def find_init_stationary_state(
     ans_odeint = scipy.integrate.solve_ivp(
         fun=dSds
         ,t_span = [sN ,s0]
-        ,t_eval = s_vec
+        #,t_eval = s_vec
         ,y0 = init_conditions
         ,args = args_list
         ,method = "LSODA"
@@ -101,36 +101,37 @@ def find_init_stationary_state(
 
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
+    print(events_t)
+    for j in range(len(events_t)):
+        for i in range(len(events_t[j])):
+            sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[j][0],num=10000))
 
-    print(events_t[0])
-    print(events_t[1])
-    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=100000))
+            alpha_1 = (c0 - sol[3][len(sol[3])-1])*sol[1][len(sol[1])-1]/np.sin(sol[0][len(sol[0])-1]) - 1
+        
+            print(f"alpha = {alpha_1} and kG/k ={kG/k}  ,lambda_1 -tau = {sol[4][len(sol[4])-1] - tau } ")
+        print("\n")     
+    print(tau)
+    print("\n")    
 
-    sol = ans_odeint.sol(events_t[0])
-    for i in range(len(sol[1])):
-        psi_sol = sol[0][i]
-        r_sol = sol[1][i]
-        z_sol = sol[2][i]
-        dpsidt_sol = sol[3][i]
-        lambds_sol = sol[4][i]
 
-        print(f"alpha_sol={( c0 - dpsidt_sol )*r_sol/(np.sin(psi_sol)) - 1 + 0.75}     lambds sol  - tau ={lambds_sol-tau}")
-        #print(f"lambds sol  - tau ={lambds_sol-tau}")
+    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[1][0],num=10000))
+    #sol = ans_odeint.sol(events_t[0])
+    psi_sol = sol[0]
+    r_sol = sol[1]
+    z_sol = sol[2]
+    dpsidt_sol = sol[3]
+    lambs_sol = sol[4]
+    nus_sol = sol[5]
+    r_1,z_1 = r_sol[len(r_sol)-1] ,z_sol[len(r_sol)-1]
+
+    alpha_1 = (c0 - dpsidt_sol[len(r_sol)-1])*r_sol[len(r_sol)-1]/np.sin(psi_sol[len(r_sol)-1]) - 1
     
-    dpsidt_1 = dpsidt[len(r)-1]
-    psi_1 = psi[len(r)-1]
-    r_1 = r[len(r)-1]
-    z_1 = z[len(r)-1]
-    lambs_1 = lambs[len(r)-1]
-    alpha = kG/k
-    alpha_1 = ( c0 - dpsidt_1 )*r_1/(np.sin(psi_1)) - 1
-    
-    print(f"alpha = {alpha_1} and kG/k ={alpha}")
-    print(f"lambda_1 -tau = {lambs_1 - tau} ")
+    print(f"alpha = {alpha_1} and kG/k ={kG/k}")
+    print(f"lambda_1 -tau = {lambs_sol[len(r_sol)-1] - tau } ")
     
     index_list = descritize_sim_results(
-        r = ans_odeint.y[1]
-        ,z = ans_odeint.y[2]
+        r = r_sol#ans_odeint.y[1]
+        ,z = z_sol#ans_odeint.y[2]
         ,ds = ds
         ,max_num_points = total_points
         )
@@ -139,11 +140,11 @@ def find_init_stationary_state(
     psi_discrete,dpsidt_discrete = [],[]
     lambs_discrete, nus_discrete = [],[]
     for i in index_list:
-        r_discrete.append(ans_odeint.y[1][i])
-        z_discrete.append(ans_odeint.y[2][i])
-        dpsidt_discrete.append(ans_odeint.y[3][i])
-        lambs_discrete.append(ans_odeint.y[4][i])
-        nus_discrete.append(ans_odeint.y[5][i])
+        r_discrete.append(r_sol[i])#ans_odeint.y[1][i])
+        z_discrete.append(z_sol[i])#ans_odeint.y[2][i])
+        dpsidt_discrete.append(dpsidt_sol[i])#ans_odeint.y[3][i])
+        lambs_discrete.append(lambs_sol[i])#ans_odeint.y[4][i])
+        nus_discrete.append(nus_sol[i])#ans_odeint.y[5][i])
 
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
@@ -167,16 +168,16 @@ def find_init_stationary_state(
             psi1 = events_y[j][i][0]
             dpsidt1 = events_y[j][i][3]
             lambs1 = events_y[j][i][4]
-            print(f"alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1}  and tau={lambs1}")
+           # print(f"alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1}  and tau={lambs1}")
             if j == 0:
                 plt.plot(r1,z1,"o",color="r",label=f"events lambda-tau={lambs1-tau:.1e} and alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}")
             elif j == 1:
                 plt.plot(r1,z1,"o",color="k",label=f"events alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}  and lambda-tau={lambs1-tau:.1e}")
     plt.legend()
     plt.show()
-    exit()
+    #exit()
     
-    return psi_discrete,r_discrete,z_discrete, r,z, alpha_1
+    return psi_discrete,r_discrete,z_discrete, r_sol,z_sol, alpha_1
     
 if __name__ == "__main__":
     #integrate_solution()

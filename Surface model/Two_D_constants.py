@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 def Two_D_paths():
     """------ paths ---------"""
     
-    save_path = "2D sim results\\"+"stationary states\\" + "tuning kG\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
+    save_path = "2D sim results\\"+"stationary states\\" + "interpolation test\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -127,7 +127,7 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 5e-7#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    T = 1e-7#3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
     dt = 1e-10#1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
@@ -140,7 +140,7 @@ def Two_D_Constants_stationary_state(
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
     c0 = 25 #0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
     k = 80 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
-    kG = -0.9*k#-1.4*k #-0.75*k
+    kG = -0.75*k#-1.4*k #-0.75*k
 
     # scaling parameters
     lc = 1/c0
@@ -178,7 +178,7 @@ def Two_D_Constants_stationary_state(
             ,total_points = N
         )
         print(f"{(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0]) - 1} and alpha={alpha}")
-        #kG = k*alpha    #(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
+        kG = k*(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]
