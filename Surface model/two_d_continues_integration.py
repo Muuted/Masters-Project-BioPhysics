@@ -81,7 +81,7 @@ def find_init_stationary_state(
     ans_odeint = scipy.integrate.solve_ivp(
         fun=dSds
         ,t_span = [sN ,s0]
-        #,t_eval = s_vec
+        ,t_eval = s_vec
         ,y0 = init_conditions
         ,args = args_list
         ,method = "LSODA"
@@ -114,7 +114,7 @@ def find_init_stationary_state(
     print("\n")    
 
 
-    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[1][0],num=10000))
+    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=10000))
     #sol = ans_odeint.sol(events_t[0])
     psi_sol = sol[0]
     r_sol = sol[1]

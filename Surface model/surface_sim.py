@@ -236,7 +236,7 @@ def Surface_sim_stationary_state_initial_configuration(
             data_path=data_path
             ,figs_save_path=figs_for_video_path
             ,df_name=df_name
-            ,tot_frames= 50
+            #,tot_frames= 50
         )
         Make_video(
             output_path=video_save_path
