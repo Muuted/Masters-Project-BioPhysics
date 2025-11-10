@@ -126,7 +126,7 @@ def find_init_stationary_state(
 
     alpha_1 = (c0 - dpsidt_sol[len(r_sol)-1])*r_sol[len(r_sol)-1]/np.sin(psi_sol[len(r_sol)-1]) - 1
     
-    print(f"alpha = {alpha_1} and kG/k ={kG/k}")
+    print(f"sdfsd alpha = {alpha_1} and kG/k ={kG/k}")
     print(f"lambda_1 -tau = {lambs_sol[len(r_sol)-1] - tau } ")
     
     index_list = descritize_sim_results(
@@ -145,6 +145,7 @@ def find_init_stationary_state(
         dpsidt_discrete.append(dpsidt_sol[i])#ans_odeint.y[3][i])
         lambs_discrete.append(lambs_sol[i])#ans_odeint.y[4][i])
         nus_discrete.append(nus_sol[i])#ans_odeint.y[5][i])
+        
 
     for i in range(len(r_discrete)-1):
         psi_discrete.append(
@@ -155,12 +156,7 @@ def find_init_stationary_state(
         )
    
     plt.figure()
-    #plt.plot(r_discrete,z_discrete,"o-",label="discreet")
-    plt.plot(r_1,z_1,"o",label="start point")
-    plt.plot(r,z,".-",label="contin")
-    plt.plot(r_sol,z_sol,"-",label="sol")
-    
-    
+        
     for j in range(2):
         for i in range(len(events_t[0])):
             r1 = events_y[j][i][1]
@@ -170,9 +166,16 @@ def find_init_stationary_state(
             lambs1 = events_y[j][i][4]
            # print(f"alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1}  and tau={lambs1}")
             if j == 0:
-                plt.plot(r1,z1,"o",color="r",label=f"events lambda-tau={lambs1-tau:.1e} and alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}")
+                plt.plot(r1,z1,"o",label=f"events lambda-tau={lambs1-tau:e} and alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:e}")
             elif j == 1:
-                plt.plot(r1,z1,"o",color="k",label=f"events alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:.1e}  and lambda-tau={lambs1-tau:.1e}")
+                plt.plot(r1,z1,"o",label=f"events alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:e}  and lambda-tau={lambs1-tau:e}")
+
+    #plt.plot(r_discrete,z_discrete,"o-",label="discreet")
+    plt.plot(r_1,z_1,"o",label="start point")
+    plt.plot(r,z,"-",label="contin")
+    plt.plot(r_sol,z_sol,"-",label="sol")
+    
+
     plt.legend()
     plt.show()
     #exit()

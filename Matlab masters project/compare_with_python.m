@@ -31,6 +31,7 @@ clc
 [ShapeSolution,alpha,r0D] = Shape(r2D,psi2,tauD,sigmaD);
 NPoints = 2000;
 k = 1
+len_xe = length(ShapeSolution.xe)
 SD = linspace(ShapeSolution.x(1),ShapeSolution.xe(k),NPoints); % make equally spaced S-points from s_start to s_end in the solution generated.
 Y = deval(ShapeSolution,SD);
 m = 0;
@@ -74,7 +75,7 @@ hold on;
 plot(r,z,".-")
 hold on;
 plot(r(m),z(m),"or")
-legend("ori","interpolation","m point")
+legend("ori","interpolation","\lambda = \tau point")
 
 %%
 %figure(2)
