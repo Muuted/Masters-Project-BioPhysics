@@ -1326,7 +1326,7 @@ def Perturbation_of_inital_state(
 
     for i in range(0,points_perturbed):
             psi[i] += delta_psi*(points_perturbed - i)
-            #psi[i] += delta_psi*np.exp(-i)#/abs(delta_psi))
+            #psi[i] += delta_psi*np.exp(-i)#*abs(delta_psi))
             #psi[i] += delta_psi
             
     for i in range(i_start,i_stop,-1):

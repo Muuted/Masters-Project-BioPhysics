@@ -4,7 +4,7 @@ from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func, gam
 from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
 from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
 from Two_D_functions import Make_variable_corrections
-from two_d_data_processing import check_area, tot_area
+from two_d_data_processing import check_area, tot_area, E_kin,E_pot, Xsqaured_test
 
 import matplotlib.pyplot as plt
 import os
@@ -386,10 +386,10 @@ def Two_D_simulation_V3(
 def Two_d_simulation_stationary_states(
     N:int,k:float,c0:float, dt:float, ds:float
     ,sigma:float,kG:float,tau:float, eta:float
-    ,sim_steps:int, L:float, r0:float
+    ,sim_steps:int, L:float, r0:float, dpsi_perturb:float
     ,radi:list,z_list:list
     ,Area:list,psi:list
-    ,r_unperturb:list ,z_unperturb:list
+    ,r_unperturb:list ,z_unperturb:list, psi_unperturb:list
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
@@ -402,8 +402,11 @@ def Two_d_simulation_stationary_states(
     print_scale = (sim_steps-2)/1000
     Area_initial = np.sum(Area)
     
-    #lambs_save, nus_save = [], []
+    Potential_E = np.zeros(sim_steps-1,dtype=float)
+    Kinetic_E = np.zeros(sim_steps-1,dtype=float)
+    Xsqre = np.zeros(sim_steps-1,dtype=float)
     correct_count_list = np.zeros(sim_steps-1)
+
     print("Simulation progressbar \n ")
     for t in range(sim_steps-1):
         if int(t%print_scale) == 0 :
@@ -424,8 +427,6 @@ def Two_d_simulation_stationary_states(
                 ,radi=radi[t]
                 ,z_list=z_list[t]
             )
-        #lambs_save.append(lambs)
-        #nus_save.append(nus)
 
         for i in range(N+1):
             if i == N:
@@ -462,6 +463,13 @@ def Two_d_simulation_stationary_states(
             )
             correct_count_list[t] = correction_count
     
+
+        Potential_E[t] = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=radi[t],psi=psi[t],Area=Area)
+        Kinetic_E[t] = E_kin(N=N,t=t,dt=dt,r=radi,z=z_list,Area=Area)
+        Xsqre[t] = Xsqaured_test(N=N
+                                 ,r_init=r_unperturb,z_init=z_unperturb,psi_init=psi_unperturb
+                                 ,r=radi[t],z=z_list[t],psi=psi[t])
+
     #b.finish()
     print("\n")
     print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n"
@@ -476,7 +484,11 @@ def Two_d_simulation_stationary_states(
             "z": [z_list],
             "r unperturbed": [r_unperturb],
             "z unperturbed": [z_unperturb],
+            "psi unperturbed": [psi_unperturb],
             "area list": [Area],
+            "Epot":[Potential_E],
+            "Ekin":[Kinetic_E],
+            "Chi squared test": [Xsqre],
             #'lambs': [lambs_save],
             #'nus': [nus_save],
             "L" : L,
@@ -490,6 +502,7 @@ def Two_d_simulation_stationary_states(
             "sim_steps": sim_steps,
             "dt": dt,
             "ds": ds,
+            "dpsi perturb": dpsi_perturb,
             "gam(i=0)": gamma(0,ds=ds,eta=eta),
             "gam(i>0)": gamma(2,ds=ds,eta=eta),
             "correction count": [correct_count_list],

@@ -202,7 +202,7 @@ def Surface_sim_stationary_state_initial_configuration(
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
     r_unperturbed, z_unperturbed = const_args[16:18]
-    eta = const_args[18]
+    eta,dpsi_perturb,psi_unperturbed = const_args[18:21]
 
     
     path_args = Two_D_paths()
@@ -210,12 +210,12 @@ def Surface_sim_stationary_state_initial_configuration(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
+    df_name += f" N,ds,dt,T,tau,c0,kG={N,ds,dt,T,tau,c0}"
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
             N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
-            ,kG=kG ,tau=tau ,sim_steps=sim_steps
+            ,kG=kG ,tau=tau ,sim_steps=sim_steps, dpsi_perturb=dpsi_perturb
             ,L=L, r0=r0
             ,Area=Area_list
             ,psi=psi_list
@@ -223,10 +223,11 @@ def Surface_sim_stationary_state_initial_configuration(
             ,z_list=z_list
             ,r_unperturb=r_unperturbed
             ,z_unperturb=z_unperturbed
+            ,psi_unperturb=psi_unperturbed
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence=1e-5#-5#-10
+            ,Tolerence=1e-5#-10
             ,save_data=True
             #,area_testing=True
         )
@@ -286,8 +287,8 @@ if __name__ == "__main__":
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         do_simulation = True
-        ,start_from_flat = False
-        ,do_perturbation = False #True
+        ,start_from_flat = True
+        ,do_perturbation = True
         ,make_movie = True
         ,make_plots= True
     )

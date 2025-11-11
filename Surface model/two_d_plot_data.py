@@ -67,6 +67,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.2)
     save_name_1 = save_name + " var corr"# Total area over time"
+    #save_name_1 =  " var corr"
     plt.savefig(output_path + save_name_1 + ".png")
     plt.pause(0.2)
 
@@ -127,8 +128,8 @@ def plot_Epot_Ekin(
             E_kin(N=N,t=t,dt=dt,r=r,z=z,Area=Area)
             )
         S[t] = (
-            E_pot(N=N,k=k,kG=kG,sigma=sigma,tau=tau,c0=c0
-                  ,r=r[t],z=z[t],psi=psi[t],Area=Area)
+            E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0
+                  ,r=r[t],psi=psi[t],Area=Area)
         )
 
     t_vec = [dt*i for i in range(sim_steps-1)]
@@ -194,7 +195,8 @@ def plot_Epot_Ekin(
     plt.title("show difference from start and end positions")
     plt.legend()
 
-    save_name_1 = df_name + "init and end"
+    save_name_1 = df_name + "init&end"
+    #save_name_1 =  "init&end"
     plt.savefig(output_path + save_name_1 +".png")
 
     #plt.close("all")

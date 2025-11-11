@@ -69,7 +69,6 @@ def find_init_stationary_state(
     A = 0 #2*np.pi*( r_L**2 - r0**2  )
 
     #constants
-    #args_list = (k ,sigma ,c0)
     args_list = (k,sigma,c0,tau,kG)
     #initial values list
     init_conditions = (psi_L ,r_L ,z_L ,n_L ,lambs_L ,nus_L ,A)
@@ -101,8 +100,6 @@ def find_init_stationary_state(
 
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
-    
-
 
     sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=10000))
     psi_sol = sol[0]

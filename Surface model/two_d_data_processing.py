@@ -153,11 +153,11 @@ def E_pot_original(
     return Epot
 
 def E_pot(
-        N:int, k:float, kG:float ,sigma:float 
+        N:int, k:float, kG:float
         ,tau:float ,c0:float
-        ,r:list,z:list,psi:list
+        ,r:list,psi:list
         ,Area:list
-        ):
+        )->float:
     Epot = tau*r[0]
     for i in range(N):
         if i < N - 1:
@@ -180,7 +180,7 @@ def E_pot(
 def E_kin(
         N:int, t:int, dt:float
         ,r:list ,z:list ,Area:list
-        ):
+        )->float:
     Ekin = 0
     for i in range(N):
         m = mass(i=i,Area=Area)
@@ -193,5 +193,15 @@ def E_kin(
     return Ekin
 
 
+
+def Xsqaured_test(N:int
+                  ,r_init:list,z_init:list,psi_init:list
+                  ,r:list,z:list,psi:list)->float:
+    X = 0
+    for i in range(N):
+        X += (r_init[i] - r[i])**2 + (z_init[i] - z[i])**2 + (psi_init[i] - psi[i])**2
+        
+    return X
+    
 if __name__ == "__main__":
     exit()
