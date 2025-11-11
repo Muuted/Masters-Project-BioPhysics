@@ -139,8 +139,8 @@ def Two_D_Constants_stationary_state(
     #Base variables
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
     c0 = 25 #0.25e8 #25#0.25#e8#0.25e0# 0.25e8 # 1/m : 
-    k = 80 #8.0e-20 #1 # 8e-20 # J    :  Mean curvature modulus
-    kG = -0.75*k#-1.4*k #-0.75*k
+    k = 80 #8.0e-20 #1 # 8e-20 # Joule    :  Mean curvature modulus
+    kG = None #-0.75*k# Joule
 
     # scaling parameters
     lc = 1/c0
@@ -167,18 +167,18 @@ def Two_D_Constants_stationary_state(
     Area_list = np.zeros(N,dtype=float)
 
     #Initiating the inital state of the membrane
+    psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
+            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds, kG=kG
+            ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+            ,total_points = N
+        )
+    kG = k*alpha
+    
     if start_flat == True:
         for i in range(N+1):
            r_list[0][i] = r0 + i*ds
     else:
         """------ variables list ---------"""
-        psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
-            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds, kG=kG
-            ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
-            ,total_points = N
-        )
-        print(f"{(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0]) - 1} and alpha={alpha}")
-        #kG = k*alpha#(c0 - (psi[1]-psi[0])/ds)*r[0]/np.sin(psi[0])
         for i in range(N+1):
             if i < N :
                 psi_list[0][i] = psi[i]

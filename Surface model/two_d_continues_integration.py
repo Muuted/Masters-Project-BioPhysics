@@ -101,33 +101,18 @@ def find_init_stationary_state(
 
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
-    print(events_t)
-    for j in range(len(events_t)):
-        for i in range(len(events_t[j])):
-            sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[j][0],num=10000))
-
-            alpha_1 = (c0 - sol[3][len(sol[3])-1])*sol[1][len(sol[1])-1]/np.sin(sol[0][len(sol[0])-1]) - 1
-        
-            print(f"alpha = {alpha_1} and kG/k ={kG/k}  ,lambda_1 -tau = {sol[4][len(sol[4])-1] - tau } ")
-        print("\n")     
-    print(tau)
-    print("\n")    
+    
 
 
     sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=10000))
-    #sol = ans_odeint.sol(events_t[0])
     psi_sol = sol[0]
     r_sol = sol[1]
     z_sol = sol[2]
     dpsidt_sol = sol[3]
     lambs_sol = sol[4]
     nus_sol = sol[5]
-    r_1,z_1 = r_sol[len(r_sol)-1] ,z_sol[len(r_sol)-1]
 
-    alpha_1 = (c0 - dpsidt_sol[len(r_sol)-1])*r_sol[len(r_sol)-1]/np.sin(psi_sol[len(r_sol)-1]) - 1
-    
-    print(f"sdfsd alpha = {alpha_1} and kG/k ={kG/k}")
-    print(f"lambda_1 -tau = {lambs_sol[len(r_sol)-1] - tau } ")
+    alpha_1 = (c0 - dpsidt_sol[len(r_sol)-1]  )*r_sol[len(r_sol)-1]/np.sin( psi_sol[len(r_sol)-1] ) - 1
     
     index_list = descritize_sim_results(
         r = r_sol#ans_odeint.y[1]
@@ -154,31 +139,6 @@ def find_init_stationary_state(
                 ,x2=r_discrete[i+1] ,y2=z_discrete[i+1]
                 )
         )
-   
-    plt.figure()
-        
-    for j in range(2):
-        for i in range(len(events_t[0])):
-            r1 = events_y[j][i][1]
-            z1 = events_y[j][i][2]
-            psi1 = events_y[j][i][0]
-            dpsidt1 = events_y[j][i][3]
-            lambs1 = events_y[j][i][4]
-           # print(f"alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1}  and tau={lambs1}")
-            if j == 0:
-                plt.plot(r1,z1,"o",label=f"events lambda-tau={lambs1-tau:e} and alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:e}")
-            elif j == 1:
-                plt.plot(r1,z1,"o",label=f"events alpha={( c0 - dpsidt1 )*r1/(np.sin(psi1)) - 1 + 0.75:e}  and lambda-tau={lambs1-tau:e}")
-
-    #plt.plot(r_discrete,z_discrete,"o-",label="discreet")
-    plt.plot(r_1,z_1,"o",label="start point")
-    plt.plot(r,z,"-",label="contin")
-    plt.plot(r_sol,z_sol,"-",label="sol")
-    
-
-    plt.legend()
-    plt.show()
-    #exit()
     
     return psi_discrete,r_discrete,z_discrete, r_sol,z_sol, alpha_1
     
