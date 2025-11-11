@@ -19,7 +19,7 @@ clear all;
 %% The dimless units
 clc
 "the dimless units" 
-k = 2;%1;%k/k_c;
+k = 1;%1;%k/k_c;
 tauD =  1;%tau/tau_c %1
 sigmaD = 0.1;%sigma/sigma_c ;%0.1
 c0 = 1;%c0/c0_c;
