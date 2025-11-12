@@ -202,7 +202,7 @@ def Surface_sim_stationary_state_initial_configuration(
     Area_list, psi_list = const_args[12:14]
     radi_list,z_list = const_args[14:16]
     r_unperturbed, z_unperturbed = const_args[16:18]
-    eta,dpsi_perturb,psi_unperturbed = const_args[18:21]
+    eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
 
     
     path_args = Two_D_paths()
@@ -215,7 +215,7 @@ def Surface_sim_stationary_state_initial_configuration(
     if do_simulation == True:
         Two_d_simulation_stationary_states(
             N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
-            ,kG=kG ,tau=tau ,sim_steps=sim_steps, dpsi_perturb=dpsi_perturb
+            ,kG=kG ,tau=tau ,sim_steps=sim_steps, dpsi_perturb=dpsi_perturb_val
             ,L=L, r0=r0
             ,Area=Area_list
             ,psi=psi_list

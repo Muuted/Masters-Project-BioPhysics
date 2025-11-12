@@ -478,6 +478,7 @@ def Two_d_simulation_stationary_states(
     
 
     if save_data == True:
+        
         df = pd.DataFrame({
             'psi': [psi],
             "r": [radi],
@@ -510,7 +511,7 @@ def Two_d_simulation_stationary_states(
             "sim completion":True
                         })
 
-
+        print(data_path + df_name)
         if not os.path.exists(data_path):
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name)

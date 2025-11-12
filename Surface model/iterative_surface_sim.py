@@ -19,14 +19,19 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     print("\n Now Running the surface simulation from stationary configurations \n")
 
 
-    kG_list = [ -(1-0.05), -1, -1.05,-1.1 , -1.15]
+    
+    save_name_list = [" unperturbed", " -perturbed"," +perturbed"]
+    dpsi_list = [0, -0.02, 0.02]
+    do_perturbation_list = [False,True,True]
 
-    for i in range(len(kG_list)):
+    ref_list_len = len(save_name_list)
+    for i in range(ref_list_len):
         const_args = Two_D_Constants_stationary_state(
             print_val=True
             ,show_stationary_state=True
             ,start_flat=start_from_flat
-            ,perturb=do_perturbation
+            ,perturb=do_perturbation_list[i]
+            ,dpsi_perturb= dpsi_list[i]
         )
 
         L,r0,N,ds,T,dt = const_args[0:6]
@@ -35,7 +40,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         Area_list, psi_list = const_args[12:14]
         radi_list,z_list = const_args[14:16]
         r_unperturbed, z_unperturbed = const_args[16:18]
-        eta = const_args[18]
+        eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
 
         
         path_args = Two_D_paths()
@@ -43,14 +48,12 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         video_save_path,figs_for_video_path = path_args[2:4]
         df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
-        kG = k*kG_list[i]
-        print(f"i={i} and kG ={kG_list[i]}*k")
-        df_name = df_name_ref + f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
+        df_name = df_name_ref + save_name_list[i] #+ f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
         #start_time = time.time()
         if do_simulation == True:
             Two_d_simulation_stationary_states(
                 N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
-                ,kG=kG ,tau=tau ,sim_steps=sim_steps
+                ,kG=kG ,tau=tau ,sim_steps=sim_steps, dpsi_perturb=dpsi_perturb_val
                 ,L=L, r0=r0
                 ,Area=Area_list
                 ,psi=psi_list
@@ -58,6 +61,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
                 ,z_list=z_list
                 ,r_unperturb=r_unperturbed
                 ,z_unperturb=z_unperturbed
+                ,psi_unperturb=psi_unperturbed
                 ,df_name = df_name
                 ,num_frames = num_frames
                 ,data_path = data_path
@@ -96,7 +100,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
             #plt.show()
             plt.draw()
-            plt.pause(5)
+            plt.pause(2)
             plt.close("all")
 
 if __name__ == "__main__":

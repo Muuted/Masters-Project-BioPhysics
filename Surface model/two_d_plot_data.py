@@ -96,7 +96,7 @@ def plot_tot_area(
 
 
     fig,ax = plt.subplots()
-    plt.plot(time,Xsqrt,label=r"$\chi^2$ test")
+    plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1")
     plt.xlabel(" t[s]")
     plt.ylabel(r"$\chi^2$")
@@ -210,15 +210,6 @@ def plot_Epot_Ekin(
     save_name_1 = df_name + "init&end"
     #save_name_1 =  "init&end"
     plt.savefig(output_path + save_name_1 +".png")
-
-    #plt.close("all")
-    plt.figure()
-    i = 3
-    dr0dt = [r[t+1,i]- r[t,i] for t in range(sim_steps-1)]
-    plt.plot(t_vec,dr0dt,label="psi[N]")
-    plt.title(r" $\frac{dr_0}{dt}$ for for alll time" +f" \n dr_idt[end]={dr0dt[len(dr0dt)-1]:0.3e} and "+r"$\Delta$"+f"dr_idt ={max(dr0dt) - min(dr0dt):0.3e}")
-    #plt.show()
-    #exit()
 
 
 

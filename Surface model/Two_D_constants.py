@@ -15,9 +15,11 @@ import matplotlib.pyplot as plt
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path = "2D sim results\\" + "stationary states\\" 
+    save_path = "2D sim results\\" + "stationary states\\"
     if folder_names == "":
-        save_path += "Science stability test\\Unperturbed \\"
+        save_path = save_path +  "Science stability test\\"
+    else:
+        save_path = save_path + folder_names
     
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
@@ -131,7 +133,7 @@ def Two_D_Constants_stationary_state(
     """------ constants ---------"""
     N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    T = 50e-11 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
     dt = 5e-11 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
