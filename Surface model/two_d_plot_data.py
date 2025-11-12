@@ -28,6 +28,7 @@ def plot_tot_area(
     dt = df_sim["dt"][0]
     sim_steps = df_sim["sim_steps"][0]
     corr_count = df_sim["correction count"][0]
+    Xsqrt = df_sim["Chi squared test"][0]
 
     Area_change= np.zeros(sim_steps)
     time = np.zeros(sim_steps)
@@ -92,6 +93,17 @@ def plot_tot_area(
     plt.savefig(output_path + save_name_2 + ".png")
 
     plt.pause(0.3)
+
+
+    fig,ax = plt.subplots()
+    plt.plot(time,Xsqrt,label=r"$\chi^2$ test")
+    plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1")
+    plt.xlabel(" t[s]")
+    plt.ylabel(r"$\chi^2$")
+    plt.draw()
+    plt.pause(0.3)
+    save_name_3 = save_name + " chisqrt"
+    plt.savefig(output_path + save_name_3 + ".png")
 
 def plot_Epot_Ekin(
         data_path:str,df_name:str,output_path:str

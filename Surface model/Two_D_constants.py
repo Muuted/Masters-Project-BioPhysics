@@ -13,10 +13,12 @@ import matplotlib.pyplot as plt
 
 
 
-def Two_D_paths():
+def Two_D_paths(folder_names=""):
     """------ paths ---------"""
+    save_path = "2D sim results\\" + "stationary states\\" 
+    if folder_names == "":
+        save_path += "Science stability test\\Unperturbed \\"
     
-    save_path = "2D sim results\\"+"stationary states\\" + "Verification plots\\flat +perturbed c0=0 tau=tau\\"#+"Error finding\\start curved ds test\\" #+ "Testing\\"
     data_path = save_path
     fig_save_path = save_path + "figures and video\\"
     video_save_path = save_path +"figures and video\\"
@@ -121,19 +123,22 @@ def Two_D_Constants_stationary_state(
         ,pause_timer:float = 2
         ,start_flat:bool = False
         ,perturb:bool = False
+        ,dpsi_perturb="",tilde_sigma=""
+        ,tilde_tau="",psi_L=""
         )->list:
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
     N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 2e-7 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
-    dt = 1e-11 #1e-11 #5e-11 #s time step. 
+    T = 1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated 
+    dt = 5e-11 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
     ds = 1.5e-2#8#0.3#1.5#e-8#e-2 #e-8 # 1.5/2#/3 #0.3 #1e-1 # 0.1  e-9 #L/(N-1) # micrometers  :  Length of each chain
     r0 = 5.0 #50 #0.5e-6 # micrometer  :   radius of hole
-    dpsi_perturb = 0.02
+    if dpsi_perturb == "":
+        dpsi_perturb = 0.02
     num_pertub = 10#int((N-1)/2)
     
     #Base variables
@@ -148,8 +153,10 @@ def Two_D_Constants_stationary_state(
     tau_c = k*c0
 
     #Dimless variables
-    tilde_sigma = 0.1
-    tilde_tau = 1
+    if tilde_sigma == "":
+        tilde_sigma = 0.1
+    if tilde_tau == "":
+        tilde_tau = 1
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -158,7 +165,8 @@ def Two_D_Constants_stationary_state(
     rs2 = 20*lc 
     zs2 = 0
     s0, sN = 0, 50*lc
-    psi_L = -2.836237310547577e-8#-7.36475216445153e-8
+    if psi_L == "":
+        psi_L = -2.836237310547577e-8#-7.36475216445153e-8
 
     #Creating lists for the variables.
     psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
@@ -207,7 +215,7 @@ def Two_D_Constants_stationary_state(
             ,delta_psi= dpsi_perturb
             ,show_initial_condi=True
         )
-    elif perturb == False:
+    if perturb == False:
         dpsi_perturb = 0
 
     if show_stationary_state==True:
@@ -243,7 +251,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    c0 = 0
+    #c0 = 0
     #tau = 0
     
 
