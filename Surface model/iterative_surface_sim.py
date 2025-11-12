@@ -77,7 +77,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
                 data_path=data_path
                 ,figs_save_path=figs_for_video_path
                 ,df_name=df_name
-                ,tot_frames= 50
+                ,tot_frames= 500
             )
             Make_video(
                 output_path=video_save_path
@@ -106,8 +106,8 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 if __name__ == "__main__":
     Surface_sim_stationary_state_initial_configuration_iterative(
         do_simulation = True
-        ,start_from_flat = False
-        ,do_perturbation = False #True
+        #,start_from_flat = False
+        #,do_perturbation = False #True
         ,make_movie = True
         ,make_plots= True
     )

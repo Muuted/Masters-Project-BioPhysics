@@ -127,12 +127,14 @@ def plot_Epot_Ekin(
     c0 = df_sim["c0"][0]
     k = df_sim['k'][0]
     kG = df_sim['kG'][0]
+    ds = df_sim['ds'][0]
     sigma = df_sim['sigma'][0]
     tau = df_sim['tau'][0]
     dt = df_sim["dt"][0]
     sim_steps = df_sim["sim_steps"][0]
-    
-    T = np.zeros(sim_steps-1)
+    S = df_sim['Epot'][0]
+    T = df_sim['Ekin'][0]
+    """T = np.zeros(sim_steps-1)
     S = np.zeros(sim_steps-1)
 
     for t in range(sim_steps-1):
@@ -142,7 +144,7 @@ def plot_Epot_Ekin(
         S[t] = (
             E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0
                   ,r=r[t],psi=psi[t],Area=Area)
-        )
+        )"""
 
     t_vec = [dt*i for i in range(sim_steps-1)]
     fontsize = 10
@@ -212,6 +214,49 @@ def plot_Epot_Ekin(
     plt.savefig(output_path + save_name_1 +".png")
 
 
+
+    fig, ax = plt.subplots()
+    font_size= 15
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    plt.plot(
+        r_unperturbed,z_unperturbed
+        ,marker="o",linestyle="-"
+        ,color="b"
+        ,label="Unperturbed initial pos"
+        )
+    plt.plot(
+        r[0],z[0]
+        ,marker="o",linestyle="-"
+        ,color="k"
+        ,label="intial positions"
+        )
+    if r[sim_steps-1].all() == 0:
+        plt.plot(
+        r[sim_steps-1],z[sim_steps-1]
+        ,marker="o",linestyle="--"
+        ,color="g"
+        ,label="Error occured, and end isnt there"
+        )
+    else:
+        plt.plot(
+        r[sim_steps-1],z[sim_steps-1]
+        ,marker="o",linestyle="--"
+        ,color="g"
+        ,label="end positions"
+        )
+    plt.xlabel("r",fontsize=font_size)
+    plt.ylabel("z",fontsize=font_size)
+    xmin,xmax  = max(r[0]) - (N+1)*ds , np.max(r[0]) - (N+1)*ds/2
+    ymin,ymax = -ds, xmax - xmin - ds
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    plt.title("show difference from start and end positions")
+    plt.legend()
+
+    save_name_1 = df_name + "init&end scaled"
+    #save_name_1 =  "init&end"
+    plt.savefig(output_path + save_name_1 +".png")
 
 
 
