@@ -24,10 +24,8 @@ MS = data_set.MS;
 psi1_cut=-pi;
 sigma_list_Curved = cell(1,N_tauD);
 sigma_list_Flat = cell(1,N_tauD);
-
 tau_list_Curved = cell(1,N_tauD);
 tau_list_Flat = cell(1,N_tauD);
-
 psi_L_list_Curved = cell(1,N_tauD);
 psi_L_list_Flat = cell(1,N_tauD);
 
@@ -42,8 +40,6 @@ NeckRadiusFlat=cell(1,N_tauD);
 
 r1Curved=cell(1,N_tauD);
 r1Flat=cell(1,N_tauD);
-
-
 
 %%
 for n=1:N_tauD
@@ -107,7 +103,6 @@ for n=1:N_tauD
 end
 for n=1:N_tauD
     N = size(ExcessAreaCurved{n});
-    N(2)
     for k=1:N(2)
         for m=1:2
             if m==1
@@ -163,40 +158,10 @@ name_list = [
     "r1 curved" 
     "r1 flat"
     ];
-
-save_cell = cell(length(name_list),1);
-
-save_cell{1} = name_list;
+length(name_list)
 
 
-save_cell{2} = sigma_list_Curved;
-save_cell{3} = sigma_list_Flat;
-
-save_cell{4} = tau_list_Curved;
-save_cell{5} = tau_list_Flat;
-
-save_cell{6} = psi_L_list_Curved;
-save_cell{7} = psi_L_list_Flat;
-
-save_cell{8} = ExcessAreaCurved;
-save_cell{9} = ExcessAreaFlat;
-
-save_cell{10} = DeltaSACurved;
-save_cell{11} = DeltaSAFlat;
-
-save_cell{12} = NeckRadiusCurved;
-save_cell{13} = NeckRadiusFlat;
-
-save_cell{14} = r1Curved;
-save_cell{14} = r1Flat;
-
-
-save_cell;
-tau_list_Curved;
-
-data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results";
-save_name = "Axcess vs neck r0";
-writecell(save_cell ,strcat(data_path,"tau list curved") ,".txt");
+save_cell = cell(length(name_list)+1,1)
 
 
 

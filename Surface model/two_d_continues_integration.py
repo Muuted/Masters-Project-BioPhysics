@@ -75,7 +75,7 @@ def find_init_stationary_state(
     #The integration part.
     
     s_vec = np.linspace(start=sN,stop=s0,num=1000)
-    #edge_tension.terminal = True
+    edge_tension.terminal = True
     #edge_ratio.terminal = True
     ans_odeint = scipy.integrate.solve_ivp(
         fun=dSds

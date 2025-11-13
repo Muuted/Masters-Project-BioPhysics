@@ -131,7 +131,7 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
-    N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 40 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
     dt = 5e-11 #1e-11 #5e-11 #s time step. 
@@ -156,9 +156,9 @@ def Two_D_Constants_stationary_state(
 
     #Dimless variables
     if tilde_sigma == "":
-        tilde_sigma = 0.1
+        tilde_sigma = -0.4 #0.1
     if tilde_tau == "":
-        tilde_tau = 1
+        tilde_tau = 2.2632 #1
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -168,7 +168,7 @@ def Two_D_Constants_stationary_state(
     zs2 = 0
     s0, sN = 0, 50*lc
     if psi_L == "":
-        psi_L = -2.836237310547577e-8#-7.36475216445153e-8
+        psi_L = -0.0016#-3.2643e-05#-2.836237310547577e-8#-7.36475216445153e-8
 
     #Creating lists for the variables.
     psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     Two_D_Constants_stationary_state(
         show_stationary_state=True
         ,pause_timer=300
-        ,start_flat=True
-        ,perturb=True
+        ,start_flat=False
+        ,perturb=False
         ,print_val=True
     )
