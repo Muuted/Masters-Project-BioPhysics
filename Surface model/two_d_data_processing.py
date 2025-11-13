@@ -204,5 +204,9 @@ def Xsqaured_test(N:int
         #the values for X given that r and z could potentially be much smaller.
     return X
     
+def Excess_Area(rmax:float,Area_tot:float):
+    return Area_tot - np.pi*rmax**2
+
+
 if __name__ == "__main__":
     exit()
