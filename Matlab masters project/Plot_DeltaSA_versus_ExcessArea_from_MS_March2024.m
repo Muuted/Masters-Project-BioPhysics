@@ -2,6 +2,11 @@
 % For figure 5 + 6 in revised manuscript march 2024
 %
 % Setting the default properties of the axis
+clear all
+close all
+clc
+
+%%
 set(groot, 'defaultAxesTickLabelInterpreter','latex');
 set(groot, 'defaultLegendInterpreter','latex');
 set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k','k'}) % set to real black
@@ -9,9 +14,22 @@ set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k'
 %set(groot,'DefaultLegendFontName','Helvetica')
 set(groot,'DefaultLegendFontSize',14,'DefaultLegendFontSizeMode','manual');
 set(0,'defaultAxesFontSize',20);
-%
+%% Load the data
+data_set = load("MS_tauD_1_to_7_NtauD_20_sigmaD_m0p4_to_2_NsigmaD_80.mat");
+%%
+clc
+data_set;
+MS = data_set.MS
+MS_size = size(MS)
+Results = MS.Result
+
+
+%%
+
+Results()
 %% plot (Area,DeltaSA) for fixed tauD. 
-%
+%% FIGURE 1
+
 [N_tauD,N_sigmaD]=size(MS);
 psi1_cut=-pi; % cutoff between large and small type necks
 f1=figure();
@@ -63,6 +81,7 @@ for n=1:N_tauD
     NeckRadiusFlat{n}=NeckRadiusFlat{n}(id_ok_flat);
     r1Flat{n}=r1Flat{n}(id_ok_flat);
 end
+%%
 % plotting extracted data points
 for n=1:N_tauD
     plot(ExcessAreaCurved{n},DeltaSACurved{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
@@ -72,8 +91,8 @@ end
 h=gca;
 line([0 0],h.YLim,'Color','k','LineStyle','--','LineWidth',1.5); % Vertical line at zero excess area
 legend(flatSApoint,legend_text); % add new legend for each value of tauD
-xlabel('Excess area $\Delta \tilde{A} = \tilde{A}_{neck}-\tilde{A}_{disc}$')
-ylabel('Relative energy  $\Delta \tilde{S}=\tilde{S}_{neck}-\tilde{S}_{flat}$')
+xlabel('Excess area $\Delta \tilde{A} = \tilde{A}_{neck}-\tilde{A}_{disc}$','Interpreter','latex')
+ylabel('Relative energy  $\Delta \tilde{S}=\tilde{S}_{neck}-\tilde{S}_{flat}$','Interpreter','latex')
 title('Neck energy versus area')
 %% plotting selected neck profiles for figure in paper
 n=2;
@@ -124,13 +143,13 @@ subplot(1,3,1)
 axis equal
 xlim([-20 20])
 ylim([-20 5])
-text(0,0,sigma_text_flat)
+text(0,0,sigma_text_flat,'Interpreter','latex')
 %
 subplot(1,3,3)
 axis equal
 xlim([-20 20])
 ylim([-20 5])
-text(0,0,sigma_text_curved)
+text(0,0,sigma_text_curved,'Interpreter','latex')
 
 %% plotting neck shape at cursor position in plot 1
 evalin('base','N_click=1');
@@ -140,7 +159,16 @@ dcm_obj.updateDataCursors;
 % Set update function
 set(dcm_obj,'UpdateFcn',{@PlotNeckAtCursor_energy,MS,f1})
 %
+
+
+
+
+
+
+
+
 %% plotting (area,neck radius)
+%% Figure 2
 f2=figure();
 subplot(1,2,1)
 for n=1:N_tauD
@@ -149,11 +177,14 @@ for n=1:N_tauD
     flat_area_point(n)=plot(ExcessAreaFlat{n},NeckRadiusFlat{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
 end
 h=gca;
-legend(flat_area_point,legend_text); % add new legend for each value of tauD
+
+legend(flat_area_point,legend_text,'Position',[0.45 0.45 0.2 0.3]); % add new legend for each value of tauD
 line([0 0],h.YLim,'Color','k','LineStyle','--','LineWidth',1.5,'HandleVisibility','off');
-xlabel('Excess area $\Delta \tilde{A} = \tilde{A}_{neck}-\tilde{A}_{disc}$')
+%xlabel('Excess area $\Delta \tilde{A} = \tilde{A}_{neck}-\tilde{A}_{disc}$')
+xlabel('Excess area $\Delta \tilde{A} = \tilde{A}_{neck}-\tilde{A}_{disc}$','Interpreter','latex')
 ylabel('Neck radius')
-%
+xlim([-70 50])
+ylim([0 7])
 A=linspace(0,abs(h.XLim(1)),10000);
 r=sqrt(A/pi);
 plot(-A,r,'--k','HandleVisibility','off');

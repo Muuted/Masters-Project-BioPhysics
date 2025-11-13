@@ -17,21 +17,18 @@ set(0,'defaultAxesFontSize',20);
 %% Load the data
 data_set = load("MS_tauD_1_to_7_NtauD_20_sigmaD_m0p4_to_2_NsigmaD_80.mat");
 %%
-
 clc
+data_set;
 MS = data_set.MS
-size(MS)
-n = 4;
-m = 2;
-Results = MS(n,m).Result(m)
+MS_size = size(MS)
+Results = MS.Result
 
-Results.psi2
 
 %%
 
 Results()
 %% plot (Area,DeltaSA) for fixed tauD. 
-% FIGURE 1
+%% FIGURE 1
 
 [N_tauD,N_sigmaD]=size(MS);
 psi1_cut=-pi; % cutoff between large and small type necks
@@ -84,6 +81,7 @@ for n=1:N_tauD
     NeckRadiusFlat{n}=NeckRadiusFlat{n}(id_ok_flat);
     r1Flat{n}=r1Flat{n}(id_ok_flat);
 end
+%%
 % plotting extracted data points
 for n=1:N_tauD
     plot(ExcessAreaCurved{n},DeltaSACurved{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
@@ -161,6 +159,14 @@ dcm_obj.updateDataCursors;
 % Set update function
 set(dcm_obj,'UpdateFcn',{@PlotNeckAtCursor_energy,MS,f1})
 %
+
+
+
+
+
+
+
+
 %% plotting (area,neck radius)
 %% Figure 2
 f2=figure();
