@@ -199,8 +199,9 @@ def Xsqaured_test(N:int
                   ,r:list,z:list,psi:list)->float:
     X = 0
     for i in range(N):
-        X += (r_init[i] - r[i])**2 + (z_init[i] - z[i])**2 + (psi_init[i] - psi[i])**2
-        
+        X += (r_init[i] - r[i])**2 + (z_init[i] - z[i])**2 #+ (psi_init[i] - psi[i])**2
+        #The angles are removed as they are between -pi and pi, which could completely dominate
+        #the values for X given that r and z could potentially be much smaller.
     return X
     
 if __name__ == "__main__":

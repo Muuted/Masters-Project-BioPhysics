@@ -105,9 +105,9 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
 if __name__ == "__main__":
     Surface_sim_stationary_state_initial_configuration_iterative(
-        do_simulation = True
+        do_simulation = False#True
         #,start_from_flat = False
         #,do_perturbation = False #True
-        ,make_movie = True
+        ,make_movie = False#True
         ,make_plots= True
     )
