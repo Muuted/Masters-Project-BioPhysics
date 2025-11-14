@@ -277,6 +277,7 @@ def Two_D_Constants_stationary_state(
             + f"    gamma(i!=0) = {gamma(i=2,ds=ds,eta=eta)} unit?  \n "
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "
+            + f"    dpsi = {dpsi_perturb:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
         )
     
