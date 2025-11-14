@@ -219,12 +219,11 @@ save_cell
 data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results\";
 save_name = "Axcess vs neck r0";
 writecell(save_cell ,strcat(data_path,"tau list curved.dat"));
-writecell(save_cell ,strcat(data_path,"tau list curved.txt"));
 
 %%
 clc
 
-s = size(save_matrix(1,1,2))
+size(save_matrix(1,1,:))
 r = save_matrix(1,1,:);
 size(r(1,:))
 %%
@@ -236,9 +235,9 @@ for n=1:N_tauD
     AEC =save_matrix(7,n,:);
     r0C = save_matrix(11,n,:);
     plot( AEC(:),  r0C(:) ,"*","color","k")
-    AEF =save_matrix(8,n,:);
-    r0F = save_matrix(12,n,:);
-    plot(AEF(:),  r0F(:)  ,"*","color","k")
+    AEF =save_matrix(7,n,:);
+    r0F = save_matrix(11,n,:);
+    plot(save_matrix(8,n,:) ,  save_matrix(12,n,:) ,"*","color","k")
     
     plot(ExcessAreaCurved{n},NeckRadiusCurved{n},".","color","y")
     plot(ExcessAreaFlat{n},NeckRadiusFlat{n},".","color","y")
