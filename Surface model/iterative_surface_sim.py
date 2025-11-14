@@ -20,9 +20,9 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
 
     folder_name = "Science stability test\\"
-    save_name_list = [" unperturbed", " -perturbed"," +perturbed"]
-    dpsi_list = [0, -0.01, 0.01]
-    do_perturbation_list = [False,True,True]
+    save_name_list = [" -perturbed"," +perturbed"," unperturbed"]
+    dpsi_list = [ -0.01, 0.01 ,0]
+    do_perturbation_list = [True ,True ,False]
 
     ref_list_len = len(save_name_list)
     for i in range(ref_list_len):
