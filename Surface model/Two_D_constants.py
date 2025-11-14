@@ -131,9 +131,9 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
-    N = 40 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+    N = 20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
+    T = 1e-6 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
     dt = 5e-11 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
@@ -156,9 +156,9 @@ def Two_D_Constants_stationary_state(
 
     #Dimless variables
     if tilde_sigma == "":
-        tilde_sigma = -0.4 #0.1
+        tilde_sigma = 0.3595 #0.1
     if tilde_tau == "":
-        tilde_tau = 2.2632 #1
+        tilde_tau = 1 #1
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -168,7 +168,7 @@ def Two_D_Constants_stationary_state(
     zs2 = 0
     s0, sN = 0, 50*lc
     if psi_L == "":
-        psi_L = -0.0016#-3.2643e-05#-2.836237310547577e-8#-7.36475216445153e-8
+        psi_L = -1.4632e-8 #-3.2643e-05#-2.836237310547577e-8#-7.36475216445153e-8
 
     #Creating lists for the variables.
     psi_list = np.zeros(shape=(sim_steps,N),dtype=float) # all the angles are just flat
@@ -277,6 +277,7 @@ def Two_D_Constants_stationary_state(
             + f"    gamma(i!=0) = {gamma(i=2,ds=ds,eta=eta)} unit?  \n "
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "
+            + f"    dpsi = {dpsi_perturb:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
         )
     
@@ -289,6 +290,7 @@ def Two_D_Constants_stationary_state(
         ,psi_list, r_list ,z_list
         ,r_unperturb,z_unperturb
         ,eta, dpsi_perturb , psi_unperturb
+        ,psi_L
         ]
 
     return args

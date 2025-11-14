@@ -19,7 +19,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     print("\n Now Running the surface simulation from stationary configurations \n")
 
 
-    
+    folder_name = "Science stability test\\"
     save_name_list = [" unperturbed", " -perturbed"," +perturbed"]
     dpsi_list = [0, -0.01, 0.01]
     do_perturbation_list = [False,True,True]
@@ -40,10 +40,10 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         Area_list, psi_list = const_args[12:14]
         radi_list,z_list = const_args[14:16]
         r_unperturbed, z_unperturbed = const_args[16:18]
-        eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
+        eta,dpsi_perturb_val,psi_unperturbed,psi2 = const_args[18:22]
 
         
-        path_args = Two_D_paths()
+        path_args = Two_D_paths(folder_names=folder_name + f"sigma,tau,psi2={sigma,tau,psi2}\\")
         data_path, fig_save_path = path_args[0:2]
         video_save_path,figs_for_video_path = path_args[2:4]
         df_name_ref, fps_movie ,num_frames = path_args[4:7]
@@ -105,9 +105,9 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
 if __name__ == "__main__":
     Surface_sim_stationary_state_initial_configuration_iterative(
-        do_simulation = False#True
+        do_simulation = True
         #,start_from_flat = False
         #,do_perturbation = False #True
-        ,make_movie = False#True
+        ,make_movie = True
         ,make_plots= True
     )
