@@ -10,10 +10,10 @@ set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k'
 set(groot,'DefaultLegendFontSize',14,'DefaultLegendFontSizeMode','manual');
 set(0,'defaultAxesFontSize',20);
 %% Load the data
-ymin = 3.75;%0;%2.0;
-ymax = 3.85;%0.2;%2.025;
-xmin = 28;%3.65;%39;
-xmax = 30;%3.75;%40;
+ymin = 2.0;
+ymax = 2.025;
+xmin = 39;
+xmax = 40;
 file = "MS_tauD_1_to_7_NtauD_20_sigmaD_m0p4_to_2_NsigmaD_80.mat";
 
 data_set = load(file);
@@ -103,7 +103,8 @@ plot_color=jet(N_tauD);
 for n=1:N_tauD
     plot(ExcessAreaCurved{n},NeckRadiusCurved{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
     hold on
-    flat_area_point(n)=plot(ExcessAreaFlat{n},NeckRadiusFlat{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
+    %flat_area_point(n) = 
+    plot(ExcessAreaFlat{n},NeckRadiusFlat{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
 end
 for n=1:N_tauD
     N = size(ExcessAreaCurved{n});
@@ -142,8 +143,10 @@ end
 xlim([-60 50])
 ylim([0 7])
 
-
-
+%%
+tau
+sigma
+psi_L
 
 %% Saving the data to .txt file for Python
 clc
@@ -165,38 +168,46 @@ name_list = [
     ];
 
 save_cell = cell(length(name_list),1);
+for i=1:length(name_list)
+    save_cell{i,1} = name_list(i);
+end
 
-save_cell{1} = name_list;
+save_matrix = [];
 
+for n=1:N_tauD
+    for i=1:length(sigma_list_Curved{n})
+        save_matrix(1,i) = sigma_list_Curved{n}(i);
+        save_matrix(2,i) = sigma_list_Flat{n}(i);
+        
+        save_matrix(3,i) = tau_list_Curved{n}(i);
+        save_matrix(4,i)= tau_list_Flat{n}(i);
 
-save_cell{2} = sigma_list_Curved;
-save_cell{3} = sigma_list_Flat;
+        save_matrix(5,i)= psi_L_list_Curved{n}(i);
+        save_matrix(6,i)= psi_L_list_Flat{n}(i);
 
-save_cell{4} = tau_list_Curved;
-save_cell{5} = tau_list_Flat;
+        save_matrix(7,i)= ExcessAreaCurved{n}(i);
+        save_matrix(8,i)= ExcessAreaFlat{n}(i);
 
-save_cell{6} = psi_L_list_Curved;
-save_cell{7} = psi_L_list_Flat;
+        save_matrix(9,i) = DeltaSACurved{n}(i);
+        save_matrix(10,i) = DeltaSAFlat{n}(i);
 
-save_cell{8} = ExcessAreaCurved;
-save_cell{9} = ExcessAreaFlat;
+        save_matrix(11,i)= NeckRadiusCurved{n}(i);
+        save_matrix(12,i)= NeckRadiusFlat{n}(i);
 
-save_cell{10} = DeltaSACurved;
-save_cell{11} = DeltaSAFlat;
+        save_matrix(13,i)= r1Curved{n}(i);
+        save_matrix(14,i)= r1Flat{n}(i);
+    end
+end
 
-save_cell{12} = NeckRadiusCurved;
-save_cell{13} = NeckRadiusFlat;
+for i=1:length(name_list)
+    save_cell{i,2} = save_matrix(i,:);
+end
 
-save_cell{14} = r1Curved;
-save_cell{14} = r1Flat;
+save_cell
 
-
-save_cell;
-tau_list_Curved;
-
-data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results";
+data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results\";
 save_name = "Axcess vs neck r0";
-writecell(save_cell ,strcat(data_path,"tau list curved") ,".txt");
+writecell(save_cell ,strcat(data_path,"tau list curved.txt"));
 
 
 
