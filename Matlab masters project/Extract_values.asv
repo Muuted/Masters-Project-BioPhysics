@@ -150,22 +150,20 @@ psi_L
 
 %% Saving the data to .txt file for Python
 clc
-name_list_curved = [
+name_list = [
     "sigma curved"
-    "tau curved"
-    "psi2 curved" 
-    "A excess curved"
-    "dSA curved"
-    "Neck r0 curved" 
-    "r1 curved" 
-    ];
-name_list_flat = [
     "sigma flat"
+    "tau curved"
     "tau flat"
+    "psi2 curved" 
     "psi2 flat"
+    "A excess curved"
     "A excess flat"
+    "dSA curved"
     "dSA flat"
+    "Neck r0 curved" 
     "Neck r0 flat"
+    "r1 curved" 
     "r1 flat"
     ];
 
@@ -213,16 +211,15 @@ size(save_matrix_curved(1,:))
 
 
 %%
-save_cell_Curved = cell(length(save_matrix(1,:)) +1, length(name_list_curved));
-save_cell_Flat = cell(length(save_matrix(1,:)) +1 , length(name_list_flat));
+save_cell_Curved = cell(length(save_matrix(1,:)) , length(name_list)/2);
+save_cell_Flat = cell(1 , length(name_list)/2);
 
-for i=1:length(name_list_curved)
-    save_cell_Curved{1,i} = name_list_curved(i);
-    save_cell_Flat{1,i} = name_list_flat(i);
+for i=1:length(name_list)/2
+    save_cell_Curved{1,i} = name_list(i);
+    save_cell_Flat{1,i} = name_list(i);
 end
 
-%%
-for i=1:length(name_list_curved)
+for i=1:length(name_list)
     for n =1:length(save_matrix(i,n))
         save_cell{n+1,i} = save_matrix(i,n);
     end
