@@ -278,6 +278,7 @@ def Two_D_Constants_stationary_state(
             + f"    Total sim time = {T} s \n "
             + f"    Sim steps = {sim_steps:0.1e} \n "
             + f"    dpsi = {dpsi_perturb:0.1e} \n "
+            + f"    alpha = {alpha:0.1e} \n "
             + f" ------------------------------------------------------ \n \n "
         )
     
