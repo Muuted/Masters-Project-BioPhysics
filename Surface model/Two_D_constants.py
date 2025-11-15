@@ -3,7 +3,7 @@ from Two_D_functions import Perturbation_of_inital_state,gamma
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-
+np.set_printoptions(legacy='1.25')
 """def gamma(i):
     gam = 1e0# standard 1e0
     if i==0:

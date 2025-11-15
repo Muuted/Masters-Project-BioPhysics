@@ -150,7 +150,7 @@ psi_L
 
 %% Saving the data to .txt file for Python
 clc
-name_list_curved = [
+name_list = [
     "sigma curved"
     "tau curved"
     "psi2 curved" 
@@ -158,8 +158,6 @@ name_list_curved = [
     "dSA curved"
     "Neck r0 curved" 
     "r1 curved" 
-    ];
-name_list_flat = [
     "sigma flat"
     "tau flat"
     "psi2 flat"
@@ -169,92 +167,128 @@ name_list_flat = [
     "r1 flat"
     ];
 
-save_matrix_curved = [];
-save_matrix_flat = [];
+data_list =[
+    sigma_list_Curved
+    tau_list_Curved
+    psi_L_list_Curved
+    ExcessAreaCurved
+    DeltaSACurved
+    NeckRadiusCurved
+    r1Curved
+    sigma_list_Flat
+    tau_list_Flat
+    psi_L_list_Flat
+    ExcessAreaFlat
+    DeltaSAFlat
+    NeckRadiusFlat
+    r1Flat
+];
 
-m = 1;
-for n=1:N_tauD
-    N = size(ExcessAreaCurved{n});
-    if N(2) ~= 0
-        for i=1:N(2)
-            save_matrix_curved(1,m) = sigma_list_Curved{n}(i);
-            save_matrix_curved(2,m) = tau_list_Curved{n}(i);
-            save_matrix_curved(3,m)= psi_L_list_Curved{n}(i);
-            save_matrix_curved(4,m) = ExcessAreaCurved{n}(i);
-            save_matrix_curved(5,m) = DeltaSACurved{n}(i);
-            save_matrix_curved(6,m)= NeckRadiusCurved{n}(i);
-            save_matrix_curved(7,m)= r1Curved{n}(i);
-            m = m + 1;
-        end
-    end
-end
-
-m = 1;
-for n=1:N_tauD
-    N = size(ExcessAreaFlat{n});
-    if N(2) ~= 0
-        for i=1:N(2)
-            save_matrix_flat(1,m) = sigma_list_Flat{n}(i);
-            save_matrix_flat(2,m)= tau_list_Flat{n}(i);
-            save_matrix_flat(3,m)= psi_L_list_Flat{n}(i);
-            save_matrix_flat(4,m) = ExcessAreaFlat{n}(i);
-            save_matrix_flat(5,m) = DeltaSAFlat{n}(i);
-            save_matrix_flat(6,m)= NeckRadiusFlat{n}(i);
-            save_matrix_flat(7,m)= r1Flat{n}(i);
-            m = m + 1;
-        end
-    end
-end
-%%
-clc
-
-size(save_matrix_flat(1,:))
-size(save_matrix_curved(1,:))
-
-
-%%
-save_cell_Curved = cell(length(save_matrix(1,:)) +1, length(name_list_curved));
-save_cell_Flat = cell(length(save_matrix(1,:)) +1 , length(name_list_flat));
-
-for i=1:length(name_list_curved)
-    save_cell_Curved{1,i} = name_list_curved(i);
-    save_cell_Flat{1,i} = name_list_flat(i);
-end
-
-%%
-for i=1:length(name_list_curved)
-    for n =1:length(save_matrix(i,n))
-        save_cell{n+1,i} = save_matrix(i,n);
-    end
-end
-save_cell
-size(save_matrix)
 %%
 data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results\";
-save_name = "Axcess vs neck r0";
-writecell(save_cell ,strcat(data_path,"tau_list_curved.dat"));
-writecell(save_cell ,strcat(data_path,"tau_list_curved.txt"));
+save_name = name_list(1);
+save_data_for_python(data_path,save_name,sigma_list_Curved,".dat")
+
+save_name = name_list(2);
+save_data_for_python(data_path,save_name,tau_list_Curved,".dat")
+
+
+save_name = name_list(3);
+save_data_for_python(data_path,save_name,psi_L_list_Curved,".dat")
+
+
+save_name = name_list(4);
+save_data_for_python(data_path,save_name,    ExcessAreaCurved,".dat")
+
+save_name = name_list(5);
+save_data_for_python(data_path,save_name,    DeltaSACurved,".dat")
+
+save_name = name_list(6);
+save_data_for_python(data_path,save_name,    NeckRadiusCurved,".dat")
+
+save_name = name_list(7);
+save_data_for_python(data_path,save_name,    r1Curved,".dat")
+
+
+
+
+save_name = name_list(8);
+save_data_for_python(data_path,save_name,sigma_list_Flat,".dat")
+
+save_name = name_list(9);
+save_data_for_python(data_path,save_name,tau_list_Flat,".dat")
+
+
+save_name = name_list(10);
+save_data_for_python(data_path,save_name,psi_L_list_Flat,".dat")
+
+
+save_name = name_list(11);
+save_data_for_python(data_path,save_name,    ExcessAreaFlat,".dat")
+
+save_name = name_list(12);
+save_data_for_python(data_path,save_name,    DeltaSAFlat,".dat")
+
+save_name = name_list(13);
+save_data_for_python(data_path,save_name,    NeckRadiusFlat,".dat")
+
+save_name = name_list(14);
+save_data_for_python(data_path,save_name,    r1Flat,".dat")
+
 
 %%
-clc
+save_cell = cell(2,2);
+save_cell{2,1} = "ExcessAreaCurved";
+save_cell{2,2} = save_matrix_curved(4,:);
 
-s = size(save_matrix(1,1,2))
-r = save_matrix(1,1,:);
-size(r(1,:))
+save_cell{3,1} = "NeckRadiusCurved";
+save_cell{3,2} = save_matrix_curved(6,1:100);
+
+save_cell
+writecell(save_cell,strcat(data_path,"ExcessAreaCurved.dat"));
+writecell(save_cell,strcat(data_path,"ExcessAreaCurved.txt"));
+
 %%
-clc
-figure(3)
-hold on
 
-for n=1:N_tauD
-    AEC =save_matrix(7,n,:);
-    r0C = save_matrix(11,n,:);
-    plot( AEC(:),  r0C(:) ,"*","color","k")
-    AEF =save_matrix(8,n,:);
-    r0F = save_matrix(12,n,:);
-    plot(AEF(:),  r0F(:)  ,"*","color","k")
-    
-    plot(ExcessAreaCurved{n},NeckRadiusCurved{n},".","color","y")
-    plot(ExcessAreaFlat{n},NeckRadiusFlat{n},".","color","y")
+save_cell = cell(2,2);
+save_cell{1,1} = "index";
+len = length(save_matrix_curved(6,:));
+save_cell{1,2} = linspace(1,len,len);
+save_cell{2,1} = "NeckRadiusCurved";
+save_cell{2,2} = save_matrix_curved(6,:);
+save_cell
+writecell(save_cell,strcat(data_path,"NeckRadiusCurved.dat"));
+
+
+
+%%
+writecell(ExcessAreaCurved,strcat(data_path,"ExcessAreaCurved.dat"));
+writecell(NeckRadiusCurved,strcat(data_path,"NeckRadiusCurved.dat"));
+
+writecell(ExcessAreaCurved,strcat(data_path,"ExcessAreaCurved.txt"));
+writecell(NeckRadiusCurved,strcat(data_path,"NeckRadiusCurved.txt"));
+
+
+%%
+
+
+function [] = save_data_for_python(data_path,save_name,data,file_type)
+    N_tauD = length(data);
+    save_cell = cell(N_tauD,2);
+    max_len = 0;
+    for n=1:N_tauD
+        M = [];
+        len = length(data{n});
+        if max_len < len
+            max_len = len;
+        end
+        for j=1:len
+            M(j) = data{n}(j);
+        end
+        save_cell{n+1,1} = strcat(save_name," ","n=",string(n));
+        save_cell{n+1,2} = M;
+    end
+    save_cell{1,1} = "index";
+    save_cell{1,2} = linspace(1,max_len,max_len);
+    writecell(save_cell,strcat(data_path,save_name,file_type));
 end
-
