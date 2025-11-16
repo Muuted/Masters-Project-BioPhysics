@@ -10,10 +10,7 @@ set(groot,{'DefaultAxesXColor','DefaultAxesYColor','DefaultAxesZColor'},{'k','k'
 set(groot,'DefaultLegendFontSize',14,'DefaultLegendFontSizeMode','manual');
 set(0,'defaultAxesFontSize',20);
 %% Load the data
-ymin = 2.0;
-ymax = 2.025;
-xmin = 39;
-xmax = 40;
+
 file = "MS_tauD_1_to_7_NtauD_20_sigmaD_m0p4_to_2_NsigmaD_80.mat";
 
 data_set = load(file);
@@ -96,57 +93,84 @@ end
 %% span of the point
 
 %%
+close all
 clc
 figure(1)
+hold on
+grid on
+%xlim([-60 50])
+%ylim([0 7])
+xlim([0 40])
+ylim([0 2.25])
 plot_color=jet(N_tauD);
+xmin_list = [3 4 4.8 5.2 5.8 6.5 7.4 9.4 10.6 12 13.4 15 16.6 18 20 21.5 23.5 25 27 29 31 33.5 36.2 39.2];%xmin
+xmax_list = [4 4.1 4.82 5.5 6 6.7 7.42 9.5 10.7 12.1 13.5 15.1 16.7 18.5 20.5 22 24 26 27.5 29.75 32 34 36.4 39.6];%xmax
+ymin_list = [0.1 0.145 0.194  0.2 0.24 0.3 0.36 0.47 0.56 0.64 0.73 0.82 0.91 1 1.1 1.2 1.3 1.4 1.45 1.55 1.65 1.75 1.9 2.02];%ymin
+ymax_list = [0.15 0.148 0.2 0.24 0.28 0.32 0.364 0.5 0.57 0.65 0.74 0.83 0.93 1.1 1.2 1.3 1.35 1.45 1.525 1.6 1.725 1.8 1.91 2.03];%ymax
 
+
+tau_return_list = [];
+sigma_return_list = [];
+psi2_return_list = [];
 for n=1:N_tauD
     plot(ExcessAreaCurved{n},NeckRadiusCurved{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
     hold on
     %flat_area_point(n) = 
     plot(ExcessAreaFlat{n},NeckRadiusFlat{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
 end
-for n=1:N_tauD
-    N = size(ExcessAreaCurved{n});
-    N(2)
-    for k=1:N(2)
-        for m=1:2
-            if m==1
-                AE = ExcessAreaCurved{n}(k);
-                r0D= NeckRadiusCurved{n}(k);
 
-                sigma_ref = sigma_list_Curved{n}(k);
-                tau_ref = tau_list_Curved{n}(k);
-                psiL_ref = psi_L_list_Curved{n}(k);
-            end
-            if m==2
-                AE = ExcessAreaFlat{n}(k);
-                r0D= NeckRadiusFlat{n}(k);
+for i=1:length(ymin_list)
+    for n=1:N_tauD
+        N = size(ExcessAreaCurved{n});
+        for k=1:N(2)
+            for m=1:2
+                if m==1
+                    AE = ExcessAreaCurved{n}(k);
+                    r0D= NeckRadiusCurved{n}(k);
 
-                sigma_ref = sigma_list_Flat{n}(k);
-                tau_ref = tau_list_Flat{n}(k);
-                psiL_ref = psi_L_list_Flat{n}(k);
-            end
-            if ymin < r0D && r0D < ymax
-                if xmin < AE && AE < xmax
-                    AE;
-                    r0D;
-                    plot(AE,r0D,"*","MarkerSize",15)
-                    tau = tau_ref;
-                    sigma = sigma_ref;
-                    psi_L = psiL_ref;
+                    sigma_ref = sigma_list_Curved{n}(k);
+                    tau_ref = tau_list_Curved{n}(k);
+                    psiL_ref = psi_L_list_Curved{n}(k);
+                end
+                if m==2
+                    AE = ExcessAreaFlat{n}(k);
+                    r0D= NeckRadiusFlat{n}(k);
+
+                    sigma_ref = sigma_list_Flat{n}(k);
+                    tau_ref = tau_list_Flat{n}(k);
+                    psiL_ref = psi_L_list_Flat{n}(k);
+                end
+                if ymin_list(i) < r0D && r0D < ymax_list(i)
+                    if xmin_list(i) < AE && AE < xmax_list(i)
+                        AE;
+                        r0D;
+                        plot(AE,r0D,"*","MarkerSize",15)
+                        tau = tau_ref
+                        sigma = sigma_ref;
+                        psi_L = psiL_ref;
+                        tau_return_list(i) = tau_ref;
+                        sigma_return_list(i) = sigma_ref;
+                        psi2_return_list(i) = psiL_ref;
+                    end
                 end
             end
         end
     end
+    pause(1)
 end
-xlim([-60 50])
-ylim([0 7])
 
 %%
-tau
-sigma
-psi_L
+clc
+length(tau_return_list)
+%%
+clc
+[tau_return_list]
+%%
+clc
+[sigma_return_list]
+%%
+clc
+[psi2_return_list]
 
 %% Saving the data to .txt file for Python
 clc
