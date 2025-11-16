@@ -37,8 +37,8 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     do_perturbation_list = [True ,True ,False]
     ref_list_len = len(save_name_list)
 
-
-    for j in range(len(tau_list)):
+    
+    for j in range(len(tau_list)-1,-1,-1):
         for i in range(ref_list_len):
             const_args = Two_D_Constants_stationary_state(
                 print_val=True
@@ -68,7 +68,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
             df_name = df_name_ref + save_name_list[i] #+ f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
             
 
-            print(f"\n j={j} of {len(tau_list)} \n ")
+            print(f"\n j={j} of {len(tau_list)-1} \n ")
             if do_simulation == True:
                 Two_d_simulation_stationary_states(
                     N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
