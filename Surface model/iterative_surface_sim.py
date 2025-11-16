@@ -18,23 +18,26 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     ):
     print("\n Now Running the surface simulation from stationary configurations \n")
 
-    tau_list = [1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    tau_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     psi2_L_list = [
         -0.3264e-4,-0.1634e-4,-0.0522e-4,-0.0322e-4,-0.0207e-4,-0.0139e-4,-0.0096e-4,-0.0050e-4
         ,-0.0037e-4,-0.0028e-4,-0.0021e-4,-0.0017e-4,-0.0013e-4,-0.0010e-4,-0.0008e-4,-0.0007e-4
         ,-0.0005e-4,-0.0004e-4,-0.0003e-4,-0.0003e-4,-0.0002e-4,-0.0002e-4,-0.0002e-4,-0.0001e-4
     ]
 
-    sigma_list = [-0.4000,-0.3696,-0.3089,-0.2785,-0.2481,-0.2177,-0.1873,-0.1266,-0.0962
-                  ,-0.0658,-0.0354,-0.0051,0.0253,0.0557,0.0861,0.1165
-                  ,0.1468,0.1772,0.2076,0.2380,0.2684,0.2987,0.3291,0.3595]
+    sigma_list = [
+        -0.4000,-0.3696,-0.3089,-0.2785,-0.2481,-0.2177,-0.1873,-0.1266,-0.0962
+        ,-0.0658,-0.0354,-0.0051,0.0253,0.0557,0.0861,0.1165
+        ,0.1468,0.1772,0.2076,0.2380,0.2684,0.2987,0.3291,0.3595
+    ]
+    
     folder_name = "Science stability test\\"
     save_name_list = [" -perturbed"," +perturbed"," unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
     ref_list_len = len(save_name_list)
 
-    
+
     for j in range(len(tau_list)):
         for i in range(ref_list_len):
             const_args = Two_D_Constants_stationary_state(
@@ -63,7 +66,9 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
             df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
             df_name = df_name_ref + save_name_list[i] #+ f" N,ds,dt,T,tau,c0,k,kG={N,ds,dt,T,tau,c0,k,kG}"
-            #start_time = time.time()
+            
+
+            print(f"\n j={j} of {len(tau_list)} \n ")
             if do_simulation == True:
                 Two_d_simulation_stationary_states(
                     N=N ,k=k ,c0=c0 ,sigma=sigma ,dt=dt ,ds=ds,eta=eta
