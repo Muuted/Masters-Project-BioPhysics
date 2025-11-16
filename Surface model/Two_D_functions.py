@@ -1285,6 +1285,7 @@ def Make_variable_corrections(
         #Area_new = tot_area(N=N,r=r,z=z)
         #dA = Area_new - Area_init
         #constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
+        do_correction = False
         do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
         #do_correction = False
         #if Tolerence < abs(dA):# or constraint_err == True:
@@ -1294,11 +1295,11 @@ def Make_variable_corrections(
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
             exit()
 
-    if r[0] != r[0]:
+    """if r[0] != r[0]:
         print(f"t={t}")
         #plt.legend()
         #plt.show()
-        exit()
+        exit()"""
 
     return correction_count
 
