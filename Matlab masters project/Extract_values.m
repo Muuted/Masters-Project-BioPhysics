@@ -98,8 +98,6 @@ clc
 figure(1)
 hold on
 grid on
-%xlim([-60 50])
-%ylim([0 7])
 xlim([0 40])
 ylim([0 2.25])
 plot_color=jet(N_tauD);
@@ -112,12 +110,15 @@ ymax_list = [0.15 0.148 0.2 0.24 0.28 0.32 0.364 0.5 0.57 0.65 0.74 0.83 0.93 1.
 tau_return_list = [];
 sigma_return_list = [];
 psi2_return_list = [];
+
 for n=1:N_tauD
     plot(ExcessAreaCurved{n},NeckRadiusCurved{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
     hold on
     %flat_area_point(n) = 
     plot(ExcessAreaFlat{n},NeckRadiusFlat{n},'.-','LineWidth',1,'Markersize',9,'Color',plot_color(n,:));
 end
+
+pause(2)
 
 for i=1:length(ymin_list)
     for n=1:N_tauD
@@ -145,7 +146,7 @@ for i=1:length(ymin_list)
                         AE;
                         r0D;
                         plot(AE,r0D,"*","MarkerSize",15)
-                        tau = tau_ref
+                        tau = tau_ref;
                         sigma = sigma_ref;
                         psi_L = psiL_ref;
                         tau_return_list(i) = tau_ref;
@@ -156,12 +157,10 @@ for i=1:length(ymin_list)
             end
         end
     end
-    pause(1)
+    pause(0.5)
 end
 
-%%
-clc
-length(tau_return_list)
+
 %%
 clc
 [tau_return_list]
@@ -174,23 +173,22 @@ clc
 
 %% Saving the data to .txt file for Python
 clc
-name_list = [
-    "sigma curved"
-    "tau curved"
-    "psi2 curved" 
-    "A excess curved"
-    "dSA curved"
-    "Neck r0 curved" 
-    "r1 curved" 
-    "sigma flat"
-    "tau flat"
-    "psi2 flat"
-    "A excess flat"
-    "dSA flat"
-    "Neck r0 flat"
-    "r1 flat"
+name_list =[
+    "sigma_list_Curved"
+    "tau_list_Curved"
+    "psi_L_list_Curved"
+    "ExcessAreaCurved"
+    "DeltaSACurved"
+    "NeckRadiusCurved"
+    "r1Curved"
+    "sigma_list_Flat"
+    "tau_list_Flat"
+    "psi_L_list_Flat"
+    "ExcessAreaFlat"
+    "DeltaSAFlat"
+    "NeckRadiusFlat"
+    "r1Flat"
     ];
-
 data_list =[
     sigma_list_Curved
     tau_list_Curved
@@ -209,7 +207,7 @@ data_list =[
 ];
 
 %%
-data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results\";
+data_path = "C:\Users\AdamSkovbjergKnudsen\Documents\GitHub\Masters-Project-BioPhysics\Surface model\2D sim results\matlab data transfer files\";
 save_name = name_list(1);
 save_data_for_python(data_path,save_name,sigma_list_Curved,".dat")
 
@@ -259,38 +257,6 @@ save_data_for_python(data_path,save_name,    NeckRadiusFlat,".dat")
 save_name = name_list(14);
 save_data_for_python(data_path,save_name,    r1Flat,".dat")
 
-
-%%
-save_cell = cell(2,2);
-save_cell{2,1} = "ExcessAreaCurved";
-save_cell{2,2} = save_matrix_curved(4,:);
-
-save_cell{3,1} = "NeckRadiusCurved";
-save_cell{3,2} = save_matrix_curved(6,1:100);
-
-save_cell
-writecell(save_cell,strcat(data_path,"ExcessAreaCurved.dat"));
-writecell(save_cell,strcat(data_path,"ExcessAreaCurved.txt"));
-
-%%
-
-save_cell = cell(2,2);
-save_cell{1,1} = "index";
-len = length(save_matrix_curved(6,:));
-save_cell{1,2} = linspace(1,len,len);
-save_cell{2,1} = "NeckRadiusCurved";
-save_cell{2,2} = save_matrix_curved(6,:);
-save_cell
-writecell(save_cell,strcat(data_path,"NeckRadiusCurved.dat"));
-
-
-
-%%
-writecell(ExcessAreaCurved,strcat(data_path,"ExcessAreaCurved.dat"));
-writecell(NeckRadiusCurved,strcat(data_path,"NeckRadiusCurved.dat"));
-
-writecell(ExcessAreaCurved,strcat(data_path,"ExcessAreaCurved.txt"));
-writecell(NeckRadiusCurved,strcat(data_path,"NeckRadiusCurved.txt"));
 
 
 %%
