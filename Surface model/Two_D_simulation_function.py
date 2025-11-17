@@ -393,9 +393,10 @@ def Two_d_simulation_stationary_states(
     ,df_name:str,num_frames:str
     ,data_path:str
     ,save_data:bool = True 
-    ,Tolerence = 1e-10
-    ,do_correction = True
-    ,area_testing = False
+    ,Tolerence:float = 1e-10
+    ,do_correction:bool = True
+    ,area_testing:bool = False
+    ,print_progess:bool = True
     ):
     np.set_printoptions(legacy='1.25')
     start_time = time.time()
@@ -409,7 +410,7 @@ def Two_d_simulation_stationary_states(
 
     print("Simulation progressbar \n ")
     for t in range(sim_steps-1):
-        if int(t%print_scale) == 0 :
+        if int(t%print_scale) == 0 and print_progess == True:
             time_since_start = round((time.time()-start_time)/60,3)
             print(f"completion : {round(t/(print_scale*10),1)}%"
                   +f"   time since start = {time_since_start:.4f} min"
