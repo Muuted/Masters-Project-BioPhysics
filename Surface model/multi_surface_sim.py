@@ -17,8 +17,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     do_simulation:bool = True
     start_from_flat:bool = False
     do_perturbation:bool = False
-    make_movie: bool = False#True
-    make_plots: bool = False#True
+    make_movie: bool = True
+    make_plots: bool = True
 
     print("\n Now Running the surface simulation from stationary configurations \n")
 
@@ -129,7 +129,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
 if __name__ == "__main__":
 
 
-    max_len = 16
+    max_len = 17
     num_cpu = 4
     index_list = [[] for i in range(num_cpu)]
     m = 0
