@@ -260,6 +260,97 @@ def plot_Epot_Ekin(
 
 
 
+
+def plot_reference_fig_for_finding_what_to_simulate():
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    import matplotlib as mpl
+    from matplotlib import cycler
+    import os
+
+    np.set_printoptions(legacy='1.25')
+
+    df_name = "Matlab data"
+    data_path2 = "2D sim results\\"
+
+    if os.path.exists(data_path2 + df_name):
+        df = pd.read_pickle(data_path2 + df_name)
+        print("hello")
+
+    print(df.info())
+    print(len(df["tau_list_Flat"]))
+    print(len(df["tau_list_Curved"]))
+    print(df["tau_list_Curved"])
+
+
+    max_tau = 0
+    min_tau = 1e20
+    diff_taus = []
+    for n in range(len(df["tau_list_Curved"])):
+        for i in range(len(df["tau_list_Curved"][n])):
+            if df["tau_list_Curved"][n][i] < min_tau:
+                min_tau = df["tau_list_Curved"][n][i]
+            
+            if df["tau_list_Curved"][n][i] > max_tau:
+                max_tau = df["tau_list_Curved"][n][i]
+
+            if df["tau_list_Curved"][n][i] not in diff_taus:
+                diff_taus.append(df["tau_list_Curved"][n][i])
+
+    """for n in range(len(df["tau_list_Flat"])):
+        for i in range(len(df["tau_list_Flat"][n])):
+            if df["tau_list_Flat"][n][i] < min_tau:
+                min_tau = df["tau_list_Flat"][n][i]
+            
+            if df["tau_list_Flat"][n][i] > max_tau:
+                max_tau = df["tau_list_Flat"][n][i]
+            
+            if df["tau_list_Flat"][n][i] not in diff_taus:
+                diff_taus.append(df["tau_list_Flat"][n][i])"""
+
+    print(diff_taus)
+    print(len(diff_taus))
+    print(f"mintau={min_tau} and max tau = {max_tau}")
+
+    fig, ax = plt.subplots()
+    cmap = plt.cm.tab20b#cool#coolwarm
+    plot_tau_ref = []
+    for n in range(len(df["ExcessAreaCurved"])):
+        if len(df["tau_list_Curved"][n]) > 0 :
+            i = (df["tau_list_Curved"][n][0]-1)/(max_tau - 1)
+            if df["tau_list_Curved"][n][0] not in plot_tau_ref:
+                plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Curved"][n][0]:0.1f}")
+                plot_tau_ref.append(df["tau_list_Curved"][n][0])
+            else:
+                plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-")#,color=cmap(i))
+
+    """i = 0 
+    for n in range(len(df["ExcessAreaFlat"])):
+        if len(df["tau_list_Flat"][n]) > 0:
+            i = (df["tau_list_Flat"][n][0]-1)/(max_tau -1)
+            if df["tau_list_Flat"][n][0] not in plot_tau_ref:
+                plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Flat"][n][0]:0.1f}")
+                plot_tau_ref.append(df["tau_list_Flat"][n][0])
+            else:
+                plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-")
+    """
+
+    font_size = 15
+    plt.title("")
+    plt.ylabel("Neck Radius",fontsize=font_size)
+    plt.xlabel(r"Excess area $\Delta \tilde{A} = \tilde{A}_{neck} - \tilde{A}_{disc}$",fontsize=font_size)
+    
+    plt.legend(fontsize=font_size-1)
+    plt.vlines(x=0,ymin=-1,ymax=8,colors="k",linestyles="--")
+    #plt.xlim(-60, 50)
+    plt.xlim(-0.1, 50)
+    plt.ylim(0 ,7)
+
+    
+    plt.show()
+
 if __name__ == "__main__":
     #plot_tot_area()
-    plot_Epot_Ekin()
+    #plot_Epot_Ekin()
+    plot_reference_fig_for_finding_what_to_simulate()
