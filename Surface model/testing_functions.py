@@ -1635,6 +1635,81 @@ def find_overflow_error():
             exit()
 
 
+
+
+def test_convergence_of_alpha():
+    from Two_D_constants import Two_D_Constants_stationary_state
+
+
+    tau_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    psi2_L_list = [
+        -0.3264e-4,-0.1634e-4,-0.0522e-4,-0.0322e-4,-0.0207e-4,-0.0139e-4,-0.0096e-4,-0.0050e-4
+        ,-0.0037e-4,-0.0028e-4,-0.0021e-4,-0.0017e-4,-0.0013e-4,-0.0010e-4,-0.0008e-4,-0.0007e-4
+        ,-0.0005e-4,-0.0004e-4,-0.0003e-4,-0.0003e-4,-0.0002e-4,-0.0002e-4,-0.0002e-4,-0.0001e-4
+    ]
+
+    sigma_list = [
+        -0.4000,-0.3696,-0.3089,-0.2785,-0.2481,-0.2177,-0.1873,-0.1266,-0.0962
+        ,-0.0658,-0.0354,-0.0051,0.0253,0.0557,0.0861,0.1165
+        ,0.1468,0.1772,0.2076,0.2380,0.2684,0.2987,0.3291,0.3595
+    ]
+
+    alpha_discrete_list = [[] for i in range(len(tau_list))]
+    alpha_list = []
+    ds_min = 1e-10
+    ds_max = 1.5e-2*1.5
+    ds_vec = np.linspace(ds_max,ds_min, 100)
+    N0 = 20
+    ds0 = 1.5e-2
+    L0 = N0*ds0
+    alpha_ref,N_ref,ds_ref , i_ref= -1e3 ,-1e3 ,-1e3 , 0
+    for j in range(len(tau_list)):
+        print(f"{int(j*100/len(tau_list))}%",end="\r")
+        for i in range(len(ds_vec)):
+            ds = ds_vec[i]
+            n = 3#int(L0/ds)
+            #print(f"n={n}, ds={ds:e} , sigma={sigma_ref} , psi2={psi2_ref} ,tau={tau_ref}")
+
+            const_args = Two_D_Constants_stationary_state(
+                print_val=False
+                ,show_stationary_state=False
+                ,start_flat=False
+                ,perturb=False
+                ,N=n
+                ,ds=ds
+                ,tilde_sigma=sigma_list[j], psi_L=psi2_L_list[j] ,tilde_tau=tau_list[j]
+            )
+            L,r0,N,ds,T,dt = const_args[0:6]
+            k,c0,sim_steps = const_args[6:9]
+            #sigma, tau, kG = const_args[9:12]
+            Area_list, psi_list = const_args[12:14]
+            radi_list,z_list = const_args[14:16]
+            r_unperturbed, z_unperturbed = const_args[16:18]
+            eta = const_args[18]
+            dpsi_perturb , psi_unperturb ,psi_L, alpha = const_args[19:23]
+
+            dpsids = (psi_list[0][1] - psi_list[0][0])/ds
+            alpha_discrete = (c0 - dpsids)*radi_list[0][0]/np.sin(psi_list[0][0]) - 1
+
+            alpha_discrete_list[j].append(alpha_discrete/alpha)
+            if i == 0:
+                alpha_list.append(alpha)
+        
+    
+    bad_sigma = 10 #sigma_list[len(sigma_list)-2]
+    fig, ax = plt.subplots()
+    for j in range(len(tau_list)):
+        if sigma_list[j] != bad_sigma:
+            plt.plot(ds_vec,alpha_discrete_list[j],".-",label=r"$\sigma$="+f"{sigma_list[j]}")
+            plt.plot(ds_vec[0],alpha_discrete_list[j][0],"*")
+            
+    
+    plt.hlines(y=1,xmin=-1,xmax=max(ds_vec)*1.3,linestyles="dashed")
+    plt.xlabel("ds")
+    #plt.legend()
+    plt.xlim(0,max(ds_vec)*1.1)
+    plt.show()
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1661,7 +1736,9 @@ if __name__ == "__main__":
     #testing_for_no_correction_on_initial_state()
 
     #testing_gradient_of_constraints()
-    testing_gradient_for_S()
+    #testing_gradient_for_S()
 
 
     #find_overflow_error()
+
+    test_convergence_of_alpha()

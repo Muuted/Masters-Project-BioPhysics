@@ -101,7 +101,7 @@ def find_init_stationary_state(
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
 
-    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=10000))
+    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=100000))
     psi_sol = sol[0]
     r_sol = sol[1]
     z_sol = sol[2]
