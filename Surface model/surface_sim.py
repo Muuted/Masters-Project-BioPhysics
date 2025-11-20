@@ -206,7 +206,7 @@ def Surface_sim_stationary_state_initial_configuration(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names = f"Unperturbed sigma,tau,psi2={sigma,tau,psi2_init}\\")
+    path_args = Two_D_paths(folder_names = f"Unperturbed sigma,tau,psi2=({sigma:0.1e}{tau:0.1e}{psi2_init:0.1e})\\")
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     #Surface_sim()
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
-        do_simulation = False#True
+        do_simulation = True
         ,start_from_flat = False#True
         ,do_perturbation = False#True
         ,make_movie = True
