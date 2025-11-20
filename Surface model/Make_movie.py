@@ -67,6 +67,7 @@ def Make_video(
     if os.path.isfile(output_path + filename):
         os.remove(output_path + filename )
     
+    
     shutil.move(filename, output_path)
 
     print(

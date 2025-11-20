@@ -15,7 +15,6 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path  = "C:\\Users\\adams\\Documents\\GitHub\\Masters-Project-BioPhysics\\Surface model\\"
     save_path =  "2D sim results\\" + "Data for thesis\\Data simulation\\"
     if folder_names == "":
         save_path = save_path #+  "\\"
