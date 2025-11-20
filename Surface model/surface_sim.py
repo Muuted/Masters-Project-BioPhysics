@@ -203,14 +203,16 @@ def Surface_sim_stationary_state_initial_configuration(
     radi_list,z_list = const_args[14:16]
     r_unperturbed, z_unperturbed = const_args[16:18]
     eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
+    psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths()
+    path_args = Two_D_paths(folder_names = f"Unperturbed sigma,tau,psi2={sigma,tau,psi2_init}\\")
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
 
-    df_name += f" N,ds,dt,T,tau,c0,kG={N,ds,dt,T,tau,c0}"
+    df_name += f" N,ds,dt,T,tau,c0={N,ds,dt,T,tau,c0}"  #f" N,ds,dt,T,tau,c0=({N:0.1e}{ds:0.1e}{dt:0.1e}{T:0.1e}{tau:0.1e}{c0:0.1e})"
+    
     #start_time = time.time()
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -287,7 +289,7 @@ if __name__ == "__main__":
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         do_simulation = True
-        ,start_from_flat = True
+        ,start_from_flat = False#True
         ,do_perturbation = False#True
         ,make_movie = True
         ,make_plots= True

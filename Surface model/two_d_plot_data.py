@@ -54,6 +54,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.2)
     save_name_1 = save_name + "Atot"# Total area over time"
+    save_name_1 = "Atot"
     plt.savefig(output_path + save_name_1 + ".png")
     plt.pause(0.2)
 
@@ -68,7 +69,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.2)
     save_name_1 = save_name + " var corr"# Total area over time"
-    #save_name_1 =  " var corr"
+    save_name_1 =  " var corr"
     plt.savefig(output_path + save_name_1 + ".png")
     plt.pause(0.2)
 
@@ -90,6 +91,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.3)
     save_name_2 = save_name + " dA"
+    save_name_2 = " dA"
     plt.savefig(output_path + save_name_2 + ".png")
 
     plt.pause(0.3)
@@ -103,6 +105,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(0.3)
     save_name_3 = save_name + " chisqrt"
+    save_name_3 = " chisqrt"
     plt.savefig(output_path + save_name_3 + ".png")
 
 def plot_Epot_Ekin(
@@ -171,7 +174,8 @@ def plot_Epot_Ekin(
     plt.pause(0.1)
     save_name_1 = "potential and kinetic energy" + df_name 
     save_name_1 = df_name +" S&T"
-    plt.savefig(output_path + save_name_1 +".png")
+    save_name_1 = "S&T"
+    plt.savefig(output_path + save_name_1 + ".png")
     
     
     fig, ax = plt.subplots()
@@ -209,9 +213,9 @@ def plot_Epot_Ekin(
     plt.title("show difference from start and end positions")
     plt.legend()
 
-    save_name_1 = df_name + "init&end"
-    #save_name_1 =  "init&end"
-    plt.savefig(output_path + save_name_1 +".png")
+    save_name_2 = df_name + "init&end"
+    save_name_2 =  "init&end"
+    plt.savefig(output_path + save_name_2 +".png")
 
 
 
@@ -254,9 +258,9 @@ def plot_Epot_Ekin(
     plt.title("show difference from start and end positions")
     plt.legend()
 
-    save_name_1 = df_name + "init&end scaled"
-    #save_name_1 =  "init&end"
-    plt.savefig(output_path + save_name_1 +".png")
+    save_name_3 = df_name + "init&end scaled"
+    save_name_3 =  "init&end scaled"
+    plt.savefig(output_path + save_name_3 +".png")
 
 
 
@@ -279,9 +283,9 @@ def plot_reference_fig_for_finding_what_to_simulate():
         print("hello")
 
     print(df.info())
-    print(len(df["tau_list_Flat"]))
-    print(len(df["tau_list_Curved"]))
-    print(df["tau_list_Curved"])
+    #print(len(df["tau_list_Flat"]))
+    #print(len(df["tau_list_Curved"]))
+    #print(df["tau_list_Curved"])
 
 
     max_tau = 0
@@ -309,13 +313,14 @@ def plot_reference_fig_for_finding_what_to_simulate():
             if df["tau_list_Flat"][n][i] not in diff_taus:
                 diff_taus.append(df["tau_list_Flat"][n][i])"""
 
-    print(diff_taus)
-    print(len(diff_taus))
-    print(f"mintau={min_tau} and max tau = {max_tau}")
+    #print(diff_taus)
+    #print(len(diff_taus))
+    #print(f"mintau={min_tau} and max tau = {max_tau}")
 
     fig, ax = plt.subplots()
     cmap = plt.cm.tab20b#cool#coolwarm
     plot_tau_ref = []
+    i_ref,n_ref = 0,0
     for n in range(len(df["ExcessAreaCurved"])):
         if len(df["tau_list_Curved"][n]) > 0 :
             i = (df["tau_list_Curved"][n][0]-1)/(max_tau - 1)
@@ -325,6 +330,14 @@ def plot_reference_fig_for_finding_what_to_simulate():
             else:
                 plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-")#,color=cmap(i))
 
+            for i in range(len(df["ExcessAreaCurved"][n])):
+                if 39.0 < df["ExcessAreaCurved"][n][i] < 40 and  1.9 < df["NeckRadiusCurved"][n][i] < 2.1:
+                    print(
+                        f"sigma = {df["sigma_list_Curved"][n][i]}   "
+                        +f"tau = {df["tau_list_Curved"][n][i]}   "
+                        +f"sigma = {df["psi_L_list_Curved"][n][i]}   "
+                    )
+                    plt.plot(df["ExcessAreaCurved"][n][i],df["NeckRadiusCurved"][n][i],"*")#,color=cmap(i))
     """i = 0 
     for n in range(len(df["ExcessAreaFlat"])):
         if len(df["tau_list_Flat"][n]) > 0:
