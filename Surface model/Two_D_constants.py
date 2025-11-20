@@ -17,7 +17,7 @@ def Two_D_paths(folder_names=""):
     """------ paths ---------"""
     save_path = "2D sim results\\" + "Data for thesis\\"
     if folder_names == "":
-        save_path = save_path #+  "Data for thesis\\"
+        save_path = save_path +  "c0=0 tau=tau\\"
     else:
         save_path = save_path + folder_names
     
@@ -258,7 +258,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    #c0 = 0
+    c0 = 0
     #tau = 0
 
     #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
