@@ -106,13 +106,13 @@ def plot_tot_area(
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
-    plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1")
-    plt.xlabel(" t[s]")
-    plt.ylabel(r"$\chi^2$ [$\mu m^2$]")
+    plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
+    plt.xlabel("t [s]",fontsize=15)
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
     plt.draw()
     plt.pause(0.3)
-    save_name_3 = save_name + " chisqrt"
-    save_name_3 = " chisqrt"
+    save_name_3 = save_name + "chisqrt"
+    save_name_3 = "chisqrt"
     plt.savefig(output_path + save_name_3 + ".png")
 
 def plot_Epot_Ekin(
@@ -238,7 +238,7 @@ def plot_Epot_Ekin(
         )
     plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
     plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
-    plt.title("show difference from start and end positions")
+    plt.title("show difference from start and end positions",fontsize=15)
     plt.legend()#fontsize=font_size)
 
     save_name_2 = df_name + "init&end"
@@ -292,7 +292,7 @@ def plot_Epot_Ekin(
 
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
-    plt.title("show difference from start and end positions")
+    plt.title("show difference from start and end positions",fontsize=15)
     plt.legend(fontsize=font_size)
 
     save_name_3 = df_name + "init&end scaled"
@@ -327,7 +327,7 @@ def plot_Epot_Ekin(
 
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
-    plt.title("show difference from start and end positions")
+    plt.title("show difference from start and end positions",fontsize=15)
     plt.legend(fontsize=font_size)
 
     save_name_3 = df_name + "init&end scaled"
@@ -436,7 +436,104 @@ def plot_reference_fig_for_finding_what_to_simulate():
     
     plt.show()
 
+
+
+def Find_the_circle_radius_of_rolling_test():
+    from two_d_data_processing import cirle_fit, make_circle, make_circle_V2
+
+    data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
+    data_path = "C:\\Users\\adams\\Documents\\GitHub\\Masters-Project-BioPhysics\\Surface model\\2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
+    data_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25)"
+
+    df_sim = pd.read_pickle(data_path+data_name)
+
+    print("I have read the file the first time around")
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
+    r_unperturbed = df_sim['r unperturbed'][0]
+    z_unperturbed = df_sim['z unperturbed'][0]
+    psi = df_sim['psi'][0]
+    Area = df_sim['area list'][0]
+    N = df_sim["N"][0]
+    c0 = df_sim["c0"][0]
+    k = df_sim['k'][0]
+    kG = df_sim['kG'][0]
+    ds = df_sim['ds'][0]
+    sigma = df_sim['sigma'][0]
+    tau = df_sim['tau'][0]
+    dt = df_sim["dt"][0]
+    sim_steps = df_sim["sim_steps"][0]
+    S = df_sim['Epot'][0]
+    T = df_sim['Ekin'][0]
+
+
+    
+    start_point = 0
+    end_point = 22
+    rc1, zc1, R = cirle_fit(
+        data_path=data_path
+        ,df_name=data_name
+        ,edge_point = start_point
+        ,end_point= end_point
+    )
+    print("I have fitted a circle")
+
+    """r_circ, z_circ = make_circle(
+        xc=xc1,zc=zc1,R=R,ds=1e-5
+        ,xlim=[min(r[sim_steps-1][start_point:end_point]) , max(r[sim_steps-1][start_point:end_point])]
+        ,zlim=[min(z[sim_steps-1][start_point:end_point]) , max(z[sim_steps-1][start_point:end_point])]
+        )"""
+    r_circ, z_circ = make_circle_V2(
+        rc=rc1,zc=zc1,R=R
+        ,rmax= max(r[sim_steps-1][start_point:end_point])
+        ,rmin=min(r[sim_steps-1][start_point:end_point])
+        ,zmax=max(z[sim_steps-1][start_point:end_point])
+        ,zmin=min(z[sim_steps-1][start_point:end_point])
+        ,step_size=1e-7
+    )
+    print("I have made the circle")
+    """------------------------------------------------------------------------------------------------"""
+    fig, ax = plt.subplots()
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
+    plt.plot(r[sim_steps-1][end_point],z[sim_steps-1][end_point]
+             ,marker="v"
+             ,linestyle=""
+             ,color="b"
+             ,label="stop point"
+             ,markersize = 15
+             )
+
+    plt.plot(r[sim_steps-1],z[sim_steps-1]
+             ,marker="*"
+             ,linestyle="-"
+             ,color="m"
+             ,label=f"membrane t={(sim_steps-1)*dt:0.1e}"
+             #,linewidth= 5
+             )
+    
+    
+    plt.plot(r_circ,z_circ
+             ,linestyle="--"
+             ,color="k"
+             ,label=f"circle fit "+r"r$\approx$"+f"{R:0.3f}"
+             )
+    rmin = min(r[sim_steps-1][start_point:end_point]) - ds
+    rmax =  max(r[sim_steps-1][start_point:end_point]) + ds
+    deltar = rmax - rmin
+    zmin = 0
+    zmax = deltar
+    plt.xlim(rmin,rmax)
+    plt.ylim(zmin,zmax)
+    plt.legend(fontsize=15)
+    plt.title("")
+    plt.grid()
+    plt.xlabel(r"r [$\mu m$]",fontsize=15)
+    plt.ylabel(r"z [$\mu m$]",fontsize=15)
+    plt.savefig(data_path + "Rolling circle fit test.png")
+    plt.show()
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
-    plot_reference_fig_for_finding_what_to_simulate()
+    #plot_reference_fig_for_finding_what_to_simulate()
+    Find_the_circle_radius_of_rolling_test()

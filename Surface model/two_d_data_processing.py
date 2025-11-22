@@ -208,5 +208,133 @@ def Excess_Area(rmax:float,Area_tot:float):
     return Area_tot - np.pi*rmax**2
 
 
+
+
+
+def cirle_fit(
+        data_path ,df_name 
+        ,edge_point ,end_point
+        ,save_data = False
+        ):
+
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    steps_tot = df_sim["sim_steps"][0]
+    ds = df_sim["ds"][0]
+
+    Radius_list = []
+    x_center_list = []
+    z_center_list = []
+    for sim_step in range(1,steps_tot):
+        #pass
+        #x = df_sim['x pos'][0][sim_step][edge_point:end_point]
+        #z = df_sim['z pos'][0][sim_step][edge_point:end_point]
+        x = df_sim['r'][0][sim_step][edge_point:end_point]
+        z = df_sim['z'][0][sim_step][edge_point:end_point]
+
+        x_max ,x_min = max(x), min(x)
+        z_max ,z_min = max(z), min(z)
+        # coordinates of the barycenter
+        x_m = np.mean(x)
+        z_m = np.mean(z)
+
+        # calculation of the reduced coordinates
+        u = x - x_m
+        v = z - z_m
+
+        # linear system defining the center in reduced coordinates (uc, vc):
+        #    Suu * uc +  Suv * vc = (Suuu + Suvv)/2
+        #    Suv * uc +  Svv * vc = (Suuv + Svvv)/2
+        Suv  = sum(u*v)
+        Suu  = sum(u**2)
+        Svv  = sum(v**2)
+        Suuv = sum(u**2 * v)
+        Suvv = sum(u * v**2)
+        Suuu = sum(u**3)
+        Svvv = sum(v**3)
+
+        # Solving the linear system
+        A = np.array([ [ Suu, Suv ], [Suv, Svv]])
+        B = np.array([ Suuu + Suvv, Svvv + Suuv ])/2.0
+
+        uc, vc = np.linalg.solve(A, B)
+
+        xc_1 = x_m + uc
+        zc_1 = z_m + vc
+
+        # Calculation of all distances from the center (xc_1, yc_1)
+        Ri_1      = np.sqrt((x-xc_1)**2 + (z-zc_1)**2)
+        R_1       = np.mean(Ri_1)
+        residu_1  = np.sum((Ri_1-R_1)**2)
+        residu2_1 = np.sum((Ri_1**2-R_1**2)**2)
+    
+        Radius_list.append(R_1)
+        x_center_list.append(xc_1)
+        z_center_list.append(zc_1)
+
+    if save_data == True:    
+        df_sim["x circle center"] = [x_center_list]
+        df_sim["z circle center"] = [z_center_list]
+        df_sim["circle radius"] = [Radius_list]
+
+        print(df_sim.info())
+        df_sim.to_pickle(data_path + df_name)
+
+
+    return [xc_1 , zc_1 , R_1]
+
+
+def make_circle(xc,zc,R,ds,xlim,zlim):
+    xmin,xmax = xlim
+    zmin,zmax = zlim
+    x_list,z_list = [],[]
+    x,z = xmin, zmax
+
+    steps_size = ds/30
+    tol = steps_size #Tolerence for divation of radius
+    z_count,x_c = 0,0
+    dz = steps_size
+    while x <= xmax:
+        on_circ = False
+        r =  (x-xc)**2 + (z-zc)**2
+        if R**2*(1-tol) < r < R**2*(1+tol) :
+            x_list.append(x)
+            z_list.append(z)
+            x += steps_size
+            on_circ = True
+        
+        if on_circ == False:
+            z += dz #steps_size
+            z_count += 1
+            if z_count > zmax/steps_size:
+                z = zmax
+                z_count = 0
+                dz *= -1
+                
+
+    return [x_list,z_list]
+
+
+def make_circle_V2(rc,zc,R,rmax,rmin,zmax,zmin,step_size) ->list:
+
+    steps = int((rmax-rmin)/step_size)
+    d= rmax - rmin #diameter
+    r_range = np.linspace(-d/2 -d/10,d/2 +d/10,steps)
+
+    r_return, z_return = [], []
+    for r in r_range:
+        z = np.sqrt( R**2 - r**2 )
+
+        r_return.append(r + rc)
+        z_return.append(z + zc)
+
+    for r in r_range:
+        z = np.sqrt( R**2 - r**2 )
+        r_return.append(r + rc)
+        z_return.append(-z + zc)
+
+    return r_return ,z_return
+
+
 if __name__ == "__main__":
     exit()
