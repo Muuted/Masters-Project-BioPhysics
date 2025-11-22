@@ -38,10 +38,11 @@ def plot_tot_area(
 
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
-    fig, ax=plt.subplots()
 
-    #wm = plt.get_current_fig_manager()
-    #wm.window.state('zoomed')
+    """--------------------------------------Chi----------------------------------------------------------"""
+    fig, ax=plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(time,Area_change,'-')
     plt.xlabel("time [s]")
     plt.ylabel("total area")
@@ -59,8 +60,10 @@ def plot_tot_area(
     plt.pause(0.2)
 
 
-
+    """--------------------------------------Chi----------------------------------------------------------"""
     fig,ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(corr_count))],corr_count,".-")
     plt.title("correction counts pr time")
     plt.xlabel("t[s]")
@@ -79,8 +82,10 @@ def plot_tot_area(
     for t in range(sim_steps-1):
         dA[t] = Area_change[t+1] - Area_change[t]
 
-
+    """--------------------------------------Chi----------------------------------------------------------"""
     fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(dA))],dA[0:sim_steps-1],'-')
@@ -96,12 +101,14 @@ def plot_tot_area(
 
     plt.pause(0.3)
 
-
+    """--------------------------------------Chi----------------------------------------------------------"""
     fig,ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1")
     plt.xlabel(" t[s]")
-    plt.ylabel(r"$\chi^2$")
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]")
     plt.draw()
     plt.pause(0.3)
     save_name_3 = save_name + " chisqrt"
@@ -137,21 +144,13 @@ def plot_Epot_Ekin(
     sim_steps = df_sim["sim_steps"][0]
     S = df_sim['Epot'][0]
     T = df_sim['Ekin'][0]
-    """T = np.zeros(sim_steps-1)
-    S = np.zeros(sim_steps-1)
-
-    for t in range(sim_steps-1):
-        T[t ]= (
-            E_kin(N=N,t=t,dt=dt,r=r,z=z,Area=Area)
-            )
-        S[t] = (
-            E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0
-                  ,r=r[t],psi=psi[t],Area=Area)
-        )"""
+    font_size= 15
+    
 
     t_vec = [dt*i for i in range(sim_steps-1)]
     fontsize = 10
     
+    """--------------------------------------Kinetic & Potential energy plot ----------------------------------------------------------"""
     fig, ax = plt.subplots(2,1)
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
@@ -160,14 +159,14 @@ def plot_Epot_Ekin(
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
     ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
-    ax[0].legend()
+    ax[0].legend(fontsize=15)
     ax[0].ticklabel_format(useOffset=False)
     #plt.figure()
     ax[1].plot(t_vec,S,"-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
     ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
     ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)
-    ax[1].legend()
+    ax[1].legend(fontsize=15)
     ax[1].ticklabel_format(useOffset=False)
 
     plt.draw()
@@ -177,92 +176,163 @@ def plot_Epot_Ekin(
     save_name_1 = "S&T"
     plt.savefig(output_path + save_name_1 + ".png")
     
-    
+    """--------------------------------------Kinetic energy plot stand alone----------------------------------------------------------"""
     fig, ax = plt.subplots()
-    font_size= 15
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
-    plt.plot(
-        r_unperturbed,z_unperturbed
-        ,marker="o",linestyle="-"
-        ,color="b"
-        ,label="Unperturbed initial pos"
-        )
+    plt.plot(t_vec,T,"-",label="Kinetic energy")
+    plt.xlabel("time [s]",fontsize=15)
+    plt.ylabel(r"$E_{kin}$",fontsize=15)
+    plt.title("Kinetic Energy (Not correct scale)",fontsize=15)
+    plt.ticklabel_format(useOffset=False)
+    plt.legend(fontsize=15)
+    save_name_4 = "Ekin"
+    plt.savefig(output_path + save_name_4 + ".png")
+    
+    """---------------------------------------Potential energy plot stand alone---------------------------------------------------------"""
+    fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    plt.plot(t_vec,S,"-",label="Potential energy")
+    plt.xlabel("time [s]",fontsize=15)
+    plt.ylabel(r"$E_{pot}$",fontsize=15)
+    plt.title("Potential Energy",fontsize=15)
+    plt.legend(fontsize=15)
+    plt.ticklabel_format(useOffset=False)
+    save_name_5 = "Epot"
+    plt.savefig(output_path + save_name_5 + ".png")
+
+
+    """---------------------------------Inital positon and end positon plot---------------------------------------------------------------"""
+    fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    if r_unperturbed[0] - r[0][0] == 0:
+        pass
+    else:
+        plt.plot(
+            r_unperturbed,z_unperturbed
+            ,marker="v",linestyle="dotted"
+            ,color="b"
+            ,label="Unperturbed initial pos"
+            )
     plt.plot(
         r[0],z[0]
-        ,marker="o",linestyle="-"
+        ,marker="o",linestyle="dashed"
         ,color="k"
         ,label="intial positions"
         )
     if r[sim_steps-1].all() == 0:
         plt.plot(
         r[sim_steps-1],z[sim_steps-1]
-        ,marker="o",linestyle="--"
+        ,marker="s",linestyle="solid"
         ,color="g"
         ,label="Error occured, and end isnt there"
         )
     else:
         plt.plot(
         r[sim_steps-1],z[sim_steps-1]
-        ,marker="o",linestyle="--"
+        ,marker="s",linestyle="solid"
         ,color="g"
         ,label="end positions"
         )
-    plt.xlabel("r",fontsize=font_size)
-    plt.ylabel("z",fontsize=font_size)
+    plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
+    plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
     plt.title("show difference from start and end positions")
-    plt.legend()
+    plt.legend()#fontsize=font_size)
 
     save_name_2 = df_name + "init&end"
     save_name_2 =  "init&end"
+    plt.draw()
     plt.savefig(output_path + save_name_2 +".png")
 
 
-
+    """---------------------------------Inital positon and end positon scaled correcly plot---------------------------------------------------------------"""
     fig, ax = plt.subplots()
     font_size= 15
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
-    plt.plot(
-        r_unperturbed,z_unperturbed
-        ,marker="o",linestyle="-"
-        ,color="b"
-        ,label="Unperturbed initial pos"
-        )
+    
+    if r_unperturbed[0] - r[0][0]==0:
+       pass
+    else:
+        plt.plot(
+            r_unperturbed,z_unperturbed
+            ,marker="v",linestyle="dotted"
+            ,color="b"
+            ,label="Unperturbed initial pos"
+            )
     plt.plot(
         r[0],z[0]
-        ,marker="o",linestyle="-"
+        ,marker="o",linestyle="dashed"
         ,color="k"
         ,label="intial positions"
         )
     if r[sim_steps-1].all() == 0:
         plt.plot(
         r[sim_steps-1],z[sim_steps-1]
-        ,marker="o",linestyle="--"
+        ,marker="s",linestyle="solid"
         ,color="g"
         ,label="Error occured, and end isnt there"
         )
     else:
         plt.plot(
         r[sim_steps-1],z[sim_steps-1]
-        ,marker="o",linestyle="--"
+        ,marker="s",linestyle="solid"
         ,color="g"
         ,label="end positions"
         )
-    plt.xlabel("r",fontsize=font_size)
-    plt.ylabel("z",fontsize=font_size)
-    xmin,xmax  = max(r[0]) - (N+1)*ds , np.max(r[0]) - (N+1)*ds/2
-    ymin,ymax = -ds, xmax - xmin - ds
+    plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
+    plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
+    xmin = min([min(r[t]) for t in range(sim_steps)]) - ds
+    xmax  = r[0][N] + ds
+    ymin = min([min(z[t]) for t in range(sim_steps)]) - ds
+    ymax = ymin + (xmax - xmin)
+
+
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
     plt.title("show difference from start and end positions")
-    plt.legend()
+    plt.legend(fontsize=font_size)
 
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "init&end scaled"
     plt.savefig(output_path + save_name_3 +".png")
 
+    """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
+    fig, ax = plt.subplots()
+    font_size= 15
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
 
+    t_ref_list = [0, int(sim_steps/4), int(2*sim_steps/4), int(3*sim_steps/4), int(sim_steps)-1 ]
+    style_list =["solid","dotted","dashed","dashdot","solid"]
+    color_list = ["k","g","r","b","m","c"]
+    marker_list= ["o","v","s","^","*",]
+    for i in range(len(t_ref_list)):
+        plt.plot(r[t_ref_list[i]],z[t_ref_list[i]]
+        ,marker=marker_list[i]
+        ,linestyle=style_list[i]
+        ,color=color_list[i]
+        ,label=r"t$\approx$"+f"{t_ref_list[i]*dt:0.1e}"
+        )
+
+    plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
+    plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
+    xmin = min([min(r[t]) for t in range(sim_steps)]) - ds
+    xmax  = r[0][N] + ds
+    ymin = min([min(z[t]) for t in range(sim_steps)]) - ds
+    ymax = ymin + (xmax - xmin)
+
+
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    plt.title("show difference from start and end positions")
+    plt.legend(fontsize=font_size)
+
+    save_name_3 = df_name + "init&end scaled"
+    save_name_3 =  "4 different postions in time"
+    plt.savefig(output_path + save_name_3 +".png")
 
 
 def plot_reference_fig_for_finding_what_to_simulate():
@@ -317,7 +387,10 @@ def plot_reference_fig_for_finding_what_to_simulate():
     #print(len(diff_taus))
     #print(f"mintau={min_tau} and max tau = {max_tau}")
 
+    """------------------------------------------------------------------------------------------------"""
     fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
     cmap = plt.cm.tab20b#cool#coolwarm
     plot_tau_ref = []
     i_ref,n_ref = 0,0
@@ -351,7 +424,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
 
     font_size = 15
     plt.title("")
-    plt.ylabel("Neck Radius",fontsize=font_size)
+    plt.ylabel("Neck Radius [dimless units]",fontsize=font_size)
     plt.xlabel(r"Excess area $\Delta \tilde{A} = \tilde{A}_{neck} - \tilde{A}_{disc}$",fontsize=font_size)
     
     plt.legend(fontsize=font_size-1)

@@ -27,14 +27,14 @@ def Make_video(
     FILES = [f"{i}.png" for i in range(num-1)]
     
     # Get the filename from the output path
-    filename = video_name +".avi"
+    filename = video_name + ".avi"
     #print(f'Creating video "{filename}" from images "{FILES}"')
 
     # Load the first image to get the frame size
     frame = cv2.imread(input_path + FILES[0],cv2.IMREAD_UNCHANGED)
     
 
-    print(f" first file name = {FILES[0]}")
+    #print(f" first file name = {FILES[0]}")
     
     
     height, width, layers = np.shape(frame)
@@ -143,7 +143,7 @@ def Make_frames(
     b.start()
     for t in frame_vec:
         b.update(k)
-        plt.plot(r_unperturbed,z_unperturbed,"-o",label="unperturbed state")
+        plt.plot(r_unperturbed,z_unperturbed,"-s",label="unperturbed state")
         plt.plot(r[t],z[t],'-o',label="dynamics")
         xmax = max(r[0])
         xmin = 0
@@ -154,8 +154,8 @@ def Make_frames(
         plt.xlim(min(r[0])-ds, max(r[0])+ds)
         ceil = max(r[0])-min(r[0]) + 2*ds
         plt.ylim(-ceil/10, 9*ceil/10)
-        plt.xlabel(f"x")
-        plt.ylabel(f"z")
+        plt.xlabel(r"r [$\mu m$]")
+        plt.ylabel(r"z [$\mu m$]")
         sig_dig = 1/dt
         plt.title(f"Dynamics for time={t*dt:0.2e}s  \n and frame ={k} of {len(frame_vec)}")
         plt.legend()

@@ -15,9 +15,9 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "Data for thesis\\Data simulation\\"
+    save_path =  "2D sim results\\" + "Data for thesis\\Data simulation\\"#"Verification\\"
     if folder_names == "":
-        save_path = save_path #+  "\\"
+        save_path = save_path +  "c0=0 tau=0\\"
     else:
         save_path = save_path + folder_names
     
@@ -28,7 +28,7 @@ def Two_D_paths(folder_names=""):
 
     
     """------ Saved files names  ---------"""
-    df_name= "2D"
+    df_name= "2D "
     fps_movie = 24
     num_frames = 100
 
@@ -134,8 +134,8 @@ def Two_D_Constants_stationary_state(
     if N == "":
         N = 20#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 2e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
-    dt = 1e-12 #1e-11 #5e-11 #s time step. 
+    T = 1e-8#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
+    dt = 1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
     if ds == "":
@@ -160,7 +160,7 @@ def Two_D_Constants_stationary_state(
     if tilde_sigma == "":
         tilde_sigma = 0.359493670886076 #0.3595 #0.1
     if tilde_tau == "":
-        tilde_tau = 1.0 #1
+        tilde_tau = 1 #1
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -258,7 +258,7 @@ def Two_D_Constants_stationary_state(
 
 
     
-    c0 = 0
+    #c0 = 0
     #tau = 0
 
     #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
