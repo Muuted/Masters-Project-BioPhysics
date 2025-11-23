@@ -601,11 +601,14 @@ def Investigating_chosen_configuration_1():
 
 
     #print(df_sim_minus_perturb.info())
+    
 
     """----------------------------------------- Minus perturbed data-----------------------------------------------------"""
     X2_minus_perturb = df_sim_minus_perturb["Chi squared test"][0]
     sim_steps_minus_perturb = df_sim_minus_perturb["sim_steps"][0]
     dt_minus_perturb = df_sim_minus_perturb["dt"][0]
+    r_minus_perturb = df_sim_minus_perturb["r"][0]
+    z_minus_perturb = df_sim_minus_perturb["z"][0]
     time_minus_perturb = np.linspace(0,sim_steps_minus_perturb*dt_minus_perturb,sim_steps_minus_perturb-1)
 
 
@@ -613,6 +616,8 @@ def Investigating_chosen_configuration_1():
     X2_plus_perturb = df_sim_plus_perturb["Chi squared test"][0]
     sim_steps_plus_perturb = df_sim_plus_perturb["sim_steps"][0]
     dt_plus_perturb = df_sim_plus_perturb["dt"][0]
+    r_plus_perturb = df_sim_plus_perturb["r"][0]
+    z_plus_perturb = df_sim_plus_perturb["z"][0]
     time_plus_perturb = np.linspace(0,sim_steps_plus_perturb*dt_plus_perturb,sim_steps_plus_perturb-1)
 
 
@@ -620,9 +625,14 @@ def Investigating_chosen_configuration_1():
     X2_unperturb = df_sim_unperturb["Chi squared test"][0]
     sim_steps_unperturb = df_sim_unperturb["sim_steps"][0]
     dt_unperturb = df_sim_unperturb["dt"][0]
+    r_unperturb = df_sim_unperturb["r"][0]
+    z_unperturb = df_sim_unperturb["z"][0]
+    r_unperturb_init = df_sim_unperturb["r unperturbed"][0]
+    z_unperturb_init = df_sim_unperturb["z unperturbed"][0]
+    ds = df_sim_unperturb["ds"][0]
     time_unperturb = np.linspace(0,sim_steps_unperturb*dt_unperturb,sim_steps_unperturb-1)
 
-
+    
 
     """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""
     fig, ax = plt.subplots()
@@ -663,6 +673,7 @@ def Investigating_chosen_configuration_1():
     plt.legend(fontsize=12)
     plt.xlabel("t [s]",fontsize=15)
     plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
+    plt.grid()
     plt.draw()
     plt.pause(2)
 
@@ -672,7 +683,67 @@ def Investigating_chosen_configuration_1():
 
     """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""    
     fig, ax = plt.subplots()
+    ax.set_aspect("equal",adjustable="box")
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
+    line_width = 2.5
+    marker_size = 10
+    plt.plot(
+        r_unperturb_init,z_unperturb_init
+        ,marker="o"
+        ,linestyle="-"
+        ,label="unperturbed initial pos"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
     
+    plt.plot(
+        r_minus_perturb[sim_steps_minus_perturb-1],z_minus_perturb[sim_steps_minus_perturb-1]
+        ,marker="s"
+        ,linestyle="--"
+        ,label="-perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.plot(
+        r_plus_perturb[sim_steps_unperturb-1] ,z_plus_perturb[sim_steps_unperturb-1]
+        ,marker="^"
+        ,linestyle="-."
+        ,label="+perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.plot(
+        r_unperturb[sim_steps_unperturb-1],z_unperturb[sim_steps_unperturb-1]
+        ,marker="*"
+        ,linestyle="dotted"
+        ,label="unperturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.xlabel(r"r [$\mu m$]",fontsize=15)
+    plt.ylabel(r"z [$\mu m$]",fontsize=15)
+    plt.legend(fontsize=15)
+    xmax = max(r_unperturb_init) #+ ds
+    xmin =  min([
+        min(r_unperturb_init)
+        ,min(r_minus_perturb[sim_steps_minus_perturb-1])
+        ,min(r_plus_perturb[sim_steps_unperturb-1])
+        ,min(r_unperturb[sim_steps_unperturb-1])
+    ])
+    ymin =  min([
+        min(z_unperturb_init)
+        ,min(z_minus_perturb[sim_steps_minus_perturb-1])
+        ,min(z_plus_perturb[sim_steps_unperturb-1])
+        ,min(z_unperturb[sim_steps_unperturb-1])
+    ])
+    ymax = xmax - xmin 
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    plt.grid()
     plt.show()
 
 if __name__ == "__main__":
