@@ -321,19 +321,21 @@ def make_circle_V2(rc,zc,R,rmax,rmin,zmax,zmin,step_size) ->list:
     d= rmax - rmin #diameter
     r_range = np.linspace(-d/2 -d/10,d/2 +d/10,steps)
 
-    r_return, z_return = [], []
+    r_return_up,r_return_down, z_return_up,z_return_down = [], [], [], []
     for r in r_range:
         z = np.sqrt( R**2 - r**2 )
 
-        r_return.append(r + rc)
-        z_return.append(z + zc)
+        if z == z:
+            r_return_up.append(r + rc)
+            z_return_up.append(z + zc)
 
     for r in r_range:
         z = np.sqrt( R**2 - r**2 )
-        r_return.append(r + rc)
-        z_return.append(-z + zc)
+        if z == z:
+            r_return_down.append(r + rc)
+            z_return_down.append(-z + zc)
 
-    return r_return ,z_return
+    return r_return_up,r_return_down ,z_return_up,z_return_down
 
 
 if __name__ == "__main__":

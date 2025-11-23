@@ -32,7 +32,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
     ]
     
     
-    save_name_list = [" -perturbed"," +perturbed"]#," unperturbed"]
+    save_name_list = ["-perturbed","+perturbed","unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
 

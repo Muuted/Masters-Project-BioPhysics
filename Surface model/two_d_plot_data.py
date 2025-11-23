@@ -52,12 +52,13 @@ def plot_tot_area(
         )
     ax.ticklabel_format(useOffset=False)
     
-    plt.draw()
-    plt.pause(0.2)
     save_name_1 = save_name + "Atot"# Total area over time"
     save_name_1 = "Atot"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
-    plt.pause(0.2)
+    
 
 
     """--------------------------------------Chi----------------------------------------------------------"""
@@ -69,12 +70,15 @@ def plot_tot_area(
     plt.xlabel("t[s]")
     plt.ylabel("number of variables corrections")
 
-    plt.draw()
-    plt.pause(0.2)
+    
     save_name_1 = save_name + " var corr"# Total area over time"
     save_name_1 =  " var corr"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
+    
     plt.savefig(output_path + save_name_1 + ".png")
-    plt.pause(0.2)
+    
 
 
 
@@ -93,13 +97,15 @@ def plot_tot_area(
     plt.title("Change in Area")
     plt.xlabel("t [s]")
     plt.ylabel("Area")
-    plt.draw()
-    plt.pause(0.3)
+
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_2 + ".png")
 
-    plt.pause(0.3)
+
 
     """--------------------------------------Chi----------------------------------------------------------"""
     fig,ax = plt.subplots()
@@ -109,10 +115,12 @@ def plot_tot_area(
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
     plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
-    plt.draw()
-    plt.pause(0.3)
+    
     save_name_3 = save_name + "chisqrt"
     save_name_3 = "chisqrt"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_3 + ".png")
 
 def plot_Epot_Ekin(
@@ -174,6 +182,9 @@ def plot_Epot_Ekin(
     save_name_1 = "potential and kinetic energy" + df_name 
     save_name_1 = df_name +" S&T"
     save_name_1 = "S&T"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
     
     """--------------------------------------Kinetic energy plot stand alone----------------------------------------------------------"""
@@ -187,6 +198,9 @@ def plot_Epot_Ekin(
     plt.ticklabel_format(useOffset=False)
     plt.legend(fontsize=15)
     save_name_4 = "Ekin"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_4 + ".png")
     
     """---------------------------------------Potential energy plot stand alone---------------------------------------------------------"""
@@ -200,6 +214,9 @@ def plot_Epot_Ekin(
     plt.legend(fontsize=15)
     plt.ticklabel_format(useOffset=False)
     save_name_5 = "Epot"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_5 + ".png")
 
 
@@ -243,7 +260,9 @@ def plot_Epot_Ekin(
 
     save_name_2 = df_name + "init&end"
     save_name_2 =  "init&end"
+    ax.set_aspect("equal",adjustable="box")
     plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_2 +".png")
 
 
@@ -289,7 +308,7 @@ def plot_Epot_Ekin(
     ymin = min([min(z[t]) for t in range(sim_steps)]) - ds
     ymax = ymin + (xmax - xmin)
 
-
+    
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
     plt.title("show difference from start and end positions",fontsize=15)
@@ -297,6 +316,9 @@ def plot_Epot_Ekin(
 
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "init&end scaled"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
 
     """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
@@ -327,11 +349,15 @@ def plot_Epot_Ekin(
 
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
+    ax.set_aspect("equal",adjustable="box")
     plt.title("show difference from start and end positions",fontsize=15)
     plt.legend(fontsize=font_size)
 
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "4 different postions in time"
+    ax.set_aspect("equal",adjustable="box")
+    plt.draw()
+    plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
 
 
@@ -442,7 +468,7 @@ def Find_the_circle_radius_of_rolling_test():
     from two_d_data_processing import cirle_fit, make_circle, make_circle_V2
 
     data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
-    data_path = "C:\\Users\\adams\\Documents\\GitHub\\Masters-Project-BioPhysics\\Surface model\\2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
+    #data_path = "C:\\Users\\adams\\Documents\\GitHub\\Masters-Project-BioPhysics\\Surface model\\2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
     data_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25)"
 
     df_sim = pd.read_pickle(data_path+data_name)
@@ -483,7 +509,7 @@ def Find_the_circle_radius_of_rolling_test():
         ,xlim=[min(r[sim_steps-1][start_point:end_point]) , max(r[sim_steps-1][start_point:end_point])]
         ,zlim=[min(z[sim_steps-1][start_point:end_point]) , max(z[sim_steps-1][start_point:end_point])]
         )"""
-    r_circ, z_circ = make_circle_V2(
+    r_circ_up,r_circ_down, z_circ_up, z_circ_down = make_circle_V2(
         rc=rc1,zc=zc1,R=R
         ,rmax= max(r[sim_steps-1][start_point:end_point])
         ,rmin=min(r[sim_steps-1][start_point:end_point])
@@ -494,13 +520,37 @@ def Find_the_circle_radius_of_rolling_test():
     print("I have made the circle")
     """------------------------------------------------------------------------------------------------"""
     fig, ax = plt.subplots()
-    #wm = plt.get_current_fig_manager()
-    #wm.window.state('zoomed')
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+
+    plt.plot(r_circ_up,z_circ_up
+             ,linestyle="-"
+             ,color="k"
+             ,label=f"circle fit"#+r"r$\approx$"+f"{R:0.3f}"
+             ,linewidth = 3
+             )
+    
+    plt.plot(r_circ_down,z_circ_down
+             ,linestyle="-"
+             ,color="k"
+             ,linewidth = 3
+             #,label=f"circle fit "+r"r$\approx$"+f"{R:0.3f}"
+             )
+    
+    plt.plot(
+        [rc1    ,r_circ_up[int( len(z_circ_down)/1.2)] ]
+        ,[zc1  ,z_circ_up[int( len(z_circ_down)/1.2 )]]
+        ,label=f"radius"+r"$\approx$"+f"{R:0.3f}" +r"$\mu m$"
+        ,color="k"
+        ,linestyle="-"
+        ,marker=""
+        )
+    
     plt.plot(r[sim_steps-1][end_point],z[sim_steps-1][end_point]
              ,marker="v"
              ,linestyle=""
              ,color="b"
-             ,label="stop point"
+             #,label="stop point"
              ,markersize = 15
              )
 
@@ -508,16 +558,13 @@ def Find_the_circle_radius_of_rolling_test():
              ,marker="*"
              ,linestyle="-"
              ,color="m"
-             ,label=f"membrane t={(sim_steps-1)*dt:0.1e}"
+             ,label=f"membrane t={(sim_steps-1)*dt:0.1e}s"
              #,linewidth= 5
              )
     
     
-    plt.plot(r_circ,z_circ
-             ,linestyle="--"
-             ,color="k"
-             ,label=f"circle fit "+r"r$\approx$"+f"{R:0.3f}"
-             )
+  
+    
     rmin = min(r[sim_steps-1][start_point:end_point]) - ds
     rmax =  max(r[sim_steps-1][start_point:end_point]) + ds
     deltar = rmax - rmin
@@ -525,15 +572,112 @@ def Find_the_circle_radius_of_rolling_test():
     zmax = deltar
     plt.xlim(rmin,rmax)
     plt.ylim(zmin,zmax)
+    ax.set_aspect("equal",adjustable="box")
     plt.legend(fontsize=15)
     plt.title("")
     plt.grid()
     plt.xlabel(r"r [$\mu m$]",fontsize=15)
     plt.ylabel(r"z [$\mu m$]",fontsize=15)
+    plt.draw()
+    plt.pause(3)
     plt.savefig(data_path + "Rolling circle fit test.png")
     plt.show()
+
+
+def Investigating_chosen_configuration_1():
+
+    data_path = "2D sim results\\Data for thesis\\Data simulation\\"
+    folder_names = " sigma,tau,psi2=(1.8e+042.0e+03-1.5e-08)\\"
+    save_name_list = ["-perturbed","+perturbed","unperturbed"]
+    data_name_list = [
+        "2D  N,ds,dt,T,tau,c0=(20, 0.015, 1.25e-13, 1e-07, 2000, 25)"
+        ,"2D  N,ds,dt,T,tau,c0=(20, 0.015, 1.25e-13, 1e-07, 2000, 25)"
+        ,"2D  N,ds,dt,T,tau,c0=(20, 0.015, 1.25e-13, 1e-08, 2000, 25)"
+        ]
+
+    df_sim_minus_perturb = pd.read_pickle(data_path + save_name_list[0] + folder_names +  data_name_list[0])
+    df_sim_plus_perturb = pd.read_pickle(data_path + save_name_list[1] + folder_names +  data_name_list[1])
+    df_sim_unperturb = pd.read_pickle(data_path + save_name_list[2] + folder_names +  data_name_list[2])
+
+
+    #print(df_sim_minus_perturb.info())
+
+    """----------------------------------------- Minus perturbed data-----------------------------------------------------"""
+    X2_minus_perturb = df_sim_minus_perturb["Chi squared test"][0]
+    sim_steps_minus_perturb = df_sim_minus_perturb["sim_steps"][0]
+    dt_minus_perturb = df_sim_minus_perturb["dt"][0]
+    time_minus_perturb = np.linspace(0,sim_steps_minus_perturb*dt_minus_perturb,sim_steps_minus_perturb-1)
+
+
+    """----------------------------------------- Plus perturbed data-----------------------------------------------------"""
+    X2_plus_perturb = df_sim_plus_perturb["Chi squared test"][0]
+    sim_steps_plus_perturb = df_sim_plus_perturb["sim_steps"][0]
+    dt_plus_perturb = df_sim_plus_perturb["dt"][0]
+    time_plus_perturb = np.linspace(0,sim_steps_plus_perturb*dt_plus_perturb,sim_steps_plus_perturb-1)
+
+
+    """----------------------------------------- Unperturbed data-----------------------------------------------------"""
+    X2_unperturb = df_sim_unperturb["Chi squared test"][0]
+    sim_steps_unperturb = df_sim_unperturb["sim_steps"][0]
+    dt_unperturb = df_sim_unperturb["dt"][0]
+    time_unperturb = np.linspace(0,sim_steps_unperturb*dt_unperturb,sim_steps_unperturb-1)
+
+
+
+    """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""
+    fig, ax = plt.subplots()
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
+    
+    line_width = 2
+    plt.plot(
+        time_minus_perturb,X2_minus_perturb
+        ,label="-perturb"
+        ,linestyle="-."
+        ,linewidth=line_width
+        )
+    plt.plot(
+        time_plus_perturb,X2_plus_perturb
+        ,label="+perturb"
+        ,linestyle="--"
+        ,linewidth=line_width
+        )
+    plt.plot(
+        time_unperturb,X2_unperturb
+        ,label="unperturb"
+        ,linestyle="-"
+        ,linewidth=line_width
+        )
+
+    ymax = max([
+         max(X2_minus_perturb[0:int(1e-8/dt_minus_perturb)])
+        ,max(X2_plus_perturb[0:int(1e-8/dt_plus_perturb)])
+        ,max(X2_unperturb[0:int(1e-8/dt_unperturb)])
+        ])
+    xmax = sim_steps_unperturb*dt_unperturb*1.01 
+    xmin = -1e-10
+    ymin = -0.3e-4
+    plt.xlim(xmin, xmax)
+    plt.ylim(ymin,ymax)
+    plt.ticklabel_format(axis='both', style='sci', scilimits=(0,0))
+    plt.legend(fontsize=12)
+    plt.xlabel("t [s]",fontsize=15)
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
+    plt.draw()
+    plt.pause(2)
+
+    save_name_1 = "chisqrt for all 3.png"
+    plt.savefig(data_path + save_name_1)
+
+
+    """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""    
+    fig, ax = plt.subplots()
+    
+    plt.show()
+
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
     #plot_reference_fig_for_finding_what_to_simulate()
-    Find_the_circle_radius_of_rolling_test()
+    #Find_the_circle_radius_of_rolling_test()
+    Investigating_chosen_configuration_1()
