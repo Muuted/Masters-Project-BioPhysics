@@ -158,7 +158,7 @@ def Two_D_Constants_stationary_state(
 
     #Dimless variables
     if tilde_sigma == "":
-        tilde_sigma = 0.359493670886076 #0.3595 #0.1
+        tilde_sigma = 0.329113924050633
     if tilde_tau == "":
         tilde_tau = 1 #1
 
@@ -170,7 +170,7 @@ def Two_D_Constants_stationary_state(
     zs2 = 0
     s0, sN = 0, 50*lc
     if psi_L == "":
-        psi_L = -1.46324247725744e-08#
+        psi_L = -1.68533976179446e-8 #-1.46324247725744e-08#
 
     #print(f"n={N}, ds={ds:e} , sigma={sigma} , psi2={psi_L} ,tau={tau}")
     #Creating lists for the variables.

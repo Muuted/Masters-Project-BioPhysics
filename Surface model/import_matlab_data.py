@@ -140,20 +140,23 @@ plt.plot(
     df["ExcessAreaCurved"][n_pos_A[0]][i_pos[0]]
     ,df["r1Curved"][n_pos_A[0]][i_pos[0]]
     #,label=""
-    ,marker="o"
+    ,marker="1"
     ,color="k"
+    ,markersize = 15
     )
 plt.plot(
     df["ExcessAreaCurved"][n_pos_A[1]][i_pos[1]]
     ,df["r1Curved"][n_pos_A[1]][i_pos[1]]
-    ,marker="o"
+    ,marker="+"
     ,color="k"
+    ,markersize = 15
     )
 plt.plot(
     df["ExcessAreaFlat"][n_neg_A[0]][i_neg[0]]
     ,df["r1Flat"][n_neg_A[0]][i_neg[0]]
-    ,marker="o"
+    ,marker="x"
     ,color="k"
+    ,markersize = 15
     )
 
 for n in range(len(df["ExcessAreaCurved"])):
@@ -201,6 +204,7 @@ plt.legend()
 plt.vlines(x=0,ymin=-1,ymax=8,colors="k",linestyles="--")
 plt.xlim(-60, 50)
 plt.ylim(0 ,7)
-plt.xlabel(r"$\Delta \tilde{A} = \tilde{A}_{membrane} - \tilde{A}_{disc} $")
-plt.ylabel(r"edge radius")
+plt.title("edge radius vs Excess Area",fontsize=15)
+plt.xlabel(r"$\Delta \tilde{A} = \tilde{A}_{membrane} - \tilde{A}_{disc} $",fontsize=15)
+plt.ylabel(r"edge radius",fontsize=15)
 plt.show()
