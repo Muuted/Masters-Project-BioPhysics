@@ -7,32 +7,31 @@ from Make_movie import Make_frames, Make_video
 from two_d_data_processing import check_area
 from Two_D_functions import Langrange_multi
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
-
+from iterative_surface_sim import Surface_sim_stationary_state_initial_configuration_iterative
 import multiprocessing
 import os
 
 def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     index:int
     ):
-    print_val:bool = False
     do_simulation:bool = True
     start_from_flat:bool = False
-    do_perturbation:bool = False
-    make_movie: bool = True
-    make_plots: bool = True
+    make_movie: bool = False#True
+    make_plots: bool = False#True
     
     print("\n Now Running the surface simulation from stationary configurations \n")
 
-    save_name_list = [" -perturbed"," +perturbed"," unperturbed"]
+    save_name_list = ["-perturbed","+perturbed","unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
+    show_print_val = [False ,False ,True]
 
     const_args = Two_D_Constants_stationary_state(
-        print_val=False
-        ,show_stationary_state=False#True
-        ,start_flat=start_from_flat
-        ,perturb=do_perturbation_list[index]
-        ,dpsi_perturb= dpsi_list[index]
+        print_val = show_print_val[index]
+        ,show_stationary_state = show_print_val[index]
+        ,start_flat = start_from_flat
+        ,perturb = do_perturbation_list[index]
+        ,dpsi_perturb = dpsi_list[index]
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -45,12 +44,12 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names= save_name_list[index] + f" sigma,tau,psi2={sigma:0.1e}{tau:0.1e}{psi2_init:0.1e}\\")
+    path_args = Two_D_paths(folder_names = save_name_list[index] + f" sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\")
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
-    df_name = df_name_ref 
+    df_name = df_name_ref + f" N,ds,dt,T,tau,c0={N,ds,dt,T,tau,c0}"
     
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -67,10 +66,9 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence = 1e-5#-5#-10
+            ,Tolerence = 1e-10
             ,save_data = True
-            ,print_progress = do_perturbation_list[index]
-            ,
+            ,print_progress = show_print_val[index]
         )
 
     #plt.show()
@@ -80,7 +78,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
             data_path=data_path
             ,figs_save_path=figs_for_video_path
             ,df_name=df_name
-            ,tot_frames= 500
+            ,tot_frames= 250
         )
         Make_video(
             output_path=video_save_path
@@ -108,34 +106,35 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
 
 if __name__ == "__main__":
 
-    folder_name_1 = "Multi processing test\\"
-    save_name_list_1 = [" -perturbed"," +perturbed"," unperturbed"]
-    dpsi_list_1 = [ -0.01, 0.01 ,0]
-    do_perturbation_list_1 = [True ,True ,False]
 
-
-    p1 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[0],))
-    p2 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[1],))
-    p3 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[2],))
-    p4 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[3],))
+    p1 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,))
+    p2 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,))
+    p3 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,))
+    #p4 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[3],))
     #p5 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[4],))
     #p6 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[5],))
 
     p1.start()
     p2.start()
     p3.start()
-    p4.start()
+    #p4.start()
     #p5.start()
     #p6.start()
 
     p1.join()
     p2.join()
     p3.join()
-    p4.join()
+    #p4.join()
     #p5.start()
     #sp6.join()
 
-
+    Surface_sim_stationary_state_initial_configuration_iterative(
+        do_simulation = False#True
+        #,start_from_flat = False
+        #,do_perturbation = False #True
+        ,make_movie = True
+        ,make_plots= True
+    )
 
 
     tau_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]

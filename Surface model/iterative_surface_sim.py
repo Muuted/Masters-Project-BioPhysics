@@ -13,7 +13,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         do_simulation:bool = True
         ,start_from_flat:bool = False
         ,do_perturbation:bool = False
-        ,make_movie: bool = True
+        ,make_movie: bool = False#True
         ,make_plots: bool = True
     ):
     print("\n Now Running the surface simulation from stationary configurations \n")
@@ -54,7 +54,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
         psi2_init ,alpha = const_args[21:23]
         
-        path_args = Two_D_paths(folder_names = save_name_list[i] + f" sigma,tau,psi2=({sigma:0.1e}{tau:0.1e}{psi2_init:0.1e})\\")
+        path_args = Two_D_paths(folder_names = save_name_list[i] + f" sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\")
         data_path, fig_save_path = path_args[0:2]
         video_save_path,figs_for_video_path = path_args[2:4]
         df_name_ref, fps_movie ,num_frames = path_args[4:7]
@@ -90,7 +90,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
                 data_path=data_path
                 ,figs_save_path=figs_for_video_path
                 ,df_name=df_name
-                ,tot_frames= 500
+                ,tot_frames= 250
             )
             Make_video(
                 output_path=video_save_path
@@ -118,7 +118,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
 if __name__ == "__main__":
     Surface_sim_stationary_state_initial_configuration_iterative(
-        do_simulation = True
+        do_simulation = False#True
         #,start_from_flat = False
         #,do_perturbation = False #True
         ,make_movie = True

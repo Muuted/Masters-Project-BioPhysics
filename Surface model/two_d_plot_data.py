@@ -54,7 +54,7 @@ def plot_tot_area(
     
     save_name_1 = save_name + "Atot"# Total area over time"
     save_name_1 = "Atot"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
@@ -73,7 +73,7 @@ def plot_tot_area(
     
     save_name_1 = save_name + " var corr"# Total area over time"
     save_name_1 =  " var corr"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     
@@ -100,7 +100,7 @@ def plot_tot_area(
 
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_2 + ".png")
@@ -118,7 +118,7 @@ def plot_tot_area(
     
     save_name_3 = save_name + "chisqrt"
     save_name_3 = "chisqrt"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_3 + ".png")
@@ -182,7 +182,7 @@ def plot_Epot_Ekin(
     save_name_1 = "potential and kinetic energy" + df_name 
     save_name_1 = df_name +" S&T"
     save_name_1 = "S&T"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
@@ -198,7 +198,7 @@ def plot_Epot_Ekin(
     plt.ticklabel_format(useOffset=False)
     plt.legend(fontsize=15)
     save_name_4 = "Ekin"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_4 + ".png")
@@ -214,7 +214,7 @@ def plot_Epot_Ekin(
     plt.legend(fontsize=15)
     plt.ticklabel_format(useOffset=False)
     save_name_5 = "Epot"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_5 + ".png")
@@ -355,7 +355,6 @@ def plot_Epot_Ekin(
 
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "4 different postions in time"
-    ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
