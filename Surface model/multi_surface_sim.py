@@ -66,7 +66,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
             ,df_name = df_name
             ,num_frames = num_frames
             ,data_path = data_path
-            ,Tolerence = 1e-10
+            ,Tolerence = 1e-5
             ,save_data = True
             ,print_progress = show_print_val[index]
         )
