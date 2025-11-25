@@ -15,7 +15,7 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "Data for thesis\\multi processor result\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "Data for thesis\\multi processor result\\cross sims\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path +  "c0=0 tau=0\\"
     else:
@@ -122,7 +122,7 @@ def Two_D_Constants(
 def Two_D_Constants_stationary_state(
         print_val:bool=False
         ,show_stationary_state:bool = True
-        ,pause_timer:float = 4
+        ,pause_timer:float = 2
         ,start_flat:bool = False
         ,perturb:bool = False
         ,dpsi_perturb="",tilde_sigma=""
