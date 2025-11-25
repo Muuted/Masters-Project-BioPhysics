@@ -15,6 +15,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
         ,do_perturbation:bool = False
         ,make_movie: bool = False#True
         ,make_plots: bool = True
+        ,print_val:bool = False
     ):
     print("\n Now Running the surface simulation from stationary configurations \n")
 
@@ -38,7 +39,7 @@ def Surface_sim_stationary_state_initial_configuration_iterative(
 
     for i in range(len(save_name_list)):
         const_args = Two_D_Constants_stationary_state(
-            print_val = True
+            print_val = print_val
             ,show_stationary_state = True
             ,start_flat = start_from_flat
             ,perturb = do_perturbation_list[i]
