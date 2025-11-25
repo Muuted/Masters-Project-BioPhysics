@@ -122,7 +122,7 @@ def Two_D_Constants(
 def Two_D_Constants_stationary_state(
         print_val:bool=False
         ,show_stationary_state:bool = True
-        ,pause_timer:float = 2
+        ,pause_timer:float = 4
         ,start_flat:bool = False
         ,perturb:bool = False
         ,dpsi_perturb="",tilde_sigma=""
