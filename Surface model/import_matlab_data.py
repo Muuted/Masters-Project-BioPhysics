@@ -230,7 +230,7 @@ print(
 )
 
 markers = ["^","+","x"]
-markers_latex = [r"$\triangle$" ,r"$\times$",r"$\plus$"]
+markers_latex = [r"$\triangle$",r"$\plus$" ,r"$\times$"]
 ax[0].plot(
     df["ExcessAreaCurved"][n_pos_A[0]][i_pos[0]]/lc**2
     ,df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc
@@ -284,6 +284,8 @@ ax[0].set_ylabel(r"edge radius [$\mu m$]",fontsize=15)
 """---------------------------------------------- Initial configurations ---------------------------------------------------"""
 #fig,ax = plt.subplots()
 
+print(f"n pos A :{n_pos_A} and i pos = {i_pos}")
+print(f"n neg A :{n_neg_A} and i neg = {i_neg}")
 
 sigma_list = [
     df["sigma_list_Curved"][n_pos_A[0]][i_pos[0]]
@@ -349,7 +351,7 @@ ax[1].plot(
 
 ax[1].plot(
     r_contin_2
-    ,z_contin_2 -spacing
+    ,z_contin_2 - spacing
     ,label = markers_latex[2]  + f",r1={df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}"
     ,linestyle="-."
     ,linewidth=2
