@@ -98,8 +98,8 @@ for n in range(len(df["tau_list_Flat"])):
 
 pos_A_min_x1 ,pos_A_min_x2 ,neg_A_min_x3 = 36 ,3.4 ,-1.08#-12
 pos_A_max_x1 ,pos_A_max_x2 ,neg_A_max_x3 = 37 ,3.6 ,-1.06#-11
-pos_A_min_y1 ,pos_A_min_y2 ,neg_A_min_y3 = 3 ,7.35 , 0.64#2.725
-pos_A_max_y1 ,pos_A_max_y2 ,neg_A_max_y3 = 3.05 ,7.45 ,0.66#2.8
+pos_r1_min_y1 ,pos_r1_min_y2 ,neg_r1_min_y3 = 3 ,7.35 , 0.64#2.725
+pos_r1_max_y1 ,pos_r1_max_y2 ,neg_r1_max_y3 = 3.05 ,7.45 ,0.66#2.8
 
 n_neg_A ,n_pos_A = [] ,[]
 i_neg ,i_pos = [],[]
@@ -109,11 +109,11 @@ for n in range(len(df["ExcessAreaCurved"])):
         if len(df["ExcessAreaCurved"]) > 0:
             A_curve = df["ExcessAreaCurved"][n][i]
             r1_curve = df["r1Curved"][n][i]
-            if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_A_min_y1 < r1_curve < pos_A_max_y1:
+            if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_r1_min_y1 < r1_curve < pos_r1_max_y1:
                 n_pos_A.append(n)
                 i_pos.append(i)
                 print("first")
-            if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_A_min_y2 < r1_curve < pos_A_max_y2:
+            if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_r1_min_y2 < r1_curve < pos_r1_max_y2:
                 n_pos_A.append(n)
                 i_pos.append(i)
                 print("2nd")
@@ -123,7 +123,7 @@ for n in range(len(df["ExcessAreaFlat"])):
         if len(df["ExcessAreaFlat"]) > 0:
             A_Flat = df["ExcessAreaFlat"][n][i]
             r1_Flat = df["r1Flat"][n][i]
-            if neg_A_min_x3 < A_Flat < neg_A_max_x3 and neg_A_min_y3 < r1_Flat < neg_A_max_y3:
+            if neg_A_min_x3 < A_Flat < neg_A_max_x3 and neg_r1_min_y3 < r1_Flat < neg_r1_max_y3:
                 n_neg_A.append(n)
                 i_neg.append(i)
 
@@ -149,6 +149,10 @@ sigma, tau, kG = const_args[9:12]
 lc = 1/c0
 sigma_c = k*c0**2
 tau_c = k*c0
+
+rs2 = 20*lc 
+zs2 = 0
+s0, sN = 0, 50*lc
 
 fig, ax = plt.subplots(1,2)
 cmap = plt.cm.coolwarm
@@ -230,22 +234,23 @@ markers_latex = [r"$\triangle$" ,r"$\times$",r"$\plus$"]
 ax[0].plot(
     df["ExcessAreaCurved"][n_pos_A[0]][i_pos[0]]/lc**2
     ,df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc
-    ,marker=markers[0]
+    ,marker=markers[0] 
     ,color="k"
     ,markersize = 15
     ,mfc = "none"
     )
+
 ax[0].plot(
     df["ExcessAreaCurved"][n_pos_A[1]][i_pos[1]]/lc**2
     ,df["r1Curved"][n_pos_A[1]][i_pos[1]]/lc
-    ,marker=markers[1]
+    ,marker=markers[1] 
     ,color="k"
     ,markersize = 12
     )
 ax[0].plot(
     df["ExcessAreaFlat"][n_neg_A[0]][i_neg[0]]/lc**2
     ,df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc
-    ,marker=markers[2]
+    ,marker=markers[2] 
     ,color="k"
     ,markersize = 12
     ,mfc = "none"
@@ -272,18 +277,13 @@ ax[0].set_title(
     +r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
     ,fontsize=15)
 ax[0].set_xlabel(r"$\Delta A = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
-ax[0].set_ylabel(r"edge radius [$\mu m^2$]",fontsize=15)
+ax[0].set_ylabel(r"edge radius [$\mu m$]",fontsize=15)
 
 
 
 """---------------------------------------------- Initial configurations ---------------------------------------------------"""
 #fig,ax = plt.subplots()
 
-
-
-rs2 = 20*lc 
-zs2 = 0
-s0, sN = 0, 50*lc
 
 sigma_list = [
     df["sigma_list_Curved"][n_pos_A[0]][i_pos[0]]
@@ -334,7 +334,7 @@ spacing = max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
 ax[1].plot(
     r_contin_0
     ,z_contin_0 + spacing
-    ,label = markers_latex[0]#+"Curved"
+    ,label = markers_latex[0] + f",r1={df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}"
     ,linestyle="-"
     ,linewidth=2
          )
@@ -342,7 +342,7 @@ ax[1].plot(
 ax[1].plot(
     r_contin_1
     ,z_contin_1 
-    ,label = markers_latex[1]# + " Curved"
+    ,label = markers_latex[1] + f",r1={df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}"
     ,linestyle="dashed"
     ,linewidth=2
     )
@@ -350,7 +350,7 @@ ax[1].plot(
 ax[1].plot(
     r_contin_2
     ,z_contin_2 -spacing
-    ,label = markers_latex[2] #+ " Flat"
+    ,label = markers_latex[2]  + f",r1={df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}"
     ,linestyle="-."
     ,linewidth=2
     )
