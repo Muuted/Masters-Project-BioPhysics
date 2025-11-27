@@ -1,16 +1,12 @@
 import pandas as pd
 import time
 import matplotlib.pyplot as plt
-from Two_D_constants import Two_D_Constants, Two_D_paths, Two_D_Constants_stationary_state
-from Two_D_simulation_function import Two_D_simulation, Two_D_simulation_V2, Two_d_simulation_stationary_states
-from Make_movie import Make_frames, Make_video
-from two_d_data_processing import check_area
-from Two_D_functions import Langrange_multi
-from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
-from iterative_surface_sim import Surface_sim_stationary_state_initial_configuration_iterative
+from Two_D_constants import Two_D_paths, Two_D_Constants_stationary_state
+from Two_D_simulation_function import  Two_d_simulation_stationary_states
+
 import multiprocessing
 import os
-from Testing_ideas import plot_everytyhing
+
 def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     perturb_index:int , const_index: int 
     ):
@@ -41,9 +37,9 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
     if const_index == 0 or const_index == 2:
-        show_print_val = [False ,False ,False]
-    else:
         show_print_val = [False ,False ,True]
+    else:
+        show_print_val = [False ,False ,False]
 
     const_args = Two_D_Constants_stationary_state(
         print_val = show_print_val[perturb_index]
@@ -54,6 +50,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
         ,tilde_sigma = tilde_sigma_list[const_index]
         ,tilde_tau = tilde_tau_list[const_index]
         ,psi_L = psi2_list[const_index]
+        ,pause_timer=10
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -94,12 +91,16 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
         )
 
 
-def main_multiProcessing(num_cpu,perturb_index_list,var_index_list):
+def main_multiProcessing():
+    num_cpu = 3
+    perturb_list = [0,1,2,0,1,2]
+
+    const_vars = [2,2,2]#,1,1,1] # 0 = triangle, 1 = plus and 2 = cross (in Latex)
     process = []
     for i in range(num_cpu):
         process.append(multiprocessing.Process(
             target=Surface_sim_stationary_state_initial_configuration_multiprocessing
-            ,args=(perturb_index_list[i],var_index_list[i])
+            ,args=(perturb_list[i],const_vars[i])
             ))
 
     for p in process:
@@ -109,17 +110,9 @@ def main_multiProcessing(num_cpu,perturb_index_list,var_index_list):
         p.join
 
 
-    plot_everytyhing()
-
 if __name__ == "__main__":
-    cpu_6 = True
-    const_index_1 = 0
-    const_index_2 = 1
 
-    perturb_list = [0,1,2,0,1,2]
-    const_vars = [0,0,0,1,1,1]
-
-    main_multiProcessing(num_cpu=6,perturb_index_list=perturb_list,var_index_list=const_vars)
+    main_multiProcessing()
 
     
 
