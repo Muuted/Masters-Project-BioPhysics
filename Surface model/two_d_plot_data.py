@@ -1025,7 +1025,6 @@ def figure_3_potential_energy_landscape_cases():
 
 def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\multi test\\"
-
     directory_list = list()
     data_files = list()
     make_movie= True
@@ -1067,10 +1066,14 @@ def plot_multiprocessing_results():
                 plt.pause(2)
                 plt.close("all")
 
+
+
+
+
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
-    plot_reference_fig_for_finding_what_to_simulate()
+    #plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
-    #figure_3_potential_energy_landscape_cases()
+    figure_3_potential_energy_landscape_cases()

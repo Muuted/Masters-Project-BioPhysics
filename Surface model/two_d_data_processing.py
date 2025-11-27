@@ -338,5 +338,63 @@ def make_circle_V2(rc,zc,R,rmax,rmin,zmax,zmin,step_size) ->list:
     return r_return_up,r_return_down ,z_return_up,z_return_down
 
 
+
+def Plot_3D_mesh(
+        path:str="",data:str="",save_path:str=""
+        ):
+    from two_d_continues_integration import find_init_stationary_state
+    if path == "":
+        #path = "2D sim results\\Data for thesis\\Verification\\c0=0 tau=0\\"
+        path = "2D sim results\\Data for thesis\\Data simulation\\unperturbed sigma,tau,psi2=(1.8e+042.0e+03-1.5e-08)\\"
+        #data = "2D surface N,ds,dt,T,tau,c0=(20, 0.015, 1e-11, 5e-07, 0, 0)"#"2D surface N,ds,dt,T,tau,c0=(20, 0.015, 1e-11, 5e-07, 2000, 0)"
+        data = "2D  N,ds,dt,T,tau,c0=(20, 0.015, 1.25e-13, 1e-08, 2000, 25)"
+    
+    df = pd.read_pickle(path + data)
+    #print(df.info())
+    simsteps = df["sim_steps"][0]
+    r = df["r"][0][simsteps-1]
+    z = df["z"][0][simsteps-1]
+    N = df["N"][0]
+    
+    xlist =  [[ i - min(r)/5 for i in r]]
+    y_down, y_up = [[ 0 for i in r]], [[ 0 for i in r]]
+
+    pi_vec = np.linspace(0,np.pi,100)
+    x2 ,y2_up,y2_down = [] ,[], []
+    x_ring, y_ring, y_ring_down = [],[],[]
+
+    for theta in pi_vec:
+        x2.append(
+            [ x*np.cos(theta) for x in xlist[0] ]
+            )
+        y2_up.append(
+            [x*np.sin(theta) for x in xlist[0]]
+        )
+        y2_down.append(
+            [-x*np.sin(theta) for x in xlist[0]]
+        )
+    
+    for x in xlist[0]:
+        x_ring.append([x*np.cos(theta) for theta in pi_vec])
+        y_ring.append([x*np.sin(theta) for theta in pi_vec])
+        y_ring_down.append([-x*np.sin(theta) for theta in pi_vec])
+        
+    ax = plt.figure().add_subplot(projection='3d')
+    alpha_val = np.linspace(start=0.1,stop=1,num=len(pi_vec))
+    for n in range(len(pi_vec)):
+        ax.plot3D(x2[n],y2_up[n],z,linestyle="-",marker="",color="k",alpha=0.3 )
+        ax.plot3D(x2[n],y2_down[n],z,linestyle="-",marker="",color="k",alpha=0.3 )
+    
+    for i in range(len(x_ring)):
+        ax.plot3D(x_ring[i],y_ring[i],z[i],linestyle="-",marker="",color="k",alpha=0.3)
+        ax.plot3D(x_ring[i],y_ring_down[i],z[i],linestyle="-",marker="",color="k",alpha=0.3)
+    
+    xmin = min([min(x2[n]) for n in range(len(x2))])
+    xmax = max([max(x2[n]) for n in range(len(x2))])
+    print(xmin,xmax)
+    plt.xlim(xmin,xmax)
+    plt.ylim(xmin,xmax)
+    ax.set_zlim(0,(xmax-xmin))
+    plt.show()
 if __name__ == "__main__":
     exit()
