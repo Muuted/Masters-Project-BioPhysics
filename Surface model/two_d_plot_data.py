@@ -964,9 +964,7 @@ def Investigating_chosen_configuration_1():
         ,markersize=marker_size
         )
     
-    plt.xlabel(r"r [$\mu m$]",fontsize=15)
-    plt.ylabel(r"z [$\mu m$]",fontsize=15)
-    plt.legend(fontsize=15)
+    
     xmax = max(r_unperturb_init) #+ ds
     xmin =  min([
         min(r_unperturb_init)
@@ -983,6 +981,9 @@ def Investigating_chosen_configuration_1():
     ymax = xmax - xmin 
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
+    plt.xlabel(r"r [$\mu m$]",fontsize=15)
+    plt.ylabel(r"z [$\mu m$]",fontsize=15)
+    plt.legend(fontsize=15)
     plt.grid()
     plt.show()
 
@@ -1040,5 +1041,5 @@ if __name__ == "__main__":
     #plot_Epot_Ekin()
     #plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
-    #Investigating_chosen_configuration_1()
-    figure_3_potential_energy_landscape_cases()
+    Investigating_chosen_configuration_1()
+    #figure_3_potential_energy_landscape_cases()
