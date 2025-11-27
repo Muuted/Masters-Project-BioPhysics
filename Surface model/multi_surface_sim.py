@@ -44,7 +44,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names = save_name_list[index] + f" sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\")
+    path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\"+save_name_list[index] + f" sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\")
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
