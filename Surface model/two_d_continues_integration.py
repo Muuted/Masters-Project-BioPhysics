@@ -56,7 +56,8 @@ def edge_ratio(t,y,k,sigma,c0,tau,kG):
 
 
 def find_init_stationary_state(
-        sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds,kG
+        sigma,k,c0,tau,psi_L,r_L,z_L,s0,sN,ds
+        ,kG= 0
         ,total_points = ""
         ,find_edge_condition = True
         ):

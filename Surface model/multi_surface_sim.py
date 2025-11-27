@@ -12,26 +12,48 @@ import multiprocessing
 import os
 
 def Surface_sim_stationary_state_initial_configuration_multiprocessing(
-    index:int
+    perturb_index:int , const_index: int 
     ):
     do_simulation:bool = True
     start_from_flat:bool = False
-    make_movie: bool = False#True
-    make_plots: bool = False#True
+    make_movie: bool = False
+    make_plots: bool = False
     
     print("\n Now Running the surface simulation from stationary configurations \n")
+
+    tilde_sigma_list = [
+        0.329113924050633
+        ,0.29873417721519
+        ,0.116455696202532 
+        ]
+    tilde_tau_list = [
+        1.0
+        ,4.47368421052632
+        ,1.0
+        ]
+    psi2_list = [
+        -1.68533976179446e-8
+        ,-2.23344534748962e-6
+        ,-2.26474921864332e-8
+        ]
 
     save_name_list = ["-perturbed","+perturbed","unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
-    show_print_val = [False ,False ,True]
+    if const_index == 0 or const_index == 2:
+        show_print_val = [False ,False ,False]
+    else:
+        show_print_val = [False ,False ,True]
 
     const_args = Two_D_Constants_stationary_state(
-        print_val = show_print_val[index]
-        ,show_stationary_state = show_print_val[index]
+        print_val = show_print_val[perturb_index]
+        ,show_stationary_state = show_print_val[perturb_index]
         ,start_flat = start_from_flat
-        ,perturb = do_perturbation_list[index]
-        ,dpsi_perturb = dpsi_list[index]
+        ,perturb = do_perturbation_list[perturb_index]
+        ,dpsi_perturb = dpsi_list[perturb_index]
+        ,tilde_sigma = tilde_sigma_list[const_index]
+        ,tilde_tau = tilde_tau_list[const_index]
+        ,psi_L = psi2_list[const_index]
     )
 
     L,r0,N,ds,T,dt = const_args[0:6]
@@ -44,12 +66,12 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\"+save_name_list[index] + f" sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\")
+    path_args = Two_D_paths(folder_names = f"T,dt={T,dt} sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" )
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
-    df_name = df_name_ref + f" N,ds,dt,T,tau,c0={N,ds,dt,T,tau,c0}"
+    df_name = df_name_ref + f" N,ds,dt,T,tau={N,ds,tau}" + ".pkl"
     
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -68,7 +90,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
             ,data_path = data_path
             ,Tolerence = 1e-5
             ,save_data = True
-            ,print_progress = show_print_val[index]
+            ,print_progress = show_print_val[perturb_index]
         )
 
     #plt.show()
@@ -104,37 +126,62 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
         plt.pause(2)
         plt.close("all")
 
+def main(num_cpu,perturb_index_list,var_index_list):
+    process = []
+    for i in range(num_cpu):
+        process.append(multiprocessing.Process(
+            target=Surface_sim_stationary_state_initial_configuration_multiprocessing
+            ,args=(perturb_index_list[i],var_index_list[i])
+            ))
+
+    for p in process:
+        p.start()
+
+    for p in process:
+        p.join
 if __name__ == "__main__":
+    cpu_6 = True
+    const_index_1 = 0
+    const_index_2 = 1
 
+    perturb_list = [0,1,2,0,1,2]
+    const_vars = [0,0,0,1,1,1]
 
-    p1 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,))
-    p2 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,))
-    p3 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,))
-    #p4 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[3],))
-    #p5 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[4],))
-    #p6 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(index_list[5],))
+    main(num_cpu=6,perturb_index_list=perturb_list,var_index_list=const_vars)
+
+    exit()
+    p1 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,const_index_1))
+    p2 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,const_index_1))
+    p3 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,const_index_1))
+
+    if cpu_6 == True:
+        p4 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,const_index_2))
+        p5 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,const_index_2))
+        p6 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,const_index_2))
 
     p1.start()
     p2.start()
     p3.start()
-    #p4.start()
-    #p5.start()
-    #p6.start()
+    if cpu_6 == True:
+        p4.start()
+        p5.start()
+        p6.start()
 
     p1.join()
     p2.join()
     p3.join()
-    #p4.join()
-    #p5.start()
-    #sp6.join()
-
+    if cpu_6 == True:
+        p4.join()
+        p5.start()
+        p6.join()
+    """
     Surface_sim_stationary_state_initial_configuration_iterative(
         do_simulation = False#True
         #,start_from_flat = False
         #,do_perturbation = False #True
         ,make_movie = True
         ,make_plots= True
-    )
+    )"""
 
 
     tau_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]

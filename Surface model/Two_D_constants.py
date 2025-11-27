@@ -15,7 +15,7 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "Data for thesis\\multi processor result\\cross sims\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "Data for thesis\\multi test\\"#multi processor result\\cross sims\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path +  "c0=0 tau=0\\"
     else:
@@ -134,7 +134,7 @@ def Two_D_Constants_stationary_state(
     if N == "":
         N = 20#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
+    T = 1e-11#1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
     dt = 1e-12#0.125e-12 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
@@ -160,7 +160,7 @@ def Two_D_Constants_stationary_state(
     if tilde_sigma == "":
         tilde_sigma = 0.116455696202532 #0.329113924050633  #0.29873417721519  #
     if tilde_tau == "":
-        tilde_tau = 4.47368421052632  #1.0     #1 
+        tilde_tau = 1.0 #4.47368421052632       #1 
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -170,7 +170,7 @@ def Two_D_Constants_stationary_state(
     zs2 = 0
     s0, sN = 0, 50*lc
     if psi_L == "":
-        psi_L = -6.531116e-8  #-1.68533976179446e-8  #-2.23344534748962e-06   
+        psi_L = -2.26474921864332e-08 #6.531116e-8   #-1.68533976179446e-8  
 
     #print(f"n={N}, ds={ds:e} , sigma={sigma} , psi2={psi_L} ,tau={tau}")
     #Creating lists for the variables.
@@ -179,9 +179,10 @@ def Two_D_Constants_stationary_state(
     z_list =  np.zeros(shape=(sim_steps,N+1),dtype=float)
     Area_list = np.zeros(N,dtype=float)
 
+
     #Initiating the inital state of the membrane
     psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
-            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds, kG=kG
+            sigma=sigma ,k=k ,c0=c0 ,tau=tau ,ds=ds
             ,psi_L=psi_L ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
             ,total_points = N
         )

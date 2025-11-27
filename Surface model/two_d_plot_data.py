@@ -463,8 +463,8 @@ def plot_reference_fig_for_finding_what_to_simulate():
         )
 
     L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
+    k,c0= const_args[6:8]
+    #sigma, tau = const_args[9:11]
 
     lc = 1/c0
     sigma_c = k*c0**2
@@ -521,33 +521,6 @@ def plot_reference_fig_for_finding_what_to_simulate():
                     ,[i/lc for i in df["r1Flat"][n]]
                     ,".-",color=cmap(i))
         
-
-    print(
-        f"   symbol:  ^"
-        ,f"sigma ={df["sigma_list_Curved"][n_pos_A[0]][i_pos[0]]}    "
-        ,f"tau ={df["tau_list_Curved"][n_pos_A[0]][i_pos[0]]}   "
-        ,f"psi2 ={df["psi_L_list_Curved"][n_pos_A[0]][i_pos[0]]}    \n"
-        ,f"sigma ={df["sigma_list_Curved"][n_pos_A[0]][i_pos[0]]*sigma_c}    "
-        ,f"tau ={df["tau_list_Curved"][n_pos_A[0]][i_pos[0]]*tau_c}   "
-    )
-    print("---------------------------------")
-    print(
-        f"    symbol x"
-        ,f"sigma ={df["sigma_list_Curved"][n_pos_A[1]][i_pos[1]]}    "
-        ,f"tau ={df["tau_list_Curved"][n_pos_A[1]][i_pos[1]]}   "
-        ,f"psi2 ={df["psi_L_list_Curved"][n_pos_A[1]][i_pos[1]]}    \n"
-        ,f"sigma ={df["sigma_list_Curved"][n_pos_A[1]][i_pos[1]]*sigma_c}    "
-        ,f"tau ={df["tau_list_Curved"][n_pos_A[1]][i_pos[1]]*tau_c}   "
-    )
-    print("---------------------------------")
-    print(
-        f"    symbol +"
-        ,f"sigma ={df["sigma_list_Curved"][n_neg_A[0]][i_neg[0]]}    "
-        ,f"tau ={df["tau_list_Curved"][n_neg_A[0]][i_neg[0]]}   "
-        ,f"psi2 ={df["psi_L_list_Curved"][n_neg_A[0]][i_neg[0]]:e}    \n"
-        ,f"sigma ={df["sigma_list_Curved"][n_neg_A[0]][i_neg[0]]*sigma_c}    "
-        ,f"tau ={df["tau_list_Curved"][n_neg_A[0]][i_neg[0]]*tau_c}   "
-    )
 
     markers = ["^","+","x"]
     markers_latex = [r"$\triangle$",r"$\plus$" ,r"$\times$"]
@@ -623,32 +596,33 @@ def plot_reference_fig_for_finding_what_to_simulate():
         ,df["psi_L_list_Flat"][n_neg_A[0]][i_neg[0]]
         ]
 
-    i = 0
+    
+    print("first integration")
     psi,r,z, r_contin_0, z_contin_0, alpha = find_init_stationary_state(
-                k=k ,c0=c0 ,ds=ds, kG=kG
+                k=k ,c0=c0 ,ds=ds
                 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
                 ,total_points = N
-                ,tau=tau_list[i]*tau_c
-                ,sigma=sigma_list[i]*sigma_c
-                ,psi_L=psi_L_list[i]
+                ,tau=tau_list[0]*tau_c
+                ,sigma=sigma_list[0]*sigma_c
+                ,psi_L=psi_L_list[0]
             )
-    i = 1
+    print("second integration")
     psi,r,z, r_contin_1, z_contin_1, alpha = find_init_stationary_state(
-                k=k ,c0=c0 ,ds=ds, kG=kG
+                k=k ,c0=c0 ,ds=ds
                 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
                 ,total_points = N
-                ,tau=tau_list[i]*tau_c
-                ,sigma=sigma_list[i]*sigma_c
-                ,psi_L=psi_L_list[i]
+                ,tau=tau_list[1]*tau_c
+                ,sigma=sigma_list[1]*sigma_c
+                ,psi_L=psi_L_list[1]
             )
-    i = 2
+    print("third integration")
     psi,r,z, r_contin_2, z_contin_2, alpha = find_init_stationary_state(
-                k=k ,c0=c0 ,ds=ds, kG=kG
+                k=k ,c0=c0 ,ds=ds
                 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
                 ,total_points = N
-                ,tau=tau_list[i]*tau_c
-                ,sigma=sigma_list[i]*sigma_c
-                ,psi_L=psi_L_list[i]
+                ,tau=tau_list[2]*tau_c
+                ,sigma=sigma_list[2]*sigma_c
+                ,psi_L=psi_L_list[2]
             )
 
     spacing = max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
@@ -697,6 +671,18 @@ def plot_reference_fig_for_finding_what_to_simulate():
     plt.pause(1)
     plt.savefig(figure_save_path + "edge_radius_ExcessArea.png")
     plt.savefig(figure_save_path + "edge_radius_ExcessArea.svg")
+
+
+    for i in range(len(sigma_list)):
+        print(
+            f"   symbol:  "+ markers[i] + "\n"
+            ,f"sigma ={sigma_list[i]}    "
+            ,f"tau ={tau_list[i]}   "
+            ,f"psi2 ={psi_L_list[i]}    \n"
+            ,f"sigma ={sigma_list[i]*sigma_c}    "
+            ,f"tau ={tau_list[i]*tau_c}   "
+        )
+        print("---------------------------------")
 
     plt.show()
 
@@ -1039,7 +1025,7 @@ def figure_3_potential_energy_landscape_cases():
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
-    #plot_reference_fig_for_finding_what_to_simulate()
+    plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
-    Investigating_chosen_configuration_1()
+    #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
