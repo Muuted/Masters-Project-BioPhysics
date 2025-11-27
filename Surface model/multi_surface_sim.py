@@ -10,7 +10,7 @@ from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
 from iterative_surface_sim import Surface_sim_stationary_state_initial_configuration_iterative
 import multiprocessing
 import os
-
+from Testing_ideas import plot_everytyhing
 def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     perturb_index:int , const_index: int 
     ):
@@ -71,7 +71,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
-    df_name = df_name_ref + f" N,ds,dt,T,tau={N,ds,tau}" + ".pkl"
+    df_name = df_name_ref + f" N,ds,dt,T,tau={N,ds,tau}"# + ".pkl"
     
     if do_simulation == True:
         Two_d_simulation_stationary_states(
@@ -93,40 +93,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
             ,print_progress = show_print_val[perturb_index]
         )
 
-    #plt.show()
-    #print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n")
-    if make_movie == True:
-        Make_frames(
-            data_path=data_path
-            ,figs_save_path=figs_for_video_path
-            ,df_name=df_name
-            ,tot_frames= 250
-        )
-        Make_video(
-            output_path=video_save_path
-            ,input_path=figs_for_video_path
-            ,video_name= df_name
-            ,fps=fps_movie
-        )
-    
-    if make_plots == True:
-        plot_Epot_Ekin(
-            data_path=data_path
-            ,df_name=df_name
-            ,output_path=video_save_path
-        )
-        plot_tot_area(
-            data_path=data_path
-            ,df_name=df_name
-            ,output_path=video_save_path
-        )
 
-        #plt.show()
-        plt.draw()
-        plt.pause(2)
-        plt.close("all")
-
-def main(num_cpu,perturb_index_list,var_index_list):
+def main_multiProcessing(num_cpu,perturb_index_list,var_index_list):
     process = []
     for i in range(num_cpu):
         process.append(multiprocessing.Process(
@@ -139,6 +107,10 @@ def main(num_cpu,perturb_index_list,var_index_list):
 
     for p in process:
         p.join
+
+
+    plot_everytyhing()
+
 if __name__ == "__main__":
     cpu_6 = True
     const_index_1 = 0
@@ -147,53 +119,8 @@ if __name__ == "__main__":
     perturb_list = [0,1,2,0,1,2]
     const_vars = [0,0,0,1,1,1]
 
-    main(num_cpu=6,perturb_index_list=perturb_list,var_index_list=const_vars)
+    main_multiProcessing(num_cpu=6,perturb_index_list=perturb_list,var_index_list=const_vars)
 
-    exit()
-    p1 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,const_index_1))
-    p2 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,const_index_1))
-    p3 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,const_index_1))
+    
 
-    if cpu_6 == True:
-        p4 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(0,const_index_2))
-        p5 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(1,const_index_2))
-        p6 = multiprocessing.Process(target=Surface_sim_stationary_state_initial_configuration_multiprocessing,args=(2,const_index_2))
-
-    p1.start()
-    p2.start()
-    p3.start()
-    if cpu_6 == True:
-        p4.start()
-        p5.start()
-        p6.start()
-
-    p1.join()
-    p2.join()
-    p3.join()
-    if cpu_6 == True:
-        p4.join()
-        p5.start()
-        p6.join()
-    """
-    Surface_sim_stationary_state_initial_configuration_iterative(
-        do_simulation = False#True
-        #,start_from_flat = False
-        #,do_perturbation = False #True
-        ,make_movie = True
-        ,make_plots= True
-    )"""
-
-
-    tau_list = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    psi2_L_list = [
-        -0.3264e-4,-0.1634e-4,-0.0522e-4,-0.0322e-4,-0.0207e-4,-0.0139e-4,-0.0096e-4,-0.0050e-4
-        ,-0.0037e-4,-0.0028e-4,-0.0021e-4,-0.0017e-4,-0.0013e-4,-0.0010e-4,-0.0008e-4,-0.0007e-4
-        ,-0.0005e-4,-0.0004e-4,-0.0003e-4,-0.0003e-4,-0.0002e-4,-0.0002e-4,-0.0002e-4,-0.0001e-4
-    ]
-
-    sigma_list = [
-        -0.4000,-0.3696,-0.3089,-0.2785,-0.2481,-0.2177,-0.1873,-0.1266,-0.0962
-        ,-0.0658,-0.0354,-0.0051,0.0253,0.0557,0.0861,0.1165
-        ,0.1468,0.1772,0.2076,0.2380,0.2684,0.2987,0.3291,0.3595
-    ]
     
