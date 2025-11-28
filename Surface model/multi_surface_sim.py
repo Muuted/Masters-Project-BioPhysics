@@ -37,8 +37,11 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
     
-    show_print_val = [False ,False ,True]
-
+    if const_index == 0 or const_index == 2:
+        show_print_val = [False ,False ,True]
+    else:
+        show_print_val = [False ,False ,False]
+        
     const_args = Two_D_Constants_stationary_state(
         print_val = show_print_val[perturb_index]
         ,show_stationary_state = show_print_val[perturb_index]
@@ -61,12 +64,13 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names = f"T,dt={T,dt} sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" )
+    #path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" )
+    path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\sigma,tau=({sigma:0.3e},{tau:0.1e})\\"+save_name_list[perturb_index] +"\\" )
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
 
-    df_name = df_name_ref + f" N,ds,dt,T,tau={N,ds,tau}"# + ".pkl"
+    df_name = df_name_ref + f"N,ds,dt,T,tau=({N},{ds},{tau:0.1e})" + ".pkl"
     
     if do_simulation == True:
         Two_d_simulation_stationary_states(

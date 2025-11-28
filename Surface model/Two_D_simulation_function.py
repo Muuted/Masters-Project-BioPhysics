@@ -515,7 +515,7 @@ def Two_d_simulation_stationary_states(
         print(data_path + df_name)
         if not os.path.exists(data_path):
             os.makedirs(data_path)
-        df.to_pickle(data_path + df_name +".pkl")
+        df.to_pickle(data_path + df_name )#+".pkl")
         
 
 if __name__ == "__main__":
