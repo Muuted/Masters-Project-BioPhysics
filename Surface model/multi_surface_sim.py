@@ -36,10 +36,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     save_name_list = ["-perturbed","+perturbed","unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
-    if const_index == 0 or const_index == 2:
-        show_print_val = [False ,False ,True]
-    else:
-        show_print_val = [False ,False ,False]
+    
+    show_print_val = [False ,False ,True]
 
     const_args = Two_D_Constants_stationary_state(
         print_val = show_print_val[perturb_index]
@@ -92,10 +90,10 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
 
 
 def main_multiProcessing():
-    num_cpu = 3
+    num_cpu = 6
     perturb_list = [0,1,2,0,1,2]
 
-    const_vars = [2,2,2]#,1,1,1] # 0 = triangle, 1 = plus and 2 = cross (in Latex)
+    const_vars = [0,0,0,1,1,1]#[2,2,2]#,1,1,1] # 0 = triangle, 1 = plus and 2 = cross (in Latex)
     process = []
     for i in range(num_cpu):
         process.append(multiprocessing.Process(
