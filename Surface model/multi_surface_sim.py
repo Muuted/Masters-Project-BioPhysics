@@ -33,6 +33,11 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
         ,-2.26474921864332e-8
         ]
 
+    folder_pos_list = [
+        "triangle sim\\"
+        ,"plus sim\\"
+        ,"cross sim\\"
+    ]
     save_name_list = ["-perturbed","+perturbed","unperturbed"]
     dpsi_list = [ -0.01, 0.01 ,0]
     do_perturbation_list = [True ,True ,False]
@@ -62,8 +67,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
     psi2_init ,alpha = const_args[21:23]
 
     
-    #path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\sigma,tau,psi2=({sigma:0.1e},{tau:0.1e},{psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" )
-    path_args = Two_D_paths(folder_names = f"T,dt={T,dt}\\sigma=({sigma:0.3e})\\tau=({tau:0.1e})\\psi2=({psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" )
+    folder = folder_pos_list[const_index] +f"T,dt={T,dt}\\sigma=({sigma:0.3e})\\tau=({tau:0.1e})\\psi2=({psi2_init:0.1e})\\"+save_name_list[perturb_index] +"\\" 
+    path_args = Two_D_paths(folder_names = folder)
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name_ref, fps_movie ,num_frames = path_args[4:7]
