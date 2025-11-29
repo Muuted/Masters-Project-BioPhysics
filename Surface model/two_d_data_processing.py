@@ -7,7 +7,7 @@ import pandas as pd
 import progressbar
 
 def mass(i:int ,Area:list):
-    rho = 1
+    rho = 4e-9 # (mu g)/(mu m^2)
     m = -1
     if i == 0:
         m = rho*Area[i]/2

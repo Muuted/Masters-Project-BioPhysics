@@ -39,17 +39,17 @@ def plot_tot_area(
     Amin, Amax = min(Area_change) ,max(Area_change)
     Aratio = Amax/Amin 
 
-    """--------------------------------------Chi----------------------------------------------------------"""
+    """-------------------------------------- Total Area ----------------------------------------------------------"""
     fig, ax=plt.subplots()
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot(time,Area_change,'-')
-    plt.xlabel("time [s]")
-    plt.ylabel("total area")
+    plt.xlabel("time [s]",fontsize=15)
+    plt.ylabel("total area",fontsize=15)
     plt.title(
         f"Ratio of Amax/Amin={Aratio} \n "
         +f"Amax - AMin={Amax-Amin}"
-        )
+        ,fontsize=15)
     ax.ticklabel_format(useOffset=False)
     
     save_name_1 = save_name + "Atot"# Total area over time"
@@ -61,14 +61,14 @@ def plot_tot_area(
     
 
 
-    """--------------------------------------Chi----------------------------------------------------------"""
+    """-------------------------------------- Variable corrections pr time ----------------------------------------------------------"""
     fig,ax = plt.subplots()
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(corr_count))],corr_count,".-")
-    plt.title("correction counts pr time")
-    plt.xlabel("t[s]")
-    plt.ylabel("number of variables corrections")
+    plt.title("correction counts pr time",fontsize=15)
+    plt.xlabel("t[s]",fontsize=15)
+    plt.ylabel("number of variables corrections",fontsize=15)
 
     
     save_name_1 = save_name + " var corr"# Total area over time"
@@ -86,7 +86,7 @@ def plot_tot_area(
     for t in range(sim_steps-1):
         dA[t] = Area_change[t+1] - Area_change[t]
 
-    """--------------------------------------Chi----------------------------------------------------------"""
+    """--------------------------------------Change in Area----------------------------------------------------------"""
     fig, ax = plt.subplots()
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
@@ -94,9 +94,9 @@ def plot_tot_area(
     #wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(dA))],dA[0:sim_steps-1],'-')
     #ax.ticklabel_format(useOffset=False)
-    plt.title("Change in Area")
-    plt.xlabel("t [s]")
-    plt.ylabel("Area")
+    plt.title("Change in Area",fontsize=15)
+    plt.xlabel("t [s]",fontsize=15)
+    plt.ylabel("Area",fontsize=15)
 
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
@@ -253,14 +253,14 @@ def plot_Epot_Ekin(
         ,color="g"
         ,label="end positions"
         )
-    plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
-    plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
+    plt.xlabel(r"r [$\mu m$]",fontsize=15)
+    plt.ylabel(r"z [$\mu m$]",fontsize=15)
     plt.title("show difference from start and end positions",fontsize=15)
     plt.legend()#fontsize=font_size)
 
     save_name_2 = df_name + "init&end"
     save_name_2 =  "init&end"
-    ax.set_aspect("equal",adjustable="box")
+    #ax.set_aspect("equal",adjustable="box")
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_2 +".png")
@@ -301,14 +301,13 @@ def plot_Epot_Ekin(
         ,color="g"
         ,label="end positions"
         )
+
     plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
     plt.ylabel(r"z [$\mu m$]",fontsize=font_size)
     xmin = min([min(r[t]) for t in range(sim_steps)]) - ds
     xmax  = r[0][N] + ds
     ymin = min([min(z[t]) for t in range(sim_steps)]) - ds
     ymax = ymin + (xmax - xmin)
-
-    
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
     plt.title("show difference from start and end positions",fontsize=15)
@@ -1028,7 +1027,7 @@ def plot_multiprocessing_results():
     directory_list = list()
     data_files = list()
     make_movie= True
-    make_figures = False
+    make_figures = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
@@ -1041,13 +1040,13 @@ def plot_multiprocessing_results():
                         data_path=data_path
                         ,figs_save_path=data_path + "figues for video\\"
                         ,df_name= df_name
-                        ,tot_frames= 250
+                        ,tot_frames= 500
                     )
                     Make_video(
                         output_path=data_path
                         ,input_path=data_path + "figues for video\\"
                         ,video_name= "surface video"
-                        ,fps=12
+                        ,fps=24
                     )
                 if make_figures == True:
                     plot_Epot_Ekin(
