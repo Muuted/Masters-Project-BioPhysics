@@ -177,6 +177,23 @@ def Make_frames(
     print("\n")
 
 
+
+def Get_directory_files(path):
+    directory_list = list()
+    data_files = list()
+    make_movie= True
+    make_figures = True
+    file_names = []
+    folder_path =[]
+
+    for root, dirs, files in os.walk(path, topdown=False):
+        for df_name in files:
+            if ".pkl" in df_name:
+                 file_names.append(df_name)
+                 folder_path.append(root + "\\")
+        
+    return file_names,folder_path
+
 if __name__=="__main__":
     const_args = Two_D_Constants(
         print_val=True

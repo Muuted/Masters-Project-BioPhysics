@@ -127,6 +127,7 @@ def Two_D_Constants_stationary_state(
         ,perturb:bool = False
         ,dpsi_perturb="",tilde_sigma=""
         ,tilde_tau="",psi_L="",N="",ds = ""
+        ,perturb_tau =   ""
         )->list:
     np.set_printoptions(legacy='1.25')
 
@@ -262,6 +263,9 @@ def Two_D_Constants_stationary_state(
     #c0 = 0
     #tau = 0
 
+    if perturb_tau != "":
+        tau *= perturb_tau
+    
     #print(f"end pos =(r,z)={round(r_list[0][len(r_list[0])-1],5),round(z_list[0][len(r_list[0])-1],5)}")
     if print_val == True:
         print(
