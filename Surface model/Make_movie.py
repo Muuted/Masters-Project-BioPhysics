@@ -70,6 +70,9 @@ def Make_video(
     
     shutil.move(filename, output_path)
 
+    files = glob.glob(input_path + "/*")
+    for f in files:
+        os.remove(f)
     print(
         "\n ---------------------- \n"
         +" Movie has been released   ,   name=" + filename
