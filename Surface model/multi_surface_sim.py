@@ -97,9 +97,11 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing(
 
 
 
-def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_tau(
-    perturb_index:int , const_index: int 
+def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_tau_and_psi(
+    perturb_index:int , const_index: int
+    ,perturb_psi:bool = True ,perturb_tau:bool = False
     ):
+
     do_simulation:bool = True
     start_from_flat:bool = False
     make_movie: bool = False
@@ -129,10 +131,16 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
         ,"cross sim\\"
     ]
     save_name_list = ["smaller","larger","no change"]
-    dpsi_list = [ 1-0.05, 1+0.05 ,1]
-    do_perturbation_list = [True ,True ,False]
+
+    dpsi_list = [ -0.01, 0.01 ,0]
+
+    dtau_list = [1-0.05, 1+0.05 , 1]
     
-    
+    if perturb_psi == True:
+        do_perturbation_list = [True ,True ,False]
+    elif perturb_psi == False:
+        do_perturbation_list = [False ,False ,False]
+
     show_print_val = [False ,False ,True]
 
     const_args = Two_D_Constants_stationary_state(
@@ -156,6 +164,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
     eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
     psi2_init ,alpha = const_args[21:23]
 
+    if perturb_tau == True:
+        tau *= dtau_list[perturb_index]
     
     folder = folder_pos_list[const_index] +f"T,dt,sigma,tau=({T:0.1e},{dt:0.1e},{sigma:0.1e},{tau:0.1e})\\"+save_name_list[perturb_index] +"\\" 
     path_args = Two_D_paths(folder_names = folder)
@@ -204,9 +214,28 @@ def main_multiProcessing():
         p.join
 
 
+def main_multiProcessing_tau_and_psi():
+    num_cpu = 6
+    perturb_list = [0,1,2,0,1,2]
+    perturb_tau = False
+    perturb_psi = True
+    const_vars = [0,0,0,1,1,1]#[2,2,2]#,1,1,1] # 0 = triangle, 1 = plus and 2 = cross (in Latex)
+    process = []
+    for i in range(num_cpu):
+        process.append(multiprocessing.Process(
+            target=Surface_sim_stationary_state_initial_configuration_multiprocessing
+            ,args=(perturb_list[i],const_vars[i],perturb_psi,perturb_tau)
+            ))
+
+    for p in process:
+        p.start()
+
+    for p in process:
+        p.join
 if __name__ == "__main__":
 
-    main_multiProcessing()
+    #main_multiProcessing()
+    main_multiProcessing_tau_and_psi()
 
     
 

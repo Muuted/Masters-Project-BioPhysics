@@ -415,11 +415,17 @@ def plot_reference_fig_for_finding_what_to_simulate():
                 diff_taus.append(df["tau_list_Flat"][n][i])
 
 
-    pos_A_min_x1 ,pos_A_min_x2 ,neg_A_min_x3 = 36 ,3.4 ,-1.08#-12
-    pos_A_max_x1 ,pos_A_max_x2 ,neg_A_max_x3 = 37 ,3.6 ,-1.06#-11
-    pos_r1_min_y1 ,pos_r1_min_y2 ,neg_r1_min_y3 = 3 ,7.35 , 0.64#2.725
-    pos_r1_max_y1 ,pos_r1_max_y2 ,neg_r1_max_y3 = 3.05 ,7.45 ,0.66#2.8
-
+    #pos_A_min_x1 ,pos_A_min_x2 ,neg_A_min_x3 = 36 ,3.4 ,-1.08#-12
+    #pos_A_max_x1 ,pos_A_max_x2 ,neg_A_max_x3 = 37 ,3.6 ,-1.06#-11
+    #pos_r1_min_y1 ,pos_r1_min_y2 ,neg_r1_min_y3 = 3 ,7.35 , 0.64#2.725
+    #pos_r1_max_y1 ,pos_r1_max_y2 ,neg_r1_max_y3 = 3.05 ,7.45 ,0.66#2.8
+    
+    """ Triangle """
+    pos_A_min_x1,pos_A_max_x1, pos_r1_min_y1, pos_r1_max_y1 = 23.6 ,23.8 ,2.83 ,2.84#36 ,37 ,3 ,3.05 # 12.0 ,12.05,1.81,1.815 #
+    """ plus """
+    pos_A_min_x2,pos_A_max_x2, pos_r1_min_y2, pos_r1_max_y2 = 3.4 ,3.6 ,7.35 ,7.45
+    """ cross """
+    neg_A_min_x3,neg_A_max_x3,neg_r1_min_y3,neg_r1_max_y3 = -1.08 ,-1.06 ,0.64 ,0.66
     n_neg_A ,n_pos_A = [] ,[]
     i_neg ,i_pos = [],[]
 
@@ -490,7 +496,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
                 ax[0].plot(
                     [i/lc**2 for i in df["ExcessAreaCurved"][n]]
                     ,[i/lc for i in df["r1Curved"][n]],".-",color=cmap(i)
-                    ,label=r"$\tau \approx$"+f"{df["tau_list_Curved"][n][0]/lc**2:0.1f}"
+                    ,label=r"$\tau \approx$"+f"{(df["tau_list_Curved"][n][0]/lc**2)/1000:0.1f} nN"
                     )
                 plot_tau_ref.append(df["tau_list_Curved"][n][0])
             else:
@@ -510,7 +516,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
                 ax[0].plot(
                     [i/lc**2 for i in df["ExcessAreaFlat"][n]]
                     ,[i/lc for i in df["r1Flat"][n]]
-                    ,".-",color=cmap(i),label=r"$\tau \approx$"+f"{df["tau_list_Flat"][n][0]/lc**2:0.1f}"
+                    ,".-",color=cmap(i),label=r"$\tau \approx$"+f"{(df["tau_list_Flat"][n][0]/lc**2)/1000:0.1f} nN"
                     )
                 plot_tau_ref.append(df["tau_list_Flat"][n][0])
             else:
@@ -551,7 +557,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
     plt.subplots_adjust(
         #left=0.05
         #,right=0.5
-        wspace=0.5
+        wspace=0.6
     )
     #plt.legend(fontsize=13)
     ax[0].legend(
@@ -565,17 +571,24 @@ def plot_reference_fig_for_finding_what_to_simulate():
     ax[0].set_xlim(-1.2e4, 2.9e4)
     ax[0].set_ylim(0 ,230)
     ax[0].set_title(
-        "edge radius vs Excess Area   ,"
-        +r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
+        "Edge radius (r1) vs Excess Area"
+        #+r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
         ,fontsize=15)
     ax[0].set_xlabel(r"$\Delta A = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
-    ax[0].set_ylabel(r"edge radius [$\mu m$]",fontsize=15)
-
+    ax[0].set_ylabel(r"Edge radius (r1) [$\mu m$]",fontsize=15)
+    ax[0].grid()
+    #ax[0].set_aspect("equal",adjustable="box")
 
 
     """---------------------------------------------- Initial configurations ---------------------------------------------------"""
     #fig,ax = plt.subplots()
+    """lc = 1/c0
+    sigma_c = k*c0**2
+    tau_c = k*c0
 
+    rs2 = 20*lc 
+    zs2 = 0
+    s0, sN = 0, 50*lc"""
     print(f"n pos A :{n_pos_A} and i pos = {i_pos}")
     print(f"n neg A :{n_neg_A} and i neg = {i_neg}")
 
@@ -624,12 +637,12 @@ def plot_reference_fig_for_finding_what_to_simulate():
                 ,psi_L=psi_L_list[2]
             )
 
-    spacing = max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
+    spacing = 0.1 #max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
 
     ax[1].plot(
         r_contin_0
         ,z_contin_0 + spacing
-        ,label = markers_latex[0] + f",r1={df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}"
+        ,label = markers_latex[0] + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}" +r" $\mu m$"
         ,linestyle="-"
         ,linewidth=2
             )
@@ -637,7 +650,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
     ax[1].plot(
         r_contin_1
         ,z_contin_1 
-        ,label = markers_latex[1] + f",r1={df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}"
+        ,label = markers_latex[1] + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[1]][i_pos[1]]/lc:.1f}" +r" $\mu m$"
         ,linestyle="dashed"
         ,linewidth=2
         )
@@ -645,27 +658,30 @@ def plot_reference_fig_for_finding_what_to_simulate():
     ax[1].plot(
         r_contin_2
         ,z_contin_2 - spacing
-        ,label = markers_latex[2]  + f",r1={df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}"
+        ,label = markers_latex[2]  + r": $ r1  \approx $" + f" {df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}" +r" $\mu m$"
         ,linestyle="-."
         ,linewidth=2
         )
 
-    rmin = min([min(r_contin_0) , min(r_contin_1) , min(r_contin_2)]) - ds
-    rmax = max([max(r_contin_0) , max(r_contin_1) , max(r_contin_2)]) + ds
+    rmin = 0#min([min(r_contin_0) , min(r_contin_1) , min(r_contin_2)]) - ds
+    rmax = max([max(r_contin_0) , max(r_contin_1) , max(r_contin_2)]) #+ ds
 
+    ax[1].set_yticks([i for i in np.arange(-3,3,0.05)])
+    ax[1].set_xticks([i for i in np.arange(-3,3,0.05)])
     ax[1].set_xlim(rmin,rmax)
-
     ax[1].set_ylim(-(rmax-rmin)/2,(rmax-rmin)/2)
-    ax[1].legend(fontsize=25)
+    ax[1].set_ylim(-(rmax-rmin)/2,(rmax-rmin)/2)
+    #ax[1].set_ylim(-0.15,0.2)
+    ax[1].legend(fontsize=20)
     ax[1].set_xlabel(r"r [$\mu m$]",fontsize=15)
     ax[1].set_ylabel(r"z [$\mu m$]",fontsize=15)
     ax[1].set_title(
         "Initial configurations of the three chosen \n points in the phase space diagram on the left"
         ,fontsize=15
         )
-    ax[1].set_yticks([])
-    #ax.set_aspect("equal",adjustable="box")
-    
+
+    ax[1].set_aspect("equal",adjustable="box")
+    ax[1].grid()
     plt.draw()
     plt.pause(1)
     plt.savefig(figure_save_path + "edge_radius_ExcessArea.png")
@@ -1072,8 +1088,8 @@ def plot_multiprocessing_results():
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
-    #plot_reference_fig_for_finding_what_to_simulate()
+    plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
-    plot_multiprocessing_results()
+    #plot_multiprocessing_results()
