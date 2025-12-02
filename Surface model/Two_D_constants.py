@@ -15,7 +15,7 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "Data for thesis\\multi processor result\\plus and triangle sims\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "Data for thesis\\multi processor result\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path +  "c0=0 tau=0\\"
     else:

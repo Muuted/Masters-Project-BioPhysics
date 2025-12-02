@@ -126,9 +126,9 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
         ]
 
     folder_pos_list = [
-        "triangle sim\\"
-        ,"plus sim\\"
-        ,"cross sim\\"
+        "triangle sims\\"
+        ,"plus sims\\"
+        ,"cross sims\\"
     ]
     save_name_list = ["smaller","larger","no change"]
 
@@ -223,7 +223,7 @@ def main_multiProcessing_tau_and_psi():
     process = []
     for i in range(num_cpu):
         process.append(multiprocessing.Process(
-            target=Surface_sim_stationary_state_initial_configuration_multiprocessing
+            target=Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_tau_and_psi
             ,args=(perturb_list[i],const_vars[i],perturb_psi,perturb_tau)
             ))
 
