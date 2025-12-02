@@ -110,17 +110,17 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
     print("\n Now Running the surface simulation from stationary configurations \n")
 
     tilde_sigma_list = [
-        0.329113924050633
+        0.0253164556962025 #0.329113924050633
         ,0.29873417721519
         ,0.116455696202532 
         ]
     tilde_tau_list = [
-        1.0
+        1.31578947368421#1.0
         ,4.47368421052632
         ,1.0
         ]
     psi2_list = [
-        -1.68533976179446e-8
+        -2.83260429562395e-7#-1.68533976179446e-8
         ,-2.23344534748962e-6
         ,-2.26474921864332e-8
         ]
@@ -215,7 +215,7 @@ def main_multiProcessing():
 
 
 def main_multiProcessing_tau_and_psi():
-    num_cpu = 6
+    num_cpu = 3
     perturb_list = [0,1,2,0,1,2]
     perturb_tau = False
     perturb_psi = True
