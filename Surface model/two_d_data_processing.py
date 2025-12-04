@@ -195,8 +195,10 @@ def E_kin(
 
 
 def Xsqaured_test(N:int
-                  ,r_init:list,z_init:list,psi_init:list
-                  ,r:list,z:list,psi:list)->float:
+                  ,r_init:list,z_init:list
+                  ,r:list,z:list
+                  ,psi:list="",psi_init:list=""
+                  )->float:
     X = 0
     for i in range(N):
         X += (r_init[i] - r[i])**2 + (z_init[i] - z[i])**2 #+ (psi_init[i] - psi[i])**2
@@ -206,9 +208,6 @@ def Xsqaured_test(N:int
     
 def Excess_Area(rmax:float,Area_tot:float):
     return Area_tot - np.pi*rmax**2
-
-
-
 
 
 def cirle_fit(
@@ -396,5 +395,8 @@ def Plot_3D_mesh(
     plt.ylim(xmin,xmax)
     ax.set_zlim(0,(xmax-xmin))
     plt.show()
+
+
+    
 if __name__ == "__main__":
     exit()

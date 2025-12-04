@@ -1,7 +1,7 @@
 from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
-from two_d_data_processing import tot_area, E_pot, E_kin
+from two_d_data_processing import tot_area, E_pot, E_kin, Xsqaured_test
 from Two_D_functions import Langrange_multi, Epsilon_values
 import numpy as np
 import pandas as pd
@@ -1085,6 +1085,232 @@ def plot_multiprocessing_results():
 
 
 
+def Investigating_chosen_configuration_New_data():
+
+    data_path ="2D sim results\\Data for thesis\\multi processor result\\" + "cross sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\\"
+    #folder_names = "cross sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\\"
+    save_name_list = ["-perturbed\\","+perturbed\\","unperturbed\\"]
+    data_name = "2D Surface.pkl"
+    #2D sim results\Data for thesis\multi processor result\cross sims\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\+perturbed
+    df_sim_minus_perturb = pd.read_pickle(data_path  +save_name_list[0]+  data_name)
+    df_sim_plus_perturb = pd.read_pickle(data_path + save_name_list[1]  + data_name)
+    df_sim_unperturb = pd.read_pickle(data_path + save_name_list[2]  +  data_name)
+
+
+    #print(df_sim_minus_perturb.info())
+    
+
+    """----------------------------------------- Minus perturbed data-----------------------------------------------------"""
+    X2_minus_perturb = df_sim_minus_perturb["Chi squared test"][0]
+    sim_steps_minus_perturb = df_sim_minus_perturb["sim_steps"][0]
+    dt_minus_perturb = df_sim_minus_perturb["dt"][0]
+    r_minus_perturb = df_sim_minus_perturb["r"][0]
+    z_minus_perturb = df_sim_minus_perturb["z"][0]
+    time_minus_perturb = np.linspace(0,sim_steps_minus_perturb*dt_minus_perturb,sim_steps_minus_perturb-1)
+
+
+    """----------------------------------------- Plus perturbed data-----------------------------------------------------"""
+    X2_plus_perturb = df_sim_plus_perturb["Chi squared test"][0]
+    sim_steps_plus_perturb = df_sim_plus_perturb["sim_steps"][0]
+    dt_plus_perturb = df_sim_plus_perturb["dt"][0]
+    r_plus_perturb = df_sim_plus_perturb["r"][0]
+    z_plus_perturb = df_sim_plus_perturb["z"][0]
+    time_plus_perturb = np.linspace(0,sim_steps_plus_perturb*dt_plus_perturb,sim_steps_plus_perturb-1)
+
+
+    """----------------------------------------- Unperturbed data-----------------------------------------------------"""
+    X2_unperturb = df_sim_unperturb["Chi squared test"][0]
+    sim_steps_unperturb = df_sim_unperturb["sim_steps"][0]
+    dt_unperturb = df_sim_unperturb["dt"][0]
+    r_unperturb = df_sim_unperturb["r"][0]
+    z_unperturb = df_sim_unperturb["z"][0]
+    r_unperturb_init = df_sim_unperturb["r unperturbed"][0]
+    z_unperturb_init = df_sim_unperturb["z unperturbed"][0]
+    ds = df_sim_unperturb["ds"][0]
+    N = df_sim_unperturb["N"][0]
+    time_unperturb = np.linspace(0,sim_steps_unperturb*dt_unperturb,sim_steps_unperturb-1)
+    sigma = df_sim_unperturb["sigma"][0]
+    tau = df_sim_unperturb["tau"][0]
+    
+
+    """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""
+    fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    
+    line_width = 2
+    plt.plot(
+        time_minus_perturb,X2_minus_perturb
+        ,label="-perturb"
+        ,linestyle="-."
+        ,linewidth=line_width
+        )
+    plt.plot(
+        time_plus_perturb,X2_plus_perturb
+        ,label="+perturb"
+        ,linestyle="--"
+        ,linewidth=line_width
+        )
+    plt.plot(
+        time_unperturb,X2_unperturb
+        ,label="unperturb"
+        ,linestyle="-"
+        ,linewidth=line_width
+        )
+
+    ymax = max([
+         max(X2_minus_perturb)
+        ,max(X2_plus_perturb)
+        ,max(X2_unperturb)
+        ])*1.05
+    
+    #xmax = sim_steps_unperturb*dt_unperturb*1.01 
+    #xmin = min([-dt_minus_perturb,-dt_plus_perturb,-dt_unperturb])/1e3
+    ymin = min([
+         min(X2_minus_perturb)
+        ,min(X2_plus_perturb)
+        ,min(X2_unperturb)
+        ])*(1-0.05)
+
+    #plt.xlim(xmin, xmax)
+    #plt.ylim(ymin,ymax)
+    plt.ticklabel_format(axis='both', style='sci', scilimits=(0,0))
+    plt.legend(fontsize=12)
+    plt.xlabel("t [s]",fontsize=15)
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
+    plt.title(
+        r"$\chi^2$ test for the sum of the difference of each of the points along the links"
+        +f"\n"
+        +r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
+        ,fontsize=15)
+    plt.grid()
+    plt.draw()
+    plt.pause(2)
+
+    save_name_1 = "chisqrt for all 3"
+    plt.savefig(data_path + save_name_1 +".png")
+    plt.savefig(data_path + save_name_1 +".svg")
+    
+    
+    """----------------------------------------- chi^2 test for the end of unperturbed with the others -----------------------------------------------------"""    
+    fig, ax = plt.subplots()
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    X2_minus_perturbed_2 = np.zeros(sim_steps_unperturb-1)
+    X2_plus_perturbed_2 = np.zeros(sim_steps_plus_perturb-1)
+
+    for t in range(sim_steps_minus_perturb-1):
+        X2_minus_perturbed_2[t] = Xsqaured_test(
+            N=N
+            ,r_init=r_unperturb[sim_steps_unperturb-1]
+            ,z_init=z_unperturb[sim_steps_unperturb-1]
+            ,r=r_minus_perturb[t]
+            ,z=z_minus_perturb[t]
+            )
+        
+    for t in range(sim_steps_plus_perturb-1):
+        X2_plus_perturbed_2[t] = Xsqaured_test(
+            N=N
+            ,r_init=r_unperturb[sim_steps_unperturb-1]
+            ,z_init=z_unperturb[sim_steps_unperturb-1]
+            ,r=r_plus_perturb[t]
+            ,z=z_plus_perturb[t]
+            )
+
+    plt.plot(
+        time_minus_perturb#[dt_minus_perturb*t for t in range(sim_steps_minus_perturb)]
+        ,X2_minus_perturbed_2
+        ,label="-perturbed"
+        )
+    plt.plot(
+        time_plus_perturb#[dt_plus_perturb*t for t in range(sim_steps_plus_perturb)]
+        ,X2_plus_perturbed_2
+        ,label="+perturbed"
+        )
+
+    plt.hlines(
+        y=0,xmin=-1,xmax=1#max(time_minus_perturb)
+        ,label="target"
+        ,linestyles="dashed"
+        ,color = "black"
+        )
+
+    xmax = max([max(time_minus_perturb), max(time_plus_perturb),max(time_unperturb)])
+    plt.xlim(xmax*(-5e-3) ,xmax*1.05)
+    plt.ylim()
+    plt.grid()
+    plt.legend()
+    plt.show()
+    exit()
+    """----------------------------------------- Compare all final positions results -----------------------------------------------------"""    
+    fig, ax = plt.subplots()
+    ax.set_aspect("equal",adjustable="box")
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
+    line_width = 2.5
+    marker_size = 10
+    plt.plot(
+        r_unperturb_init,z_unperturb_init
+        ,marker="o"
+        ,linestyle="-"
+        ,label="unperturbed initial pos"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.plot(
+        r_minus_perturb[sim_steps_minus_perturb-1],z_minus_perturb[sim_steps_minus_perturb-1]
+        ,marker="s"
+        ,linestyle="--"
+        ,label="-perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.plot(
+        r_plus_perturb[sim_steps_unperturb-1] ,z_plus_perturb[sim_steps_unperturb-1]
+        ,marker="^"
+        ,linestyle="-."
+        ,label="+perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    plt.plot(
+        r_unperturb[sim_steps_unperturb-1],z_unperturb[sim_steps_unperturb-1]
+        ,marker="*"
+        ,linestyle="dotted"
+        ,label="unperturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    
+    xmax = max(r_unperturb_init) #+ ds
+    xmin =  min([
+        min(r_unperturb_init)
+        ,min(r_minus_perturb[sim_steps_minus_perturb-1])
+        ,min(r_plus_perturb[sim_steps_unperturb-1])
+        ,min(r_unperturb[sim_steps_unperturb-1])
+    ])
+    ymin =  min([
+        min(z_unperturb_init)
+        ,min(z_minus_perturb[sim_steps_minus_perturb-1])
+        ,min(z_plus_perturb[sim_steps_unperturb-1])
+        ,min(z_unperturb[sim_steps_unperturb-1])
+    ])
+    ymax = xmax - xmin 
+    plt.xlim(xmin,xmax)
+    plt.ylim(ymin,ymax)
+    plt.xlabel(r"r [$\mu m$]",fontsize=15)
+    plt.ylabel(r"z [$\mu m$]",fontsize=15)
+    plt.legend(fontsize=15)
+    plt.grid()
+    plt.show()
+
+
+
+
 if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
@@ -1093,3 +1319,4 @@ if __name__ == "__main__":
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
     plot_multiprocessing_results()
+    #Investigating_chosen_configuration_New_data()
