@@ -144,7 +144,7 @@ def Two_D_Constants_stationary_state(
     r0 = 5.0 #50 #0.5e-6 # micrometer  :   radius of hole
     if dpsi_perturb == "":
         dpsi_perturb = -0.02
-    num_pertub = 10#int((N-1)/2)
+    num_pertub = int(10*(N/20))#int((N-1)/2)
     
     #Base variables
     eta = 1.0#e-3 #e-3 # SI: kg /(ms)
