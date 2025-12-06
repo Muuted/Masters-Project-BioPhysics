@@ -65,7 +65,7 @@ def plot_tot_area(
     fig,ax = plt.subplots()
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
-    plt.plot([i*dt for i in range(len(corr_count))],corr_count,".-")
+    plt.plot([i*dt for i in range(len(corr_count))],corr_count,linestyle="-")
     plt.title("correction counts pr time",fontsize=15)
     plt.xlabel("t[s]",fontsize=15)
     plt.ylabel("number of variables corrections",fontsize=15)
@@ -1039,7 +1039,8 @@ def figure_3_potential_energy_landscape_cases():
 
 
 def plot_multiprocessing_results():
-    path = "2D sim results\\Data for thesis\\multi processor result\\"
+    path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
+    
     directory_list = list()
     data_files = list()
     make_movie= True
@@ -1056,7 +1057,7 @@ def plot_multiprocessing_results():
                         data_path=data_path
                         ,figs_save_path=data_path + "figues for video\\"
                         ,df_name= df_name
-                        ,tot_frames= 500
+                        ,tot_frames= 120
                     )
                     Make_video(
                         output_path=data_path
