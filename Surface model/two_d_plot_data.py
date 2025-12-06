@@ -165,14 +165,14 @@ def plot_Epot_Ekin(
 
     ax[0].plot(t_vec,T,"-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
-    ax[0].set_ylabel(r"$E_{kin}$",fontsize=fontsize)
+    ax[0].set_ylabel(r"$E_{kin} [zJ]$",fontsize=fontsize)
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend(fontsize=15)
     ax[0].ticklabel_format(useOffset=False)
     #plt.figure()
     ax[1].plot(t_vec,S,"-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
-    ax[1].set_ylabel(r"$E_{pot}$",fontsize=fontsize)
+    ax[1].set_ylabel(r"$E_{pot}$ [zJ]",fontsize=fontsize)
     ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)
     ax[1].legend(fontsize=15)
     ax[1].ticklabel_format(useOffset=False)
@@ -193,7 +193,7 @@ def plot_Epot_Ekin(
     wm.window.state('zoomed')
     plt.plot(t_vec,T,"-",label="Kinetic energy")
     plt.xlabel("time [s]",fontsize=15)
-    plt.ylabel(r"$E_{kin}$",fontsize=15)
+    plt.ylabel(r"$E_{kin}$ [zJ]",fontsize=15)
     plt.title("Kinetic Energy (Not correct scale)",fontsize=15)
     plt.ticklabel_format(useOffset=False)
     plt.legend(fontsize=15)
@@ -209,7 +209,7 @@ def plot_Epot_Ekin(
     wm.window.state('zoomed')
     plt.plot(t_vec,S,"-",label="Potential energy")
     plt.xlabel("time [s]",fontsize=15)
-    plt.ylabel(r"$E_{pot}$",fontsize=15)
+    plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=15)
     plt.title("Potential Energy",fontsize=15)
     plt.legend(fontsize=15)
     plt.ticklabel_format(useOffset=False)
@@ -1040,7 +1040,7 @@ def figure_3_potential_energy_landscape_cases():
 
 def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
-    
+    path = "2D sim results\\Data for thesis\\test\\"
     directory_list = list()
     data_files = list()
     make_movie= True
