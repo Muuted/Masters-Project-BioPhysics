@@ -1050,7 +1050,7 @@ def figure_3_potential_energy_landscape_cases():
 
 def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
-    path = "2D sim results\\Data for thesis\\" + "fewpoints but low dt\\"
+    path = "2D sim results\\Data for thesis\\" + "fewpoints but low dt\\"+"triangle sims\\T,dt,sigma,tau=(2.0e-08,1.2e-13,1.3e+03,2.6e+03)\\"
     directory_list = list()
     data_files = list()
     make_movie= True
