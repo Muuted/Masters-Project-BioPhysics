@@ -142,6 +142,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
         do_perturbation_list = [False ,False ,False]
 
     show_print_val = [False ,False ,True]
+    show_print_val = [True, True ,True]
 
     const_args = Two_D_Constants_stationary_state(
         print_val = show_print_val[perturb_index]

@@ -58,6 +58,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
+    plt.savefig(output_path + save_name_1 + ".svg")
     
 
 
@@ -78,6 +79,7 @@ def plot_tot_area(
     plt.pause(2)
     
     plt.savefig(output_path + save_name_1 + ".png")
+    plt.savefig(output_path + save_name_1 + ".svg")
     
 
 
@@ -104,6 +106,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_2 + ".png")
+    plt.savefig(output_path + save_name_2 + ".svg")
 
 
 
@@ -122,6 +125,7 @@ def plot_tot_area(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_3 + ".png")
+    plt.savefig(output_path + save_name_3 + ".svg")
 
 def plot_Epot_Ekin(
         data_path:str,df_name:str,output_path:str
@@ -186,6 +190,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_1 + ".png")
+    plt.savefig(output_path + save_name_1 + ".svg")
     
     """--------------------------------------Kinetic energy plot stand alone----------------------------------------------------------"""
     fig, ax = plt.subplots()
@@ -202,6 +207,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_4 + ".png")
+    plt.savefig(output_path + save_name_4 + ".svg")
     
     """---------------------------------------Potential energy plot stand alone---------------------------------------------------------"""
     fig, ax = plt.subplots()
@@ -218,6 +224,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_5 + ".png")
+    plt.savefig(output_path + save_name_5 + ".svg")
 
 
     """---------------------------------Inital positon and end positon plot---------------------------------------------------------------"""
@@ -264,6 +271,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_2 +".png")
+    plt.savefig(output_path + save_name_2 +".svg")
 
 
     """---------------------------------Inital positon and end positon scaled correcly plot---------------------------------------------------------------"""
@@ -319,6 +327,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
+    plt.savefig(output_path + save_name_3 +".svg")
 
     """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
     fig, ax = plt.subplots()
@@ -357,6 +366,7 @@ def plot_Epot_Ekin(
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
+    plt.savefig(output_path + save_name_3 +".svg")
 
 
 def plot_reference_fig_for_finding_what_to_simulate():
@@ -1040,7 +1050,7 @@ def figure_3_potential_energy_landscape_cases():
 
 def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
-    path = "2D sim results\\Data for thesis\\test\\"
+    path = "2D sim results\\Data for thesis\\" + "fewpoints but low dt\\"
     directory_list = list()
     data_files = list()
     make_movie= True
