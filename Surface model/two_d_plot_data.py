@@ -1054,6 +1054,7 @@ def plot_multiprocessing_results():
     path = "C:\\Users\\adams\\Desktop\\labtop data\\"
     path = "C:\\Users\\adams\\Desktop\\præsentations data\\N=20\\"
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
+    path = "2D sim results\\Data for thesis\\really long"
     directory_list = list()
     data_files = list()
     make_movie= True
