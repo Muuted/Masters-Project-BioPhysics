@@ -168,7 +168,7 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
     if perturb_tau == True:
         tau *= dtau_list[perturb_index]
     
-    folder = folder_pos_list[const_index] +f"T,dt,sigma,tau=({T:0.1e},{dt:0.1e},{sigma:0.1e},{tau:0.1e})\\"+save_name_list[perturb_index] +"\\" 
+    folder = folder_pos_list[const_index] +f"N,T,dt,sigma,tau=({N},{T:0.1e},{dt:0.1e},{sigma:0.1e},{tau:0.1e})\\"+save_name_list[perturb_index] +"\\" 
     path_args = Two_D_paths(folder_names = folder)
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
