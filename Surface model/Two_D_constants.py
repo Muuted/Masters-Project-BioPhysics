@@ -28,7 +28,7 @@ def Two_D_paths(folder_names=""):
 
     
     """------ Saved files names  ---------"""
-    df_name= "2D Suface"
+    df_name= "2D Surface"
     fps_movie = 24
     num_frames = 100
 

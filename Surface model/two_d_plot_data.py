@@ -1,7 +1,7 @@
 from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
-from two_d_data_processing import tot_area, E_pot, E_kin, Xsqaured_test
+from two_d_data_processing import tot_area, E_pot, E_kin, Xsqaured_test, Plot_3D_mesh
 from Two_D_functions import Langrange_multi, Epsilon_values
 import numpy as np
 import pandas as pd
@@ -367,6 +367,13 @@ def plot_Epot_Ekin(
     plt.pause(2)
     plt.savefig(output_path + save_name_3 +".png")
     plt.savefig(output_path + save_name_3 +".svg")
+
+    
+    
+    
+
+
+
 
 
 def plot_reference_fig_for_finding_what_to_simulate():
@@ -1324,14 +1331,71 @@ def Investigating_chosen_configuration_New_data():
     plt.show()
 
 
+def plot_test_3d(data_path:str,df_name:str,output_path:str
+        ):
+    if data_path == "" or df_name== "" or output_path=="":
+        print(f" No paths were given, in the plot_Epot_Ekin function")
+        exit()
+    save_name = df_name.replace(".avi","")
 
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    #exit()
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
+    r_unperturbed = df_sim['r unperturbed'][0]
+    z_unperturbed = df_sim['z unperturbed'][0]
+    psi = df_sim['psi'][0]
+    Area = df_sim['area list'][0]
+    N = df_sim["N"][0]
+    c0 = df_sim["c0"][0]
+    k = df_sim['k'][0]
+    kG = df_sim['kG'][0]
+    ds = df_sim['ds'][0]
+    sigma = df_sim['sigma'][0]
+    tau = df_sim['tau'][0]
+    dt = df_sim["dt"][0]
+    sim_steps = df_sim["sim_steps"][0]
+    S = df_sim['Epot'][0]
+    T = df_sim['Ekin'][0]
+    """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
+    #fig, ax = plt.subplots()
+    #font_size= 15
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
+    #ax = plt.figure().add_subplot(projection='3d')
+    t_ref_list = [0, int(sim_steps/4), int(2*sim_steps/4), int(3*sim_steps/4), int(sim_steps)-1 ]
+    style_list =["solid","dotted","dashed","dashdot","solid"]
+    color_list = ["k","g","r","b","m","c"]
+    marker_list= ["o","v","s","^","*",]
+
+
+    Plot_3D_mesh(
+        N=N ,r=r,z=z
+        ,time_pos_list=t_ref_list
+        ,linestyle_list=style_list
+        ,marker_list=marker_list
+        ,color_list=color_list
+    )
 
 if __name__ == "__main__":
+    data_path = "C:\\Users\\adams\\Desktop\\praesentations data\\"
+    data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
+    output_path = data_path
+    file_name = "2D Surface.pkl"
+    file_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25)"
+
     #plot_tot_area()
     #plot_Epot_Ekin()
     #plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
-    plot_multiprocessing_results()
+    #plot_multiprocessing_results()
     #Investigating_chosen_configuration_New_data()
+    plot_test_3d(
+        data_path=data_path
+        ,df_name=file_name
+        ,output_path=output_path
+    )
+    plt.show()
