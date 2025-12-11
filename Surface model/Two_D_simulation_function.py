@@ -404,6 +404,7 @@ def Two_d_simulation_stationary_states(
     Area_initial = np.sum(Area)
     
     Potential_E = np.zeros(sim_steps-1,dtype=float)
+    Potential_E_before_correction = np.zeros(sim_steps-1,dtype=float)
     Kinetic_E = np.zeros(sim_steps-1,dtype=float)
     Xsqre = np.zeros(sim_steps-1,dtype=float)
     correct_count_list = np.zeros(sim_steps-1)
@@ -453,6 +454,9 @@ def Two_d_simulation_stationary_states(
                                 )
                 psi[t+1][i] = psi[t][i] + dt*dpsidt
         
+
+        Potential_E_before_correction[t] = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=radi[t],psi=psi[t],Area=Area)
+
         if do_correction == True:
             correction_count = Make_variable_corrections(
                 N=N
@@ -478,8 +482,7 @@ def Two_d_simulation_stationary_states(
           )
     
 
-    if save_data == True:
-        
+    if save_data == True:        
         df = pd.DataFrame({
             'psi': [psi],
             "r": [radi],
@@ -490,6 +493,7 @@ def Two_d_simulation_stationary_states(
             "area list": [Area],
             "Epot":[Potential_E],
             "Ekin":[Kinetic_E],
+            "Ekin before correction": [Potential_E_before_correction],
             "Chi squared test": [Xsqre],
             #'lambs': [lambs_save],
             #'nus': [nus_save],
