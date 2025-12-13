@@ -50,6 +50,7 @@ def plot_tot_area(
         f"Ratio of Amax/Amin={Aratio} \n "
         +f"Amax - AMin={Amax-Amin}"
         ,fontsize=15)
+    plt.grid()
     ax.ticklabel_format(useOffset=False)
     
     save_name_1 = save_name + "Atot"# Total area over time"
@@ -70,7 +71,7 @@ def plot_tot_area(
     plt.title("correction counts pr time",fontsize=15)
     plt.xlabel("t[s]",fontsize=15)
     plt.ylabel("number of variables corrections",fontsize=15)
-
+    plt.grid()
     
     save_name_1 = save_name + " var corr"# Total area over time"
     save_name_1 =  " var corr"
@@ -99,7 +100,7 @@ def plot_tot_area(
     plt.title("Change in Area",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
     plt.ylabel("Area",fontsize=15)
-
+    plt.grid()
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
     #ax.set_aspect("equal",adjustable="box")
@@ -117,8 +118,8 @@ def plot_tot_area(
     plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
-    plt.ylabel(r"$\chi^2$ [$\mu m^2$]",fontsize=15)
-    
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]", fontsize=15)
+    plt.grid()
     save_name_3 = save_name + "chisqrt"
     save_name_3 = "chisqrt"
     #ax.set_aspect("equal",adjustable="box")
@@ -173,6 +174,7 @@ def plot_Epot_Ekin(
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend(fontsize=15)
     ax[0].ticklabel_format(useOffset=False)
+    ax[0].grid()
     #plt.figure()
     ax[1].plot(t_vec,S,"-",label="Potential energy")
     ax[1].set_xlabel("time [s]",fontsize=fontsize)
@@ -180,7 +182,7 @@ def plot_Epot_Ekin(
     ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)
     ax[1].legend(fontsize=15)
     ax[1].ticklabel_format(useOffset=False)
-
+    ax[1].grid()
     plt.draw()
     plt.pause(0.1)
     save_name_1 = "potential and kinetic energy" + df_name 
@@ -202,6 +204,7 @@ def plot_Epot_Ekin(
     plt.title("Kinetic Energy (Not correct scale)",fontsize=15)
     plt.ticklabel_format(useOffset=False)
     plt.legend(fontsize=15)
+    plt.grid()
     save_name_4 = "Ekin"
     #ax.set_aspect("equal",adjustable="box")
     plt.draw()
@@ -219,6 +222,7 @@ def plot_Epot_Ekin(
     plt.title("Potential Energy",fontsize=15)
     plt.legend(fontsize=15)
     plt.ticklabel_format(useOffset=False)
+    plt.grid()
     save_name_5 = "Epot"
     #ax.set_aspect("equal",adjustable="box")
     plt.draw()
@@ -264,7 +268,7 @@ def plot_Epot_Ekin(
     plt.ylabel(r"z [$\mu m$]",fontsize=15)
     plt.title("show difference from start and end positions",fontsize=15)
     plt.legend()#fontsize=font_size)
-
+    plt.grid()
     save_name_2 = df_name + "init&end"
     save_name_2 =  "init&end"
     #ax.set_aspect("equal",adjustable="box")
@@ -320,6 +324,7 @@ def plot_Epot_Ekin(
     plt.ylim(ymin,ymax)
     plt.title("show difference from start and end positions",fontsize=15)
     plt.legend(fontsize=font_size)
+    plt.grid()
 
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "init&end scaled"
@@ -360,7 +365,7 @@ def plot_Epot_Ekin(
     ax.set_aspect("equal",adjustable="box")
     plt.title("show difference from start and end positions",fontsize=15)
     plt.legend(fontsize=font_size)
-
+    plt.grid()
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "4 different postions in time"
     plt.draw()
@@ -591,7 +596,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
         "Edge radius (r1) vs Excess Area"
         #+r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
         ,fontsize=15)
-    ax[0].set_xlabel(r"$\Delta A = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
+    ax[0].set_xlabel(r"$\Delta A_{Excess} = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
     ax[0].set_ylabel(r"Edge radius (r1) [$\mu m$]",fontsize=15)
     ax[0].grid()
     #ax[0].set_aspect("equal",adjustable="box")
@@ -654,12 +659,14 @@ def plot_reference_fig_for_finding_what_to_simulate():
                 ,psi_L=psi_L_list[2]
             )
 
-    spacing = 0.1 #max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
+    spacing = 0.15 #max(z_contin_2) + max(z_contin_1) + max(z_contin_0)
 
     ax[1].plot(
         r_contin_0
         ,z_contin_0 + spacing
-        ,label = markers_latex[0] + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}" +r" $\mu m$"
+        ,label = markers_latex[0] 
+        + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[0]][i_pos[0]]/lc:.1f}" +r" $\mu m$"
+        + r", $\tau \approx $" + f"{(df["tau_list_Curved"][n_pos_A[0]][i_pos[0]]/lc**2)/1000:0.1f} nN"
         ,linestyle="-"
         ,linewidth=2
             )
@@ -667,7 +674,9 @@ def plot_reference_fig_for_finding_what_to_simulate():
     ax[1].plot(
         r_contin_1
         ,z_contin_1 
-        ,label = markers_latex[1] + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[1]][i_pos[1]]/lc:.1f}" +r" $\mu m$"
+        ,label = markers_latex[1] 
+        + r": $ r1 \approx $" + f"{df["r1Curved"][n_pos_A[1]][i_pos[1]]/lc:.1f}" +r" $\mu m$"
+        + r", $\tau \approx $" + f"{(df["tau_list_Curved"][n_pos_A[1]][i_pos[1]]/lc**2)/1000:0.1f} nN"
         ,linestyle="dashed"
         ,linewidth=2
         )
@@ -675,7 +684,9 @@ def plot_reference_fig_for_finding_what_to_simulate():
     ax[1].plot(
         r_contin_2
         ,z_contin_2 - spacing
-        ,label = markers_latex[2]  + r": $ r1  \approx $" + f" {df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}" +r" $\mu m$"
+        ,label = markers_latex[2]  
+        + r": $ r1  \approx $" + f" {df["r1Flat"][n_neg_A[0]][i_neg[0]]/lc:.1f}" +r" $\mu m$"
+        + r", $\tau \approx $" + f"{(df["tau_list_Flat"][n_neg_A[0]][i_neg[0]]/lc**2)/1000:0.1f} nN"
         ,linestyle="-."
         ,linewidth=2
         )
@@ -685,9 +696,10 @@ def plot_reference_fig_for_finding_what_to_simulate():
 
     ax[1].set_yticks([i for i in np.arange(-3,3,0.05)])
     ax[1].set_xticks([i for i in np.arange(-3,3,0.05)])
-    ax[1].set_xlim(rmin,rmax)
-    ax[1].set_ylim(-(rmax-rmin)/2,(rmax-rmin)/2)
-    ax[1].set_ylim(-(rmax-rmin)/2,(rmax-rmin)/2)
+    ax[1].set_xlim(rmin,rmax +0.03*(rmax-rmin))
+    lim_spacing = -1.5*spacing
+    ax[1].set_ylim(lim_spacing,(rmax-rmin) + lim_spacing)
+    #ax[1].set_ylim(-(rmax-rmin)/2,(rmax-rmin)/2)
     #ax[1].set_ylim(-0.15,0.2)
     ax[1].legend(fontsize=20)
     ax[1].set_xlabel(r"r [$\mu m$]",fontsize=15)
@@ -727,7 +739,7 @@ def Find_the_circle_radius_of_rolling_test():
 
     data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
     #data_path = "C:\\Users\\adams\\Documents\\GitHub\\Masters-Project-BioPhysics\\Surface model\\2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
-    data_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25)"
+    data_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25).pkl"
 
     df_sim = pd.read_pickle(data_path+data_name)
 
@@ -839,6 +851,7 @@ def Find_the_circle_radius_of_rolling_test():
     plt.draw()
     plt.pause(3)
     plt.savefig(data_path + "Rolling circle fit test.png")
+    plt.savefig(data_path + "Rolling circle fit test.svg")
     plt.show()
 
 
@@ -1062,6 +1075,7 @@ def plot_multiprocessing_results():
     path = "C:\\Users\\adams\\Desktop\\præsentations data\\N=20\\"
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
+    path = "2D sim results\\Data for thesis\\Verification\\"
     directory_list = list()
     data_files = list()
     make_movie= True
@@ -1388,14 +1402,10 @@ if __name__ == "__main__":
     #plot_tot_area()
     #plot_Epot_Ekin()
     #plot_reference_fig_for_finding_what_to_simulate()
-    #Find_the_circle_radius_of_rolling_test()
+    Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
     #plot_multiprocessing_results()
     #Investigating_chosen_configuration_New_data()
-    plot_test_3d(
-        data_path=data_path
-        ,df_name=file_name
-        ,output_path=output_path
-    )
+    #plot_test_3d(data_path=data_path,df_name=file_name,output_path=output_path)
     plt.show()

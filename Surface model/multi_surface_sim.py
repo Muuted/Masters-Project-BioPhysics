@@ -130,8 +130,8 @@ def Surface_sim_stationary_state_initial_configuration_multiprocessing_perturb_t
         ,"plus sims\\"
         ,"cross sims\\"
     ]
-    save_name_list = ["smaller","larger","no change"]
-
+    save_name_list = ["-perturbed","+perturbed","unperturbed"]
+    #["smaller","larger","no change"]
     dpsi_list = [ -0.01, 0.01 ,0]
 
     dtau_list = [1-0.05, 1+0.05 , 1]

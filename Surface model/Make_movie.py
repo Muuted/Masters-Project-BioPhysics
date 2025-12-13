@@ -168,6 +168,7 @@ def Make_frames(
                  ,verticalalignment='top'
                  ,bbox=props
                  )
+        plt.grid()
 
         plt.draw()
         plt.pause(0.1)
