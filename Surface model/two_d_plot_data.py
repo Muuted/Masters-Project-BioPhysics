@@ -1068,59 +1068,6 @@ def figure_3_potential_energy_landscape_cases():
     plt.show()
 
 
-def plot_multiprocessing_results():
-    path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
-    path = "2D sim results\\Data for thesis\\" + "fewpoints but low dt\\"+"triangle sims\\T,dt,sigma,tau=(2.0e-08,1.2e-13,1.3e+03,2.6e+03)\\"
-    path = "C:\\Users\\adams\\Desktop\\labtop data\\"
-    path = "C:\\Users\\adams\\Desktop\\præsentations data\\N=20\\"
-    path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
-    path = "2D sim results\\Data for thesis\\really long"
-    path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\"
-
-    directory_list = list()
-    data_files = list()
-    make_movie= True
-    make_figures = True
-    for root, dirs, files in os.walk(path, topdown=False):
-        for df_name in files:
-            if ".pkl" in df_name:
-                
-                data_path = root + "\\"
-                directory_list.append(data_path+ files[0])
-                print(data_path + df_name)
-                if make_movie == True:
-                    Make_frames(
-                        data_path=data_path
-                        ,figs_save_path=data_path + "figues for video\\"
-                        ,df_name= df_name
-                        ,tot_frames= 250
-                    )
-                    Make_video(
-                        output_path=data_path
-                        ,input_path=data_path + "figues for video\\"
-                        ,video_name= "surface video"
-                        ,fps=24
-                    )
-                if make_figures == True:
-                    plot_Epot_Ekin(
-                        data_path=data_path
-                        ,df_name=df_name
-                        ,output_path=data_path
-                    )
-                    plot_tot_area(
-                        data_path=data_path
-                        ,df_name=df_name
-                        ,output_path=data_path
-                    )
-
-                #plt.show()
-                plt.draw()
-                plt.pause(2)
-                plt.close("all")
-
-
-
 
 
 def Investigating_chosen_configuration_New_data():
@@ -1580,13 +1527,24 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
     
     
     """----------------------------------------- Compare all final positions results -----------------------------------------------------"""    
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
     fig, ax = plt.subplots()
     ax.set_aspect("equal",adjustable="box")
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
+    sub_ax = inset_axes(
+    parent_axes=ax,
+    width=4,
+    height=4,
+    loc='upper right',
+    axes_kwargs={
+        'facecolor':"#C9C9C9"
+    })
+
+    
     line_width = 2.5
     marker_size = 10
-    plt.plot(
+    ax.plot(
         r_unperturb_init,z_unperturb_init
         ,marker="o"
         ,linestyle="-"
@@ -1594,8 +1552,15 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         ,linewidth=line_width
         ,markersize=marker_size
         )
-    
-    plt.plot(
+    sub_ax.plot(
+        r_unperturb_init,z_unperturb_init
+        ,marker="o"
+        ,linestyle="-"
+        ,label="unperturbed initial pos"
+        ,linewidth=line_width
+        ,markersize=marker_size
+    )
+    ax.plot(
         r_minus_perturb[sim_steps_minus_perturb-1],z_minus_perturb[sim_steps_minus_perturb-1]
         ,marker="s"
         ,linestyle="--"
@@ -1604,7 +1569,16 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         ,markersize=marker_size
         )
     
-    plt.plot(
+    sub_ax.plot(
+        r_minus_perturb[sim_steps_minus_perturb-1],z_minus_perturb[sim_steps_minus_perturb-1]
+        ,marker="s"
+        ,linestyle="--"
+        ,label="-perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    ax.plot(
         r_plus_perturb[sim_steps_unperturb-1] ,z_plus_perturb[sim_steps_unperturb-1]
         ,marker="^"
         ,linestyle="-."
@@ -1613,16 +1587,68 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         ,markersize=marker_size
         )
     
-    plt.plot(
+    sub_ax.plot(
+        r_plus_perturb[sim_steps_unperturb-1] ,z_plus_perturb[sim_steps_unperturb-1]
+        ,marker="^"
+        ,linestyle="-."
+        ,label="+perturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+    
+    ax.plot(
         r_unperturb[sim_steps_unperturb-1],z_unperturb[sim_steps_unperturb-1]
         ,marker="*"
         ,linestyle="dotted"
         ,label="unperturb"
         ,linewidth=line_width
         ,markersize=marker_size
-        )
+    )
+    sub_ax.plot(
+        r_unperturb[sim_steps_unperturb-1],z_unperturb[sim_steps_unperturb-1]
+        ,marker="*"
+        ,linestyle="dotted"
+        ,label="unperturb"
+        ,linewidth=line_width
+        ,markersize=marker_size
+    )
     
-    
+
+
+    ymax =  max([
+        max(z_unperturb_init)
+        ,max(z_minus_perturb[sim_steps_minus_perturb-1])
+        ,max(z_plus_perturb[sim_steps_unperturb-1])
+        ,max(z_unperturb[sim_steps_unperturb-1])
+    ]) + ds
+    ymin = min([z_minus_perturb[sim_steps_minus_perturb-1][0] , z_plus_perturb[sim_steps_plus_perturb-1][0] , z_unperturb[sim_steps_unperturb-1][0]]) - ds
+    r_edge_init = (r_unperturb[0][0]+ r_unperturb[sim_steps_unperturb-1][0] + r_minus_perturb[sim_steps_minus_perturb-1][0] + r_plus_perturb[sim_steps_plus_perturb-1][0])/4 - ds/2
+    r_edge_init = 0
+    edge_points = 3
+    for i in range(edge_points):
+        r_edge_init += (r_unperturb[0][i]+ r_unperturb[sim_steps_unperturb-1][i] + r_minus_perturb[sim_steps_minus_perturb-1][i] + r_plus_perturb[sim_steps_plus_perturb-1][i])/(4*edge_points)
+    r_edge_init += - ds/2
+    xmin = r_edge_init - (ymax-ymin)/2
+    xmax =  r_edge_init + (ymax-ymin)/2
+    sub_ax.set_xlim(xmin, xmax)
+    sub_ax.set_ylim(ymin,ymax)
+    #sub_ax.set_xlabel(r"r [$\mu m$]",fontsize=15)
+    #sub_ax.set_ylabel(r"z [$\mu m$]",fontsize=15)
+    #sub_ax.set_xticks([])
+    #sub_ax.set_yticks([])
+    #sub_ax.legend(fontsize=20)
+    sub_ax.grid()
+    plt.draw()
+    plt.pause(2)
+
+    ax.vlines(ymax=ymax,ymin=ymin,x=xmin,colors="k")
+    ax.vlines(ymax=ymax,ymin=ymin,x=xmax,colors="k")
+    ax.hlines(y=ymax,xmax=xmax,xmin=xmin,colors="k")
+    ax.hlines(y=ymin,xmax=xmax,xmin=xmin,colors="k",label="Zoom in area")
+
+    #ax.plot([xmin,0.1614],[ymax,0.2569],color="k")
+    #ax.plot([xmax,0.3185],[ymin,0.0997],color="k")
+
     xmax = max(r_unperturb_init) #+ ds
     xmin =  min([
         min(r_unperturb_init)
@@ -1637,21 +1663,94 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         ,min(z_unperturb[sim_steps_unperturb-1])
     ])
     ymax = xmax - xmin 
-    plt.xlim(xmin-ds,xmax+ds)
-    plt.ylim(ymin-ds,ymax+ds)
-    plt.xlabel(r"r [$\mu m$]",fontsize=15)
-    plt.ylabel(r"z [$\mu m$]",fontsize=15)
-    plt.legend(fontsize=20)
-    plt.grid()
+    ax.set_xlim(xmin-2*ds,xmax+2*ds)
+    ax.set_ylim(ymin-2*ds,ymax+2*ds)
+    ax.set_xlabel(r"r [$\mu m$]",fontsize=15)
+    ax.set_ylabel(r"z [$\mu m$]",fontsize=15)
+    #ax.legend(fontsize=15,loc="lower right")
+    ax.legend(
+        bbox_to_anchor=(1.02, 1)
+        , loc='upper left'
+        , borderaxespad=0
+        ,fontsize=15
+                )
+    ax.grid()
 
+    plt.title(
+        f"The unperturbed intial configuration and the final positions \n"
+        +f"of the three different membrane initial conditions \n"
+        #+r"$\sigma \approx$" +f"{round(sigma,3)},   "
+        #+r"$\tau \approx$"+f"{round(tau,3)}"
+        +r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
+    ,fontsize=15
+    ,x=0
+    ,y=1.01
+    )
+    plt.pause(1)
     plt.draw()
-    plt.pause(2)
-
-    save_name_3 = "Compare final pos of all"
+    save_name_3 = "Compare final pos of membrane positions"
     plt.savefig(path + save_name_3 +".png")
     plt.savefig(path + save_name_3 +".svg")
 
     plt.show()
+
+
+
+def plot_multiprocessing_results():
+    path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
+    path = "2D sim results\\Data for thesis\\" + "fewpoints but low dt\\"+"triangle sims\\T,dt,sigma,tau=(2.0e-08,1.2e-13,1.3e+03,2.6e+03)\\"
+    path = "C:\\Users\\adams\\Desktop\\labtop data\\"
+    path = "C:\\Users\\adams\\Desktop\\præsentations data\\N=20\\"
+    path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
+    path = "2D sim results\\Data for thesis\\really long"
+    path = "2D sim results\\Data for thesis\\Verification\\"
+    path = "2D sim results\\Data for thesis\\multi processor result\\triangle sims\\"
+
+    directory_list = list()
+    data_files = list()
+    make_movie= True
+    make_figures = True
+    for root, dirs, files in os.walk(path, topdown=False):
+        for df_name in files:
+            if ".pkl" in df_name:
+                
+                data_path = root + "\\"
+                directory_list.append(data_path+ files[0])
+                print(data_path + df_name)
+                if make_movie == True:
+                    Make_frames(
+                        data_path=data_path
+                        ,figs_save_path=data_path + "figues for video\\"
+                        ,df_name= df_name
+                        ,tot_frames= 250
+                    )
+                    Make_video(
+                        output_path=data_path
+                        ,input_path=data_path + "figues for video\\"
+                        ,video_name= "surface video"
+                        ,fps=24
+                    )
+                if make_figures == True:
+                    plot_Epot_Ekin(
+                        data_path=data_path
+                        ,df_name=df_name
+                        ,output_path=data_path
+                    )
+                    plot_tot_area(
+                        data_path=data_path
+                        ,df_name=df_name
+                        ,output_path=data_path
+                    )
+
+                    plot_comparison_of_plus_minus_un_perturbed_results(
+                        path=data_path
+                    )
+                #plt.show()
+                plt.draw()
+                plt.pause(2)
+                plt.close("all")
+
+
 
 if __name__ == "__main__":
     data_path = "C:\\Users\\adams\\Desktop\\praesentations data\\"
@@ -1666,10 +1765,12 @@ if __name__ == "__main__":
     #Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
-    #plot_multiprocessing_results()
     #Investigating_chosen_configuration_New_data()
     #plot_test_3d(data_path=data_path,df_name=file_name,output_path=output_path)
     plot_comparison_of_plus_minus_un_perturbed_results(
-        path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
+        #path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
+        #path  ="2D sim results\\Data for thesis\\multi processor result\\cross sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\\+perturbed\\"
+       path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\+perturbed\\"
     )
-    plt.show()
+    #plot_multiprocessing_results()
+    #plt.show()
