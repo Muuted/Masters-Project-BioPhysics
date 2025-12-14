@@ -1679,14 +1679,13 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
     plt.title(
         f"The unperturbed intial configuration and the final positions \n"
         +f"of the three different membrane initial conditions \n"
-        #+r"$\sigma \approx$" +f"{round(sigma,3)},   "
-        #+r"$\tau \approx$"+f"{round(tau,3)}"
+        #+r"$\sigma \approx$" +f"{round(sigma,3)},   " + r"$\tau \approx$"+f"{round(tau,3)}"
         +r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
-    ,fontsize=15
-    ,x=0
-    ,y=1.01
+        ,fontsize=15
+        ,x=0
+        ,y=1.01
     )
-    
+
     plt.pause(1)
     plt.draw()
     save_name_3 = "Compare final pos of membrane positions"
@@ -1694,7 +1693,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
     plt.savefig(path + save_name_3 +".svg")
 
     #plt.show()
-
+    """-----------------------------------------  -----------------------------------------------------"""    
 
 
 def plot_multiprocessing_results():
