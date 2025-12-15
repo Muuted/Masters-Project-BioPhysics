@@ -1363,7 +1363,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         for j in range(len(root_list)):
             if place_ref[i] in Path(root_list[j]).parts:
                 do_plots = True
-
+    print(f"do_plots ={do_plots}")
     if do_plots == True:
         for i in range(len(directory_list)):
             folders = Path(directory_list[i]).parent.parts
@@ -1792,17 +1792,16 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\multi processor result\\"#triangle sims\\"
-
+    path = "2D sim results\\Data for thesis\\fewpoints but low dt\\"
+    print(path)
     directory_list = list()
     data_files = list()
     make_movie= True
     make_figures = True
-    make_comparison_figs = True
+    make_comparison_figs = False#True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
-                
                 data_path = root + "\\"
                 directory_list.append(data_path+ files[0])
                 print(data_path + df_name)
@@ -1811,7 +1810,7 @@ def plot_multiprocessing_results():
                         data_path=data_path
                         ,figs_save_path=data_path + "figues for video\\"
                         ,df_name= df_name
-                        ,tot_frames= 250
+                        ,tot_frames= 100
                     )
                     Make_video(
                         output_path=data_path
