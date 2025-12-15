@@ -1857,11 +1857,11 @@ if __name__ == "__main__":
     #figure_3_potential_energy_landscape_cases()
     #Investigating_chosen_configuration_New_data()
     #plot_test_3d(data_path=data_path,df_name=file_name,output_path=output_path)
-    plot_comparison_of_plus_minus_un_perturbed_results(
-        path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
+    #plot_comparison_of_plus_minus_un_perturbed_results(
+    #    path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
         #path  ="2D sim results\\Data for thesis\\multi processor result\\cross sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\Verification\\c0=0 tau=0\\"
-    )
-    #plot_multiprocessing_results()
-    plt.show()
+    #)
+    plot_multiprocessing_results()
+    #plt.show()
