@@ -68,7 +68,12 @@ def plot_tot_area(
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(corr_count))],corr_count,linestyle="-")
-    plt.title("correction counts pr time",fontsize=15)
+    plt.title(
+        f"correction counts pr time step \n "
+        +r"$\frac{corrections}{time step} \approx$"
+        +f"{round(np.sum(corr_count)/sim_steps ,3)}"
+        ,fontsize=15
+        )
     plt.xlabel("t[s]",fontsize=15)
     plt.ylabel("number of variables corrections",fontsize=15)
     plt.grid()
@@ -127,6 +132,9 @@ def plot_tot_area(
     plt.pause(2)
     plt.savefig(output_path + save_name_3 + ".png")
     plt.savefig(output_path + save_name_3 + ".svg")
+
+
+
 
 def plot_Epot_Ekin(
         data_path:str,df_name:str,output_path:str
@@ -1677,8 +1685,9 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         r_edge_init += - ds/2
         xmin = r_edge_init - (ymax-ymin)/2
         xmax =  r_edge_init + (ymax-ymin)/2
-        sub_ax.set_xlim(xmin, xmax)
-        sub_ax.set_ylim(ymin,ymax)
+        if xmin == xmin and xmax == xmax and ymin==ymin and ymax == ymax:
+            sub_ax.set_xlim(xmin, xmax)
+            sub_ax.set_ylim(ymin,ymax)
         #sub_ax.set_xlabel(r"r [$\mu m$]",fontsize=15)
         #sub_ax.set_ylabel(r"z [$\mu m$]",fontsize=15)
         #sub_ax.set_xticks([])
@@ -1792,13 +1801,13 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\new test for N\\"
-    print(path)
+    path = "2D sim results\\Data for thesis\\"#new test for N\\"
+    #print(path)
     directory_list = list()
     data_files = list()
     make_movie= True
     make_figures = True
-    make_comparison_figs = False#True
+    make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:

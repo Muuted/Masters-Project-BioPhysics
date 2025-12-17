@@ -120,7 +120,7 @@ def Make_frames(
         f"dt= {dt:0.1e}",
         f"c0={c0:0.1e}",
         f"N={N}",
-        f"gam(i>1)={gam2}",
+        f"gam(i>1)={gam2:0.1e}",
         r" $ T_{tot} $ =" + f"{T_tot:0.2e}s",
     ))
 
