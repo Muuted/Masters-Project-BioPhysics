@@ -344,11 +344,11 @@ def Plot_3D_mesh(
         ,linestyle_list:list,marker_list:list,color_list:list
         ,time_pos_list:list
         ):
-    pi_vec = np.linspace(0,np.pi,100)
+    pi_vec = np.linspace(0,np.pi,50)
     ax = plt.figure().add_subplot(projection='3d')
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
-    ax.view_init(elev=0, azim=45, roll=0)
+    ax.view_init(elev=35, azim=45, roll=0)
     alpha_val = np.linspace(start=0.1,stop=1,num=len(pi_vec))
 
     print(f"len(time)={len(time_pos_list)} and len(color)={len(color_list)}")
@@ -377,7 +377,6 @@ def Plot_3D_mesh(
             y_ring.append([x*np.sin(theta) for theta in pi_vec])
             y_ring_down.append([-x*np.sin(theta) for theta in pi_vec])
             
-        
         for n in range(len(pi_vec)):
             ax.plot3D(x2[n],y2_up[n],z[t],linestyle="-",marker="",color=color_list[time_pos],alpha=0.3 )
             ax.plot3D(x2[n],y2_down[n],z[t],linestyle="-",marker="",color=color_list[time_pos],alpha=0.3 )
@@ -391,9 +390,10 @@ def Plot_3D_mesh(
         #print(xmin,xmax)
         #plt.xlim(xmin,xmax)
         #plt.ylim(xmin,xmax)
-    #ax.set_zlim(0,(xmax-xmin)/2)
-    ax.set_xlim(0,xmax)
-    ax.set_ylim(0,xmax)
+        ax.set_zlim(0,(xmax-xmin)/2)
+        ax.set_xlim(0,xmax*1.5)
+        ax.set_ylim(0,xmax*1.5)
+
     #plt.show()
 
 

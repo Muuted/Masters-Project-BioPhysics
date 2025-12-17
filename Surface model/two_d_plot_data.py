@@ -956,8 +956,9 @@ def Investigating_chosen_configuration_1():
     plt.draw()
     plt.pause(2)
 
-    save_name_1 = "chisqrt for all 3.png"
-    plt.savefig(data_path + save_name_1)
+    save_name_1 = "chisqrt for all 3"
+    plt.savefig(data_path + save_name_1 +".png")
+    plt.savefig(data_path + save_name_1 +".svg")
 
 
     """----------------------------------------- Compare all X^2 results -----------------------------------------------------"""    
@@ -1792,6 +1793,13 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         plt.ylabel(r"Potential Energy [zJ]",fontsize=15)
         plt.grid()
 
+        plt.pause(1)
+        plt.draw()
+
+        save_name_4 = "Compare potential energy"
+        plt.savefig(path + save_name_4 +".png")
+        plt.savefig(path + save_name_4 +".svg")
+
 
 def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\multi processor result\\" + "triangle sims\\T,dt,sigma,tau=(1.0e-08,1.1e-13,1.3e+03,2.6e+03)\\"#T,dt,sigma,tau=(1.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
@@ -1849,6 +1857,89 @@ def plot_multiprocessing_results():
                 plt.close("all")
 
 
+def Front_page_plot():
+    from two_d_data_processing import Plot_3D_mesh
+    data_path = f"2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
+    df_name = "2D surface N,ds,dt,T,tau,c0=(40, 0.015, 1e-11, 1e-06, 0, 25).pkl"
+    output_path = f"2D sim results\\Data for thesis\\"
+
+    df_sim = pd.read_pickle(data_path + df_name)
+    #print(df_sim.info())
+    #exit()
+    r = df_sim['r'][0]
+    z = df_sim['z'][0]
+    N = df_sim["N"][0]
+    ds = df_sim['ds'][0]
+    dt = df_sim["dt"][0]
+    r0 = df_sim["r0"][0]
+    sim_steps = df_sim["sim_steps"][0]
+    
+    r = [r - r0 for r in r]
+    r_opposite = [-r for r in r]
+    """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
+    fig, ax = plt.subplots()
+    font_size= 15
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    ax.set_aspect("equal",adjustable="box")
+    t_ref_list = [int(sim_steps/100), int(10*sim_steps/100), int(40*sim_steps/100), int(70*sim_steps/100), int(sim_steps)-1 ]
+    style_list =["solid","dotted","dashed","dashdot","solid"]
+    color_list = ["k","g","r","b","m","c"]
+    marker_list= ["o","v","s","^","*",]
+    for i in range(len(t_ref_list)):
+        plt.plot(r[t_ref_list[i]],z[t_ref_list[i]]
+        #,marker=marker_list[i]
+        ,linestyle="-"#style_list[i]
+        ,color="k"#color_list[i]
+        #,label=r"t$\approx$"+f"{t_ref_list[i]*dt:0.1e}"
+        )
+        plt.plot(r_opposite[t_ref_list[i]],z[t_ref_list[i]]
+        #,marker=marker_list[i]
+        ,linestyle="-"#style_list[i]
+        ,color="k"#color_list[i]
+        #,label=r"t$\approx$"+f"{t_ref_list[i]*dt:0.1e}"
+        )
+
+    #plt.xlabel(r"r [$\mu m$]",fontsize=font_size)
+    #lt.ylabel(r"z [$\mu m$]",fontsize=font_size)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    xmin = min([min(r[t]) for t in range(sim_steps)]) - ds
+    xmax  = r[0][N] + ds
+    ymin = min([min(z[t]) for t in range(sim_steps)]) - ds
+    ymax = ymin + (xmax - xmin)
+
+
+    #plt.xlim(xmin,xmax)
+    plt.ylim(ymin,0.2)#ymax)
+    ax.set_aspect("equal",adjustable="box")
+    #plt.title("show difference from start and end positions",fontsize=15)
+    #plt.legend(fontsize=font_size)
+    #plt.grid()
+    save_name_3 = df_name + "init&end scaled"
+    save_name_3 =  "4 different postions in time"
+    plt.draw()
+    plt.pause(2)
+    plt.savefig(output_path + save_name_3 +".png")
+    plt.savefig(output_path + save_name_3 +".svg")
+    
+
+    """---------------------------------Show different positons a 5 different t 3D plot---------------------------------------------------------------"""
+    t_ref_list = [int(10*sim_steps/100), int(40*sim_steps/100) ,sim_steps-1]
+    Plot_3D_mesh(
+        N=N, r=r ,z=z
+        ,linestyle_list = ["-"]
+        ,marker_list = ["" for i in range(len(t_ref_list))]
+        ,color_list = ["k" for i in range(len(t_ref_list))]
+        ,time_pos_list = t_ref_list
+    )
+
+
+
 
 if __name__ == "__main__":
     data_path = "C:\\Users\\adams\\Desktop\\praesentations data\\"
@@ -1872,4 +1963,5 @@ if __name__ == "__main__":
         #path = "2D sim results\\Data for thesis\Verification\\c0=0 tau=0\\"
     #)
     plot_multiprocessing_results()
+    #Front_page_plot()
     #plt.show()
