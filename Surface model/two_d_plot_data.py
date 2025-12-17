@@ -1370,9 +1370,15 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
     do_plots = False
     for i in range(len(place_ref)):
         for j in range(len(root_list)):
-            if place_ref[i] in Path(root_list[j]).parts:
-                do_plots = True
-    print(f"do_plots ={do_plots}")
+            A = Path(root_list[j]).parts
+            if place_ref[i] in A:
+                B = Path(path).parts
+                if ref_folder_list[0] in B:
+                    #print(f"B={B}")
+                    #print("do plots = true")
+                    do_plots = True
+    
+    #print(f"do_plots ={do_plots}")
     if do_plots == True:
         for i in range(len(directory_list)):
             folders = Path(directory_list[i]).parent.parts
@@ -1768,7 +1774,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
             time_plus_perturb,S_plus_perturb
             ,linestyle=linestyle_plus_perturb
             ,color=color_plus_perturb
-            ,label=label_minus_perturb
+            ,label=label_plus_perturb
             ,linewidth=line_width
         )
 
@@ -1813,15 +1819,15 @@ def plot_multiprocessing_results():
     #print(path)
     directory_list = list()
     data_files = list()
-    make_movie= True
-    make_figures = True
+    make_movie= False#True
+    make_figures = False#True
     make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
                 data_path = root + "\\"
                 directory_list.append(data_path+ files[0])
-                print(data_path + df_name)
+                #print(data_path + df_name)
                 if make_movie == True:
                     Make_frames(
                         data_path=data_path
