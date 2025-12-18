@@ -206,12 +206,13 @@ def plot_Epot_Ekin(
     fig, ax = plt.subplots()
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
+    fontsize = 20
     plt.plot(t_vec,T,"-",label="Kinetic energy")
-    plt.xlabel("time [s]",fontsize=15)
-    plt.ylabel(r"$E_{kin}$ [zJ]",fontsize=15)
-    plt.title("Kinetic Energy (Not correct scale)",fontsize=15)
+    plt.xlabel("time [s]",fontsize=fontsize)
+    plt.ylabel(r"$E_{kin}$ [zJ]",fontsize=fontsize)
+    plt.title("Kinetic Energy (Not correct scale)",fontsize=fontsize)
     plt.ticklabel_format(useOffset=False)
-    plt.legend(fontsize=15)
+    plt.legend(fontsize=fontsize)
     plt.grid()
     save_name_4 = "Ekin"
     #ax.set_aspect("equal",adjustable="box")
@@ -225,10 +226,10 @@ def plot_Epot_Ekin(
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
     plt.plot(t_vec,S,"-",label="Potential energy")
-    plt.xlabel("time [s]",fontsize=15)
-    plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=15)
-    plt.title("Potential Energy",fontsize=15)
-    plt.legend(fontsize=15)
+    plt.xlabel("time [s]",fontsize=fontsize)
+    plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=fontsize)
+    plt.title("Potential Energy",fontsize=fontsize)
+    plt.legend(fontsize=fontsize)
     plt.ticklabel_format(useOffset=False)
     plt.grid()
     save_name_5 = "Epot"
@@ -272,9 +273,9 @@ def plot_Epot_Ekin(
         ,color="g"
         ,label="end positions"
         )
-    plt.xlabel(r"r [$\mu m$]",fontsize=15)
-    plt.ylabel(r"z [$\mu m$]",fontsize=15)
-    plt.title("show difference from start and end positions",fontsize=15)
+    plt.xlabel(r"r [$\mu m$]",fontsize=fontsize)
+    plt.ylabel(r"z [$\mu m$]",fontsize=fontsize)
+    plt.title("show difference from start and end positions",fontsize=fontsize)
     plt.legend()#fontsize=font_size)
     plt.grid()
     save_name_2 = df_name + "init&end"
@@ -344,7 +345,7 @@ def plot_Epot_Ekin(
 
     """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
     fig, ax = plt.subplots()
-    font_size= 15
+    font_size= 20
     wm = plt.get_current_fig_manager()
     wm.window.state('zoomed')
 
@@ -371,7 +372,7 @@ def plot_Epot_Ekin(
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
     ax.set_aspect("equal",adjustable="box")
-    plt.title("show difference from start and end positions",fontsize=15)
+    plt.title("show difference from start and end positions",fontsize=font_size)
     plt.legend(fontsize=font_size)
     plt.grid()
     save_name_3 = df_name + "init&end scaled"
@@ -1820,8 +1821,8 @@ def plot_multiprocessing_results():
     directory_list = list()
     data_files = list()
     make_movie= False#True
-    make_figures = False#True
-    make_comparison_figs = True
+    make_figures = True
+    make_comparison_figs =False# True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
