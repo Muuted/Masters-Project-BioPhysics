@@ -12,7 +12,8 @@ import os
 def plot_tot_area(
         data_path:str,df_name:str,output_path:str
         ):
-
+    full_screen = False#True
+    font_size = 12
     if data_path == "" and df_name== "":
         print(f" No paths were given in the plot_tot_area function")
         exit()
@@ -41,15 +42,16 @@ def plot_tot_area(
 
     """-------------------------------------- Total Area ----------------------------------------------------------"""
     fig, ax=plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     plt.plot(time,Area_change,'-')
-    plt.xlabel("time [s]",fontsize=15)
-    plt.ylabel("total area",fontsize=15)
+    plt.xlabel("time [s]",fontsize=font_size)
+    plt.ylabel("total area",fontsize=font_size)
     plt.title(
         f"Ratio of Amax/Amin={Aratio} \n "
         +f"Amax - AMin={Amax-Amin}"
-        ,fontsize=15)
+        ,fontsize=font_size)
     plt.grid()
     ax.ticklabel_format(useOffset=False)
     
@@ -65,17 +67,18 @@ def plot_tot_area(
 
     """-------------------------------------- Variable corrections pr time ----------------------------------------------------------"""
     fig,ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(corr_count))],corr_count,linestyle="-")
     plt.title(
         f"correction counts pr time step \n "
         +r"$\frac{corrections}{time step} \approx$"
         +f"{round(np.sum(corr_count)/sim_steps ,3)}"
-        ,fontsize=15
-        )
-    plt.xlabel("t[s]",fontsize=15)
-    plt.ylabel("number of variables corrections",fontsize=15)
+        ,fontsize=font_size)
+        
+    plt.xlabel("t[s]",fontsize=font_size)
+    plt.ylabel("number of variables corrections",fontsize=font_size)
     plt.grid()
     
     save_name_1 = save_name + " var corr"# Total area over time"
@@ -96,15 +99,16 @@ def plot_tot_area(
 
     """--------------------------------------Change in Area----------------------------------------------------------"""
     fig, ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     #wm = plt.get_current_fig_manager()
     #wm.window.state('zoomed')
     plt.plot([i*dt for i in range(len(dA))],dA[0:sim_steps-1],'-')
     #ax.ticklabel_format(useOffset=False)
-    plt.title("Change in Area",fontsize=15)
-    plt.xlabel("t [s]",fontsize=15)
-    plt.ylabel("Area",fontsize=15)
+    plt.title("Change in Area",fontsize=font_size)
+    plt.xlabel("t [s]",fontsize=font_size)
+    plt.ylabel("Area",fontsize=font_size)
     plt.grid()
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
@@ -118,12 +122,13 @@ def plot_tot_area(
 
     """--------------------------------------Chi----------------------------------------------------------"""
     fig,ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
-    plt.ylabel(r"$\chi^2$ [$\mu m^2$]", fontsize=15)
+    plt.ylabel(r"$\chi^2$ [$\mu m^2$]", fontsize=font_size)
     plt.grid()
     save_name_3 = save_name + "chisqrt"
     save_name_3 = "chisqrt"
@@ -139,7 +144,7 @@ def plot_tot_area(
 def plot_Epot_Ekin(
         data_path:str,df_name:str,output_path:str
         ):
-
+    full_screen = False#True
     if data_path == "" or df_name== "" or output_path=="":
         print(f" No paths were given, in the plot_Epot_Ekin function")
         exit()
@@ -173,8 +178,9 @@ def plot_Epot_Ekin(
     
     """--------------------------------------Kinetic & Potential energy plot ----------------------------------------------------------"""
     fig, ax = plt.subplots(2,1)
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
 
     ax[0].plot(t_vec,T,"-",label="Kinetic energy")
     ax[0].set_xlabel("time [s]",fontsize=fontsize)
@@ -204,9 +210,10 @@ def plot_Epot_Ekin(
     
     """--------------------------------------Kinetic energy plot stand alone----------------------------------------------------------"""
     fig, ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
-    fontsize = 20
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
+    fontsize = 12
     plt.plot(t_vec,T,"-",label="Kinetic energy")
     plt.xlabel("time [s]",fontsize=fontsize)
     plt.ylabel(r"$E_{kin}$ [zJ]",fontsize=fontsize)
@@ -223,8 +230,9 @@ def plot_Epot_Ekin(
     
     """---------------------------------------Potential energy plot stand alone---------------------------------------------------------"""
     fig, ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     plt.plot(t_vec,S,"-",label="Potential energy")
     plt.xlabel("time [s]",fontsize=fontsize)
     plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=fontsize)
@@ -242,8 +250,9 @@ def plot_Epot_Ekin(
 
     """---------------------------------Inital positon and end positon plot---------------------------------------------------------------"""
     fig, ax = plt.subplots()
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     if r_unperturbed[0] - r[0][0] == 0:
         pass
     else:
@@ -289,9 +298,10 @@ def plot_Epot_Ekin(
 
     """---------------------------------Inital positon and end positon scaled correcly plot---------------------------------------------------------------"""
     fig, ax = plt.subplots()
-    font_size= 15
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    font_size = 15
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
     
     if r_unperturbed[0] - r[0][0]==0:
        pass
@@ -331,7 +341,7 @@ def plot_Epot_Ekin(
     ymax = ymin + (xmax - xmin)
     plt.xlim(xmin,xmax)
     plt.ylim(ymin,ymax)
-    plt.title("show difference from start and end positions",fontsize=15)
+    plt.title("show difference from start and end positions",fontsize= font_size)
     plt.legend(fontsize=font_size)
     plt.grid()
 
@@ -345,9 +355,10 @@ def plot_Epot_Ekin(
 
     """---------------------------------Show different positons a 5 different t---------------------------------------------------------------"""
     fig, ax = plt.subplots()
-    font_size= 20
-    wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    font_size= 15
+    if full_screen == True:
+        wm = plt.get_current_fig_manager()
+        wm.window.state('zoomed')
 
     t_ref_list = [0, int(sim_steps/4), int(2*sim_steps/4), int(3*sim_steps/4), int(sim_steps)-1 ]
     style_list =["solid","dotted","dashed","dashdot","solid"]
@@ -1816,13 +1827,13 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\"#new test for N\\"
+    path = "2D sim results\\Data for thesis"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
     #print(path)
     directory_list = list()
     data_files = list()
     make_movie= False#True
-    make_figures = True
-    make_comparison_figs =False# True
+    make_figures = False #True
+    make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
