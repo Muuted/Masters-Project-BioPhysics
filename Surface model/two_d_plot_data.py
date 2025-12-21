@@ -1378,7 +1378,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
     ref_folder_list = ["+perturbed","-perturbed","unperturbed"]
     place_ref = ["cross sims","triangle sims","plus sims"]
     #print(Path(root_list[0]).parts)
-    
+
     do_plots = False
     for i in range(len(place_ref)):
         for j in range(len(root_list)):
@@ -1762,6 +1762,23 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
             ,y=1.01
         )
 
+        #----------- making text box on figure -----------
+        textstr = "\n".join((
+        r"The edge radius ($r_1$): $r_{1,init} \to r_{1,final} $",
+        label_unperturb_init + r" $r_1 \approx $" + f"{r_unperturb_init[0]:0.2e}" +r"$ \mu m$",
+        label_minus_perturb + r" $r_1 \approx $" +  f"{r_minus_perturb[0][0]:0.2e}" + r"$\to$" +f"{r_minus_perturb[sim_steps_unperturb-1][0]:0.2e}" +r"$ \mu m$",
+        label_plus_perturb + r" $r_1 \approx $" +  f"{r_plus_perturb[0][0]:0.2e}"+ r"$\to$" + f"{r_plus_perturb[sim_steps_plus_perturb-1][0]:0.2e}"+r"$ \mu m$",
+        label_unperturb + r" $r_1 \approx $" + f"{r_unperturb[0][0]:0.2e}"+ r"$\to$" +  f"{r_unperturb[sim_steps_unperturb-1][0]:0.2e}"+r"$ \mu m$",
+        ))
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+        plt.text(1.025, 0.75, textstr
+                 ,transform=ax.transAxes
+                 ,fontsize=12
+                 ,verticalalignment='top'
+                 ,bbox=props
+                 )
+
+
         plt.pause(1)
         plt.draw()
         save_name_3 = "Compare final pos of membrane positions"
@@ -1975,11 +1992,11 @@ if __name__ == "__main__":
     #Investigating_chosen_configuration_New_data()
     #plot_test_3d(data_path=data_path,df_name=file_name,output_path=output_path)
     #plot_comparison_of_plus_minus_un_perturbed_results(
-    #    path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
+        #path="2D sim results\\Data for thesis\\multi processor result\\triangle sims\\N=20\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\-perturbed\\"
         #path  ="2D sim results\\Data for thesis\\multi processor result\\cross sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,5.8e+03,2.0e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\Verification\\c0=0 tau=0\\"
     #)
     plot_multiprocessing_results()
     #Front_page_plot()
-    #plt.show()
+    plt.show()
