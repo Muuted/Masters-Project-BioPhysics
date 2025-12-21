@@ -1514,7 +1514,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
             r"$\chi^2$ test with respect to the inital position of the unperturbed configuration"
             +f"\n"
             #+r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
-            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $nN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
+            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
             ,fontsize=15)
         plt.grid()
         plt.draw()
@@ -1581,7 +1581,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
             r"$\chi^2$ with respect to the final position of the dynamical simulation of the unperturbed state"
             +f"\n"
             #+r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
-            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $nN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
+            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
             ,fontsize=15
             )
         plt.draw()
@@ -1756,7 +1756,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
             +f"of the three different membrane initial conditions \n"
             #+r"$\sigma \approx$" +f"{round(sigma,3)},   " + r"$\tau \approx$"+f"{round(tau,3)}"
             #+r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
-            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $nN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
+            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
             ,fontsize=15
             ,x=0
             ,y=1.01
@@ -1819,7 +1819,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         plt.title(
             f"The potential energy of the three different initial positions configurations"
             +f"\n"
-            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $nN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
+            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
             ,fontsize=15
             #,x=0
             ,y=1.01
