@@ -1753,10 +1753,10 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
 
         plt.title(
             f"The unperturbed intial configuration and the final positions \n"
-            +f"of the three different membrane initial conditions \n"
+            +f"of the three different membrane initial conditions "#\n"
             #+r"$\sigma \approx$" +f"{round(sigma,3)},   " + r"$\tau \approx$"+f"{round(tau,3)}"
             #+r"$\sigma \approx $" +f"{sigma/1000:0.1f}" + r" $nN/\mu m$ and $\tau \approx$" +f"{tau/1000:0.1f} nN"
-            +r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
+            #+r"$\sigma \approx $" +f"{round(sigma/1000,3)}" + r" $pN/\mu m$ and $\tau \approx$" +f"{round(tau/1000,3)} nN"
             ,fontsize=15
             ,x=0
             ,y=1.01
@@ -1769,6 +1769,10 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         label_minus_perturb + r" $r_1 \approx $" +  f"{r_minus_perturb[0][0]:0.2e}" + r"$\to$" +f"{r_minus_perturb[sim_steps_unperturb-1][0]:0.2e}" +r"$ \mu m$",
         label_plus_perturb + r" $r_1 \approx $" +  f"{r_plus_perturb[0][0]:0.2e}"+ r"$\to$" + f"{r_plus_perturb[sim_steps_plus_perturb-1][0]:0.2e}"+r"$ \mu m$",
         label_unperturb + r" $r_1 \approx $" + f"{r_unperturb[0][0]:0.2e}"+ r"$\to$" +  f"{r_unperturb[sim_steps_unperturb-1][0]:0.2e}"+r"$ \mu m$",
+        r"$\sigma \approx $" +f"{round(sigma/1000,3)}" +r" $pN/\mu m$",
+        r"$\tau \approx$" +f"{round(tau/1000,3)} nN",
+        f"dt={dt_minus_perturb:0.2e} s",
+        f"T={sim_steps_minus_perturb*dt_minus_perturb:0.2e} s",
         ))
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
         plt.text(1.025, 0.75, textstr
@@ -1844,12 +1848,12 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\new test for N\\"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
+    path = "2D sim results\\Data for thesis\\"#new test for N\\"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
     #print(path)
     directory_list = list()
     data_files = list()
-    make_movie= True
-    make_figures = False #True
+    make_movie= False#True
+    make_figures = False#True
     make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
