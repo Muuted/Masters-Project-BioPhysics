@@ -1844,11 +1844,11 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
+    path = "2D sim results\\Data for thesis\\new test for N\\"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
     #print(path)
     directory_list = list()
     data_files = list()
-    make_movie= False#True
+    make_movie= True
     make_figures = False #True
     make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
