@@ -1773,6 +1773,7 @@ def plot_comparison_of_plus_minus_un_perturbed_results(path):
         r"$\tau \approx$" +f"{round(tau/1000,3)} nN",
         f"dt={dt_minus_perturb:0.2e} s",
         f"T={sim_steps_minus_perturb*dt_minus_perturb:0.2e} s",
+        f"N={N} links",
         ))
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
         plt.text(1.025, 0.75, textstr
