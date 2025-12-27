@@ -215,7 +215,7 @@ def cirle_fit(
         ,edge_point ,end_point
         ,save_data = False
         ):
-
+    #print("\n"+data_path + df_name+"\n")
     df_sim = pd.read_pickle(data_path + df_name)
     #print(df_sim.info())
     steps_tot = df_sim["sim_steps"][0]

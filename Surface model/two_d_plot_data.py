@@ -1979,6 +1979,323 @@ def Front_page_plot():
     )
 
 
+def circle_fit_on_N30_triangle_data():
+    from pathlib import Path
+    from two_d_data_processing import cirle_fit,make_circle_V2
+    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+    #path = path + "..\\"  # To go one folder back, as the system works from finding the data files and not the folders.
+    path = "2D sim results\\Data for thesis\\new test for N=30\\triangle sims\\N,T,dt,sigma,tau=(30,5.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"    
+    ref_folder_list = ["+perturbed\\","-perturbed\\","unperturbed\\"]
+    data = "2D Surface.pkl"
+
+    df_sim_plus_perturb = pd.read_pickle(path + ref_folder_list[0] + data)
+    df_sim_minus_perturb = pd.read_pickle(path + ref_folder_list[1] + data)
+    df_sim_unperturb = pd.read_pickle(path + ref_folder_list[2] + data)
+
+    make_circle_fit = True
+    make_circle_fit_plus = True
+    make_circle_fit_minus = True
+    """----------------------------------------- Minus perturbed data-----------------------------------------------------"""
+    X2_minus_perturb = df_sim_minus_perturb["Chi squared test"][0]
+    sim_steps_minus_perturb = df_sim_minus_perturb["sim_steps"][0]
+    dt_minus_perturb = df_sim_minus_perturb["dt"][0]
+    r_minus_perturb = df_sim_minus_perturb["r"][0]
+    z_minus_perturb = df_sim_minus_perturb["z"][0]
+    S_minus_perturb = df_sim_minus_perturb["Epot"][0]
+    time_minus_perturb = np.linspace(0,sim_steps_minus_perturb*dt_minus_perturb,sim_steps_minus_perturb-1)
+
+    start_point = 0
+    end_point = 7
+    if make_circle_fit_minus == True:
+        rc1_minus_perturb, zc1_minus_perturb, R_minus_perturb = cirle_fit(
+            data_path = path + ref_folder_list[1] 
+            ,df_name = data
+            ,edge_point = start_point
+            ,end_point= end_point
+        )
+        print(f"R minus perturb ={R_minus_perturb}")
+        r_circ_up_minus_perturb,r_circ_down_minus_perturb, z_circ_up_minus_perturb, z_circ_down_minus_perturb = make_circle_V2(
+            rc=rc1_minus_perturb,zc=zc1_minus_perturb,R=R_minus_perturb
+            ,rmax= max(r_minus_perturb[sim_steps_minus_perturb-1][start_point:end_point])
+            ,rmin=min(r_minus_perturb[sim_steps_minus_perturb-1][start_point:end_point])
+            ,zmax=max(z_minus_perturb[sim_steps_minus_perturb-1][start_point:end_point])
+            ,zmin=min(z_minus_perturb[sim_steps_minus_perturb-1][start_point:end_point])
+            ,step_size=1e-7
+        )
+
+    color_minus_perturb = "orange"
+    linestyle_minus_perturb = "--"
+    marker_minus_perturb = "s"
+    label_minus_perturb = "-perturbed"
+
+    """----------------------------------------- Plus perturbed data-----------------------------------------------------"""
+    X2_plus_perturb = df_sim_plus_perturb["Chi squared test"][0]
+    sim_steps_plus_perturb = df_sim_plus_perturb["sim_steps"][0]
+    dt_plus_perturb = df_sim_plus_perturb["dt"][0]
+    r_plus_perturb = df_sim_plus_perturb["r"][0]
+    z_plus_perturb = df_sim_plus_perturb["z"][0]
+    S_plus_perturb = df_sim_plus_perturb["Epot"][0]
+    time_plus_perturb = np.linspace(0,sim_steps_plus_perturb*dt_plus_perturb,sim_steps_plus_perturb-1)
+
+    #start_point = 0
+    #end_point = 22
+    if make_circle_fit_plus == True:
+        rc1_plus_perturb, zc1_plus_perturb, R_plus_perturb = cirle_fit(
+            data_path=path + ref_folder_list[0]
+            ,df_name= data
+            ,edge_point = start_point
+            ,end_point= end_point
+        )
+        print(f"R plus perturb ={R_plus_perturb}")
+        r_circ_up_plus_perturb,r_circ_down_plus_perturb, z_circ_up_plus_perturb, z_circ_down_plus_perturb = make_circle_V2(
+            rc=rc1_plus_perturb,zc=zc1_plus_perturb,R=R_plus_perturb
+            ,rmax= max(r_plus_perturb[sim_steps_plus_perturb-1][start_point:end_point])
+            ,rmin=min(r_plus_perturb[sim_steps_plus_perturb-1][start_point:end_point])
+            ,zmax=max(z_plus_perturb[sim_steps_plus_perturb-1][start_point:end_point])
+            ,zmin=min(z_plus_perturb[sim_steps_plus_perturb-1][start_point:end_point])
+            ,step_size=1e-7
+        )
+
+    color_plus_perturb = "green"
+    linestyle_plus_perturb = "dashdot"
+    marker_plus_perturb = "^"
+    label_plus_perturb = "+perturbed"
+
+    """----------------------------------------- Unperturbed data-----------------------------------------------------"""
+    X2_unperturb = df_sim_unperturb["Chi squared test"][0]
+    sim_steps_unperturb = df_sim_unperturb["sim_steps"][0]
+    dt_unperturb = df_sim_unperturb["dt"][0]
+    r_unperturb = df_sim_unperturb["r"][0]
+    z_unperturb = df_sim_unperturb["z"][0]
+    S_unperturb = df_sim_unperturb["Epot"][0]
+
+    r_unperturb_init = df_sim_unperturb["r unperturbed"][0]
+    z_unperturb_init = df_sim_unperturb["z unperturbed"][0]
+
+    time_unperturb = np.linspace(0,sim_steps_unperturb*dt_unperturb,sim_steps_unperturb-1)
+    ds = df_sim_unperturb["ds"][0]
+    sigma = df_sim_unperturb["sigma"][0]
+    tau = df_sim_unperturb["tau"][0]
+    N = df_sim_unperturb["N"][0]
+
+    #start_point = 0
+    #end_point = 22
+    if make_circle_fit == True:
+        rc1_unperturb, zc1_unperturb, R_unperturb = cirle_fit(
+            data_path=path + ref_folder_list[2]
+            ,df_name= data
+            ,edge_point = start_point
+            ,end_point= end_point
+        )
+        print(f"R unperturb ={R_unperturb}")
+        r_circ_up_unperturb,r_circ_down_unperturb, z_circ_up_unperturb, z_circ_down_unperturb = make_circle_V2(
+            rc=rc1_unperturb,zc=zc1_unperturb,R=R_unperturb
+            ,rmax= max(r_unperturb[sim_steps_unperturb-1][start_point:end_point])
+            ,rmin=min(r_unperturb[sim_steps_unperturb-1][start_point:end_point])
+            ,zmax=max(z_unperturb[sim_steps_unperturb-1][start_point:end_point])
+            ,zmin=min(z_unperturb[sim_steps_unperturb-1][start_point:end_point])
+            ,step_size=1e-7
+        )
+
+    color_unperturb = "red"
+    linestyle_unperturb = "dotted"
+    marker_unperturb = "*"
+    label_unperturb = "unperturbed"
+
+    color_unperturb_init = "blue"
+    linestyle_unperturb_init = "-"
+    marker_unperturb_init = "o"
+    label_unperturb_init = "unperturbed initial position"
+
+
+    print("I have made the circle")
+    """------------------------------------------------------------------------------------------------"""
+    """----------------------------------------- Compare all final positions results -----------------------------------------------------"""    
+    fig, ax = plt.subplots()
+    ax.set_aspect("equal",adjustable="box")
+    wm = plt.get_current_fig_manager()
+    wm.window.state('zoomed')
+    """sub_ax = inset_axes(
+    parent_axes=ax,
+    width=4,
+    height=4,
+    loc='upper right',
+    axes_kwargs={
+        'facecolor':"#C9C9C9"
+    })"""
+    
+    line_width = 2.5
+    marker_size = 10
+
+    ax.plot(
+        [rc1_plus_perturb,rc1_unperturb,rc1_minus_perturb],[zc1_plus_perturb,zc1_unperturb,zc1_minus_perturb]
+        ,color="k"
+        ,linestyle="-"
+    )
+
+    if make_circle_fit_plus == True:
+        ax.plot(r_circ_up_plus_perturb,z_circ_up_plus_perturb
+            ,color="k"#color_plus_perturb
+            ,linestyle=linestyle_plus_perturb
+            ,label= "fit:" +label_plus_perturb + r",R$\approx$"+f"{R_plus_perturb:0.1e}" + r"$\mu m$"
+            )
+        ax.plot(r_circ_down_plus_perturb,z_circ_down_plus_perturb
+            ,color="k"#color_plus_perturb
+            ,linestyle=linestyle_plus_perturb
+            )
+        ax.plot(
+            rc1_plus_perturb,zc1_plus_perturb
+            ,color=color_plus_perturb
+            ,marker=marker_plus_perturb
+            ,label="circle center"
+            )
+    
+    if make_circle_fit_minus == True:
+        ax.plot(r_circ_up_minus_perturb,z_circ_up_minus_perturb
+            ,color="k"#color_minus_perturb
+            ,linestyle=linestyle_minus_perturb
+            ,label= "fit:" + label_minus_perturb + r",R$\approx$"+f"{R_minus_perturb:0.1e}" + r"$\mu m$"
+            )
+        ax.plot(r_circ_down_minus_perturb,z_circ_down_minus_perturb
+            ,color="k"#color_minus_perturb
+            ,linestyle=linestyle_minus_perturb
+            )
+        ax.plot(
+            rc1_minus_perturb,zc1_minus_perturb
+            ,color=color_minus_perturb
+            ,marker=marker_minus_perturb
+            ,label="circle center"
+                )
+    
+    if make_circle_fit == True:
+        ax.plot(r_circ_up_unperturb,z_circ_up_unperturb
+            ,color="k"#color_unperturb
+            ,linestyle=linestyle_unperturb
+            ,label= "fit:" + label_unperturb + r",R$\approx$"+f"{R_unperturb:0.1e}" + r"$\mu m$"
+            )
+        ax.plot(r_circ_down_unperturb,z_circ_down_unperturb
+            ,color="k"#color_unperturb
+            ,linestyle=linestyle_unperturb
+            )
+        ax.plot(
+            rc1_unperturb,zc1_unperturb
+            ,color=color_unperturb
+            ,marker=marker_unperturb
+            ,label="circle center"
+            )
+    
+
+
+    ax.plot(
+        r_unperturb_init,z_unperturb_init
+        ,marker=marker_unperturb_init
+        ,linestyle=linestyle_unperturb_init
+        ,color=color_unperturb_init
+        ,label=label_unperturb_init
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+
+    ax.plot(
+        r_minus_perturb[sim_steps_minus_perturb-1],z_minus_perturb[sim_steps_minus_perturb-1]
+        ,marker=marker_minus_perturb
+        ,linestyle=linestyle_minus_perturb
+        ,color=color_minus_perturb
+        ,label=label_minus_perturb
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )
+      
+    ax.plot(
+        r_plus_perturb[sim_steps_unperturb-1] ,z_plus_perturb[sim_steps_unperturb-1]
+        ,marker=marker_plus_perturb
+        ,linestyle=linestyle_plus_perturb
+        ,color=color_plus_perturb
+        ,label=label_plus_perturb
+        ,linewidth=line_width
+        ,markersize=marker_size
+        )    
+    
+    ax.plot(
+        r_unperturb[sim_steps_unperturb-1],z_unperturb[sim_steps_unperturb-1]
+        ,marker=marker_unperturb
+        ,linestyle=linestyle_unperturb
+        ,color=color_unperturb
+        ,label=label_unperturb
+        ,linewidth=line_width
+        ,markersize=marker_size
+    )
+    
+
+
+    ymax =  max([
+        max(z_unperturb_init)
+        ,max(z_minus_perturb[sim_steps_minus_perturb-1])
+        ,max(z_plus_perturb[sim_steps_unperturb-1])
+        ,max(z_unperturb[sim_steps_unperturb-1])
+    ]) + ds
+    ymin = min([z_minus_perturb[sim_steps_minus_perturb-1][0] , z_plus_perturb[sim_steps_plus_perturb-1][0] , z_unperturb[sim_steps_unperturb-1][0]]) - ds
+    r_edge_init = (r_unperturb[0][0]+ r_unperturb[sim_steps_unperturb-1][0] + r_minus_perturb[sim_steps_minus_perturb-1][0] + r_plus_perturb[sim_steps_plus_perturb-1][0])/4 - ds/2
+    r_edge_init = 0
+    edge_points = 3
+    for i in range(edge_points):
+        r_edge_init += (r_unperturb[0][i]+ r_unperturb[sim_steps_unperturb-1][i] + r_minus_perturb[sim_steps_minus_perturb-1][i] + r_plus_perturb[sim_steps_plus_perturb-1][i])/(4*edge_points)
+    r_edge_init += - ds/2
+    xmin = r_edge_init - (ymax-ymin)/2
+    xmax =  r_edge_init + (ymax-ymin)/2
+    if xmin == xmin and xmax == xmax and ymin==ymin and ymax == ymax:
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin,ymax)
+
+    plt.grid()
+    plt.draw()
+    plt.pause(2)
+
+
+    ax.set_xlabel(r"r [$\mu m$]",fontsize=15)
+    ax.set_ylabel(r"z [$\mu m$]",fontsize=15)
+    #ax.legend(fontsize=15,loc="lower right")
+    ax.legend(
+        bbox_to_anchor=(1.02, 1)
+        , loc='upper left'
+        , borderaxespad=0
+        ,fontsize=15
+                )
+    
+
+    plt.title(
+        f"Circle fit for the three dynamic simulations"
+        ,fontsize=15
+        #,x=0
+        #,y=1.01
+    )
+
+    #----------- making text box on figure -----------
+    textstr = "\n".join((
+    r"The edge radius ($r_1$): $r_{1,init} \to r_{1,final} $",
+    label_unperturb_init + r" $r_1 \approx $" + f"{r_unperturb_init[0]:0.2e}" +r"$ \mu m$",
+    label_minus_perturb + r" $r_1 \approx $" +  f"{r_minus_perturb[0][0]:0.2e}" + r"$\to$" +f"{r_minus_perturb[sim_steps_unperturb-1][0]:0.2e}" +r"$ \mu m$",
+    label_plus_perturb + r" $r_1 \approx $" +  f"{r_plus_perturb[0][0]:0.2e}"+ r"$\to$" + f"{r_plus_perturb[sim_steps_plus_perturb-1][0]:0.2e}"+r"$ \mu m$",
+    label_unperturb + r" $r_1 \approx $" + f"{r_unperturb[0][0]:0.2e}"+ r"$\to$" +  f"{r_unperturb[sim_steps_unperturb-1][0]:0.2e}"+r"$ \mu m$",
+    r"$\sigma \approx $" +f"{round(sigma/1000,3)}" +r" $pN/\mu m$",
+    r"$\tau \approx$" +f"{round(tau/1000,3)} nN",
+    f"dt={dt_minus_perturb:0.2e} s",
+    f"T={sim_steps_minus_perturb*dt_minus_perturb:0.2e} s",
+    f"N={N} links",
+    ))
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    plt.text(1.025, 0.55, textstr
+                ,transform=ax.transAxes
+                ,fontsize=12
+                ,verticalalignment='top'
+                ,bbox=props
+                )
+
+
+    plt.pause(0.5)
+    plt.savefig(path + "Circle fit 3 compare.png")
+    plt.savefig(path + "Circle fit 3 compare.svg")
+
 
 
 if __name__ == "__main__":
@@ -2002,6 +2319,7 @@ if __name__ == "__main__":
         #path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\Verification\\c0=0 tau=0\\"
     #)
-    plot_multiprocessing_results()
+    #plot_multiprocessing_results()
     #Front_page_plot()
+    circle_fit_on_N30_triangle_data()
     plt.show()
