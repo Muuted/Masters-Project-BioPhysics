@@ -1985,6 +1985,7 @@ def circle_fit_on_N30_triangle_data():
     from mpl_toolkits.axes_grid1.inset_locator import inset_axes
     #path = path + "..\\"  # To go one folder back, as the system works from finding the data files and not the folders.
     path = "2D sim results\\Data for thesis\\new test for N=30\\triangle sims\\N,T,dt,sigma,tau=(30,5.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"    
+    #path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\"
     ref_folder_list = ["+perturbed\\","-perturbed\\","unperturbed\\"]
     data = "2D Surface.pkl"
 
