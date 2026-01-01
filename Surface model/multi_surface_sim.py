@@ -217,7 +217,9 @@ def main_multiProcessing():
 
 def main_multiProcessing_tau_and_psi():
     num_cpu = 3
-    perturb_list = [0,1,2,0,1,2]
+    perturb_list = [0,1,2
+                    ,0,1,2 
+                    ,0,1,2]
     perturb_tau = False
     perturb_psi = True
     const_vars = [0,0,0]#,1,1,1]#[2,2,2]#,1,1,1] # 0 = triangle, 1 = plus and 2 = cross (in Latex)

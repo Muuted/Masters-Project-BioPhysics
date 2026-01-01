@@ -2320,7 +2320,7 @@ if __name__ == "__main__":
         #path = "2D sim results\\Data for thesis\\multi processor result\\plus sims\\T,dt,sigma,tau=(1e-07, 1.25e-13,1.494e+04,8.9e+03)\\+perturbed\\"
         #path = "2D sim results\\Data for thesis\Verification\\c0=0 tau=0\\"
     #)
-    #plot_multiprocessing_results()
     #Front_page_plot()
-    circle_fit_on_N30_triangle_data()
+    #circle_fit_on_N30_triangle_data()
+    plot_multiprocessing_results()
     plt.show()

@@ -12,34 +12,6 @@ np.set_printoptions(legacy='1.25')
         return gam"""
 
 
-
-def Two_D_paths(folder_names=""):
-    """------ paths ---------"""
-    save_path =  "2D sim results\\" + "Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
-    if folder_names == "":
-        save_path = save_path +  "c0=0 tau=0\\"
-    else:
-        save_path = save_path + folder_names
-    
-    data_path = save_path
-    fig_save_path = save_path + "figures and video\\"
-    video_save_path = save_path +"figures and video\\"
-    figs_for_video_path = save_path +"figures for video\\"
-
-    
-    """------ Saved files names  ---------"""
-    df_name= "2D Surface"
-    fps_movie = 24
-    num_frames = 100
-
-    path_args=[
-        data_path, fig_save_path
-        ,video_save_path,figs_for_video_path
-        ,df_name, fps_movie ,num_frames
-    ]
-
-    return path_args
-
 def Two_D_Constants(
         print_val=False
         ,init_rand_psi = False
@@ -117,6 +89,32 @@ def Two_D_Constants(
 
     return args
 
+def Two_D_paths(folder_names=""):
+    """------ paths ---------"""
+    save_path =  "2D sim results\\" + "Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
+    if folder_names == "":
+        save_path = save_path +  "c0=0 tau=0\\"
+    else:
+        save_path = save_path + folder_names
+    
+    data_path = save_path
+    fig_save_path = save_path + "figures and video\\"
+    video_save_path = save_path +"figures and video\\"
+    figs_for_video_path = save_path +"figures for video\\"
+
+    
+    """------ Saved files names  ---------"""
+    df_name= "2D Surface"
+    fps_movie = 24
+    num_frames = 100
+
+    path_args=[
+        data_path, fig_save_path
+        ,video_save_path,figs_for_video_path
+        ,df_name, fps_movie ,num_frames
+    ]
+
+    return path_args
 
 
 def Two_D_Constants_stationary_state(
@@ -159,9 +157,9 @@ def Two_D_Constants_stationary_state(
 
     #Dimless variables
     if tilde_sigma == "":
-        tilde_sigma = 0.0253164556962025 #0.329113924050633  #0.29873417721519  #
+        tilde_sigma = 0.0253164556962025 #dimensionless sigma
     if tilde_tau == "":
-        tilde_tau = 1.31578947368421 #4.47368421052632       #1 
+        tilde_tau = 1.31578947368421 # Dimensionless tau
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
