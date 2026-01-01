@@ -53,7 +53,7 @@ def plot_tot_area(
         +f"Amax - AMin={Amax-Amin}"
         ,fontsize=font_size)
     plt.grid()
-    ax.ticklabel_format(useOffset=False)
+    ax.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     
     save_name_1 = save_name + "Atot"# Total area over time"
     save_name_1 = "Atot"
@@ -79,6 +79,7 @@ def plot_tot_area(
         
     plt.xlabel("t[s]",fontsize=font_size)
     plt.ylabel("number of variables corrections",fontsize=font_size)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.grid()
     
     save_name_1 = save_name + " var corr"# Total area over time"
@@ -109,6 +110,7 @@ def plot_tot_area(
     plt.title("Change in Area",fontsize=font_size)
     plt.xlabel("t [s]",fontsize=font_size)
     plt.ylabel("Area",fontsize=font_size)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.grid()
     save_name_2 = save_name + " dA"
     save_name_2 = " dA"
@@ -129,6 +131,7 @@ def plot_tot_area(
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
     plt.ylabel(r"$\chi^2$ [$\mu m^2$]", fontsize=font_size)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.grid()
     save_name_3 = save_name + "chisqrt"
     save_name_3 = "chisqrt"
@@ -187,7 +190,7 @@ def plot_Epot_Ekin(
     ax[0].set_ylabel(r"$E_{kin} [zJ]$",fontsize=fontsize)
     ax[0].set_title("Kinetic energy, not scale properly \n" +f"min(E_kin)={min(T)}",fontsize=fontsize)
     ax[0].legend(fontsize=15)
-    ax[0].ticklabel_format(useOffset=False)
+    ax[0].ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     ax[0].grid()
     #plt.figure()
     ax[1].plot(t_vec,S,"-",label="Potential energy")
@@ -195,7 +198,7 @@ def plot_Epot_Ekin(
     ax[1].set_ylabel(r"$E_{pot}$ [zJ]",fontsize=fontsize)
     ax[1].set_title("Potential energy  " +r"$min(E_{pot}) \approx$"+f"{round(min(S),3)}  and " +r"$\Delta E_{pot} \approx$"+f"{max(S)-min(S):0.1e}",fontsize=fontsize)
     ax[1].legend(fontsize=15)
-    ax[1].ticklabel_format(useOffset=False)
+    ax[1].ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     ax[1].grid()
     plt.draw()
     plt.pause(0.1)
@@ -218,7 +221,7 @@ def plot_Epot_Ekin(
     plt.xlabel("time [s]",fontsize=fontsize)
     plt.ylabel(r"$E_{kin}$ [zJ]",fontsize=fontsize)
     plt.title("Kinetic Energy (Not correct scale)",fontsize=fontsize)
-    plt.ticklabel_format(useOffset=False)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.legend(fontsize=fontsize)
     plt.grid()
     save_name_4 = "Ekin"
@@ -238,7 +241,7 @@ def plot_Epot_Ekin(
     plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=fontsize)
     plt.title("Potential Energy",fontsize=fontsize)
     plt.legend(fontsize=fontsize)
-    plt.ticklabel_format(useOffset=False)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.grid()
     save_name_5 = "Epot"
     #ax.set_aspect("equal",adjustable="box")
@@ -247,7 +250,7 @@ def plot_Epot_Ekin(
     plt.savefig(output_path + save_name_5 + ".png")
     plt.savefig(output_path + save_name_5 + ".svg")
 
-
+    
     """---------------------------------Inital positon and end positon plot---------------------------------------------------------------"""
     fig, ax = plt.subplots()
     if full_screen == True:
@@ -290,6 +293,7 @@ def plot_Epot_Ekin(
     save_name_2 = df_name + "init&end"
     save_name_2 =  "init&end"
     #ax.set_aspect("equal",adjustable="box")
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.draw()
     plt.pause(2)
     plt.savefig(output_path + save_name_2 +".png")
@@ -344,7 +348,7 @@ def plot_Epot_Ekin(
     plt.title("show difference from start and end positions",fontsize= font_size)
     plt.legend(fontsize=font_size)
     plt.grid()
-
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     save_name_3 = df_name + "init&end scaled"
     save_name_3 =  "init&end scaled"
     ax.set_aspect("equal",adjustable="box")
@@ -384,6 +388,7 @@ def plot_Epot_Ekin(
     plt.ylim(ymin,ymax)
     ax.set_aspect("equal",adjustable="box")
     plt.title("show difference from start and end positions",fontsize=font_size)
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     plt.legend(fontsize=font_size)
     plt.grid()
     save_name_3 = df_name + "init&end scaled"
@@ -393,7 +398,6 @@ def plot_Epot_Ekin(
     plt.savefig(output_path + save_name_3 +".png")
     plt.savefig(output_path + save_name_3 +".svg")
 
-    
     
     
 
@@ -1849,13 +1853,13 @@ def plot_multiprocessing_results():
     path = "2D sim results\\Data for thesis\\fewpoints but low dt\\triangle sims\\N,T,dt,sigma,tau=(20,2.0e-08,1.0e-13,1.3e+03,2.6e+03)\\"
     path = "2D sim results\\Data for thesis\\really long"
     path = "2D sim results\\Data for thesis\\Verification\\"
-    path = "2D sim results\\Data for thesis\\new test for N=40\\"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
+    #path = "2D sim results\\Data for thesis\\new test for N=40\\"#\\Verification\\c0=0 tau=tau +perturbation\\"#new test for N\\"
     #print(path)
     directory_list = list()
     data_files = list()
-    make_movie= True
+    make_movie= False#True
     make_figures = True
-    make_comparison_figs = True
+    make_comparison_figs = False#True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
