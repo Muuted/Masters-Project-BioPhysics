@@ -1,0 +1,39 @@
+Date : 2026-01-01 19:33:01
+Directory : c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model
+Total : 14 files,  6197 codes, 598 comments, 1340 blanks, all 8135 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         13 |      6,179 |        598 |      1,339 |      8,116 |
+| pip requirements |          1 |         18 |          0 |          1 |         19 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                    | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                       |         14 |      6,197 |        598 |      1,340 |      8,135 |
++---------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                                | language         | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Make_movie.py                  | Python           |        160 |         24 |         47 |        231 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Testing_ideas.py               | Python           |          9 |          2 |          4 |         15 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_constants.py             | Python           |        234 |         36 |         45 |        315 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_functions.py             | Python           |        955 |        134 |        270 |      1,359 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\Two_D_simulation_function.py   | Python           |        444 |          8 |         75 |        527 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\import_matlab_data.py          | Python           |        295 |         18 |         63 |        376 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\iterative_surface_sim.py       | Python           |        105 |          6 |         17 |        128 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\multi_surface_sim.py           | Python           |        201 |          2 |         45 |        248 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\requirements.txt               | pip requirements |         18 |          0 |          1 |         19 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\surface_sim.py                 | Python           |        240 |         13 |         45 |        298 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\testing_functions.py           | Python           |      1,309 |        120 |        315 |      1,744 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_continues_integration.py | Python           |        109 |         12 |         25 |        146 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_data_processing.py       | Python           |        299 |         28 |         76 |        403 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\Surface model\two_d_plot_data.py             | Python           |      1,819 |        195 |        312 |      2,326 |
+| Total                                                                                                   |                  |      6,197 |        598 |      1,340 |      8,135 |
++---------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

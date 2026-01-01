@@ -1,0 +1,34 @@
+Date : 2026-01-01 19:32:13
+Directory : c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution
+Total : 9 files,  1072 codes, 127 comments, 296 blanks, all 1495 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |          8 |      1,056 |        127 |        295 |      1,478 |
+| pip requirements |          1 |         16 |          0 |          1 |         17 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                      | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                         |          9 |      1,072 |        127 |        296 |      1,495 |
++-----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                                  | language         | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\Make_movie.py         | Python           |        138 |         16 |         44 |        198 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Constants.py    | Python           |         63 |         12 |         16 |         91 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Functions.py    | Python           |        120 |          6 |         54 |        180 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_Simulation.py   | Python           |        135 |          3 |         37 |        175 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\One_D_sim_function.py | Python           |         59 |          8 |         13 |         80 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\data_processing.py    | Python           |        127 |          8 |         43 |        178 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\plot_data.py          | Python           |        324 |         71 |         59 |        454 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\plotting_functions.py | Python           |         90 |          3 |         29 |        122 |
+| c:\Users\adams\Documents\GitHub\Masters-Project-BioPhysics\One_Dimensional_solution\requirements.txt      | pip requirements |         16 |          0 |          1 |         17 |
+| Total                                                                                                     |                  |      1,072 |        127 |        296 |      1,495 |
++-----------------------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
