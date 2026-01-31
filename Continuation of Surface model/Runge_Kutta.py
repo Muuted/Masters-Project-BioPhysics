@@ -1,5 +1,5 @@
 from Two_D_functions import dpsidt_func,drdt_func,dzdt_func
-
+import numpy as np
 
 
 def drdt_RK4(
@@ -7,7 +7,6 @@ def drdt_RK4(
         ,Area:list,psi:list,r:list, z:list
         ,lamb:list , nu:list
         ):
-    
     k1 = drdt_func(
         i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
         ,Area=Area,psi=psi,lamb=lamb , nu=nu, z_list=z
@@ -35,22 +34,23 @@ def drdt_RK4(
     return (dt/6)*(k1 + k2 + k3 + k4)
 
 
-def  dzdt_RK4(i,dt,Area:list,radi:list, nu:list):
+def  dzdt_RK4(i:int,dt:float,Area:list,radi:list, nu:list):
     
-    dzdt_1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
+    k1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
-    dzdt_2 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
+    #dzdt_2 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
+    return dt*k1
 
 
 def dPsidt_RK4(
-        i,N,k,c0,sigma,kG,tau,dt
-        ,Area,radi,z_list
-        ,lambs,nus
-        ,psi
+        i:int,N:int,k:float,c0:float,sigma:float,kG:float,tau:float,dt:float
+        ,Area:list,radi:list,z_list:list
+        ,lambs:list,nus:list
+        ,psi:list
         ):
     
-    dpdt_1 = dpsidt_func(
+    k1 = dpsidt_func(
         i=i
         ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area,radi=radi,z_list=z_list
@@ -58,26 +58,24 @@ def dPsidt_RK4(
         ,psi=psi 
                 )
 
-    dpdt_2 = dpsidt_func(i=i
+    k2 = dpsidt_func(i=i
         ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area,radi=radi,z_list=z_list
         ,lamb=lambs,nu=nus
-        ,psi= psi + (dt/2)*dpdt_1
+        ,psi= [j if j!=psi[i] else j + dt*k1/2 for j in psi ]
     )
 
-    dpdt_3 = dpsidt_func(i=i
+    k3 = dpsidt_func(i=i
         ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area,radi=radi,z_list=z_list
         ,lamb=lambs,nu=nus
-        ,psi= psi + (dt/2)*dpdt_2
+        ,psi=[j if j!=psi[i] else j + dt*k2/2 for j in psi ]
     )
 
-    dpdt_4 = dpsidt_func(i=i
+    k4 = dpsidt_func(i=i
         ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
         ,Area=Area,radi=radi,z_list=z_list
         ,lamb=lambs,nu=nus
-        ,psi= psi + dt*dpdt_3
+        ,psi= [j if j!=psi[i] else j + dt*k3 for j in psi ]
     )
-
-    Runge_kutta = dpdt_1 + 2*dpdt_2 + 2*dpdt_3 + dpdt_4
-    return Runge_kutta
+    return (dt/6)*(k1 + k2 + k3 + k4)
