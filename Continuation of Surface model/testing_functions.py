@@ -1,5 +1,5 @@
 from Two_D_constants import Two_D_Constants, Two_D_paths
-from Two_D_simulation_function import Two_D_simulation_V2, Two_D_simulation_V3
+#from Two_D_simulation_function import Two_D_simulation_V2, Two_D_simulation_V3
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import tot_area, E_pot, E_kin
 from Two_D_functions import Langrange_multi, Epsilon_values
@@ -1710,6 +1710,48 @@ def test_convergence_of_alpha():
     plt.xlim(0,max(ds_vec)*1.1)
     plt.show()
 
+
+def Testing_RungeKutta():
+    from Two_D_constants import Two_D_Constants_stationary_state
+    from Runge_Kutta import RungeKutta45
+    const_args = Two_D_Constants_stationary_state(
+        print_val=True
+        ,show_stationary_state=True
+        ,start_flat=False
+        ,perturb=False
+    )
+
+    L,r0,N,ds,T,dt = const_args[0:6]
+    k,c0,sim_steps = const_args[6:9]
+    sigma, tau, kG = const_args[9:12]
+    Area_list, psi_list = const_args[12:14]
+    radi_list,z_list = const_args[14:16]
+    r_unperturbed, z_unperturbed = const_args[16:18]
+    eta,dpsi_perturb_val,psi_unperturbed = const_args[18:21]
+    psi2_init ,alpha = const_args[21:23]
+
+    t=0
+    lambs,nus = Langrange_multi(
+                N=N,k=k,c0=c0,sigma=sigma
+                ,kG=kG,tau=tau,ds=ds,eta=eta
+                ,Area=Area_list
+                ,psi=psi_list[t]
+                ,radi=radi_list[t]
+                ,z_list=z_list[t]
+            )
+    kr,kz,kpsi = RungeKutta45(
+        N=N,dt=dt,k=k,c0=c0, sigma=sigma
+        ,kG=kG ,tau=tau, ds=ds,eta=eta
+        ,Area=Area_list 
+        ,psi_init=psi_list[t],r_init=radi_list[t], z_init=z_list[t]
+        ,lamb=lambs , nu=nus
+    )
+    #print(kr)
+    print(np.shape(kr))
+    print("kr=",kr)
+    print(f"kr[:][0]={kr[:,0]}")
+    print(f"sum(kr[:][0])={np.sum(kr[:,0]):.1e}")
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1741,4 +1783,6 @@ if __name__ == "__main__":
 
     #find_overflow_error()
 
-    test_convergence_of_alpha()
+    #test_convergence_of_alpha()
+
+    Testing_RungeKutta()

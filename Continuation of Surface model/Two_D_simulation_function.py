@@ -5,13 +5,14 @@ from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
 from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
 from Two_D_functions import Make_variable_corrections
 from two_d_data_processing import check_area, tot_area, E_kin,E_pot, Xsqaured_test
+from Runge_Kutta import RungeKutta45
 
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import progressbar
 import time
-
+"""
 def Two_D_simulation(
     N:int,k:float,c0:float, dt:float, ds:float
     ,sigma:float,kG:float,tau:float
@@ -22,6 +23,7 @@ def Two_D_simulation(
     ,data_path:str
     ,save_data:bool = True 
     ,condition = 1
+    ,integration_method:str = "Euler"
     ):
 
     
@@ -42,28 +44,32 @@ def Two_D_simulation(
             )
         lambs_save.append(lambs)
         nus_save.append(nus)
-        for i in range(N+1):
-            if i == N:
-                z_list[t+1][i] = z_list[t][i]
-                radi[t+1][i] = radi[t][i]
-                psi[t+1][i] = psi[t][i]
-            if i < N:
-                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
+        if integration_method == "Euler":
+            for i in range(N+1):
+                if i == N:
+                    z_list[t+1][i] = z_list[t][i]
+                    radi[t+1][i] = radi[t][i]
+                    psi[t+1][i] = psi[t][i]
+                if i < N:
+                    z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,Area=Area,radi=radi[t],nu=nus)
 
-                radi[t+1][i] = radi[t][i] + dt*drdt_func(
-                                                    i=i
-                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                    ,lamb=lambs,nu=nus
-                                                    )
+                    radi[t+1][i] = radi[t][i] + dt*drdt_func(
+                                                        i=i
+                                                        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                        ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                        ,lamb=lambs,nu=nus
+                                                        )
 
-                psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
-                                                    i=i
-                                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-                                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                                                    ,lamb=lambs,nu=nus
-                                                    )
-                
+                    psi[t+1][i] = psi[t][i] + dt*dpsidt_func(
+                                                        i=i
+                                                        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
+                                                        ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                                        ,lamb=lambs,nu=nus
+                                                        )
+        if integration_method == "RK4":
+            pass
+
+        for i in range(N+1): 
             if t%condition==0 and i < N:
                 ebf, ebg = Epsilon_values(
                     N=N, r=radi[t+1], z=z_list[t+1] ,psi=psi[t+1] ,Area=Area
@@ -381,7 +387,7 @@ def Two_D_simulation_V3(
 
 
 
-
+"""
 
 def Two_d_simulation_stationary_states(
     N:int,k:float,c0:float, dt:float, ds:float
@@ -397,6 +403,7 @@ def Two_d_simulation_stationary_states(
     ,do_correction:bool = True
     ,area_testing:bool = False
     ,print_progress:bool = True
+    ,integration_method:str = "Euler"
     ):
     np.set_printoptions(legacy='1.25')
     start_time = time.time()
@@ -409,6 +416,11 @@ def Two_d_simulation_stationary_states(
     Xsqre = np.zeros(sim_steps-1,dtype=float)
     correct_count_list = np.zeros(sim_steps-1)
 
+    integration_options = ["Euler","RK4"]
+    if integration_method not in integration_options:
+        print("No integration method choosen correctly")
+        exit()
+    
     print("Simulation progressbar \n ")
     for t in range(sim_steps-1):
         if int(t%print_scale) == 0 and print_progress == True:
@@ -429,31 +441,48 @@ def Two_d_simulation_stationary_states(
                 ,radi=radi[t]
                 ,z_list=z_list[t]
             )
+        if integration_method == "Euler":
+            for i in range(N+1):
+                if i == N:
+                    z_list[t+1][i] = z_list[t][i]
+                    radi[t+1][i] = radi[t][i]
+                    #psi[t+1][i] = psi[t][i]
+                if i < N:
+                    z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,ds=ds,eta=eta,Area=Area,radi=radi[t],nu=nus)
 
-        for i in range(N+1):
-            if i == N:
-                z_list[t+1][i] = z_list[t][i]
-                radi[t+1][i] = radi[t][i]
-                #psi[t+1][i] = psi[t][i]
-            if i < N:
-                z_list[t+1][i] = z_list[t][i] + dt*dzdt_func(i=i,ds=ds,eta=eta,Area=Area,radi=radi[t],nu=nus)
-
-                drdt = drdt_func(
-                            i=i
-                            ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta
-                            ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
-                            ,lamb=lambs,nu=nus
-                            )
-                radi[t+1][i] = radi[t][i] + dt*drdt
-
-                dpsidt = dpsidt_func(
+                    drdt = drdt_func(
                                 i=i
                                 ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta
                                 ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
                                 ,lamb=lambs,nu=nus
                                 )
-                psi[t+1][i] = psi[t][i] + dt*dpsidt
-        
+                    radi[t+1][i] = radi[t][i] + dt*drdt
+
+                    dpsidt = dpsidt_func(
+                                    i=i
+                                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta
+                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                    ,lamb=lambs,nu=nus
+                                    )
+                    psi[t+1][i] = psi[t][i] + dt*dpsidt
+        if integration_method == "RK4":
+            kr,kz,kpsi = RungeKutta45(
+            N=N,dt=dt,k=k,c0=c0, sigma=sigma
+            ,kG=kG ,tau=tau, ds=ds,eta=eta
+            ,Area=Area
+            ,psi_init=psi[t],r_init=radi[t], z_init=z_list[t]
+            ,lamb=lambs , nu=nus
+            )
+            for i in range(N+1):
+                if i == N:
+                    z_list[t+1][i] = z_list[t][i]
+                    radi[t+1][i] = radi[t][i]
+                    #psi[t+1][i] = psi[t][i]
+                if i < N:
+                    radi[t+1] = radi[t] + (dt/6)*np.sum(kr[:,i])
+                    z_list[t+1] = z_list[t] + (dt/6)*np.sum(kz[:,i])
+                    psi[t+1] = psi[t] + (dt/6)*np.sum(kpsi[:,i])
+
 
         Potential_E_before_correction[t] = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=radi[t],psi=psi[t],Area=Area)
 
@@ -513,7 +542,8 @@ def Two_d_simulation_stationary_states(
             "gam(i>0)": gamma(2,ds=ds,eta=eta),
             "correction count": [correct_count_list],
             "tolerence":Tolerence,
-            "sim completion":True
+            "sim completion":True,
+            "integration method":integration_method
                         })
 
         print(data_path + df_name)

@@ -2,103 +2,56 @@ from Two_D_functions import dpsidt_func,drdt_func,dzdt_func
 import numpy as np
 
 
-
 def RungeKutta45(
-    t:int,N:int,dt:float,k:float,c0:float, sigma:float
+    N:int,dt:float,k:float,c0:float, sigma:float
     ,kG:float, tau:float, ds:float,eta:float
-    ,Area:list,psi:list,r:list, z:list
+    ,Area:list,psi_init:list,r_init:list, z_init:list
     ,lamb:list , nu:list
-        ):
+        ) -> list:
     
-    k_psi =[[],[],[],[]]
-    k_r =  [[],[],[],[]]
-    k_z = [[],[],[],[]]
-    for i in range(N):
-        pass
+    k_psi = np.zeros(shape=(5,len(psi_init)),dtype=float)
+    k_r = np.zeros(shape=(5,len(r_init)),dtype=float)
+    k_z = np.zeros(shape=(5,len(z_init)),dtype=float)
 
+    for j in range(1,5):
+        print("j=",j)
+        if  j < 4:
+            r = [ r_init[i] + (dt/2)*k_r[j-1][i] for i in range(len(r_init))]
+            z = [ z_init[i] + (dt/2)*k_z[j-1][i] for i in range(len(z_init))]
+            psi = [ psi_init[i] + (dt/2)*k_psi[j-1][i] for i in range(len(psi_init))]
+        if j == 4:
+            r = [ r_init[i] + dt*k_r[j-1][i] for i in range(len(r_init))]
+            z = [ z_init[i] + dt*k_z[j-1][i] for i in range(len(z_init))]
+            psi = [ psi_init[i] + dt*k_psi[j-1][i] for i in range(len(psi_init))]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def drdt_RK4(
-        i:int,N:int,dt:float,k:float,c0:float, sigma:float, kG:float, tau:float, ds:float,eta:float
-        ,Area:list,psi:list,r:list, z:list
-        ,lamb:list , nu:list
-        ):
-    k1 = drdt_func(
-        i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
-        ,Area=Area,psi=psi,lamb=lamb , nu=nu, z_list=z
-        ,raid=r
-        )
-    k2 = drdt_func(
-        i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
-        ,Area=Area,psi=psi,lamb=lamb , nu=nu, z_list=z
-        ,raid=[j if j!=r[i] else j + dt*k1/2 for j in r ]
-        )    
-    k3 = drdt_func(
-        i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
-        ,Area=Area,psi=psi,lamb=lamb , nu=nu, z_list=z
-        ,raid=[j if j!=r[i] else j + dt*k2/2 for j in r ]
-        )
-    k4 = drdt_func(
-        i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
-        ,Area=Area,psi=psi,lamb=lamb , nu=nu, z_list=z
-        ,raid=[j if j!=r[i] else j + dt*k3 for j in r ]
-        )    
-    return (dt/6)*(k1 + k2 + k3 + k4)
-
-
-def  dzdt_RK4(i:int,dt:float,Area:list,radi:list, nu:list):
-    k1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
-    return dt*k1
-
-
-def dPsidt_RK4(
-        i:int,N:int,k:float,c0:float,sigma:float,kG:float,tau:float,dt:float
-        ,Area:list,radi:list,z_list:list
-        ,lambs:list,nus:list
-        ,psi:list
-        ):    
-    k1 = dpsidt_func(
-        i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi=psi 
+        for i in range(N):
+            k_r[j][i]=(
+                drdt_func(
+                    i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
+                    ,Area=Area,lamb=lamb , nu=nu
+                    ,z_list=z,psi=psi,radi=r
+                    )
+            )
+            k_z[j][i]=(
+                dzdt_func(
+                    i=i,Area=Area,nu=nu ,eta=eta,ds=ds
+                    ,radi=r
+                    )
+            )
+            k_psi[j][i]=(
+                dpsidt_func(
+                    i=i
+                    ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,eta=eta,ds=ds
+                    ,Area=Area,lamb=lamb,nu=nu
+                    ,radi=r,z_list=z,psi=psi 
                 )
-    k2 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi= [j if j!=psi[i] else j + dt*k1/2 for j in psi ]
-    )
-    k3 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi=[j if j!=psi[i] else j + dt*k2/2 for j in psi ]
-    )
-    k4 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi= [j if j!=psi[i] else j + dt*k3 for j in psi ]
-    )
-    return (dt/6)*(k1 + k2 + k3 + k4)
+            )
+
+
+    return k_r,k_z,k_psi
+
+
+
+
+if __name__ == "__main__":
+    pass

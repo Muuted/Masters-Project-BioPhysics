@@ -126,13 +126,6 @@ def drdt_func(
     return drdt/gamma(i,ds=ds,eta=eta)
 
 
-def drdt_RungeKutta_4(
-        i,dt,N,k,c0, sigma, kG, tau
-        ,Area:list,psi:list,radi:list
-        ,lamb:list , nu:list, z_list:list
-        ):
-    
-    pass
 
 def dzdt_func(
         i:int,ds:float,eta:float,Area:list,radi:list, nu:list
@@ -148,11 +141,7 @@ def dzdt_func(
     
     return dzdt/gamma(i,ds=ds,eta=eta)
 
-def  dzdt_RungeKutta_4(i,dt,Area:list,radi:list, nu:list):
-    
-    dzdt_1 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
-    dzdt_2 = dzdt_func(i=i,Area=Area,radi=radi,nu=nu)
 
 def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float, ds:float ,eta:float
         ,Area:list,psi:list,radi:list
@@ -199,44 +188,6 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
 
     return dpsidt
 
-def dPsidt_RungeKutta_4(
-        i,N,k,c0,sigma,kG,tau,dt
-        ,Area,radi,z_list
-        ,lambs,nus
-        ,psi
-        ):
-    
-    dpdt_1 = dpsidt_func(
-        i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi=psi 
-                )
-
-    dpdt_2 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi= psi + (dt/2)*dpdt_1
-    )
-
-    dpdt_3 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi= psi + (dt/2)*dpdt_2
-    )
-
-    dpdt_4 = dpsidt_func(i=i
-        ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau
-        ,Area=Area,radi=radi,z_list=z_list
-        ,lamb=lambs,nu=nus
-        ,psi= psi + dt*dpdt_3
-    )
-
-    Runge_kutta = dpdt_1 + 2*dpdt_2 + 2*dpdt_3 + dpdt_4
-    return Runge_kutta
 
 
 def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)->float:

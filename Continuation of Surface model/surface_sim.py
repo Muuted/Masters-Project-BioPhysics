@@ -7,7 +7,7 @@ from Make_movie import Make_frames, Make_video
 from two_d_data_processing import check_area
 from Two_D_functions import Langrange_multi
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
-
+"""
 def surface_sim_find_c0():
     const_args = Two_D_Constants(
         print_val=True
@@ -179,6 +179,7 @@ def Surface_sim_Area_condition():
     
 
 
+"""
 
 def Surface_sim_stationary_state_initial_configuration(
         do_simulation:bool = True
@@ -186,6 +187,7 @@ def Surface_sim_stationary_state_initial_configuration(
         ,do_perturbation:bool = False
         ,make_movie: bool = True
         ,make_plots: bool = True
+        ,integration_method:str = "Euler"
     ):
     print("\n Now Running the surface simulation from stationary configurations \n")
 
@@ -232,6 +234,7 @@ def Surface_sim_stationary_state_initial_configuration(
             ,Tolerence=1e-5
             ,save_data=True
             #,area_testing=True
+            ,integration_method=integration_method
         )
 
     if make_movie == True:
@@ -293,6 +296,7 @@ if __name__ == "__main__":
         ,do_perturbation = False#True
         ,make_movie = True
         ,make_plots= True
+        ,integration_method= "Euler"
     )
 
     #Speed_diagnosing()
