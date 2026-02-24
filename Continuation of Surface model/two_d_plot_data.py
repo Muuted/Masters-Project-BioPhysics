@@ -1,8 +1,8 @@
-from Two_D_constants import Two_D_Constants, Two_D_paths
-from Two_D_simulation_function import Two_D_simulation
+#from Two_D_constants import Two_D_Constants, Two_D_paths
+#from Two_D_simulation_function import Two_D_simulation
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import tot_area, E_pot, E_kin, Xsqaured_test, Plot_3D_mesh
-from Two_D_functions import Langrange_multi, Epsilon_values
+#from Two_D_functions import Langrange_multi, Epsilon_values
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

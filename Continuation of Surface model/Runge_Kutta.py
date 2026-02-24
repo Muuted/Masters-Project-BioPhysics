@@ -14,7 +14,7 @@ def RungeKutta45(
     k_z = np.zeros(shape=(5,len(z_init)),dtype=float)
 
     for j in range(1,5):
-        print("j=",j)
+        #print("j=",j)
         if  j < 4:
             r = [ r_init[i] + (dt/2)*k_r[j-1][i] for i in range(len(r_init))]
             z = [ z_init[i] + (dt/2)*k_z[j-1][i] for i in range(len(z_init))]

@@ -1,11 +1,13 @@
 import pandas as pd
 import time
 import matplotlib.pyplot as plt
-from Two_D_constants import Two_D_Constants, Two_D_paths, Two_D_Constants_stationary_state
-from Two_D_simulation_function import Two_D_simulation, Two_D_simulation_V2, Two_d_simulation_stationary_states
+#from Two_D_constants import Two_D_Constants, Two_D_paths, Two_D_Constants_stationary_state
+from Two_D_constants import  Two_D_paths, Two_D_Constants_stationary_state
+#from Two_D_simulation_function import Two_D_simulation, Two_D_simulation_V2
+from Two_D_simulation_function import Two_d_simulation_stationary_states
 from Make_movie import Make_frames, Make_video
-from two_d_data_processing import check_area
-from Two_D_functions import Langrange_multi
+#from two_d_data_processing import check_area
+#from Two_D_functions import Langrange_multi
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
 """
 def surface_sim_find_c0():
@@ -208,7 +210,9 @@ def Surface_sim_stationary_state_initial_configuration(
     psi2_init ,alpha = const_args[21:23]
 
     
-    path_args = Two_D_paths(folder_names = f"Unperturbed sigma,tau,psi2=({sigma:0.1e}{tau:0.1e}{psi2_init:0.1e})\\")
+    path_args = Two_D_paths(
+        #folder_names = ""f"Unperturbed sigma,tau,psi2=({sigma:0.1e}{tau:0.1e}{psi2_init:0.1e})\\"
+        )
     data_path, fig_save_path = path_args[0:2]
     video_save_path,figs_for_video_path = path_args[2:4]
     df_name, fps_movie ,num_frames = path_args[4:7]
@@ -294,9 +298,9 @@ if __name__ == "__main__":
         do_simulation = True #determines if 
         ,start_from_flat = False#True
         ,do_perturbation = False#True
-        ,make_movie = True
+        ,make_movie = False#True
         ,make_plots= True
-        ,integration_method= "Euler"
+        ,integration_method= "RK4"
     )
 
     #Speed_diagnosing()

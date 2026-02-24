@@ -467,12 +467,12 @@ def Two_d_simulation_stationary_states(
                     psi[t+1][i] = psi[t][i] + dt*dpsidt
         if integration_method == "RK4":
             kr,kz,kpsi = RungeKutta45(
-            N=N,dt=dt,k=k,c0=c0, sigma=sigma
-            ,kG=kG ,tau=tau, ds=ds,eta=eta
-            ,Area=Area
-            ,psi_init=psi[t],r_init=radi[t], z_init=z_list[t]
-            ,lamb=lambs , nu=nus
-            )
+                N=N,dt=dt,k=k,c0=c0, sigma=sigma
+                ,kG=kG ,tau=tau, ds=ds,eta=eta
+                ,Area=Area
+                ,psi_init=psi[t],r_init=radi[t], z_init=z_list[t]
+                ,lamb=lambs , nu=nus
+                )
             for i in range(N+1):
                 if i == N:
                     z_list[t+1][i] = z_list[t][i]
@@ -543,7 +543,8 @@ def Two_d_simulation_stationary_states(
             "correction count": [correct_count_list],
             "tolerence":Tolerence,
             "sim completion":True,
-            "integration method":integration_method
+            "integration method":integration_method,
+            "simulation time [s]":int(time.time()-start_time)
                         })
 
         print(data_path + df_name)
