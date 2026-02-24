@@ -398,12 +398,12 @@ def Two_d_simulation_stationary_states(
     ,r_unperturb:list ,z_unperturb:list, psi_unperturb:list
     ,df_name:str,num_frames:str
     ,data_path:str
+    ,integration_method:str #= "RK4"
     ,save_data:bool = True 
     ,Tolerence:float = 1e-10
     ,do_correction:bool = True
     ,area_testing:bool = False
     ,print_progress:bool = True
-    ,integration_method:str = "Euler"
     ):
     np.set_printoptions(legacy='1.25')
     start_time = time.time()

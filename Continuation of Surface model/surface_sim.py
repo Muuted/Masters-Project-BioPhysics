@@ -298,9 +298,9 @@ if __name__ == "__main__":
         do_simulation = True #determines if 
         ,start_from_flat = False#True
         ,do_perturbation = False#True
-        ,make_movie = False#True
+        ,make_movie = True
         ,make_plots= True
-        ,integration_method= "RK4"
+        ,integration_method= "Euler"
     )
 
     #Speed_diagnosing()
