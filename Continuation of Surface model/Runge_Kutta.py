@@ -13,32 +13,36 @@ def RungeKutta45(
     k_r = np.zeros(shape=(5,len(r_init)),dtype=float)
     k_z = np.zeros(shape=(5,len(z_init)),dtype=float)
 
+    r = np.zeros(shape=(len(r_init)),dtype=float)
+    z = np.zeros(shape=(len(z_init)),dtype=float)
+    psi = np.zeros(shape=(len(psi_init)),dtype=float)
+
     for j in range(1,5):
-        #print("j=",j)
-        if  j < 4:
-            r = [ r_init[i] + (dt/2)*k_r[j-1][i] for i in range(len(r_init))]
-            z = [ z_init[i] + (dt/2)*k_z[j-1][i] for i in range(len(z_init))]
-            psi = [ psi_init[i] + (dt/2)*k_psi[j-1][i] for i in range(len(psi_init))]
-        if j == 4:
-            r = [ r_init[i] + dt*k_r[j-1][i] for i in range(len(r_init))]
-            z = [ z_init[i] + dt*k_z[j-1][i] for i in range(len(z_init))]
-            psi = [ psi_init[i] + dt*k_psi[j-1][i] for i in range(len(psi_init))]
+        for i in range(N):
+            if  j < 4:
+                r[i] =  r_init[i] + (dt/2)*k_r[j-1][i] 
+                z[i] = z_init[i] + (dt/2)*k_z[j-1][i] 
+                psi[i] = psi_init[i] + (dt/2)*k_psi[j-1][i] 
+            if j == 4:
+                r[i] = r_init[i] + dt*k_r[j-1][i] 
+                z[i] = z_init[i] + dt*k_z[j-1][i]
+                psi[i] =  psi_init[i] + dt*k_psi[j-1][i] 
 
         for i in range(N):
-            k_r[j][i]=(
+            k_r[j][i] = (
                 drdt_func(
                     i=i,N=N,k=k,c0=c0, sigma=sigma, kG=kG, tau=tau, ds=ds, eta=eta
                     ,Area=Area,lamb=lamb , nu=nu
-                    ,z_list=z,psi=psi,radi=r
+                    ,z_list=z ,psi=psi ,radi=r
                     )
             )
-            k_z[j][i]=(
+            k_z[j][i] = (
                 dzdt_func(
                     i=i,Area=Area,nu=nu ,eta=eta,ds=ds
                     ,radi=r
                     )
             )
-            k_psi[j][i]=(
+            k_psi[j][i] = (
                 dpsidt_func(
                     i=i
                     ,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,eta=eta,ds=ds
@@ -46,7 +50,6 @@ def RungeKutta45(
                     ,radi=r,z_list=z,psi=psi 
                 )
             )
-
 
     return k_r,k_z,k_psi
 
