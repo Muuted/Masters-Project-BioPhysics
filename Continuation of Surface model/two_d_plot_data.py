@@ -2306,8 +2306,9 @@ def circle_fit_on_N30_triangle_data():
 
 
 def RungeKutta_Euler_acruacy_test():
-    path_Euler = "2D sim results\\accuracy test\\Euler data\\2D Surface N,ds,dt,T,tau,c0=(25, 0.012, 1e-13, 1e-08, 2631.57894736842, 25)"
-    path_RK4 = "2D sim results\\accuracy test\\Rk4 data\\2D Surface N,ds,dt,T,tau,c0=(25, 0.012, 1e-13, 1e-08, 2631.57894736842, 25)"
+    path = "2D sim results\\accuracy test\\"
+    path_Euler = path + "Euler data\\2D Surface N,ds,dt,T,tau,c0=(25, 0.012, 1e-13, 1e-08, 2631.57894736842, 25)"
+    path_RK4 = path + "Rk4 data\\2D Surface N,ds,dt,T,tau,c0=(25, 0.012, 1e-13, 1e-08, 2631.57894736842, 25)"
 
     df_sim_Euler = pd.read_pickle(path_Euler)
     df_sim_RK4 = pd.read_pickle(path_RK4)
@@ -2315,17 +2316,20 @@ def RungeKutta_Euler_acruacy_test():
     r_Euler = df_sim_Euler["r"][0]
     z_Euler = df_sim_Euler["z"][0]
     psi_Euler = df_sim_Euler["psi"][0]
+    corrs_Euler = df_sim_Euler["correction count"][0]
     dt = df_sim_Euler["dt"][0]
 
     r_RK4 = df_sim_RK4["r"][0]
     z_RK4 = df_sim_RK4["z"][0]
     psi_RK4 = df_sim_RK4["psi"][0]
+    corrs_RK4 = df_sim_RK4["correction count"][0]
 
-    T, N = np.shape(r_Euler)
-
+    T1, N1 = np.shape(r_Euler)
+    T, N = np.shape(r_RK4)
+    #print(f"T1,N1={T1,N1} and T,N={T,N}")
     what_to_plot = 0
     """------------------------------Difference in integration results --------------------------------"""
-    if what_to_plot == 0:
+    if what_to_plot == 0 or what_to_plot == 1:
         Dr0 , Dr1, Dr2 = np.zeros(T,dtype=float),np.zeros(T,dtype=float),np.zeros(T,dtype=float)
         Dz0 , Dz1, Dz2 = np.zeros(T,dtype=float),np.zeros(T,dtype=float),np.zeros(T,dtype=float)
         Dpsi0 , Dpsi1, Dpsi2 = np.zeros(T,dtype=float),np.zeros(T,dtype=float),np.zeros(T,dtype=float)
@@ -2365,7 +2369,7 @@ def RungeKutta_Euler_acruacy_test():
         ax[0,0].plot(time,Dr0,label=r"$\Delta r_0$")
         ax[0,0].plot(time,Dr1,label=r"$\Delta r_1$")
         ax[0,0].plot(time,Dr2,label=r"$\Delta r_2$")
-        ax[0,0].set_xlabel("time [s]")
+        #ax[0,0].set_xlabel("time [s]",fontsize=15)
         ax[0,0].set_ylabel("")
         ax[0,0].set_title("Membrane edge case differences \n this column")
         ax[0,0].ticklabel_format(style="sci",scilimits=(1,0))
@@ -2375,7 +2379,7 @@ def RungeKutta_Euler_acruacy_test():
         ax[1,0].plot(time,Dz0,label=r"$\Delta z_0$")
         ax[1,0].plot(time,Dz1,label=r"$\Delta z_1$")
         ax[1,0].plot(time,Dz2,label=r"$\Delta z_2$")
-        ax[1,0].set_xlabel("time [s]")
+        #ax[1,0].set_xlabel("time [s]",fontsize=15)
         ax[1,0].set_ylabel("")
         ax[1,0].ticklabel_format(style="sci",scilimits=(1,0))
         ax[1,0].legend()
@@ -2384,7 +2388,7 @@ def RungeKutta_Euler_acruacy_test():
         ax[2,0].plot(time,Dpsi0,label=r"$\Delta \psi_0$")
         ax[2,0].plot(time,Dpsi1,label=r"$\Delta \psi_1$")
         ax[2,0].plot(time,Dpsi2,label=r"$\Delta \psi_2$")
-        ax[2,0].set_xlabel("time [s]")
+        ax[2,0].set_xlabel("time [s]",fontsize=15)
         ax[2,0].set_ylabel("")
         ax[2,0].ticklabel_format(style="sci",scilimits=(1,0))
         ax[2,0].legend()
@@ -2392,7 +2396,7 @@ def RungeKutta_Euler_acruacy_test():
 
         #------------------------------------------------#
         ax[0,1].plot(time,Dr,label=r"$\Delta r$",color="b")
-        ax[0,1].set_xlabel("time [s]")
+        #ax[0,1].set_xlabel("time [s]",fontsize=15)
         ax[0,1].set_ylabel("")
         ax[0,1].set_title("Full membrane differences \n this column")
         ax[0,1].ticklabel_format(style="sci",scilimits=(1,0))
@@ -2400,24 +2404,69 @@ def RungeKutta_Euler_acruacy_test():
         ax[0,1].grid()
 
         ax[1,1].plot(time,Dz,label=r"$\Delta z$",color="r")
-        ax[1,1].set_xlabel("time [s]")
+        #ax[1,1].set_xlabel("time [s]",fontsize=15)
         ax[1,1].set_ylabel("")
         ax[1,1].ticklabel_format(style="sci",scilimits=(1,0))
         ax[1,1].legend()
         ax[1,1].grid()
 
         ax[2,1].plot(time,Dpsi,label=r"$\Delta \psi$",color="m")
-        ax[2,1].set_xlabel("time [s]")
+        ax[2,1].set_xlabel("time [s]",fontsize=15)
         ax[2,1].set_ylabel("")
         ax[2,1].ticklabel_format(style="sci",scilimits=(1,0))
         ax[2,1].legend()
         ax[2,1].grid()
 
+        plt.draw()
+        plt.pause(0.1)
+        plt.savefig(path + "diff in vars" + ".png")
 
 
+    if what_to_plot == 0 or what_to_plot == 2:
+        fig,ax = plt.subplots()
+        wm = plt.get_current_fig_manager()
+        #wm.window.state('zoomed')
 
+        plt.plot(
+            r_Euler[T-1],z_Euler[T-1]
+            ,marker="o"
+            ,linestyle="-"
+            ,color="g"
+            ,label="Euler final"
+            )        
+        plt.plot(
+            r_RK4[T-1],z_RK4[T-1]
+            ,marker="o"
+            ,linestyle="-"
+            ,color="r"
+            ,label="RK4 final"
+            )
+        
 
+        plt.plot(
+            r_RK4[0],z_RK4[0]
+            ,marker="o"
+            ,linestyle="--"
+            ,color="c"
+            ,label="RK4 initial"
+            )
+        plt.plot(
+            r_Euler[0],z_Euler[0]
+            ,marker="o"
+            ,linestyle="--"
+            ,color="k"
+            ,label="Euler initial"
+            )    
 
+        plt.legend()
+        plt.title(
+            "Final positions of the Euler and Runge Kutta (RK4) integration schemes"
+            +f"\n num of corrections pr time step, Euler={np.sum(corrs_Euler)/T} and RK4={np.sum(corrs_RK4)/T}"
+            )
+        plt.xlabel(r"r [$\mu m$]",fontsize=15)
+        plt.ylabel(r"z [$\mu m$]",fontsize=15)
+        plt.grid()
+        plt.savefig(path + "diff end pos" + ".png")
 
 
 if __name__ == "__main__":
