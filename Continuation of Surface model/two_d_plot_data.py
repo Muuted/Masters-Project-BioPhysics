@@ -2317,17 +2317,23 @@ def RungeKutta_Euler_acruacy_test():
     z_Euler = df_sim_Euler["z"][0]
     psi_Euler = df_sim_Euler["psi"][0]
     corrs_Euler = df_sim_Euler["correction count"][0]
+    Epot_Euler = df_sim_Euler["Epot"][0]
     dt = df_sim_Euler["dt"][0]
 
     r_RK4 = df_sim_RK4["r"][0]
     z_RK4 = df_sim_RK4["z"][0]
     psi_RK4 = df_sim_RK4["psi"][0]
     corrs_RK4 = df_sim_RK4["correction count"][0]
+    Epot_RK4 = df_sim_RK4["Epot"][0]
 
     T1, N1 = np.shape(r_Euler)
     T, N = np.shape(r_RK4)
     #print(f"T1,N1={T1,N1} and T,N={T,N}")
-    what_to_plot = 0
+    time = np.zeros(T,dtype=float)
+    for t in range(T):
+        time[t] = dt*t
+
+    what_to_plot = 3
     """------------------------------Difference in integration results --------------------------------"""
     if what_to_plot == 0 or what_to_plot == 1:
         Dr0 , Dr1, Dr2 = np.zeros(T,dtype=float),np.zeros(T,dtype=float),np.zeros(T,dtype=float)
@@ -2349,8 +2355,6 @@ def RungeKutta_Euler_acruacy_test():
             Dpsi0[t] = psi_Euler[t][0] - psi_RK4[t][0]
             Dpsi1[t] = psi_Euler[t][1] - psi_RK4[t][1]
             Dpsi2[t] = psi_Euler[t][2] - psi_RK4[t][2]
-            
-            time[t] = dt*t
 
             for i in range(N):
                 Dr[t] += (r_Euler[t][i] - r_RK4[t][i])**2
@@ -2466,9 +2470,37 @@ def RungeKutta_Euler_acruacy_test():
         plt.xlabel(r"r [$\mu m$]",fontsize=15)
         plt.ylabel(r"z [$\mu m$]",fontsize=15)
         plt.grid()
+
+        plt.draw()
+        plt.pause(0.1)
         plt.savefig(path + "diff end pos" + ".png")
 
+    if what_to_plot == 0 or what_to_plot == 3:
+        fig,ax = plt.subplots()
+        wm = plt.get_current_fig_manager()
+        #wm.window.state('zoomed')
 
+        plt.plot(
+            time[0:T-1],Epot_Euler
+            ,label="Epot Euler"
+            )
+        
+        plt.plot(
+            time[0:T-1],Epot_RK4
+            ,label="Epot RK4"
+            )
+        
+        plt.legend()
+        plt.title("Comparison of potential energy")
+        plt.xlabel("time [s]",fontsize=15)
+        plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=13)
+        plt.grid()
+
+        plt.draw()
+        plt.pause(0.1)
+        plt.savefig(path + "diff Epot" + ".png")
+
+        
 if __name__ == "__main__":
     data_path = "C:\\Users\\adams\\Desktop\\praesentations data\\"
     data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
