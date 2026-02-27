@@ -91,7 +91,7 @@ def Two_D_Constants(
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "accuracy test\\Euler data\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "dt test\\T=1e-6\\RK4 dt=5e-11\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path #+  "c0=0 tau=0\\"
     else:
@@ -133,8 +133,8 @@ def Two_D_Constants_stationary_state(
     if N == "":
         N = 25#20#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
-    T = 1e-8 #1e-7#1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
-    dt = 1e-13#1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
+    T = 1e-6 #1e-7#1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
+    dt = 5e-11#1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
     if ds == "":
@@ -155,11 +155,28 @@ def Two_D_Constants_stationary_state(
     sigma_c = k*c0**2
     tau_c = k*c0
 
+    tilde_sigma_list = [
+        0.0253164556962025 #0.329113924050633
+        ,0.29873417721519
+        ,0.116455696202532 
+        ]
+    tilde_tau_list = [
+        1.31578947368421#1.0
+        ,4.47368421052632
+        ,1.0
+        ]
+    psi2_list = [
+        -2.83260429562395e-7#-1.68533976179446e-8
+        ,-2.23344534748962e-6
+        ,-2.26474921864332e-8
+        ]
+    const_index = 0
+
     #Dimless variables
     if tilde_sigma == "":
-        tilde_sigma = 0.0253164556962025 #dimensionless sigma
+        tilde_sigma = tilde_sigma_list[const_index]#0.0253164556962025 #dimensionless sigma
     if tilde_tau == "":
-        tilde_tau = 1.31578947368421 # Dimensionless tau
+        tilde_tau = tilde_tau_list[const_index] #1.31578947368421 # Dimensionless tau
 
     #Converted variables
     sigma = tilde_sigma*sigma_c
@@ -169,7 +186,7 @@ def Two_D_Constants_stationary_state(
     zs2 = 0
     s0, sN = 0, 50*lc
     if psi_L == "":
-        psi_L = -2.83260429562395e-7 #6.531116e-8   #-1.68533976179446e-8  
+        psi_L = psi2_list[const_index] #-2.83260429562395e-7 #6.531116e-8   #-1.68533976179446e-8  
 
     #print(f"n={N}, ds={ds:e} , sigma={sigma} , psi2={psi_L} ,tau={tau}")
     #Creating lists for the variables.
@@ -248,6 +265,7 @@ def Two_D_Constants_stationary_state(
             ,fontsize=font_size
             )
         plt.legend()
+        plt.grid()
         #plt.xlim(min(r)*0.95, max(r)*1.05)
         #plt.ylim(-5,max(r)-min(r)-5)
         #plt.show()

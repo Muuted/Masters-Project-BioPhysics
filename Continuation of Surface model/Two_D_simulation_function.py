@@ -45,7 +45,7 @@ def Two_d_simulation_stationary_states(
     if integration_method not in integration_options:
         print("No integration method choosen correctly")
         exit()
-    
+    print("integration_method=",integration_method)
     print("Simulation progressbar \n ")
     for t in range(sim_steps-1):
         if int(t%print_scale) == 0 and print_progress == True:

@@ -76,7 +76,7 @@ def plot_tot_area(
     plt.title(
         f"correction counts pr time step \n "
         +r"$\frac{corrections}{time step} \approx$"
-        +f"{round(np.sum(corr_count)/sim_steps ,3)}"
+        +f"{round(np.sum(corr_count)/(sim_steps-1) ,3)}"
         ,fontsize=font_size)
         
     plt.xlabel("t[s]",fontsize=font_size)
@@ -2500,7 +2500,7 @@ def RungeKutta_Euler_acruacy_test():
         plt.pause(0.1)
         plt.savefig(path + "diff Epot" + ".png")
 
-        
+
 if __name__ == "__main__":
     data_path = "C:\\Users\\adams\\Desktop\\praesentations data\\"
     data_path = "2D sim results\\Data for thesis\\Verification\\c0=c0 tau=0\\"
