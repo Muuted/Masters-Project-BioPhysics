@@ -1,107 +1,49 @@
-import numpy as np
-from PySide6 import QtCore, QtWidgets, QtGui
+#from PySide6 import QtCore, QtWidgets, QtGui
+#from PyQt6 import  QtCore
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, QFormLayout, QLineEdit
 import sys
-import random
 
 
-
-
-class MyWidget(QtWidgets.QWidget):
+class AnotherWindow(QWidget):
+    """
+    This "window" is a QWidget. If it has no parent, it
+    will appear as a free-floating window as we want.
+    """
     def __init__(self):
         super().__init__()
-        self.window_num = 1
-        self.Window1()
+        layout = QVBoxLayout(self)
+        self.label = QLabel("Another Window")
+        self.setGeometry(50,50,800,600)
+        layout.addWidget(self.label)
+        self.setLayout(layout)
 
 
-    @QtCore.Slot()
-    def Window1(self):
-        self.hello = ["Hello World","Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
-
-        self.button = QtWidgets.QPushButton("Click me!")
-        self.text = QtWidgets.QLabel("Window 1",alignment=QtCore.Qt.AlignCenter)
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-
-        self.button.clicked.connect(self.magic)
-    
-    @QtCore.Slot()
-    def Window2(self):
-        self.hello = ["Hello World","Hallo Welt", "Hei maailma", "Hola Mundo", "Привет мир"]
-
-        self.button = QtWidgets.QPushButton("Click me!")
-        self.text = QtWidgets.QLabel("Window 2",alignment=QtCore.Qt.AlignCenter)
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-
-        self.button.clicked.connect(self.magic)
-    
-    @QtCore.Slot()    
-    def magic(self):
-        if self.window_num == 1:
-            self.Window2()
-            self.window_num = 2
-        
-        if self.window_num == 2:
-            self.Window1()
-            self.window_num = 1
-
-
-class MyWidget_2(QtWidgets.QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.button1 = QPushButton("1") 
+        self.input1 = QLineEdit()
+        self.button2 = QPushButton("1") 
+        self.input2 = QLineEdit()
+        #self.setCentralWidget(self.button)
+        #self.setWindowTitle("My first app")
+        #self.setGeometry(50,50,800,600)
 
-        self.hello = ["window 2"]
-
-        self.button = QtWidgets.QPushButton("Click me!")
-        self.text = QtWidgets.QLabel("Window 2",alignment=QtCore.Qt.AlignCenter)
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.text)
-        self.layout.addWidget(self.button)
-
-        self.button.clicked.connect(self.magic)
-
-    @QtCore.Slot()    
-    def magic(self,checked):
-        w = Window2()
-        w.show()
-
-class Window2(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.hello = ["window 2"]
-
-        self.button1 = QtWidgets.QPushButton("Click me!")
-        self.button2 = QtWidgets.QPushButton("Click me!")
-        self.text = QtWidgets.QLabel("Window 2",alignment=QtCore.Qt.AlignCenter)
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.text)
+        self.layout = QFormLayout(self)
         self.layout.addWidget(self.button1)
+        self.layout.addWidget(self.input1)
         self.layout.addWidget(self.button2)
+        self.layout.addWidget(self.input2)
 
-        self.button.clicked.connect(self.magic)
+        #self.button.clicked.connect(self.show_new_window)
+        #self.setLayout(self.layout)
 
-    @QtCore.Slot()    
-    def magic(self):
-        w = MyWidget_2()
-        w.show()
-
-
-
+    def show_new_window(self,checked):
+        pass#w = AnotherWindow()
+        #w.show()
 
 if __name__ == "__main__":
-    app = QtWidgets.QApplication([])
-    widget = MyWidget_2()
-    widget.resize(800, 600)
-    widget.show()
-    sys.exit(app.exec())
-
-
-
-
+    app = QApplication(sys.argv)
+    w = MainWindow()
+    w.show()
+    app.exec()
