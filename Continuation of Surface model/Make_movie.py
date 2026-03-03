@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import os
 import pandas as pd
-from Two_D_constants import Two_D_Constants, Two_D_paths
+from Two_D_constants import Two_D_paths
 import progressbar
 import glob 
 #from plotting_functions import plot_from_psi_V2

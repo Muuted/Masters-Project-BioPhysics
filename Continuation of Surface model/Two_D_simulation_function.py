@@ -1,8 +1,8 @@
 import numpy as np
-from Two_D_constants import Two_D_Constants, Two_D_paths
+#from Two_D_constants import Two_D_Constants, Two_D_paths
 from Two_D_functions import Langrange_multi,dpsidt_func,drdt_func,dzdt_func, gamma
-from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
-from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
+#from Two_D_functions import Epsilon_values, c_diff_f,c_diff_g
+#from Two_D_functions import Epsilon_v2, c_diff, check_constraints_truth
 from Two_D_functions import Make_variable_corrections
 from two_d_data_processing import check_area, tot_area, E_kin,E_pot, Xsqaured_test
 from Runge_Kutta import RungeKutta45
