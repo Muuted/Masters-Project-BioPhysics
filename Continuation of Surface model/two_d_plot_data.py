@@ -2319,12 +2319,14 @@ def RungeKutta_Euler_acruacy_test():
     corrs_Euler = df_sim_Euler["correction count"][0]
     Epot_Euler = df_sim_Euler["Epot"][0]
     dt = df_sim_Euler["dt"][0]
+    sim_time_Euler = df_sim_Euler["simulation time [s]"][0]
 
     r_RK4 = df_sim_RK4["r"][0]
     z_RK4 = df_sim_RK4["z"][0]
     psi_RK4 = df_sim_RK4["psi"][0]
     corrs_RK4 = df_sim_RK4["correction count"][0]
     Epot_RK4 = df_sim_RK4["Epot"][0]
+    sim_time_RK4 = df_sim_RK4["simulation time [s]"][0]
 
     T1, N1 = np.shape(r_Euler)
     T, N = np.shape(r_RK4)
@@ -2491,7 +2493,8 @@ def RungeKutta_Euler_acruacy_test():
             )
         
         plt.legend()
-        plt.title("Comparison of potential energy")
+        plt.title("Comparison of potential energy \n"
+                  +f"Real world integration time: Euler={sim_time_Euler/60:0.1f}min, RK4={sim_time_RK4/60:0.1f}min")
         plt.xlabel("time [s]",fontsize=15)
         plt.ylabel(r"$E_{pot}$ [zJ]",fontsize=13)
         plt.grid()
