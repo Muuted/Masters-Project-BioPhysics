@@ -117,7 +117,7 @@ def Two_d_simulation_stationary_states(
                 ,r=radi[t+1] ,z=z_list[t+1], psi=psi[t+1] 
                 ,Area=Area ,Area_init=Area_initial
                 ,Tolerence=Tolerence
-                ,corr_max=100
+                ,corr_max=10
                 ,t=t
             )
             correct_count_list[t] = correction_count
@@ -177,6 +177,8 @@ def Two_d_simulation_stationary_states(
             os.makedirs(data_path)
         df.to_pickle(data_path + df_name )#+".pkl")
         
+        if not os.path.exists(data_path +"figures and video"):
+            os.makedirs(data_path+"figures and video")
 
 if __name__ == "__main__":
     pass

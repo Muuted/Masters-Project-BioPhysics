@@ -950,6 +950,7 @@ def c_diff_f(
             df = 2*np.pi*r[i+1]/Area[i]#*Kronecker(i+1,j) #- r[i]*Kronecker(i,j))/Area[i]
         if i == j :
             df = -2*np.pi*r[i]/Area[i]
+            
     if diff_var == diff_var_list[1]or diff_var == 1:
         df = 0
 
