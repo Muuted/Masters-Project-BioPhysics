@@ -127,7 +127,7 @@ if __name__ == "__main__":
         ,do_perturbation = False#True
         ,make_movie = True
         ,make_plots= True
-        ,integration_method= "RK4"
+        ,integration_method= "Euler"#"RK4"
     )
 
     #Speed_diagnosing()
