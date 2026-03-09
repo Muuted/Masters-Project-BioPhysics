@@ -7,7 +7,7 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "comparison\\cross\\N=30 T=1e-6\\RK4 dt=2.5e-11\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "comparison\\triangle\\N=30 T=1e-6\\RK4 dt=2.5e-11\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path #+  "c0=0 tau=0\\"
     else:
@@ -46,7 +46,7 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
-    const_index = 2
+    const_index = 1
     if N == "":
         N = 30#25#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
