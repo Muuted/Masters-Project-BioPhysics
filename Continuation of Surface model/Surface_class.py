@@ -1,20 +1,30 @@
 import numpy as np
-
-
+import matplotlib.pyplot as plt
+import time
+import os
+import pandas as pd
+from two_d_continues_integration import find_init_stationary_state
+from Two_D_functions import Perturbation_of_inital_state, drdt_func,dzdt_func,dpsidt_func
+from Two_D_functions import Langrange_multi, Make_variable_corrections, gamma
+from Runge_Kutta import RungeKutta45
+from two_d_data_processing import E_kin, E_pot, Xsqaured_test
+from Make_movie import Make_frames, Make_video
+from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
 np.set_printoptions(legacy='1.25') #Setting the print format
 
 
 
-class Surface_membrane():
+class Surface_membrane:
     def __init__(self
-        ,N:int = 30 ,T:float=1.0e-7 ,dt:float=2.5e-11
+        ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
+        , make_movie:bool  = True, make_plots:bool = True
         ):
         super().__init__()
         # Base constants
+        self.N:int = N # Number of links
         self.T:float = T # [s] real time simulatied in seconds
         self.dt:float = dt #[s] time step
         self.sim_steps:int = int(self.T/self.dt) #number of steps in the simulation
-        self.N:int = N # Number of links
         self.c0:float = 25.0 # [1/(mu m)]
         self.k:float = 80.0 #[zJ]
         self.kG:float = None # [zJ]
@@ -23,9 +33,12 @@ class Surface_membrane():
         self.Area_init:float = None # [(mu m)^2] 
         self.ds:float = 1.5e-2/(self.N/20) # [mu m]
         self.dpsi_perturb:float = -0.02 # [rad]
-
+        self.num_perturb:int = int(self.N/2) # Number of perturbed points
+        self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
+        self.L = 100 # some times used for the total length of the membrane
         # Phase space variables 
-        self.phase_space_names:list = ["triangle","plus","cross"]
+        self.const_index:int = const_index #Choosing which of the 3 initial configurations is used
+        self.phase_space_names:list = ["triangle\\","plus\\","cross\\"]
         self.tilde_sigma_list:list = [
         0.0253164556962025 
         ,0.29873417721519
@@ -44,13 +57,15 @@ class Surface_membrane():
 
         # Constant variables
         self.lc = 1/self.c0 # [mu m]
-        self.tilde_sigma:float = 0 # [dimless]
-        self.sigma:float = 0 # [zJ/(mu m)^2]
+        self.tilde_sigma:float = self.tilde_sigma_list[self.const_index] # [dimless]
+        self.sigma_c:float = self.k*self.c0**2
+        self.sigma:float = self.tilde_sigma*self.sigma_c # [zJ/(mu m)^2]
 
-        self.tilde_tau:float = 0 # [dimless]
-        self.tau:float = 0 # [zJ/(mu m)]
+        self.tilde_tau:float = self.tilde_tau_list[self.const_index] # [dimless]
+        self.tau_c:float = self.k*self.c0
+        self.tau:float = self.tilde_tau*self.tau_c # [zJ/(mu m)]
 
-        self.psi2:float = 0 # [rad]
+        self.psi2:float = self.psi2_list[self.const_index] # [rad]
 
         # Lists for variables
         self.r_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
@@ -68,26 +83,335 @@ class Surface_membrane():
         self.Xsqre = np.zeros(self.sim_steps-1,dtype=float)
         self.correct_count_list = np.zeros(self.sim_steps-1)
 
-
         # Setting up program
         self.var_corr_tol:float = 1e-5 # The tolerence for when to use variable correction
-        self.print_scale:int = int((self.sim_steps-2)/1000)
-
-        self.integration_method:str = "RK4" #Type of integration scheme
-        self.save_path:str
-        self.df_name:str
         self.do_correction:bool = True
+        self.perturb:bool = False #decieds if we are going perturb the initial state or not        
+        self.start_flat:bool = False
+
+        # Printing choices and paths saving
+        self.integration_method:str = "RK4" #Type of integration scheme
+        self.save_path:str = "2D sim results\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+        self.save_figs_path:str = "figures and movie\\"
+        self.figs_for_video_path:str = "figures for video\\"
+        self.df_name:str = "2D Surface sim.pkl"
         self.print_progress:bool = True
-        self.start_flat:bool = True
+        self.print_scale:int = int((self.sim_steps-2)/1000)
+        self.print_constants:bool = True
+
+        # 
+        self.save_data:bool = True
+        self.show_stationary_state:bool = True #Showing the initial configuration before simulation start
+        self.init_config_show_time:float = 2 # Showing the initial configuration
+
+        # Making movies and plots
+        self.make_movie:bool = make_movie 
+        self.make_plots:bool = make_plots
+        self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
+
+    def setup_simulation(self):
+        # scaling parameters        
+        rs2 = 20*self.lc 
+        zs2 = 0
+        s0, sN = 0, 50*self.lc
+
+        #Initiating the inital state of the membrane
+        psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
+                sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
+                ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+                ,total_points = self.N
+            )
+        self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
+        self.kG = self.k*self.alpha        
+
+        if self.start_flat == True:
+            for i in range(self.N+1):
+                self.r_list[0][i] = self.r0 + i*self.ds
+                #self.z_list[0][i] = 0
+                if i < self.N:
+                    self.psi_list[0][i] = 0
+        else:
+            """------ variables list ---------"""
+            for i in range(self.N+1):
+                if i < self.N :
+                    self.psi_list[0][i] = psi[i]
+                self.r_list[0][i] = r[i]
+                self.z_list[0][i] = z[i]
+        
+        for i in range(self.N+1):
+            if i < self.N :
+                self.Area_list[i] =  np.pi*(self.r_list[0][i+1] + self.r_list[0][i])*np.sqrt( 
+                    (self.r_list[0][i+1] - self.r_list[0][i])**2
+                      + (self.z_list[0][i+1] - self.z_list[0][i])**2 
+                    )
+                if self.Area_list[i] == 0 :
+                    print(f"Area[{i}]=0")
+                    exit()
+        
+        self.r_unperturb = [i for i in self.r_list[0]]
+        self.z_unperturb = [i for i in self.z_list[0]]
+        self.psi_unperturb = [i for i in self.psi_list[0]]
+
+        if self.perturb == True:
+            Perturbation_of_inital_state(
+                points_perturbed=self.num_perturb 
+                ,ds=self.ds, N=self.N
+                ,r=self.r_list[0]
+                ,z=self.z_list[0]
+                ,psi=self.psi_list[0]
+                ,Area=self.Area_list
+                ,delta_psi= self.dpsi_perturb
+                ,show_initial_condi=True
+            )
+        if self.perturb == False:
+            dpsi_perturb = 0
+
+        if self.show_stationary_state == True:
+            plt.figure()
+            font_size = 10
+            #plt.plot(r_contin,z_contin,marker="",label="integration")
+            plt.plot(self.r_list[0],self.z_list[0],"o-",label="Discreet")
+            plt.plot(self.r_list[0][0],self.z_list[0][0],"o",color="k",label="s1")
+            plt.plot(self.r_list[0][len(self.r_list[0])-1],self.z_list[0][len(self.r_list[0])-1],"o",color="y",label="s2")
+            if self.start_flat == False:
+                plt.plot(r_contin,z_contin,linestyle="--",marker="",color="k",label="integration")
+            if self.perturb == True:
+                plt.plot(self.r_unperturb,self.z_unperturb,"-o",label="unperturbed")
+            plt.xlim(min(self.r_list[0])-self.ds, max(self.r_list[0])+self.ds)
+            ceil = max(self.r_list[0]) - min(self.r_list[0]) + 2*self.ds
+            plt.ylim(-ceil/10, 9*ceil/10)
+            #plt.xlim(3,83)
+            #plt.ylim(-10,70)
+            plt.xlabel("r",fontsize=font_size)
+            plt.ylabel("z",fontsize=font_size)
+            plt.title(
+                f"Quick peak at the neck configuration before dynanic simulation "
+                ,fontsize=font_size
+                )
+            plt.legend()
+            plt.grid()
+            plt.draw()
+            plt.pause(self.init_config_show_time)
+            plt.close("all")
+
+    def print_consts(self):
+        if self.print_constants == True:
+            print(
+            f" \n \n"
+            + "------------- Constant used in Simulation -------------- \n "
+            + f"    number of chain links N: {self.N} \n " 
+            + f"    Total sim time = {self.T} [s] \n "
+            + f"    dt = {self.dt:0.1e} [s] \n "
+            + f"    k = {self.k:0.1e}  [zJ] \n "
+            + f"    kG = {self.kG:.1e}  [zJ] \n "
+            + f"    c0 = {self.c0:.1e}  [1/(mu m)] \n "
+            + f"    tau = {self.tau:0.1e}  [N] \n "
+            + f"    sigma = {self.sigma:0.1e} [zJ/(mu m)^2] \n "
+            + f"    ds = {self.ds:0.1e} [mu m] \n "
+            + f"    eta = {self.eta:0.1e} [(mu g)/(mu m * s)] \n "
+            + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta)} [(mu g)/s]  \n "
+            + f"    Sim steps = {self.sim_steps:0.1e} \n "
+            + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
+            + f"    alpha = {self.alpha:0.1e} dimless \n "
+            + f"------------------------------------------------------- \n \n "
+        )
+
+    def dynamics(self):
+        start_time = time.time()
+        print_scale = (self.sim_steps-2)/1000
+        Area_initial = np.sum(self.Area_list)
+
+        integration_options = ["Euler","RK4"]
+        if self.integration_method not in integration_options:
+            print("No integration method choosen correctly")
+            exit()
+        print(f"integration method={self.integration_method}")
+        print("Simulation progressbar \n ")
+        for t in range(self.sim_steps-1):
+            if int(t%print_scale) == 0 and self.print_progress == True:
+                time_since_start = round((time.time()-start_time)/60,3)
+                print(f"completion : {round(t/(print_scale*10),1)}%"
+                    +f"   time since start = {time_since_start:.4f} min"
+                    +f"   estimated time left = {(time_since_start/(t+1))*(self.sim_steps-t):.2f} min"
+                    +f"       {((time_since_start/(t+1))*(self.sim_steps-t))/60:.2f} hours"
+                    , end="\r"
+                    )
+            #t1,t2 = t%2, (t+1)%2
+            
+            lambs,nus = Langrange_multi(
+                    N=self.N,k=self.k,c0=self.c0,sigma=self.sigma
+                    ,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
+                    ,Area=self.Area_list
+                    ,psi=self.psi_list[t]
+                    ,radi=self.r_list[t]
+                    ,z_list=self.z_list[t]
+                )
+            if self.integration_method == "Euler":
+                for i in range(self.N+1):
+                    if i == self.N:
+                        self.z_list[t+1][i] = self.z_list[t][i]
+                        self.r_list[t+1][i] = self.r_list[t][i]
+                        #psi[t+1][i] = psi[t][i]
+                    if i < self.N:
+                        self.z_list[t+1][i] = self.z_list[t][i] + self.dt*dzdt_func(i=i,ds=self.ds,eta=self.eta,Area=self.Area,radi=self.r_list[t],nu=nus)
+
+                        drdt = drdt_func(
+                                    i=i
+                                    ,N=self.N,k=self.k,c0=self.c0,sigma=self.sigma,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
+                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                    ,lamb=lambs,nu=nus
+                                    )
+                        self.r_list[t+1][i] = self.r_list[t][i] + self.dt*drdt
+
+                        dpsidt = dpsidt_func(
+                                        i=i
+                                        ,N=self.N,k=self.k,c0=self.c0,sigma=self.sigma,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
+                                        ,Area=self.Area_list,psi=self.psi_list[t],radi=self.r_list[t],z_list=self.z_list[t]
+                                        ,lamb=lambs,nu=nus
+                                        )
+                        self.psi_list[t+1][i] = self.psi_list[t][i] + self.dt*dpsidt
+
+            if self.integration_method == "RK4":
+                kr,kz,kpsi = RungeKutta45(
+                    N=self.N,dt=self.dt,k=self.k,c0=self.c0, sigma=self.sigma
+                    ,kG=self.kG ,tau=self.tau, ds=self.ds,eta=self.eta
+                    ,Area=self.Area_list,lamb=lambs,nu=nus
+                    ,psi_init=self.psi_list[t],r_init=self.r_list[t], z_init=self.z_list[t]
+                    )
+                for i in range(self.N+1):
+                    if i == self.N:
+                        self.z_list[t+1][i] = self.z_list[t][i]
+                        self.r_list[t+1][i] = self.r_list[t][i]
+                        #psi[t+1][i] = psi[t][i]
+                    if i < self.N:
+                        self.r_list[t+1][i] = self.r_list[t][i] + (self.dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
+                        self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
+                        self.psi_list[t+1][i] = self.psi_list[t][i] + (self.dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
 
+            self.Potential_E_before_correction[t] = E_pot(
+                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
+                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
+                )
 
-    def run_simulation(self):
-        print("Running" +f"print(N,T,dt)={print(self.N,self.T,self.dt)}")
+            if self.do_correction == True:
+                correction_count = Make_variable_corrections(
+                    N=self.N
+                    ,r=self.r_list[t+1] ,z=self.z_list[t+1], psi=self.psi_list[t+1] 
+                    ,Area=self.Area_list ,Area_init=Area_initial
+                    ,Tolerence=self.var_corr_tol
+                    ,corr_max=10
+                    ,t=t
+                )
+                self.correct_count_list[t] = correction_count
+        
+
+            self.Potential_E[t] = E_pot(
+                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
+                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
+                )
+            self.Kinetic_E[t] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
+            self.Xsqre[t] = Xsqaured_test(
+                N=self.N
+                ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
+                ,r=self.r_list[t],z=self.z_list[t],psi=self.psi_list[t])
+
+        #b.finish()
+        print("\n")
+        print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n"
+            +f"round((time.time()-start_time)/60**2,3) hours"
+            )
+        
+
+        if self.save_data == True:        
+            df = pd.DataFrame({
+                'psi': [self.psi_list],
+                "r": [self.r_list],
+                "z": [self.z_list],
+                "r unperturbed": [self.r_unperturb],
+                "z unperturbed": [self.z_unperturb],
+                "psi unperturbed": [self.psi_unperturb],
+                "area list": [self.Area_list],
+                "Epot":[self.Potential_E],
+                "Ekin":[self.Kinetic_E],
+                "Ekin before correction": [self.Potential_E_before_correction],
+                "Chi squared test": [self.Xsqre],
+                #'lambs': [lambs_save],
+                #'nus': [nus_save],
+                "L" : self.L,
+                "r0": self.r0,
+                "N": self.N,
+                "c0": self.c0,
+                "k": self.k,
+                "kG": self.kG,
+                "sigma": self.sigma,
+                "tau": self.tau,
+                "sim_steps": self.sim_steps,
+                "dt": self.dt,
+                "ds": self.ds,
+                "dpsi perturb": self.dpsi_perturb,
+                "gam(i=0)": gamma(0,ds=self.ds,eta=self.eta),
+                "gam(i>0)": gamma(2,ds=self.ds,eta=self.eta),
+                "correction count": [self.correct_count_list],
+                "tolerence":self.var_corr_tol,
+                "sim completion":True,
+                "integration method":self.integration_method,
+                "simulation time [s]":int(time.time()-start_time)
+                            })
+
+            print(self.save_path + self.df_name)
+            if not os.path.exists(self.save_path):
+                os.makedirs(self.save_path)
+            df.to_pickle(self.save_path + self.df_name)
+            
+            if not os.path.exists(self.save_path +"figures and video"):
+                os.makedirs(self.save_path + "figures and video")
+
+    def plotting_n_movie_data(self):
+        if self.make_movie == True:
+            Make_frames(
+                data_path = self.save_path
+                ,figs_save_path = self.figs_for_video_path
+                ,df_name = self.df_name
+                #,tot_frames= 50
+            )
+            Make_video(
+                output_path = self.save_path + self.save_figs_path
+                ,input_path = self.figs_for_video_path
+                ,video_name = self.df_name
+                ,fps = self.fps_movie
+            )
+        
+        if self.make_plots == True:
+            plot_Epot_Ekin(
+                data_path = self.save_path
+                ,df_name = self.df_name
+                ,output_path = self.save_path + self.save_figs_path
+            )
+            plot_tot_area(
+                data_path = self.save_path
+                ,df_name = self.df_name
+                ,output_path = self.save_path + self.save_figs_path
+            )
+
+            plt.show()
+
+    def run_sim(self):
+        self.setup_simulation()
+        self.print_consts()
+        self.dynamics()
+        self.plotting_n_movie_data()
+
 
 
 
 if __name__ == "__main__":
-    membrane = Surface_membrane()
+    membrane0 = Surface_membrane(
+        const_index = 2
+        ,T = 1e-6
+        ,dt = 2.5e-11
+        )
+    #membrane0.make_movie = False
+    #membrane0.make_plots = False
 
-    membrane.run_simulation()
+    membrane0.run_sim()
