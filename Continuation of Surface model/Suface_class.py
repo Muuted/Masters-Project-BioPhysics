@@ -81,3 +81,13 @@ class Surface_membrane():
         self.start_flat:bool = True
 
 
+
+    def run_simulation(self):
+        print("Running" +f"print(N,T,dt)={print(self.N,self.T,self.dt)}")
+
+
+
+if __name__ == "__main__":
+    membrane = Surface_membrane()
+
+    membrane.run_simulation()
