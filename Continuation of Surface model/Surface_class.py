@@ -10,6 +10,8 @@ from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
+import multiprocessing
+
 np.set_printoptions(legacy='1.25') #Setting the print format
 
 
@@ -17,7 +19,6 @@ np.set_printoptions(legacy='1.25') #Setting the print format
 class Surface_membrane:
     def __init__(self
         ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
-        , make_movie:bool  = True, make_plots:bool = True
         ):
         super().__init__()
         # Base constants
@@ -36,6 +37,7 @@ class Surface_membrane:
         self.num_perturb:int = int(self.N/2) # Number of perturbed points
         self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
+
         # Phase space variables 
         self.const_index:int = const_index
         self.phase_space_names:list = ["triangle\\","plus\\","cross\\"]
@@ -106,8 +108,8 @@ class Surface_membrane:
         self.close_final_plots:bool = False
 
         # Making movies and plots
-        self.make_movie:bool = make_movie 
-        self.make_plots:bool = make_plots
+        self.make_movie:bool = True#make_movie 
+        self.make_plots:bool = True#make_plots
         self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
 
     def setup_simulation(self):
@@ -220,7 +222,7 @@ class Surface_membrane:
     def dynamics(self):
         start_time = time.time()
         print_scale = (self.sim_steps-2)/1000
-        Area_initial = np.sum(self.Area_list)
+        self.Area_init = np.sum(self.Area_list)
 
         integration_options = ["Euler","RK4"]
         if self.integration_method not in integration_options:
@@ -254,12 +256,12 @@ class Surface_membrane:
                         self.r_list[t+1][i] = self.r_list[t][i]
                         #psi[t+1][i] = psi[t][i]
                     if i < self.N:
-                        self.z_list[t+1][i] = self.z_list[t][i] + self.dt*dzdt_func(i=i,ds=self.ds,eta=self.eta,Area=self.Area,radi=self.r_list[t],nu=nus)
+                        self.z_list[t+1][i] = self.z_list[t][i] + self.dt*dzdt_func(i=i,ds=self.ds,eta=self.eta,Area=self.Area_list,radi=self.r_list[t],nu=nus)
 
                         drdt = drdt_func(
                                     i=i
                                     ,N=self.N,k=self.k,c0=self.c0,sigma=self.sigma,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
-                                    ,Area=Area,psi=psi[t],radi=radi[t],z_list=z_list[t]
+                                    ,Area=self.Area_list,psi=self.psi_list[t],radi=self.r_list[t],z_list=self.z_list[t]
                                     ,lamb=lambs,nu=nus
                                     )
                         self.r_list[t+1][i] = self.r_list[t][i] + self.dt*drdt
@@ -299,7 +301,7 @@ class Surface_membrane:
                 correction_count = Make_variable_corrections(
                     N=self.N
                     ,r=self.r_list[t+1] ,z=self.z_list[t+1], psi=self.psi_list[t+1] 
-                    ,Area=self.Area_list ,Area_init=Area_initial
+                    ,Area=self.Area_list ,Area_init=self.Area_init
                     ,Tolerence=self.var_corr_tol
                     ,corr_max=10
                     ,t=t
@@ -410,13 +412,27 @@ class Surface_membrane:
 
 
 
+def multi_process(cpu_cores:int=3):
+
+    process = []
+    for i in range(cpu_cores):
+        membrane = Surface_membrane(N=30,T=1e-6,const_index=i)
+        membrane.init_config_show_time = 10
+        membrane.make_movie = False
+        membrane.make_plots = False
+
+        process.append(multiprocessing.Process(
+            target=membrane.run_sim
+        ))
+
+    for p in process:
+        p.start()
+    
+    for p in process:
+        p.join()
+
+
 
 if __name__ == "__main__":
-    for i in range(3):
-        membrane = Surface_membrane(
-            const_index = i
-            ,T = 1e-6
-            ,dt = 2.5e-11
-            )
-        membrane.close_final_plots = True
-        membrane.run_sim()
+    
+    multi_process(cpu_cores=3)

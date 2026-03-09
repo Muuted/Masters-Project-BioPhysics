@@ -46,9 +46,9 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
-    const_index = 1
+    const_index = 0
     if N == "":
-        N = 30#25#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
+        N = 20#25#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e-6 #1e-7#1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
     dt = 2.5e-11#1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
