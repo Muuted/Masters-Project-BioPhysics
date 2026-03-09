@@ -104,9 +104,9 @@ def Two_d_simulation_stationary_states(
                     radi[t+1][i] = radi[t][i]
                     #psi[t+1][i] = psi[t][i]
                 if i < N:
-                    radi[t+1][i] = radi[t][i] + (dt/6)*(kr[1][i] + kr[2][i] + kr[3][i] + kr[4][i])
-                    z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + kz[2][i] + kz[3][i] + kz[4][i])
-                    psi[t+1][i] = psi[t][i] + (dt/6)*(kpsi[1][i] + kpsi[2][i] + kpsi[3][i] + kpsi[4][i])
+                    radi[t+1][i] = radi[t][i] + (dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
+                    z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
+                    psi[t+1][i] = psi[t][i] + (dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
 
         Potential_E_before_correction[t] = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=radi[t],psi=psi[t],Area=Area)
