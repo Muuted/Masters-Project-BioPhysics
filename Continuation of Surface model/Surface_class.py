@@ -413,10 +413,9 @@ class Surface_membrane:
 
 
 def multi_process(cpu_cores:int=3):
-
     process = []
     for i in range(cpu_cores):
-        membrane = Surface_membrane(N=30,T=1e-6,const_index=i)
+        membrane = Surface_membrane(N=30,T=1e-10,const_index=i)
         membrane.init_config_show_time = 10
         membrane.make_movie = False
         membrane.make_plots = False
@@ -432,7 +431,51 @@ def multi_process(cpu_cores:int=3):
         p.join()
 
 
+def plotting_multi_process_results():
+    path = "2D sim results\\object results\\"
+    directory_list = list()
+    make_movie= True
+    make_figures = False#True
+    make_comparison_figs = False#True
+    for root, dirs, files in os.walk(path, topdown=False):
+        for df_name in files:
+            if ".pkl" in df_name:
+                data_path = root + "\\"
+                directory_list.append(data_path+ files[0])
+                #print(data_path + df_name)
+                if make_movie == True:
+                    Make_frames(
+                        data_path=data_path
+                        ,figs_save_path=data_path + "figues for video\\"
+                        ,df_name= df_name
+                        ,tot_frames= 100
+                    )
+                    Make_video(
+                        output_path=data_path
+                        ,input_path=data_path + "figues for video\\"
+                        ,video_name= "surface video"
+                        ,fps=24
+                    )
+                if make_figures == True:
+                    plot_Epot_Ekin(
+                        data_path=data_path
+                        ,df_name=df_name
+                        ,output_path=data_path
+                    )
+                    plot_tot_area(
+                        data_path=data_path
+                        ,df_name=df_name
+                        ,output_path=data_path
+                    )
+                if make_comparison_figs == True:
+                    plot_comparison_of_plus_minus_un_perturbed_results(
+                        path=data_path
+                    )
+                plt.draw()
+                plt.pause(2)
+                plt.close("all")
+
 
 if __name__ == "__main__":
-    
     multi_process(cpu_cores=3)
+    plotting_multi_process_results()
