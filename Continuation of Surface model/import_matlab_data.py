@@ -158,7 +158,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1,2)
     cmap = plt.cm.coolwarm
     wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm.window.state('zoomed')
 
     index = [i for i in range(len(diff_taus))]
     i = 0

@@ -530,7 +530,7 @@ def plot_reference_fig_for_finding_what_to_simulate():
     fig, ax = plt.subplots(1,2)
     cmap = plt.cm.coolwarm
     wm = plt.get_current_fig_manager()
-    wm.window.state('zoomed')
+    #wm.window.style('zoomed')
 
     index = [i for i in range(len(diff_taus))]
     i = 0
@@ -2513,7 +2513,7 @@ if __name__ == "__main__":
 
     #plot_tot_area()
     #plot_Epot_Ekin()
-    #plot_reference_fig_for_finding_what_to_simulate()
+    plot_reference_fig_for_finding_what_to_simulate()
     #Find_the_circle_radius_of_rolling_test()
     #Investigating_chosen_configuration_1()
     #figure_3_potential_energy_landscape_cases()
@@ -2529,5 +2529,5 @@ if __name__ == "__main__":
     #circle_fit_on_N30_triangle_data()
     #plot_multiprocessing_results()
 
-    RungeKutta_Euler_acruacy_test()
+    #RungeKutta_Euler_acruacy_test()
     plt.show()
