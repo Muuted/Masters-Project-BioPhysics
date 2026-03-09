@@ -7,7 +7,7 @@ np.set_printoptions(legacy='1.25')
 
 def Two_D_paths(folder_names=""):
     """------ paths ---------"""
-    save_path =  "2D sim results\\" + "comparison\\triangle\\N=30 T=1e-6\\RK4 dt=5e-11\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
+    save_path =  "2D sim results\\" + "comparison\\cross\\N=30 T=1e-6\\RK4 dt=2.5e-11\\"#"Data for thesis\\new test for N=40\\"#Data simulation\\"#"Verification\\"
     if folder_names == "":
         save_path = save_path #+  "c0=0 tau=0\\"
     else:
@@ -46,11 +46,12 @@ def Two_D_Constants_stationary_state(
     np.set_printoptions(legacy='1.25')
 
     """------ constants ---------"""
+    const_index = 2
     if N == "":
         N = 30#25#20 #60#20#80 #int(L/ds) # 99 + 1 # Number of chain links
     #m = 1e-6 # grams  :   Mass of each chain link
     T = 1e-6 #1e-7#1e-7#1e-7#1e-8 #5e-7 #1e-6 #3e-7# 0.3e-6# 20e-7 #10 #5.45#s  : total time simulated seconds
-    dt = 5e-11#1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
+    dt = 2.5e-11#1.25e-13#0.125e-12 #1e-11 #5e-11 #s time step. 
     sim_steps = int(T/dt) # : number of simulation steps
     L = 100.0 #1e-6 # micrometers  :  Total length of line
     if ds == "":
@@ -86,7 +87,6 @@ def Two_D_Constants_stationary_state(
         ,-2.23344534748962e-6
         ,-2.26474921864332e-8
         ]
-    const_index = 0
 
     #Dimless variables
     if tilde_sigma == "":
