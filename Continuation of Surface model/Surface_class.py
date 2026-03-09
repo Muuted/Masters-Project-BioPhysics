@@ -37,7 +37,7 @@ class Surface_membrane:
         self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
         # Phase space variables 
-        self.const_index:int = const_index #Choosing which of the 3 initial configurations is used
+        self.const_index:int = const_index
         self.phase_space_names:list = ["triangle\\","plus\\","cross\\"]
         self.tilde_sigma_list:list = [
         0.0253164556962025 
@@ -91,7 +91,7 @@ class Surface_membrane:
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
-        self.save_path:str = "2D sim results\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+        self.save_path:str = "2D sim results\\object results\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
         self.save_figs_path:str = "figures and movie\\"
         self.figs_for_video_path:str = "figures for video\\"
         self.df_name:str = "2D Surface sim.pkl"
@@ -103,6 +103,7 @@ class Surface_membrane:
         self.save_data:bool = True
         self.show_stationary_state:bool = True #Showing the initial configuration before simulation start
         self.init_config_show_time:float = 2 # Showing the initial configuration
+        self.close_final_plots:bool = False
 
         # Making movies and plots
         self.make_movie:bool = make_movie 
@@ -394,7 +395,12 @@ class Surface_membrane:
                 ,output_path = self.save_path + self.save_figs_path
             )
 
-            plt.show()
+            if self.close_final_plots == False:
+                plt.show()
+            else:
+                plt.draw()
+                plt.pause(10)
+
 
     def run_sim(self):
         self.setup_simulation()
@@ -406,12 +412,11 @@ class Surface_membrane:
 
 
 if __name__ == "__main__":
-    membrane0 = Surface_membrane(
-        const_index = 2
-        ,T = 1e-6
-        ,dt = 2.5e-11
-        )
-    #membrane0.make_movie = False
-    #membrane0.make_plots = False
-
-    membrane0.run_sim()
+    for i in range(3):
+        membrane = Surface_membrane(
+            const_index = i
+            ,T = 1e-6
+            ,dt = 2.5e-11
+            )
+        membrane.close_final_plots = True
+        membrane.run_sim()
