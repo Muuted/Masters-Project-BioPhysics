@@ -376,7 +376,7 @@ class Surface_membrane:
             df.to_pickle(self.save_path + self.df_name)
             
             if not os.path.exists(self.save_path +"figures and video"):
-                os.makedirs(self.save_path + "figures and video 1")
+                os.makedirs(self.save_path + "figures and video")
 
     def plotting_n_movie_data(self):
         if self.make_movie == True:
@@ -633,6 +633,7 @@ class Surface_membrane:
                     self.sigma = df["sigma_list_" + data_type][n_point][i_point]
                     self.tau = df["tau_list_" + data_type][n_point][i_point]
                     self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
+                    self.save_path = f"2D sim results\\ phase space choice\\(sigma,tau,psi2)=({self.sigma:0.2e},{self.tau:0.2e},{self.psi2:0.2e})\\"
                     plt.close()
                     running = False
                 
@@ -718,7 +719,7 @@ if __name__ == "__main__":
     #exit()
     membrane = Surface_membrane(T=1e-10)
     membrane.use_phase_diagram = True
-    membrane.phase_space_choice()
-    membrane.setup_simulation()
-    membrane.dynamics()
-    #membrane.run_sim()
+    #membrane.phase_space_choice()
+    #membrane.setup_simulation()
+    #membrane.dynamics()
+    membrane.run_sim()
