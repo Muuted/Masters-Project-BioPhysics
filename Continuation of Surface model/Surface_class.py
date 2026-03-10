@@ -90,6 +90,7 @@ class Surface_membrane:
         self.do_correction:bool = True
         self.perturb:bool = False #decieds if we are going perturb the initial state or not        
         self.start_flat:bool = False
+        self.use_phase_diagram: bool = False
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
@@ -417,179 +418,232 @@ class Surface_membrane:
         wm = plt.get_current_fig_manager()
         #wm.window.style('zoomed')
 
-        max_tau = -1e20
-        min_tau = 1e20
+        max_tau = -1e5
+        min_tau = 1e5
 
+        diff_taus = []
+        """------------ Finding the max and min values of Tau for cmap plot-------------------------------"""
+        for n in range(len(df["tau_list_Curved"])):
+            for i in range(len(df["tau_list_Curved"][n])):
+                if df["tau_list_Curved"][n][i] < min_tau:
+                    min_tau = df["tau_list_Curved"][n][i]
+                
+                if df["tau_list_Curved"][n][i] > max_tau:
+                    max_tau = df["tau_list_Curved"][n][i]
+
+                if df["tau_list_Curved"][n][i] not in diff_taus:
+                    diff_taus.append(df["tau_list_Curved"][n][i])
+
+        for n in range(len(df["tau_list_Flat"])):
+            for i in range(len(df["tau_list_Flat"][n])):
+                if df["tau_list_Flat"][n][i] < min_tau:
+                    min_tau = df["tau_list_Flat"][n][i]
+                
+                if df["tau_list_Flat"][n][i] > max_tau:
+                    max_tau = df["tau_list_Flat"][n][i]
+                
+                if df["tau_list_Flat"][n][i] not in diff_taus:
+                    diff_taus.append(df["tau_list_Flat"][n][i])
+        
+        """-------------------------Finding the three marks triangle/plus/cross -----------------------------------"""
+        """ Triangle """
+        pos_A_min_x1,pos_A_max_x1, pos_r1_min_y1, pos_r1_max_y1 = 23.6 ,23.8 ,2.83 ,2.84
+        """ plus """
+        pos_A_min_x2,pos_A_max_x2, pos_r1_min_y2, pos_r1_max_y2 = 3.4 ,3.6 ,7.35 ,7.45
+        """ cross """
+        neg_A_min_x3,neg_A_max_x3,neg_r1_min_y3,neg_r1_max_y3 = -1.08 ,-1.06 ,0.64 ,0.66
+        n_neg_A ,n_pos_A = [] ,[]
+        i_neg ,i_pos = [],[]
+
+        for n in range(len(df["ExcessAreaCurved"])):
+            for i in range(len(df["ExcessAreaCurved"][n])):
+                if len(df["ExcessAreaCurved"]) > 0:
+                    A_curve = df["ExcessAreaCurved"][n][i]
+                    r1_curve = df["r1Curved"][n][i]
+                    if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_r1_min_y1 < r1_curve < pos_r1_max_y1:
+                        n_pos_A.append(n)
+                        i_pos.append(i)
+                        print("first")
+                    if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_r1_min_y2 < r1_curve < pos_r1_max_y2:
+                        n_pos_A.append(n)
+                        i_pos.append(i)
+                        print("2nd")
+
+        for n in range(len(df["ExcessAreaFlat"])):
+            for i in range(len(df["ExcessAreaFlat"][n])):
+                if len(df["ExcessAreaFlat"]) > 0:
+                    A_Flat = df["ExcessAreaFlat"][n][i]
+                    r1_Flat = df["r1Flat"][n][i]
+                    if neg_A_min_x3 < A_Flat < neg_A_max_x3 and neg_r1_min_y3 < r1_Flat < neg_r1_max_y3:
+                        n_neg_A.append(n)
+                        i_neg.append(i)
+
+        i = 0
+        plot_tau_ref = []
+
+        for n in range(len(df["ExcessAreaCurved"])):
+            if len(df["tau_list_Curved"][n]) > 0 :
+                i = (df["tau_list_Curved"][n][0]-1)/(max_tau - 1)
+                if df["tau_list_Curved"][n][0] not in plot_tau_ref:
+                    #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Curved"][n][0]:0.1f}")
+                    ax.plot(
+                        [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
+                        ,[i/self.lc for i in df["r1Curved"][n]],".-",color=cmap(i)
+                        ,label=r"$\tau \approx$"+f"{(df["tau_list_Curved"][n][0]/self.lc**2)/1000:0.1f} nN"
+                        )
+                    plot_tau_ref.append(df["tau_list_Curved"][n][0])
+                else:
+                    #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-")#,color=cmap(i))
+                    ax.plot(
+                        [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
+                        , [i/self.lc for i in df["r1Curved"][n]]
+                        ,".-",color=cmap(i)
+                        )#,color=cmap(i))
+
+
+        for n in range(len(df["ExcessAreaFlat"])):
+            if len(df["tau_list_Flat"][n]) > 0:
+                i = (df["tau_list_Flat"][n][0]-1)/(max_tau -1)
+                if df["tau_list_Flat"][n][0] not in plot_tau_ref:
+                    #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Flat"][n][0]:0.1f}")
+                    ax.plot(
+                        [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
+                        ,[i/self.lc for i in df["r1Flat"][n]]
+                        ,".-",color=cmap(i),label=r"$\tau \approx$"+f"{(df["tau_list_Flat"][n][0]/self.lc**2)/1000:0.1f} nN"
+                        )
+                    plot_tau_ref.append(df["tau_list_Flat"][n][0])
+                else:
+                    #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-")
+                    ax.plot(
+                        [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
+                        ,[i/self.lc for i in df["r1Flat"][n]]
+                        ,".-",color=cmap(i))
+            
+        markers = ["^","+","x"]
+        markers_latex = [r"$\triangle$",r"$\plus$" ,r"$\times$"]
+        ax.plot(
+            df["ExcessAreaCurved"][n_pos_A[0]][i_pos[0]]/self.lc**2
+            ,df["r1Curved"][n_pos_A[0]][i_pos[0]]/self.lc
+            ,marker=markers[0] 
+            ,color="k"
+            ,markersize = 15
+            ,mfc = "none"
+            )
+
+        ax.plot(
+            df["ExcessAreaCurved"][n_pos_A[1]][i_pos[1]]/self.lc**2
+            ,df["r1Curved"][n_pos_A[1]][i_pos[1]]/self.lc
+            ,marker=markers[1] 
+            ,color="k"
+            ,markersize = 12
+            )
+        ax.plot(
+            df["ExcessAreaFlat"][n_neg_A[0]][i_neg[0]]/self.lc**2
+            ,df["r1Flat"][n_neg_A[0]][i_neg[0]]/self.lc
+            ,marker=markers[2] 
+            ,color="k"
+            ,markersize = 12
+            ,mfc = "none"
+            )
+
+        plt.subplots_adjust(
+            #left=0.05
+            #,right=0.5
+            wspace=-0.6
+        )
+        #plt.legend(fontsize=13)
+        ax.legend(
+            bbox_to_anchor=(1.02, 1)
+            ,loc='upper left'
+            ,borderaxespad=0
+            ,fontsize=15
+                    )
+        ax.vlines(x=0,ymin=-100,ymax=300,colors="k",linestyles="--")
+        #plt.xlim(-60, 50)
+        xlim_min = -1.2e4
+        xlim_max = 2.9e4
+        ax.set_xlim(-1.2e4, 2.9e4)
+        ylim_max = 230
+        ax.set_ylim(0 ,ylim_max)
+        ax.set_title(
+            "Edge radius (r1) vs Excess Area"
+            #+r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
+            ,fontsize=15)
+        ax.set_xlabel(r"$\Delta A_{Excess} = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
+        ax.set_ylabel(r"Edge radius (r1) [$\mu m$]",fontsize=15)
+        ax.grid()
+        #ax[0].set_aspect("equal",adjustable="box")
+
+        #plt.show()
+        plt.draw()
+        plt.pause(2)
         running = True
         choose_point = True
+        calc_dist = False
         while running:
-            diff_taus = []
-            for n in range(len(df["tau_list_Curved"])):
-                for i in range(len(df["tau_list_Curved"][n])):
-                    if df["tau_list_Curved"][n][i] < min_tau:
-                        min_tau = df["tau_list_Curved"][n][i]
-                    
-                    if df["tau_list_Curved"][n][i] > max_tau:
-                        max_tau = df["tau_list_Curved"][n][i]
-
-                    if df["tau_list_Curved"][n][i] not in diff_taus:
-                        diff_taus.append(df["tau_list_Curved"][n][i])
-
-            for n in range(len(df["tau_list_Flat"])):
-                for i in range(len(df["tau_list_Flat"][n])):
-                    if df["tau_list_Flat"][n][i] < min_tau:
-                        min_tau = df["tau_list_Flat"][n][i]
-                    
-                    if df["tau_list_Flat"][n][i] > max_tau:
-                        max_tau = df["tau_list_Flat"][n][i]
-                    
-                    if df["tau_list_Flat"][n][i] not in diff_taus:
-                        diff_taus.append(df["tau_list_Flat"][n][i])
-            
-            """ Triangle """
-            pos_A_min_x1,pos_A_max_x1, pos_r1_min_y1, pos_r1_max_y1 = 23.6 ,23.8 ,2.83 ,2.84
-            """ plus """
-            pos_A_min_x2,pos_A_max_x2, pos_r1_min_y2, pos_r1_max_y2 = 3.4 ,3.6 ,7.35 ,7.45
-            """ cross """
-            neg_A_min_x3,neg_A_max_x3,neg_r1_min_y3,neg_r1_max_y3 = -1.08 ,-1.06 ,0.64 ,0.66
-            n_neg_A ,n_pos_A = [] ,[]
-            i_neg ,i_pos = [],[]
-
-            for n in range(len(df["ExcessAreaCurved"])):
-                for i in range(len(df["ExcessAreaCurved"][n])):
-                    if len(df["ExcessAreaCurved"]) > 0:
-                        A_curve = df["ExcessAreaCurved"][n][i]
-                        r1_curve = df["r1Curved"][n][i]
-                        if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_r1_min_y1 < r1_curve < pos_r1_max_y1:
-                            n_pos_A.append(n)
-                            i_pos.append(i)
-                            print("first")
-                        if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_r1_min_y2 < r1_curve < pos_r1_max_y2:
-                            n_pos_A.append(n)
-                            i_pos.append(i)
-                            print("2nd")
-
-            for n in range(len(df["ExcessAreaFlat"])):
-                for i in range(len(df["ExcessAreaFlat"][n])):
-                    if len(df["ExcessAreaFlat"]) > 0:
-                        A_Flat = df["ExcessAreaFlat"][n][i]
-                        r1_Flat = df["r1Flat"][n][i]
-                        if neg_A_min_x3 < A_Flat < neg_A_max_x3 and neg_r1_min_y3 < r1_Flat < neg_r1_max_y3:
-                            n_neg_A.append(n)
-                            i_neg.append(i)
-
-            i = 0
-            plot_tau_ref = []
-
-            for n in range(len(df["ExcessAreaCurved"])):
-                if len(df["tau_list_Curved"][n]) > 0 :
-                    i = (df["tau_list_Curved"][n][0]-1)/(max_tau - 1)
-                    if df["tau_list_Curved"][n][0] not in plot_tau_ref:
-                        #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Curved"][n][0]:0.1f}")
-                        ax.plot(
-                            [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
-                            ,[i/self.lc for i in df["r1Curved"][n]],".-",color=cmap(i)
-                            ,label=r"$\tau \approx$"+f"{(df["tau_list_Curved"][n][0]/self.lc**2)/1000:0.1f} nN"
-                            )
-                        plot_tau_ref.append(df["tau_list_Curved"][n][0])
-                    else:
-                        #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-")#,color=cmap(i))
-                        ax.plot(
-                            [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
-                            , [i/self.lc for i in df["r1Curved"][n]]
-                            ,".-",color=cmap(i)
-                            )#,color=cmap(i))
-
-
-            for n in range(len(df["ExcessAreaFlat"])):
-                if len(df["tau_list_Flat"][n]) > 0:
-                    i = (df["tau_list_Flat"][n][0]-1)/(max_tau -1)
-                    if df["tau_list_Flat"][n][0] not in plot_tau_ref:
-                        #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Flat"][n][0]:0.1f}")
-                        ax.plot(
-                            [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
-                            ,[i/self.lc for i in df["r1Flat"][n]]
-                            ,".-",color=cmap(i),label=r"$\tau \approx$"+f"{(df["tau_list_Flat"][n][0]/self.lc**2)/1000:0.1f} nN"
-                            )
-                        plot_tau_ref.append(df["tau_list_Flat"][n][0])
-                    else:
-                        #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-")
-                        ax.plot(
-                            [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
-                            ,[i/self.lc for i in df["r1Flat"][n]]
-                            ,".-",color=cmap(i))
-                
-            markers = ["^","+","x"]
-            markers_latex = [r"$\triangle$",r"$\plus$" ,r"$\times$"]
-            ax.plot(
-                df["ExcessAreaCurved"][n_pos_A[0]][i_pos[0]]/self.lc**2
-                ,df["r1Curved"][n_pos_A[0]][i_pos[0]]/self.lc
-                ,marker=markers[0] 
-                ,color="k"
-                ,markersize = 15
-                ,mfc = "none"
-                )
-
-            ax.plot(
-                df["ExcessAreaCurved"][n_pos_A[1]][i_pos[1]]/self.lc**2
-                ,df["r1Curved"][n_pos_A[1]][i_pos[1]]/self.lc
-                ,marker=markers[1] 
-                ,color="k"
-                ,markersize = 12
-                )
-            ax.plot(
-                df["ExcessAreaFlat"][n_neg_A[0]][i_neg[0]]/self.lc**2
-                ,df["r1Flat"][n_neg_A[0]][i_neg[0]]/self.lc
-                ,marker=markers[2] 
-                ,color="k"
-                ,markersize = 12
-                ,mfc = "none"
-                )
-
-            plt.subplots_adjust(
-                #left=0.05
-                #,right=0.5
-                wspace=-0.6
-            )
-            #plt.legend(fontsize=13)
-            ax.legend(
-                bbox_to_anchor=(1.02, 1)
-                ,loc='upper left'
-                ,borderaxespad=0
-                ,fontsize=15
-                        )
-            ax.vlines(x=0,ymin=-100,ymax=300,colors="k",linestyles="--")
-            #plt.xlim(-60, 50)
-            ax.set_xlim(-1.2e4, 2.9e4)
-            ax.set_ylim(0 ,230)
-            ax.set_title(
-                "Edge radius (r1) vs Excess Area"
-                #+r"[$\tau]=\frac{\mu g\cdot \mu m }{s^2}$"
-                ,fontsize=15)
-            ax.set_xlabel(r"$\Delta A_{Excess} = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
-            ax.set_ylabel(r"Edge radius (r1) [$\mu m$]",fontsize=15)
-            ax.grid()
-            #ax[0].set_aspect("equal",adjustable="box")
-
-            #plt.show()
-            plt.draw()
-
-            plt.pause(2)
             if choose_point == True:
                 print(f"Choose (x,y) coordinates")
-                x1 = input("x=")
-                y1 = input("y=")
+                x1 =  input("Excess Area=")
+                y1 = input("r1=")
                 choose_point = False
+                calc_dist = True
 
-            if choose_point == False:
+            if calc_dist == True:
                 x,y = float(x1), float(y1)
-                print(x,y)
-                ax.plot(x,y,marker="o",markersize=2)
+                ax.plot(x,y,marker="o",markersize=5)
                 plt.draw()
-                plt.pause(3)
-                running = False
+
+                min_dist = 1e20
+                r1,ExcessArea = 1e20,1e20
+                data_set = ["Curved","Flat"]
+                data_type:str = ""
+                n_point,i_point = None,None
+                points_checked = 0
+                for data in data_set:
+                    print(data)
+                    for n in range(len(df["ExcessArea" + data])):
+                        if len(df["ExcessArea" + data][n]) > 0 :
+                            for i in range(len(df["ExcessArea" + data][n])):
+                                points_checked += 1
+                                r1_test = df["r1" + data][n][i]/self.lc
+                                ExA_test = df["ExcessArea" + data][n][i]/self.lc**2
+
+                                dist = np.sqrt( 
+                                    ( (x - ExA_test)/(xlim_max + abs(xlim_min)) )**2 
+                                    + ( (y - r1_test)/ylim_max )**2
+                                    ) 
+                                if dist < min_dist:
+                                    min_dist = dist
+                                    r1 = r1_test
+                                    ExcessArea = ExA_test
+                                    data_type = data
+                                    n_point = n
+                                    i_point = i
+                                    print(f"ExA={ExcessArea:0.3e} and r1 ={r1:0.3e} and dist={min_dist:0.3e}")
+
+                print(points_checked)
+                print(f"ExA={ExcessArea:0.3e} and r1 ={r1:0.3e} and dist={min_dist:0.3e}")
+                ax.plot([x,ExcessArea],[y,r1],color="k",markersize=1,label="closes point")
+                #plt.legend()
+                plt.draw()
+                calc_dist = False
+            
+            if running==True:
+                next = str(input("choose one (end,new point, correct point) :"))
+                if next == "end":# or int(next) == 0:
+                    running =   False
+                if next == "new point":# or int(next) == 1:
+                    choose_point = True
+                if next == "correct point":
+                    self.sigma = df["sigma_list_" + data_type][n_point][i_point]
+                    self.tau = df["tau_list_" + data_type][n_point][i_point]
+                    self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
+                
+            
 
     def run_sim(self):
+            if self.use_phase_diagram == True:
+                self.phase_space_choice()
             self.setup_simulation()
             self.print_consts()
             self.dynamics()
@@ -665,5 +719,6 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=3)
     #plotting_multi_process_results()
 
-    membrane = Surface_membrane()
-    membrane.phase_space_choice()
+    membrane = Surface_membrane(T=1e-10)
+    #membrane.use_phase_diagram = True
+    membrane.run_sim()
