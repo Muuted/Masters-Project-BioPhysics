@@ -109,8 +109,8 @@ class Surface_membrane:
         self.close_final_plots:bool = False
 
         # Making movies and plots
-        self.make_movie:bool = True#make_movie 
-        self.make_plots:bool = True#make_plots
+        self.make_movie:bool = False#True#make_movie 
+        self.make_plots:bool = False#True#make_plots
         self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
 
     def setup_simulation(self):
@@ -119,7 +119,6 @@ class Surface_membrane:
         zs2 = 0
         s0, sN = 0, 50*self.lc
 
-        print(self.sigma,self.tau,self.psi2)
         #Initiating the inital state of the membrane
         psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
                 sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
@@ -664,8 +663,8 @@ def multi_process(Tot_time:float,cpu_cores:int=3):
     for i in range(cpu_cores):
         membrane = Surface_membrane(N=30,T=Tot_time,const_index=i)
         membrane.init_config_show_time = 10
-        membrane.make_movie = False
-        membrane.make_plots = False
+        #membrane.make_movie = False
+        #membrane.make_plots = False
 
         process.append(multiprocessing.Process(
             target=membrane.run_sim
@@ -682,7 +681,7 @@ def plotting_multi_process_results():
     path = "2D sim results\\object results\\"
     directory_list = list()
     make_movie= True
-    make_figures = False#True
+    make_figures = True
     make_comparison_figs = False#True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
@@ -698,7 +697,7 @@ def plotting_multi_process_results():
                         ,tot_frames= 100
                     )
                     Make_video(
-                        output_path=data_path
+                        output_path=data_path + "figures and video\\"
                         ,input_path=data_path + "figues for video\\"
                         ,video_name= "surface video"
                         ,fps=24
@@ -707,12 +706,12 @@ def plotting_multi_process_results():
                     plot_Epot_Ekin(
                         data_path=data_path
                         ,df_name=df_name
-                        ,output_path=data_path
+                        ,output_path=data_path + "figures and video\\"
                     )
                     plot_tot_area(
                         data_path=data_path
                         ,df_name=df_name
-                        ,output_path=data_path
+                        ,output_path=data_path + "figures and video\\"
                     )
                 if make_comparison_figs == True:
                     plot_comparison_of_plus_minus_un_perturbed_results(
@@ -724,7 +723,7 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=3,Tot_time=1e-6)
+    multi_process(cpu_cores=3,Tot_time=1e-9)
     plotting_multi_process_results()
 
     exit()
