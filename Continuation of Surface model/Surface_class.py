@@ -33,6 +33,7 @@ class Surface_membrane:
         self.Area_init:float = None # [(mu m)^2] 
         self.ds:float = 1.5e-2/(self.N/20) # [mu m]
         self.dpsi_perturb:float = -0.02 # [rad]
+        self.dtau_perturb:float = 1.05 # [nN]
         self.num_perturb:int = int(self.N/2) # Number of perturbed points
         self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
@@ -63,8 +64,8 @@ class Surface_membrane:
         self.sigma:float = self.tilde_sigma*self.sigma_c # [zJ/(mu m)^2]
 
         self.tilde_tau:float = self.tilde_tau_list[self.const_index] # [dimless]
-        self.tau_c:float = self.k*self.c0
-        self.tau:float = self.tilde_tau*self.tau_c # [zJ/(mu m)]
+        self.tau_c:float = self.k*self.c0 # [nN]
+        self.tau:float = self.tilde_tau*self.tau_c # [nN]
 
         self.psi2:float = self.psi2_list[self.const_index] # [rad]
 
@@ -87,7 +88,9 @@ class Surface_membrane:
         # Setting up program
         self.var_corr_tol:float = 1e-5 # The tolerence for when to use variable correction
         self.do_correction:bool = True
-        self.perturb:bool = False #decieds if we are going perturb the initial state or not        
+        self.perturb:bool = False #decieds if we are going perturb the initial state or not   
+        self.var_perturb_options:list = ["psi","tau"] # the types of options for variable perturbations    
+        self.var_perturb_choice:str = self.var_perturb_options[0] # The variable choosen
         self.start_flat:bool = False
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
 
@@ -157,18 +160,23 @@ class Surface_membrane:
         self.psi_unperturb = [i for i in self.psi_list[0]]
 
         if self.perturb == True:
-            Perturbation_of_inital_state(
-                points_perturbed=self.num_perturb 
-                ,ds=self.ds, N=self.N
-                ,r=self.r_list[0]
-                ,z=self.z_list[0]
-                ,psi=self.psi_list[0]
-                ,Area=self.Area_list
-                ,delta_psi= self.dpsi_perturb
-                ,show_initial_condi=True
-            )
-        if self.perturb == False:
-            dpsi_perturb = 0
+            if self.var_perturb_choice == "psi":#self.var_perturb_options[0]:
+                print("psi perturb chosen")
+                Perturbation_of_inital_state(
+                    points_perturbed = self.num_perturb 
+                    ,ds = self.ds
+                    ,N = self.N
+                    ,r = self.r_list[0]
+                    ,z = self.z_list[0]
+                    ,psi = self.psi_list[0]
+                    ,Area = self.Area_list
+                    ,delta_psi = self.dpsi_perturb
+                    ,show_initial_condi = True
+                )
+            if self.var_perturb_choice == "tau":#self.var_perturb_options[1]:
+                print("tau perturb chosen")
+                self.tau = self.tau*self.dtau_perturb
+                
 
         if self.show_stationary_state == True:
             plt.figure()
@@ -718,7 +726,10 @@ if __name__ == "__main__":
 
     #exit()
     membrane = Surface_membrane(T=1e-10)
-    membrane.use_phase_diagram = True
+    #membrane.use_phase_diagram = True
+    membrane.init_config_show_time = 10
+    membrane.perturb = True
+    membrane.var_perturb_choice = membrane.var_perturb_options[1]
     #membrane.phase_space_choice()
     #membrane.setup_simulation()
     #membrane.dynamics()
