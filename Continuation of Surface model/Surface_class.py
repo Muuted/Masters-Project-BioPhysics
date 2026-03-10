@@ -90,7 +90,7 @@ class Surface_membrane:
         self.do_correction:bool = True
         self.perturb:bool = False #decieds if we are going perturb the initial state or not        
         self.start_flat:bool = False
-        self.use_phase_diagram: bool = False
+        self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
@@ -119,11 +119,13 @@ class Surface_membrane:
         zs2 = 0
         s0, sN = 0, 50*self.lc
 
+        print(self.sigma,self.tau,self.psi2)
         #Initiating the inital state of the membrane
         psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
                 sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
                 ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
                 ,total_points = self.N
+                ,use_phase_space= self.use_phase_diagram
             )
         self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
         self.kG = self.k*self.alpha        
@@ -195,7 +197,14 @@ class Surface_membrane:
             plt.legend()
             plt.grid()
             plt.draw()
-            plt.pause(self.init_config_show_time)
+            plt.pause(2)
+            if self.use_phase_diagram == False:
+                plt.pause(self.init_config_show_time)
+            elif self.use_phase_diagram == True:
+                next = input(f"give input, for close figure write: run sim , for exit program write: end, \n input=")
+                if str(next) == "end":
+                    print("you close the program.")
+                    exit()
             plt.close("all")
 
     def print_consts(self):
@@ -463,11 +472,11 @@ class Surface_membrane:
                     if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_r1_min_y1 < r1_curve < pos_r1_max_y1:
                         n_pos_A.append(n)
                         i_pos.append(i)
-                        print("first")
+                        #print("first")
                     if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_r1_min_y2 < r1_curve < pos_r1_max_y2:
                         n_pos_A.append(n)
                         i_pos.append(i)
-                        print("2nd")
+                        #print("2nd")
 
         for n in range(len(df["ExcessAreaFlat"])):
             for i in range(len(df["ExcessAreaFlat"][n])):
@@ -600,7 +609,7 @@ class Surface_membrane:
                 n_point,i_point = None,None
                 points_checked = 0
                 for data in data_set:
-                    print(data)
+                    #print(data)
                     for n in range(len(df["ExcessArea" + data])):
                         if len(df["ExcessArea" + data][n]) > 0 :
                             for i in range(len(df["ExcessArea" + data][n])):
@@ -635,6 +644,7 @@ class Surface_membrane:
                     self.sigma = df["sigma_list_" + data_type][n_point][i_point]
                     self.tau = df["tau_list_" + data_type][n_point][i_point]
                     self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
+                    plt.close()
                     running = False
                 
             
@@ -649,10 +659,10 @@ class Surface_membrane:
 
 
 
-def multi_process(cpu_cores:int=3):
+def multi_process(Tot_time:float,cpu_cores:int=3):
     process = []
     for i in range(cpu_cores):
-        membrane = Surface_membrane(N=30,T=1e-10,const_index=i)
+        membrane = Surface_membrane(N=30,T=Tot_time,const_index=i)
         membrane.init_config_show_time = 10
         membrane.make_movie = False
         membrane.make_plots = False
@@ -714,9 +724,10 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    #multi_process(cpu_cores=3)
-    #plotting_multi_process_results()
+    multi_process(cpu_cores=3,Tot_time=1e-6)
+    plotting_multi_process_results()
 
+    exit()
     membrane = Surface_membrane(T=1e-10)
     membrane.use_phase_diagram = True
     membrane.run_sim()
