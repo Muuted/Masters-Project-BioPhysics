@@ -619,10 +619,7 @@ class Surface_membrane:
                                     data_type = data
                                     n_point = n
                                     i_point = i
-                                    print(f"ExA={ExcessArea:0.3e} and r1 ={r1:0.3e} and dist={min_dist:0.3e}")
-
-                print(points_checked)
-                print(f"ExA={ExcessArea:0.3e} and r1 ={r1:0.3e} and dist={min_dist:0.3e}")
+                                    
                 ax.plot([x,ExcessArea],[y,r1],color="k",markersize=1,label="closes point")
                 #plt.legend()
                 plt.draw()
@@ -631,13 +628,14 @@ class Surface_membrane:
             if running==True:
                 next = str(input("choose one (end,new point, correct point) :"))
                 if next == "end":# or int(next) == 0:
-                    running =   False
+                    running = False
                 if next == "new point":# or int(next) == 1:
                     choose_point = True
                 if next == "correct point":
                     self.sigma = df["sigma_list_" + data_type][n_point][i_point]
                     self.tau = df["tau_list_" + data_type][n_point][i_point]
                     self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
+                    running = False
                 
             
 
@@ -720,5 +718,5 @@ if __name__ == "__main__":
     #plotting_multi_process_results()
 
     membrane = Surface_membrane(T=1e-10)
-    #membrane.use_phase_diagram = True
+    membrane.use_phase_diagram = True
     membrane.run_sim()
