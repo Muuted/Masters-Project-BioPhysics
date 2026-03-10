@@ -103,11 +103,37 @@ def find_init_stationary_state(
     events_t = ans_odeint.t_events
     events_y = ans_odeint.y_events
 
+    run_plotting = True
     if use_phase_space == True:
-        choose_config = [[],[],[]]
-        fig_count = 0
-        for j in range(len(events_t)):
-            for i in range(  len(events_t[j])) :
+        while run_plotting:
+            choose_config = [[],[],[]]
+            fig_count = 0
+            for j in range(len(events_t)):
+                for i in range(  len(events_t[j])) :
+                    sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[j][i],num=100000))
+                    psi_sol = sol[0]
+                    r_sol = sol[1]
+                    z_sol = sol[2]
+                    dpsidt_sol = sol[3]
+                    lambs_sol = sol[4]
+                    nus_sol = sol[5]
+                    plt.figure()
+                    plt.plot(r_sol,z_sol)
+                    plt.draw()
+                    fig_count += 1
+                    choose_config[0].append(fig_count)
+                    choose_config[1].append(j)
+                    choose_config[2].append(i)
+            plt.pause(0.5)
+
+            num_fig = int(input("What number figure do you wan to use? fig num="))
+
+            if num_fig not in choose_config[0]:
+                print("You didnt choose any of the available figures, closing program")
+                exit()
+            else:
+                j = choose_config[1][num_fig -1]
+                i = choose_config[2][num_fig -1]
                 sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[j][i],num=100000))
                 psi_sol = sol[0]
                 r_sol = sol[1]
@@ -115,29 +141,20 @@ def find_init_stationary_state(
                 dpsidt_sol = sol[3]
                 lambs_sol = sol[4]
                 nus_sol = sol[5]
+                plt.close("all")
+                plt.pause(0.5)
                 plt.figure()
                 plt.plot(r_sol,z_sol)
                 plt.draw()
-                fig_count += 1
-                choose_config[0].append(fig_count)
-                choose_config[1].append(j)
-                choose_config[2].append(i)
+                plt.pause(0.5)
 
-        plt.pause(0.5)
-        num_fig = int(input("What number figure do you wan to use? fig num="))
-        if num_fig not in choose_config[0]:
-            print("You didnt choose any of the available figures,closing program")
-            exit()
-        else:
-            j = choose_config[1][num_fig -1]
-            i = choose_config[2][num_fig -1]
-            sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[j][i],num=100000))
-            psi_sol = sol[0]
-            r_sol = sol[1]
-            z_sol = sol[2]
-            dpsidt_sol = sol[3]
-            lambs_sol = sol[4]
-            nus_sol = sol[5]
+                is_plot_correct = str(input(f"is this the correct plot? (Y/n)"))
+                if is_plot_correct == "Y":
+                    run_plotting = False
+                    break
+                elif is_plot_correct == "n":
+                    print("Plotting again.")
+                    pass
     else:
         sol = ans_odeint.sol(np.linspace(start=sN,stop=events_t[0][0],num=100000))
         psi_sol = sol[0]

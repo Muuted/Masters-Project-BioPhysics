@@ -15,7 +15,6 @@ import multiprocessing
 np.set_printoptions(legacy='1.25') #Setting the print format
 
 
-
 class Surface_membrane:
     def __init__(self
         ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
@@ -132,7 +131,7 @@ class Surface_membrane:
         if self.start_flat == True:
             for i in range(self.N+1):
                 self.r_list[0][i] = self.r0 + i*self.ds
-                #self.z_list[0][i] = 0
+                self.z_list[0][i] = 0
                 if i < self.N:
                     self.psi_list[0][i] = 0
         else:
@@ -196,7 +195,7 @@ class Surface_membrane:
             plt.legend()
             plt.grid()
             plt.draw()
-            plt.pause(2)
+            plt.pause(0.5)
             if self.use_phase_diagram == False:
                 plt.pause(self.init_config_show_time)
             elif self.use_phase_diagram == True:
@@ -377,7 +376,7 @@ class Surface_membrane:
             df.to_pickle(self.save_path + self.df_name)
             
             if not os.path.exists(self.save_path +"figures and video"):
-                os.makedirs(self.save_path + "figures and video")
+                os.makedirs(self.save_path + "figures and video 1")
 
     def plotting_n_movie_data(self):
         if self.make_movie == True:
@@ -410,7 +409,7 @@ class Surface_membrane:
                 plt.show()
             else:
                 plt.draw()
-                plt.pause(10)
+                plt.pause(2)
 
     def phase_space_choice(self):
         df_name = "Matlab data"
@@ -425,6 +424,7 @@ class Surface_membrane:
         cmap = plt.cm.coolwarm
         wm = plt.get_current_fig_manager()
         #wm.window.style('zoomed')
+        #wm.window.state('zoomed')
 
         max_tau = -1e5
         min_tau = 1e5
@@ -471,11 +471,9 @@ class Surface_membrane:
                     if pos_A_min_x1 < A_curve < pos_A_max_x1 and pos_r1_min_y1 < r1_curve < pos_r1_max_y1:
                         n_pos_A.append(n)
                         i_pos.append(i)
-                        #print("first")
                     if pos_A_min_x2 < A_curve < pos_A_max_x2 and pos_r1_min_y2 < r1_curve < pos_r1_max_y2:
                         n_pos_A.append(n)
                         i_pos.append(i)
-                        #print("2nd")
 
         for n in range(len(df["ExcessAreaFlat"])):
             for i in range(len(df["ExcessAreaFlat"][n])):
@@ -493,7 +491,6 @@ class Surface_membrane:
             if len(df["tau_list_Curved"][n]) > 0 :
                 i = (df["tau_list_Curved"][n][0]-1)/(max_tau - 1)
                 if df["tau_list_Curved"][n][0] not in plot_tau_ref:
-                    #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Curved"][n][0]:0.1f}")
                     ax.plot(
                         [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
                         ,[i/self.lc for i in df["r1Curved"][n]],".-",color=cmap(i)
@@ -501,19 +498,16 @@ class Surface_membrane:
                         )
                     plot_tau_ref.append(df["tau_list_Curved"][n][0])
                 else:
-                    #plt.plot(df["ExcessAreaCurved"][n],df["NeckRadiusCurved"][n],".-")#,color=cmap(i))
                     ax.plot(
                         [i/self.lc**2 for i in df["ExcessAreaCurved"][n]]
                         , [i/self.lc for i in df["r1Curved"][n]]
                         ,".-",color=cmap(i)
-                        )#,color=cmap(i))
-
+                        )
 
         for n in range(len(df["ExcessAreaFlat"])):
             if len(df["tau_list_Flat"][n]) > 0:
                 i = (df["tau_list_Flat"][n][0]-1)/(max_tau -1)
                 if df["tau_list_Flat"][n][0] not in plot_tau_ref:
-                    #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-",color=cmap(i),label=r"$\tau$"+f"={df["tau_list_Flat"][n][0]:0.1f}")
                     ax.plot(
                         [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
                         ,[i/self.lc for i in df["r1Flat"][n]]
@@ -521,7 +515,6 @@ class Surface_membrane:
                         )
                     plot_tau_ref.append(df["tau_list_Flat"][n][0])
                 else:
-                    #plt.plot(df["ExcessAreaFlat"][n],df["NeckRadiusFlat"][n],".-")
                     ax.plot(
                         [i/self.lc**2 for i in df["ExcessAreaFlat"][n]]
                         ,[i/self.lc for i in df["r1Flat"][n]]
@@ -559,7 +552,6 @@ class Surface_membrane:
             #,right=0.5
             wspace=-0.6
         )
-        #plt.legend(fontsize=13)
         ax.legend(
             bbox_to_anchor=(1.02, 1)
             ,loc='upper left'
@@ -580,9 +572,7 @@ class Surface_membrane:
         ax.set_xlabel(r"$\Delta A_{Excess} = A_{membrane} - A_{disc} $  [$\mu m^2$]",fontsize=15)
         ax.set_ylabel(r"Edge radius (r1) [$\mu m$]",fontsize=15)
         ax.grid()
-        #ax[0].set_aspect("equal",adjustable="box")
 
-        #plt.show()
         plt.draw()
         plt.pause(2)
         running = True
@@ -608,7 +598,6 @@ class Surface_membrane:
                 n_point,i_point = None,None
                 points_checked = 0
                 for data in data_set:
-                    #print(data)
                     for n in range(len(df["ExcessArea" + data])):
                         if len(df["ExcessArea" + data][n]) > 0 :
                             for i in range(len(df["ExcessArea" + data][n])):
@@ -629,25 +618,24 @@ class Surface_membrane:
                                     i_point = i
                                     
                 ax.plot([x,ExcessArea],[y,r1],color="k",markersize=1,label="closes point")
-                #plt.legend()
                 plt.draw()
                 calc_dist = False
             
             if running==True:
-                next = str(input("choose one (end,new point, correct point) :"))
-                if next == "end":# or int(next) == 0:
+                next = str(input("choose one (end/e, new point/n, correct point/c) :"))
+                if next == "end" or next =="e":
                     running = False
-                if next == "new point":# or int(next) == 1:
+
+                if next == "new point" or next == "n":
                     choose_point = True
-                if next == "correct point":
+
+                if next == "correct point" or next == "c":
                     self.sigma = df["sigma_list_" + data_type][n_point][i_point]
                     self.tau = df["tau_list_" + data_type][n_point][i_point]
                     self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
                     plt.close()
                     running = False
                 
-            
-
     def run_sim(self):
             if self.use_phase_diagram == True:
                 self.phase_space_choice()
@@ -663,10 +651,11 @@ def multi_process(Tot_time:float,cpu_cores:int=3):
     for i in range(cpu_cores):
         membrane = Surface_membrane(N=30,T=Tot_time,const_index=i)
         membrane.init_config_show_time = 10
-        #membrane.make_movie = False
-        #membrane.make_plots = False
-
+        #membrane.use_phase_diagram = True
+        #membrane.phase_space_choice()
+        #membrane.setup_simulation()
         process.append(multiprocessing.Process(
+            #target=membrane.dynamics#run_sim
             target=membrane.run_sim
         ))
 
@@ -723,10 +712,13 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=3,Tot_time=1e-9)
-    plotting_multi_process_results()
+    #multi_process(cpu_cores=3,Tot_time=1e-9)
+    #plotting_multi_process_results()
 
-    exit()
+    #exit()
     membrane = Surface_membrane(T=1e-10)
     membrane.use_phase_diagram = True
-    membrane.run_sim()
+    membrane.phase_space_choice()
+    membrane.setup_simulation()
+    membrane.dynamics()
+    #membrane.run_sim()
