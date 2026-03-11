@@ -685,7 +685,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20):
             ,dtau= perturb_list_tau[i]
             ,perturb_var= perturb_var_choice[i]
         )
-        membrane.init_config_show_time = 2
+        membrane.init_config_show_time = 10
         membrane.perturb = perturb_bool_list[i]
         membrane.print_constants = False
         #membrane.dpsi_perturb *= perturb_list_psi[i]
