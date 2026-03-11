@@ -113,7 +113,7 @@ class Surface_membrane:
         # Making movies and plots
         self.make_movie:bool = False#True#make_movie 
         self.make_plots:bool = False#True#make_plots
-        self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
+        #self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
 
     def setup_simulation(self):
         # scaling parameters        
@@ -721,10 +721,10 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    #multi_process(cpu_cores=3,Tot_time=1e-9)
-    #plotting_multi_process_results()
+    multi_process(cpu_cores=3,Tot_time=1e-6)
+    plotting_multi_process_results()
 
-    #exit()
+    exit()
     membrane = Surface_membrane(T=1e-10)
     #membrane.use_phase_diagram = True
     membrane.init_config_show_time = 10
