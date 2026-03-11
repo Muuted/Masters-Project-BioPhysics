@@ -19,6 +19,7 @@ class Surface_membrane:
     def __init__(self
         ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
         , dpsi:float = -0.02, dtau:float = 1.05, perturb_var:str = ""
+        ,save_path:str = ""
         ):
         super().__init__()
         # Base constants
@@ -100,10 +101,14 @@ class Surface_membrane:
         if self.var_perturb_choice == "psi":
             a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
         elif self.var_perturb_choice == "tau":
-            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,perturb)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
+            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
         else:
             a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
-        self.save_path:str = a
+        
+        if save_path == "":
+            self.save_path:str = a
+        else:
+            self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
         self.save_figs_path:str = "figures and movie\\"
         self.figs_for_video_path:str = "figures for video\\"
         self.df_name:str = "2D Surface sim.pkl"
@@ -669,7 +674,7 @@ class Surface_membrane:
 
 
 
-def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20):
+def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11):
     perturb_bool_list = [False,True,True,True,True]
     perturb_list_psi = [0 ,0    ,0      ,0.02 ,-0.02]
     perturb_list_tau = [0 ,1.05 ,1-1.05 ,0    ,0    ]
@@ -678,12 +683,13 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20):
     process = []
     for i in range(cpu_cores):
         membrane = Surface_membrane(
-            N=N
-            ,T=Tot_time
+            N = N
+            ,T = Tot_time
+            ,dt = dt#1.25e-11
             ,const_index=sim_index
-            ,dpsi= perturb_list_psi[i]
-            ,dtau= perturb_list_tau[i]
-            ,perturb_var= perturb_var_choice[i]
+            ,dpsi = perturb_list_psi[i]
+            ,dtau = perturb_list_tau[i]
+            ,perturb_var = perturb_var_choice[i]
         )
         membrane.init_config_show_time = 10
         membrane.perturb = perturb_bool_list[i]
@@ -706,7 +712,8 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20):
 
 
 def plotting_multi_process_results():
-    path = "2D sim results\\object results\\"
+    path = "2D sim results\\object results T=1e-06\\"
+    path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
     directory_list = list()
     make_movie= True
     make_figures = True
@@ -714,7 +721,7 @@ def plotting_multi_process_results():
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
-                data_path = root + "\\"
+                data_path = root #+ "\\"
                 directory_list.append(data_path+ files[0])
                 #print(data_path + df_name)
                 if make_movie == True:
@@ -722,13 +729,13 @@ def plotting_multi_process_results():
                         data_path=data_path
                         ,figs_save_path=data_path + "figues for video\\"
                         ,df_name= df_name
-                        ,tot_frames= 100
+                        ,tot_frames= 20#300
                     )
                     Make_video(
                         output_path=data_path + "figures and video\\"
                         ,input_path=data_path + "figues for video\\"
                         ,video_name= "surface video"
-                        ,fps=24
+                        ,fps=18#24
                     )
                 if make_figures == True:
                     plot_Epot_Ekin(
@@ -751,9 +758,9 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=5,Tot_time=1e-6,N=30,sim_index=0)
-    multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1)
-    multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2)
+    #multi_process(cpu_cores=5,Tot_time=1e-6,N=30,sim_index=0,dt=1.25e-11)
+    #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1,dt=2.5e-11)
+    #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
     plotting_multi_process_results()
 
     exit()

@@ -16,7 +16,7 @@ def Make_video(
         ,video_name
         ,fps
         ):
-       
+    
     #input_path = input_path +"\\"
     # Create a list of all the input image files
     FILES = []
@@ -73,6 +73,9 @@ def Make_video(
     files = glob.glob(input_path + "/*")
     for f in files:
         os.remove(f)
+    
+    if os.path.exists(input_path):
+        os.rmdir(input_path)
     print(
         "\n ---------------------- \n"
         +" Movie has been released   ,   name=" + filename
