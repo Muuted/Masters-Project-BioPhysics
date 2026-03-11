@@ -9,7 +9,7 @@ from Two_D_functions import Langrange_multi, Make_variable_corrections, gamma
 from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
-from two_d_plot_data import plot_Epot_Ekin, plot_tot_area
+from two_d_plot_data import plot_Epot_Ekin, plot_tot_area, plot_comparison_of_plus_minus_un_perturbed_results
 import multiprocessing
 
 np.set_printoptions(legacy='1.25') #Setting the print format
@@ -18,6 +18,7 @@ np.set_printoptions(legacy='1.25') #Setting the print format
 class Surface_membrane:
     def __init__(self
         ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
+        , dpsi:float = -0.02, dtau:float = 1.05, perturb_var:str = ""
         ):
         super().__init__()
         # Base constants
@@ -32,8 +33,8 @@ class Surface_membrane:
         self.alpha:float = None #
         self.Area_init:float = None # [(mu m)^2] 
         self.ds:float = 1.5e-2/(self.N/20) # [mu m]
-        self.dpsi_perturb:float = -0.02 # [rad]
-        self.dtau_perturb:float = 1.05 # [nN]
+        self.dpsi_perturb:float = dpsi # [rad]
+        self.dtau_perturb:float = dtau # [nN]
         self.num_perturb:int = int(self.N/2) # Number of perturbed points
         self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
@@ -90,13 +91,19 @@ class Surface_membrane:
         self.do_correction:bool = True
         self.perturb:bool = False #decieds if we are going perturb the initial state or not   
         self.var_perturb_options:list = ["psi","tau"] # the types of options for variable perturbations    
-        self.var_perturb_choice:str = self.var_perturb_options[0] # The variable choosen
+        self.var_perturb_choice:str = perturb_var #= self.var_perturb_options[0] # The variable choosen
         self.start_flat:bool = False
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
-        self.save_path:str = "2D sim results\\object results\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+        if self.var_perturb_choice == "psi":
+            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
+        elif self.var_perturb_choice == "tau":
+            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,perturb)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
+        else:
+            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+        self.save_path:str = a
         self.save_figs_path:str = "figures and movie\\"
         self.figs_for_video_path:str = "figures for video\\"
         self.df_name:str = "2D Surface sim.pkl"
@@ -173,10 +180,12 @@ class Surface_membrane:
                     ,delta_psi = self.dpsi_perturb
                     ,show_initial_condi = True
                 )
-            if self.var_perturb_choice == "tau":#self.var_perturb_options[1]:
+            elif self.var_perturb_choice == "tau":#self.var_perturb_options[1]:
                 print("tau perturb chosen")
                 self.tau = self.tau*self.dtau_perturb
-                
+            else:
+                print("No perturb method was chosen, yet perturbation was set to true. Some mistake was made")
+                exit()
 
         if self.show_stationary_state == True:
             plt.figure()
@@ -369,6 +378,8 @@ class Surface_membrane:
                 "dt": self.dt,
                 "ds": self.ds,
                 "dpsi perturb": self.dpsi_perturb,
+                "dtau perturb": self.dtau_perturb,
+                "perturb var": self.var_perturb_choice,
                 "gam(i=0)": gamma(0,ds=self.ds,eta=self.eta),
                 "gam(i>0)": gamma(2,ds=self.ds,eta=self.eta),
                 "correction count": [self.correct_count_list],
@@ -641,7 +652,10 @@ class Surface_membrane:
                     self.sigma = df["sigma_list_" + data_type][n_point][i_point]
                     self.tau = df["tau_list_" + data_type][n_point][i_point]
                     self.psi2 = df["psi_L_list_" + data_type][n_point][i_point]
-                    self.save_path = f"2D sim results\\ phase space choice\\(sigma,tau,psi2)=({self.sigma:0.2e},{self.tau:0.2e},{self.psi2:0.2e})\\"
+                    a1 =f"2D sim results\\phase space choice\\"
+                    a2 = f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+                    a3 = f"(sigma,tau,psi2)=({self.sigma:0.2e},{self.tau:0.2e},{self.psi2:0.2e})\\"
+                    self.save_path = a1 + a2 + a3
                     plt.close()
                     running = False
                 
@@ -655,11 +669,27 @@ class Surface_membrane:
 
 
 
-def multi_process(Tot_time:float,cpu_cores:int=3):
+def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20):
+    perturb_bool_list = [False,True,True,True,True]
+    perturb_list_psi = [0 ,0    ,0      ,0.02 ,-0.02]
+    perturb_list_tau = [0 ,1.05 ,1-1.05 ,0    ,0    ]
+    perturb_var_choice = ["","tau","tau","psi","psi"]
+
     process = []
     for i in range(cpu_cores):
-        membrane = Surface_membrane(N=30,T=Tot_time,const_index=i)
-        membrane.init_config_show_time = 10
+        membrane = Surface_membrane(
+            N=N
+            ,T=Tot_time
+            ,const_index=sim_index
+            ,dpsi= perturb_list_psi[i]
+            ,dtau= perturb_list_tau[i]
+            ,perturb_var= perturb_var_choice[i]
+        )
+        membrane.init_config_show_time = 2
+        membrane.perturb = perturb_bool_list[i]
+        membrane.print_constants = False
+        #membrane.dpsi_perturb *= perturb_list_psi[i]
+        #membrane.var_perturb_choice = perturb_var_choice[i]
         #membrane.use_phase_diagram = True
         #membrane.phase_space_choice()
         #membrane.setup_simulation()
@@ -680,7 +710,7 @@ def plotting_multi_process_results():
     directory_list = list()
     make_movie= True
     make_figures = True
-    make_comparison_figs = False#True
+    make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
@@ -721,13 +751,15 @@ def plotting_multi_process_results():
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=3,Tot_time=1e-6)
+    multi_process(cpu_cores=5,Tot_time=1e-6,N=30,sim_index=0)
+    multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1)
+    multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2)
     plotting_multi_process_results()
 
     exit()
-    membrane = Surface_membrane(T=1e-10)
+    membrane = Surface_membrane(T=1e-8,const_index=0,N=30)
     #membrane.use_phase_diagram = True
-    membrane.init_config_show_time = 10
+    membrane.init_config_show_time = 3
     membrane.perturb = True
     membrane.var_perturb_choice = membrane.var_perturb_options[1]
     #membrane.phase_space_choice()
