@@ -711,9 +711,11 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
         p.join()
 
 
-def plotting_multi_process_results():
-    path = "2D sim results\\object results T=1e-06\\"
-    path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
+def plotting_multi_process_results(
+        path:str = "2D sim results\\object results T=1e-06\\"
+    ):
+    #path = "2D sim results\\object results T=1e-06\\"
+    #path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
     directory_list = list()
     make_movie= True
     make_figures = True
@@ -721,21 +723,21 @@ def plotting_multi_process_results():
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
-                data_path = root #+ "\\"
+                data_path = root + "\\"
                 directory_list.append(data_path+ files[0])
                 #print(data_path + df_name)
                 if make_movie == True:
                     Make_frames(
-                        data_path=data_path
-                        ,figs_save_path=data_path + "figues for video\\"
-                        ,df_name= df_name
-                        ,tot_frames= 20#300
+                        data_path = data_path
+                        ,figs_save_path = data_path + "figues for video\\"
+                        ,df_name = df_name
+                        ,tot_frames = 200 #100
                     )
                     Make_video(
                         output_path=data_path + "figures and video\\"
                         ,input_path=data_path + "figues for video\\"
                         ,video_name= "surface video"
-                        ,fps=18#24
+                        ,fps = 12 #24
                     )
                 if make_figures == True:
                     plot_Epot_Ekin(
