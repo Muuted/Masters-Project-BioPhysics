@@ -155,7 +155,7 @@ def speed_N_test():
     plt.title(f"Real time simulating for T={sim_time:0.1e} and dt={dt_list[i]:0.1e}")
     plt.draw()
     plt.pause(0.5)
-    plt.savefig(save_path + "time comparison plot.png")
+    plt.savefig(save_path + "N comparison plot.png")
     plt.show()
 
 def compare_thesis_data_and_new_data():
