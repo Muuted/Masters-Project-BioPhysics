@@ -760,7 +760,7 @@ def plotting_multi_process_results(
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=5,Tot_time=1e-6,N=30,sim_index=0,dt=1.25e-11)
+    multi_process(cpu_cores=5,Tot_time=5e-7,N=30,sim_index=0,dt=1.25e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
     plotting_multi_process_results()
