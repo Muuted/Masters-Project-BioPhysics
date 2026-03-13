@@ -12,6 +12,10 @@ import matplotlib.pyplot as plt
 
 
 if __name__ == "__main__":
-    p = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
-    print("hello")
-    print(p[0:len(p)-1])
+    
+    a = 5.0
+
+    if isinstance(a,int) == True or isinstance(a,float):
+        print("is an integer or float")
+    if isinstance(a,list) == True:
+        print("is a list")

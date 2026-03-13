@@ -99,11 +99,11 @@ class Surface_membrane:
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
         if self.var_perturb_choice == "psi":
-            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
+            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
         elif self.var_perturb_choice == "tau":
-            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
+            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
         else:
-            a = f"2D sim results\\object results T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
         
         if save_path == "":
             self.save_path:str = a

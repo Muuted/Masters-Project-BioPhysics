@@ -8,11 +8,18 @@ from two_d_data_processing import tot_area
 
 def gamma(i,ds,eta):
     #eta = 1 # (micr gram)/(micro meter seconds)  #1e-3 Pa*s
-    gam = eta*ds# standard 1e0
-    if i==0:
-        return gam/2
-    if i > 0:
-        return gam
+    if isinstance(ds,float) or isinstance(ds,int) == True:
+        gam = eta*ds# standard 1e0
+        if i==0:
+            return gam/2
+        if i > 0:
+            return gam
+    elif isinstance(ds,list) == True:
+        print("ds is a list, but I havent implemented the code yet to use that")
+        exit()
+    else:
+        print("ds was neither integer, float or a list, check agian. Closing program")
+        exit()
 
 
 def Delta_s(A:list,r:list,i:int):

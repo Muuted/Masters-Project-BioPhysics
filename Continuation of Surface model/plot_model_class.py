@@ -9,7 +9,7 @@ def speed_dt_test():
     membrane_choice = ["triangle","plus","cross"]
     save_path =  "2D sim results\\object results speed test\\for dt\\"
     #data_name = "2D Surface sim.pkl"
-    N_choice= [30,20,20]
+    N_choice= [30,30,30]
     sim_time = 1e-9
     dt_list = np.linspace(1e-12,2.5e-11,10)
 
@@ -94,15 +94,25 @@ def speed_N_test():
     dt_list = [1.25e-11,1.25e-11,1.25e-11]#np.linspace(1e-12,2.5e-11,10)
 
     for index in range(len(membrane_choice)):
-        for i in range(10):
-            membrane = Surface_membrane(
-                N = N_choice[index] + i
-                ,T = sim_time
-                ,dt = dt_list[index]
-                ,const_index = index
-                ,save_path = save_path + membrane_choice[index] + "\\"
-            )
-            membrane.run_sim()
+        for i in range(21):
+            if i < 11 and index == 0:
+                membrane = Surface_membrane(
+                    N = N_choice[index] + i
+                    ,T = sim_time
+                    ,dt = dt_list[index]
+                    ,const_index = index
+                    ,save_path = save_path + membrane_choice[index] + "\\"
+                )
+                membrane.run_sim()
+            if index != 0:
+                membrane = Surface_membrane(
+                    N = N_choice[index] + i
+                    ,T = sim_time
+                    ,dt = dt_list[index]
+                    ,const_index = index
+                    ,save_path = save_path + membrane_choice[index] + "\\"
+                )
+                membrane.run_sim()
             
     data_paths_list = [[],[],[]]
     directory_list = list()
