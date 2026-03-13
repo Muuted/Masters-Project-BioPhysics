@@ -712,7 +712,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
 
 
 def plotting_multi_process_results(
-        path:str = "2D sim results\\object results T=1e-06\\"
+        path:str = "2D sim results\\object results T=1e-07\\"
     ):
     #path = "2D sim results\\object results T=1e-06\\"
     #path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
