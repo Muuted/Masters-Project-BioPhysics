@@ -25,10 +25,10 @@ class Surface_membrane:
         # Base constants
         self.N:int = N # Number of links
         self.T:float = T # [s] real time simulatied in seconds
-        self.dt:float = dt #[s] time step
+        self.dt:float = dt # [s] time step
         self.sim_steps:int = int(self.T/self.dt) #number of steps in the simulation
         self.c0:float = 25.0 # [1/(mu m)]
-        self.k:float = 80.0 #[zJ]
+        self.k:float = 80.0 # [zJ]
         self.kG:float = None # [zJ]
         self.eta:float = 1.0 # [kg/(m*s)]
         self.alpha:float = None #
@@ -89,10 +89,10 @@ class Surface_membrane:
 
         # Setting up program
         self.var_corr_tol:float = 1e-5 # The tolerence for when to use variable correction
-        self.do_correction:bool = True
-        self.perturb:bool = False #decieds if we are going perturb the initial state or not   
+        self.do_correction:bool = True # deciced whether or not to use variable corrections
+        self.perturb:bool = False # decieds if we are going perturb the initial state or not   
         self.var_perturb_options:list = ["psi","tau"] # the types of options for variable perturbations    
-        self.var_perturb_choice:str = perturb_var #= self.var_perturb_options[0] # The variable choosen
+        self.var_perturb_choice:str = perturb_var  # The variable choosen
         self.start_flat:bool = False
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
 
@@ -118,13 +118,13 @@ class Surface_membrane:
 
         # 
         self.save_data:bool = True
-        self.show_stationary_state:bool = True #Showing the initial configuration before simulation start
+        self.show_stationary_state:bool = True # Showing the initial configuration before simulation start
         self.init_config_show_time:float = 2 # Showing the initial configuration
         self.close_final_plots:bool = False
 
         # Making movies and plots
-        self.make_movie:bool = False#True#make_movie 
-        self.make_plots:bool = False#True#make_plots
+        self.make_movie:bool = False #True # make_movie 
+        self.make_plots:bool = False #True # make_plots
         #self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
 
     def setup_simulation(self):
@@ -246,6 +246,7 @@ class Surface_membrane:
             + f"    Sim steps = {self.sim_steps:0.1e} \n "
             + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
             + f"    alpha = {self.alpha:0.1e} dimless \n "
+            + f"    var tol = {self.var_corr_tol:0.1e} dimless \n "
             + f"------------------------------------------------------- \n \n "
         )
 
@@ -262,13 +263,16 @@ class Surface_membrane:
         print("Simulation progressbar \n ")
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
-                time_since_start = round((time.time()-start_time)/60,3)
-                print(f"completion : {round(t/(print_scale*10),1)}%"
-                    +f"   time since start = {time_since_start:.4f} min"
-                    +f"   estimated time left = {(time_since_start/(t+1))*(self.sim_steps-t):.2f} min"
-                    +f"       {((time_since_start/(t+1))*(self.sim_steps-t))/60:.2f} hours"
+                time1 = time.time()-start_time
+                time_left = (time1/(t+1))*(self.sim_steps-t)
+                time_h_start, time_m_start, time_s_start = int((time1/60**2)%24), int((time1/60)%60), int(time1%60)
+                time_h_end, time_m_end, time_s_end = int((time_left/60**2)%24), int((time_left/60)%60), int(time_left%60)
+                print(
+                    f"completion : {round(t/(print_scale*10),1)}%       " 
+                    +f"Time since start = {time_h_start}h {time_m_start}m {time_s_start}s        "
+                    +f"Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s"
                     , end="\r"
-                    )
+                )
             #t1,t2 = t%2, (t+1)%2
             
             lambs,nus = Langrange_multi(
@@ -279,6 +283,7 @@ class Surface_membrane:
                     ,radi=self.r_list[t]
                     ,z_list=self.z_list[t]
                 )
+            
             if self.integration_method == "Euler":
                 for i in range(self.N+1):
                     if i == self.N:
@@ -349,12 +354,8 @@ class Surface_membrane:
                 ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
                 ,r=self.r_list[t],z=self.z_list[t],psi=self.psi_list[t])
 
-        #b.finish()
-        print("\n")
-        print(f"\n the simulation time={round((time.time()-start_time)/60,3)} min \n"
-            +f"round((time.time()-start_time)/60**2,3) hours"
-            )
-        
+
+        print("\n")        
 
         if self.save_data == True:        
             df = pd.DataFrame({
@@ -388,7 +389,7 @@ class Surface_membrane:
                 "gam(i=0)": gamma(0,ds=self.ds,eta=self.eta),
                 "gam(i>0)": gamma(2,ds=self.ds,eta=self.eta),
                 "correction count": [self.correct_count_list],
-                "tolerence":self.var_corr_tol,
+                "Tolerance":self.var_corr_tol,
                 "sim completion":True,
                 "integration method":self.integration_method,
                 "simulation time [s]":int(time.time()-start_time)
@@ -760,13 +761,13 @@ def plotting_multi_process_results(
 
 
 if __name__ == "__main__":
-    multi_process(cpu_cores=5,Tot_time=5e-7,N=30,sim_index=0,dt=1.25e-11)
+    #multi_process(cpu_cores=5,Tot_time=5e-7,N=30,sim_index=0,dt=1.25e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
-    plotting_multi_process_results()
+    #plotting_multi_process_results()
 
-    exit()
-    membrane = Surface_membrane(T=1e-8,const_index=0,N=30)
+    #exit()
+    membrane = Surface_membrane(T=1e-6,const_index=0,N=30)
     #membrane.use_phase_diagram = True
     membrane.init_config_show_time = 3
     membrane.perturb = True
