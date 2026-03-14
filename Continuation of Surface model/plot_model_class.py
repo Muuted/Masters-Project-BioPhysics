@@ -217,13 +217,14 @@ def speed_N_test():
 
 def get_files(path):
     directory_list = list()
+    data_list = list()
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
                 data_path = root + "\\"
                 directory_list.append(data_path+ files[0])
-
-    return directory_list
+                data_list.append(data_path + df_name)
+    return data_list
 
 
 def speed_var_corr_tol_test():
@@ -232,22 +233,26 @@ def speed_var_corr_tol_test():
     import pandas as pd
     import matplotlib.pyplot as plt
 
-    tol_list = np.linspace(1e-5,1e-1,10)
+    tot_sim_time = 1e-9
+    tol_list = np.linspace(1e-5,1e-3,20)
+    #tol_list = np.linspace(1e-5,1e-1,10)
     init_config = ["triangle","plus","cross"]
     save_path =  f"2D sim results\\object results speed test\\tol test\\"
+
     for tol in tol_list:
         for i in range(3):
             membrane = Surface_membrane(
                 N = 30
-                ,T = 1e-8
+                ,T = tot_sim_time
                 ,dt = 1e-11
                 ,const_index = i
-                ,save_path =save_path + init_config[i] + "\\" + f"tol={tol}\\"
+                ,save_path =save_path + init_config[i] + "\\" + f"tol={tol:0.3e}\\"
             )
             membrane.var_corr_tol = tol
+            membrane.show_stationary_state = False
             membrane.print_constants = False
 
-            #membrane.run_sim()
+            membrane.run_sim()
     
     dict_list = get_files(save_path)
 
@@ -261,23 +266,44 @@ def speed_var_corr_tol_test():
         if "cross" in data:
             data_lists[2].append(data)
 
+    
     for i in range(3):
         for _ in range(len(data_lists[i])):
             for j in range(len(data_lists[i])-1):
                 df1 = pd.read_pickle(data_lists[i][j])
                 df2 = pd.read_pickle(data_lists[i][j+1])
 
-                tol1 , tol2 = df1["tolerence"][0] , df2["tolerence"][0]
+                tol1 , tol2 = df1["Tolerance"][0] , df2["Tolerance"][0]
 
                 if tol1 > tol2 :
                     data_lists[i][j], data_lists[i][j+1] = data_lists[i][j+1], data_lists[i][j]
 
-                
+
+    sim_time_list = [[],[],[]]
+    for i in range(3):
+        for j in range(len(data_lists[i])):
+            df = pd.read_pickle(data_lists[i][j])
+            sim_time = df["simulation time [s]"][0]/60 # make it into minutes
+            sim_time_list[i].append(sim_time)
 
     fig, ax = plt.subplots()
     for i in range(3):
-        pass
+        ax.plot(
+            tol_list, sim_time_list[i]
+            ,marker="."
+            ,linestyle="-"
+            ,label=init_config[i]
+        )
 
+    plt.xlabel("Tolerance for when to correct variables")
+    plt.ylabel("sim time")
+    plt.title(f"compare total sim time given T={tot_sim_time:0.1e}")
+    plt.grid()
+    plt.legend()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(save_path + "compare sim time with Tolerances.png")
+    plt.show()
     
 
 def compare_thesis_data_and_new_data():
