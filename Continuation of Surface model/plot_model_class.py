@@ -59,56 +59,40 @@ def speed_dt_test():
         for j in range(len(data_paths_list[i])):
             df  = pd.read_pickle(data_paths_list[i][j])
             dt_val_lists[i].append(df["dt"][0])
-            sim_time_list[i].append(df["simulation time [s]"][0]/60)
+            sim_time_list[i].append(df["simulation time [s]"][0])#/60)
 
     markers = ["o","s","^"]
     fig, ax = plt.subplots()
     for i in range(3):
         ax.plot(
-            dt_val_lists[i], sim_time_list[i][:]
+            dt_val_lists[i], sim_time_list[i]#[:]
             ,label=membrane_choice[i] + f", N={N_choice[i]}"
             ,marker= markers[i]
-        )
+        )    
 
-        if i == 2:
-            y = [ np.log(n)  for n in sim_time_list[i]]
-            a,b = np.polyfit(dt_val_lists[i],y,1)
-            #print(f"firsrt",np.polyfit(dt_val_lists[i],y,1))
-            ax.plot(
-                dt_val_lists[i],[np.exp(b+a*n) for n in dt_val_lists[i]]
-                ,label = f"exp fit for: " + membrane_choice[i]
-                ,marker="."
-                ,linestyle="-"
-            )
+    i = 0
+    x0 = dt_val_lists[i][0]
+    x1 = dt_val_lists[i][len(dt_val_lists[i])-1]
+    y0 = sim_time_list[i][0]
+    y1 = sim_time_list[i][len(sim_time_list[i])-1]
+    tau = -(x1 - x0)/np.log(y1/y0)
+    A = y0
 
-            deg = 5
-            sol = np.polyfit(dt_val_lists[i],sim_time_list[i],deg)
-            y2 = np.zeros(len(dt_val_lists[i]))
-            fit_name = "y="
-            for j in range(len(dt_val_lists[i])-1):
-                p = 0
-                t = dt_val_lists[i][j]
-                for n in range(len(sol)):
-                    p += sol[n]*t**(deg - n)
-                    if j == 0:
-                        fit_name = fit_name + f"${sol[n]:0.1e}" +f"t^{deg-n}"
-                        if deg - n != 0:
-                            fit_name = fit_name + "+"
-                y2[j] = p
-            
-            ax.plot(
-                dt_val_lists[i],y2
-                ,label = f"poly {deg} fit for: " + membrane_choice[i]
-                ,marker="."
-                ,linestyle="-"
-            )
+    exp_fit = [A*np.exp(-(l- x0)/tau) for l in dt_val_lists[i]]
+
+    ax.plot(
+        dt_val_lists[i], exp_fit
+        ,marker="."
+        ,linestyle="-"
+        ,label= r"exp fit y, $\tau$=" + f"{tau:0.2e}"
+    )
 
     plt.legend()
     plt.grid()
     plt.xlabel("dt [s]")
     plt.ylabel("time spend simulating [min]")
     plt.title(f"Real time simulating for T={sim_time:0.1e}"
-              f"\n" + fit_name
+              f"\n" + r"$ y = A \cdot \exp ({-(x-x_0 )/\tau} )$" 
               ,fontsize=9)
     plt.draw()
     plt.pause(0.5)
@@ -233,11 +217,11 @@ def speed_var_corr_tol_test():
     import pandas as pd
     import matplotlib.pyplot as plt
 
-    tot_sim_time = 1e-9
+    tot_sim_time = 1e-8
     tol_list = np.linspace(1e-5,1e-3,20)
     #tol_list = np.linspace(1e-5,1e-1,10)
     init_config = ["triangle","plus","cross"]
-    save_path =  f"2D sim results\\object results speed test\\tol test\\"
+    save_path = f"2D sim results\\object results speed test\\tol test\\T={tot_sim_time}\\"
 
     for tol in tol_list:
         for i in range(3):
@@ -255,7 +239,6 @@ def speed_var_corr_tol_test():
             membrane.run_sim()
     
     dict_list = get_files(save_path)
-
     data_lists = [[],[],[]]
 
     for data in dict_list:
@@ -265,8 +248,7 @@ def speed_var_corr_tol_test():
             data_lists[1].append(data)
         if "cross" in data:
             data_lists[2].append(data)
-
-    
+ 
     for i in range(3):
         for _ in range(len(data_lists[i])):
             for j in range(len(data_lists[i])-1):
@@ -296,8 +278,9 @@ def speed_var_corr_tol_test():
         )
 
     plt.xlabel("Tolerance for when to correct variables")
-    plt.ylabel("sim time")
+    plt.ylabel("sim time [min]")
     plt.title(f"compare total sim time given T={tot_sim_time:0.1e}")
+    plt.ticklabel_format(style="sci",scilimits=[0,1])
     plt.grid()
     plt.legend()
     plt.draw()
@@ -314,7 +297,7 @@ def compare_thesis_data_and_new_data():
     pass
 
 if __name__ == "__main__":
-    #speed_dt_test()
+    speed_dt_test()
     #speed_N_test()
     #compare_thesis_data_and_new_data()
-    speed_var_corr_tol_test()
+    #speed_var_corr_tol_test()
