@@ -198,24 +198,12 @@ def speed_N_test():
 
 
 
-
-def get_files(path):
-    directory_list = list()
-    data_list = list()
-    for root, dirs, files in os.walk(path, topdown=False):
-        for df_name in files:
-            if ".pkl" in df_name:
-                data_path = root + "\\"
-                directory_list.append(data_path+ files[0])
-                data_list.append(data_path + df_name)
-    return data_list
-
-
 def speed_var_corr_tol_test():
     import numpy as np
     from Surface_class import Surface_membrane
     import pandas as pd
     import matplotlib.pyplot as plt
+    from two_d_data_processing import get_files
 
     tot_sim_time = 1e-8
     tol_list = np.linspace(1e-5,1e-3,20)
@@ -289,6 +277,81 @@ def speed_var_corr_tol_test():
     plt.show()
     
 
+def Overflow_for_dt_test():
+    import numpy as np
+    import pandas as pd
+    import matplotlib.pyplot as plt
+    from Surface_class import Surface_membrane
+    from two_d_data_processing import get_files
+
+    tot_sim_time = 1e-8
+    dt_val_list = np.linspace(1e-11,1e-9,5)
+    init_config = ["triangle","plus","cross"]
+    data_sim_times = np.zeros(shape=(len(init_config),len(dt_val_list)),dtype=float)
+
+    save_path = f"2D sim results\\object results speed test\\dt overflow test\\T={tot_sim_time}\\"
+    N_val = [30,20,20]
+
+    for dt in dt_val_list:
+        for i in range(3):
+            membrane = Surface_membrane(
+                N = N_val[i]
+                ,T = tot_sim_time
+                ,dt = dt
+                ,const_index = i
+                ,save_path =save_path + init_config[i] + "\\" + f"dt={dt:0.2e}\\"
+            )
+            membrane.show_stationary_state = False
+            membrane.print_constants = False
+
+            #membrane.run_sim()
+
+    dict_list = get_files(save_path)
+    dict = [[],[],[]]
+    for d in range(len(dict_list)):
+        file = dict_list[d]
+        if init_config[0] in file:
+            dict[0].append(file)
+        if init_config[1] in file:
+            dict[1].append(file)
+        if init_config[2] in file:
+            dict[2].append(file)
+
+    for i in range(len(init_config)):
+        length = len(dict[i])
+        for _ in range(length):
+            for j in range(length-1):
+                df1 = pd.read_pickle(dict[i][j])
+                dt1 = df1["dt"][0]
+                df2 = pd.read_pickle(dict[i][j+1])
+                dt2 = df2["dt"][0]
+
+                if dt1 > dt2:
+                    dict[i][j], dict[i][j+1] = dict[i][j+1] , dict[i][j]    
+
+    for i in range(3):
+        for j in range(len(dt_val_list)):
+            df = pd.read_pickle(dict[i][j])
+            data_sim_times[i][j] = df["simulation time [s]"][0]
+
+    fig, ax = plt.subplots()
+    for i in range(3):
+        ax.plot(
+            dt_val_list, data_sim_times[i]
+            ,marker=".",linestyle="-"
+            ,label= init_config[i] + f", N={N_val[i]}"
+        )
+    
+    plt.xlabel("dt [s]")
+    plt.ylabel("sim time [s]")
+    plt.title("Testing Overflow error from dt.")
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+
+
+
 def compare_thesis_data_and_new_data():
     import numpy as np
     import os
@@ -297,7 +360,8 @@ def compare_thesis_data_and_new_data():
     pass
 
 if __name__ == "__main__":
-    speed_dt_test()
+    #speed_dt_test()
     #speed_N_test()
     #compare_thesis_data_and_new_data()
     #speed_var_corr_tol_test()
+    Overflow_for_dt_test()

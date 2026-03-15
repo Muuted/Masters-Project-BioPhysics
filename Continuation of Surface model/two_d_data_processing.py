@@ -6,6 +6,18 @@ import os
 import pandas as pd
 import progressbar
 
+def get_files(path):
+    directory_list = list()
+    data_list = list()
+    for root, dirs, files in os.walk(path, topdown=False):
+        for df_name in files:
+            if ".pkl" in df_name:
+                data_path = root + "\\"
+                directory_list.append(data_path+ files[0])
+                data_list.append(data_path + df_name)
+    return data_list
+
+
 def mass(i:int ,Area:list):
     rho = 4e-9 # (mu g)/(mu m^2)
     m = -1

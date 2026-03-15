@@ -1252,7 +1252,8 @@ def Make_variable_corrections(
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
-            exit()
+            #exit()
+            break
 
     """if r[0] != r[0]:
         print(f"t={t}")
