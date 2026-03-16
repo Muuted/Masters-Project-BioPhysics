@@ -277,18 +277,22 @@ def speed_var_corr_tol_test():
     plt.show()
     
 
-def Overflow_for_dt_test():
+def Overflow_for_dt_test(
+    tot_sim_time = 1e-8
+    ,N_val = [20,20,20]
+    ,plot_fig = True
+    ):
     import numpy as np
     import pandas as pd
     import matplotlib.pyplot as plt
     from Surface_class import Surface_membrane
     from two_d_data_processing import get_files
 
-    tot_sim_time = 1e-8
-    dt_val_list = np.linspace(1e-11,1e-9,15)
-    init_config = ["triangle","plus","cross"]
-    N_val = [20,20,20]
+    #tot_sim_time = 1e-8
+    #N_val = [20,20,20]
     #N_val = [30,30,30]
+    dt_val_list = np.linspace(1e-11,1e-9,10)
+    init_config = ["triangle","plus","cross"]
     save_path = f"2D sim results\\object results speed test\\dt overflow test\\T={tot_sim_time} N={N_val[1]}\\"
 
     for dt in dt_val_list:
@@ -361,7 +365,10 @@ def Overflow_for_dt_test():
     plt.draw()
     plt.pause(0.5)
     plt.savefig(save_path + "Overflow test graph" +".png")
-    plt.show()
+
+    if plot_fig == True:    
+        plt.show()
+    
 
 
 
