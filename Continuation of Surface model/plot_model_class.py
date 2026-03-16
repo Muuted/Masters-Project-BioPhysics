@@ -285,12 +285,11 @@ def Overflow_for_dt_test():
     from two_d_data_processing import get_files
 
     tot_sim_time = 1e-8
-    dt_val_list = np.linspace(1e-11,1e-9,5)
+    dt_val_list = np.linspace(1e-11,1e-9,15)
     init_config = ["triangle","plus","cross"]
-    data_sim_times = np.zeros(shape=(len(init_config),len(dt_val_list)),dtype=float)
-
-    save_path = f"2D sim results\\object results speed test\\dt overflow test\\T={tot_sim_time}\\"
-    N_val = [30,20,20]
+    N_val = [20,20,20]
+    #N_val = [30,30,30]
+    save_path = f"2D sim results\\object results speed test\\dt overflow test\\T={tot_sim_time} N={N_val[1]}\\"
 
     for dt in dt_val_list:
         for i in range(3):
@@ -304,7 +303,7 @@ def Overflow_for_dt_test():
             membrane.show_stationary_state = False
             membrane.print_constants = False
 
-            #membrane.run_sim()
+            membrane.run_sim()
 
     dict_list = get_files(save_path)
     dict = [[],[],[]]
@@ -329,24 +328,39 @@ def Overflow_for_dt_test():
                 if dt1 > dt2:
                     dict[i][j], dict[i][j+1] = dict[i][j+1] , dict[i][j]    
 
+    data_sim_time, data_dt_vals = [[],[],[]], [[],[],[]]
     for i in range(3):
         for j in range(len(dt_val_list)):
             df = pd.read_pickle(dict[i][j])
-            data_sim_times[i][j] = df["simulation time [s]"][0]
+            if df["Overflow err"][0] == False:
+                data_sim_time[i].append( df["simulation time [s]"][0] )
+                data_dt_vals[i].append( df["dt"][0] )
+
 
     fig, ax = plt.subplots()
     for i in range(3):
         ax.plot(
-            dt_val_list, data_sim_times[i]
+            data_dt_vals[i], data_sim_time[i]
             ,marker=".",linestyle="-"
             ,label= init_config[i] + f", N={N_val[i]}"
         )
+    ref_frame = [0 for i in range(len(dt_val_list))]
+    ax.plot(dt_val_list,ref_frame
+            ,marker="|",linestyle="-"
+            ,label="possible val of dt")    
     
     plt.xlabel("dt [s]")
     plt.ylabel("sim time [s]")
-    plt.title("Testing Overflow error from dt.")
+    plt.title(
+        "Testing Overflow error from dt."
+        +f"\n T={tot_sim_time}"
+        )
     plt.grid()
     plt.legend()
+    
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(save_path + "Overflow test graph" +".png")
     plt.show()
 
 

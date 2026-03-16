@@ -121,6 +121,7 @@ class Surface_membrane:
         self.show_stationary_state:bool = True # Showing the initial configuration before simulation start
         self.init_config_show_time:float = 2 # Showing the initial configuration
         self.close_final_plots:bool = False
+        self.overflow_err = False
 
         # Making movies and plots
         self.make_movie:bool = False #True # make_movie 
@@ -290,6 +291,11 @@ class Surface_membrane:
                         self.z_list[t+1][i] = self.z_list[t][i]
                         self.r_list[t+1][i] = self.r_list[t][i]
                         #psi[t+1][i] = psi[t][i]
+                        if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i]:
+                            if self.overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                self.overflow_err = True
+
                     if i < self.N:
                         self.z_list[t+1][i] = self.z_list[t][i] + self.dt*dzdt_func(i=i,ds=self.ds,eta=self.eta,Area=self.Area_list,radi=self.r_list[t],nu=nus)
 
@@ -309,6 +315,11 @@ class Surface_membrane:
                                         )
                         self.psi_list[t+1][i] = self.psi_list[t][i] + self.dt*dpsidt
 
+                        if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i] or self.psi_list[t+1][i] != self.psi_list[t+1][i]:
+                            if self.overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                self.overflow_err = True
+                                
             if self.integration_method == "RK4":
                 kr,kz,kpsi = RungeKutta45(
                     N=self.N,dt=self.dt,k=self.k,c0=self.c0, sigma=self.sigma
@@ -321,11 +332,20 @@ class Surface_membrane:
                         self.z_list[t+1][i] = self.z_list[t][i]
                         self.r_list[t+1][i] = self.r_list[t][i]
                         #psi[t+1][i] = psi[t][i]
+                        if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i]:
+                            if self.overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                self.overflow_err = True
+
                     if i < self.N:
                         self.r_list[t+1][i] = self.r_list[t][i] + (self.dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
                         self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
                         self.psi_list[t+1][i] = self.psi_list[t][i] + (self.dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
+                        if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i] or self.psi_list[t+1][i] != self.psi_list[t+1][i]:
+                            if self.overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                self.overflow_err = True
 
             self.Potential_E_before_correction[t] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
@@ -390,7 +410,7 @@ class Surface_membrane:
                 "gam(i>0)": gamma(2,ds=self.ds,eta=self.eta),
                 "correction count": [self.correct_count_list],
                 "Tolerance":self.var_corr_tol,
-                "sim completion":True,
+                "Overflow err": self.overflow_err,
                 "integration method":self.integration_method,
                 "simulation time [s]":int(time.time()-start_time)
                             })
@@ -766,7 +786,7 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
     #plotting_multi_process_results()
 
-    #exit()
+    exit()
     membrane = Surface_membrane(T=1e-6,const_index=0,N=30)
     #membrane.use_phase_diagram = True
     membrane.init_config_show_time = 3
