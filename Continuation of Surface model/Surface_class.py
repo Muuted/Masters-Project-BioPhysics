@@ -733,7 +733,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
 
 
 def plotting_multi_process_results(
-        path:str = "2D sim results\\object results T=1e-07\\"
+        path:str = "2D sim results\\object results compare with thesis data\\"
     ):
     #path = "2D sim results\\object results T=1e-06\\"
     #path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
@@ -784,7 +784,7 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=5e-7,N=30,sim_index=0,dt=1.25e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
-    #plotting_multi_process_results()
+    plotting_multi_process_results()
 
     exit()
     membrane = Surface_membrane(T=1e-6,const_index=0,N=30)

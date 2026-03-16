@@ -278,8 +278,8 @@ def speed_var_corr_tol_test():
     
 
 def Overflow_for_dt_test(
-    tot_sim_time = 1e-8
-    ,N_val = [20,20,20]
+    tot_sim_time = 1.1e-8
+    ,N_val = [30,30,30]
     ,plot_fig = True
     ):
     import numpy as np
@@ -291,7 +291,7 @@ def Overflow_for_dt_test(
     #tot_sim_time = 1e-8
     #N_val = [20,20,20]
     #N_val = [30,30,30]
-    dt_val_list = np.linspace(1e-11,1e-9,10)
+    dt_val_list = np.linspace(1e-11,2e-10,10)
     init_config = ["triangle","plus","cross"]
     save_path = f"2D sim results\\object results speed test\\dt overflow test\\T={tot_sim_time} N={N_val[1]}\\"
 
@@ -371,18 +371,29 @@ def Overflow_for_dt_test(
     
 
 
-
-
 def compare_thesis_data_and_new_data():
     import numpy as np
     import os
     import pandas as pd
     import matplotlib.pyplot as plt
-    pass
+    from two_d_data_processing import get_files
+
+    sim_types = ["triangle","plus","cross"]
+    pertub_types = ["unperturbed","+perturbed","-perturbed"]
+    dpsi = "dpsi"
+
+    old_data_path = "2D sim results\\Data for thesis\\multi processor result\\"
+    new_data_path = "2D sim results\\object results compare with thesis data\\"
+
+    old_data = get_files(old_data_path)
+    new_data = get_files(new_data_path)
+
+    
+
 
 if __name__ == "__main__":
     #speed_dt_test()
     #speed_N_test()
-    #compare_thesis_data_and_new_data()
     #speed_var_corr_tol_test()
-    Overflow_for_dt_test()
+    #Overflow_for_dt_test()
+    compare_thesis_data_and_new_data()
