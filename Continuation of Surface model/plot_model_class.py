@@ -388,7 +388,20 @@ def compare_thesis_data_and_new_data():
     old_data = get_files(old_data_path)
     new_data = get_files(new_data_path)
 
-    
+    # Test for getting the right files from new
+    fig, ax = plt.subplots()
+    posx,posy = [0,1,0,1],[0,0,1,1]  
+    for data in new_data:
+        if sim_types[0] in data:
+            df = pd.read_pickle(data)
+            if dpsi in data:
+                if df["dpsi perturb"][0] < 0:
+                    pass#print(data)
+
+                if df["dpsi perturb"][0] < 0:
+                    pass#print(data)
+
+
 
 
 if __name__ == "__main__":
