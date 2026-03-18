@@ -387,22 +387,93 @@ def compare_thesis_data_and_new_data():
 
     old_data = get_files(old_data_path)
     new_data = get_files(new_data_path)
+    total_data = [d for d in old_data]
+    for i in range(len(new_data)):
+        total_data.append(new_data[i])
 
-    # Test for getting the right files from new
+
     fig, ax = plt.subplots()
-    posx,posy = [0,1,0,1],[0,0,1,1]  
-    for data in new_data:
+    plot_unperturbed = False
+    plot_init = True
+    plot_end = False
+    for data in total_data:
         if sim_types[0] in data:
-            df = pd.read_pickle(data)
             if dpsi in data:
-                if df["dpsi perturb"][0] < 0:
-                    pass#print(data)
+                df = pd.read_pickle(data)
+                #df.info()
+                if df["dpsi perturb"][0] > 0: 
+                    print(data)
+                    r_RK4 = df["r"][0]
+                    z_RK4 = df["z"][0]
+                    r_unperturbed_RK4 = df["r unperturbed"][0]
+                    z_unperturbed_RK4 = df["z unperturbed"][0]
+                    simsteps_RK4 = df["sim_steps"][0]
+                    dt_RK4 = df["dt"][0]
+                    if plot_unperturbed == True:
+                        ax.plot(
+                            r_unperturbed_RK4, z_unperturbed_RK4
+                            ,marker="o"
+                            ,color="g"
+                            ,label= "init pos for " + df["integration method"][0]
+                            )
+                    if plot_end:
+                        ax.plot(
+                            r_RK4[simsteps_RK4-1], z_RK4[simsteps_RK4-1]
+                            ,marker="o"
+                            ,color="k"
+                            ,label= "end pos for " + df["integration method"][0] 
+                            )
+                    if plot_init:
+                        ax.plot(
+                            r_RK4[0], z_RK4[0]
+                            ,marker="o"
+                            ,color="g"
+                            ,label= "init pos for " + df["integration method"][0]
+                            )
 
-                if df["dpsi perturb"][0] < 0:
-                    pass#print(data)
+            if pertub_types[1] in data:
+                df = pd.read_pickle(data)
+                df.info()
+                r_Thesis = df["r"][0]
+                z_Thesis = df["z"][0]
+                r_unperturbed_Thesis = df["r unperturbed"][0]
+                z_unperturbed_Thesis = df["z unperturbed"][0]
+                simsteps_Thesis = df["sim_steps"][0]
+                dt_Thesis = df["dt"][0]
+                if plot_unperturbed:
+                    ax.plot(
+                            r_unperturbed_Thesis, z_unperturbed_Thesis
+                            ,marker="s"
+                            ,color="b"
+                            ,label= "init pos for " #+ df["integration method"][0]
+                            )
+                if plot_end:
+                    ax.plot(
+                        r_Thesis[simsteps_Thesis-1], z_Thesis[simsteps_Thesis-1]
+                        ,marker="o"
+                        ,color="r"
+                        ,label= "end pos for Thesis data" #+ df["integration method"][0] 
+                        )
+                if plot_init:
+                    ax.plot(
+                        r_Thesis[0], z_Thesis[0]
+                        ,marker="o"
+                        ,color="b"
+                        ,label= "init pos for Thesis data" #+ df["integration method"][0]
+                        )
+    plt.title(
+        f"RK4 sim tot time = {simsteps_Thesis*dt_Thesis:0.1e}"
+        +f"\n Euler sim tot time = {simsteps_Thesis*dt_Thesis:0.1e}"
+        )
+    plt.grid()
+    plt.legend()
+    plt.show() 
 
 
-
+    for data in total_data:
+        if sim_types[0] in data:
+            if df["dpsi perturb"][0] < 0 or pertub_types[2] in data:
+                pass#print(data)
 
 if __name__ == "__main__":
     #speed_dt_test()
