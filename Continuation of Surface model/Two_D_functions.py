@@ -1274,7 +1274,7 @@ def Perturbation_of_inital_state(
         ,Tolerence:float = 1e-10
         ,show_initial_condi:bool = False
         ):
-    
+    print("delta_psi=",delta_psi)
     r_unperturb = [i for i in r]
     z_unperturb = [i for i in z]
 

@@ -381,26 +381,29 @@ def compare_thesis_data_and_new_data():
     sim_types = ["triangle","plus","cross"]
     pertub_types = ["unperturbed","+perturbed","-perturbed"]
     dpsi = "dpsi"
-
+    fig_save_path = "2D sim results\\object results compare with thesis data\\"
     old_data_path = "2D sim results\\Data for thesis\\multi processor result\\"
-    new_data_path = "2D sim results\\object results compare with thesis data\\"
+    new_data_path = "2D sim results\\object results compare with thesis data\\RK4\\"
+    new_data_Euler_path = "2D sim results\\object results compare with thesis data\\Euler\\"
 
     old_data = get_files(old_data_path)
     new_data = get_files(new_data_path)
+    new_data_Euler = get_files(new_data_Euler_path)
+
     total_data = [d for d in old_data]
     for i in range(len(new_data)):
         total_data.append(new_data[i])
 
 
-    fig, ax = plt.subplots()
-    plot_unperturbed = False
+    """fig, ax = plt.subplots()
+    plot_unperturbed = True
     plot_init = True
-    plot_end = False
+    plot_end = True
+    plot_Epot = True
     for data in total_data:
         if sim_types[0] in data:
             if dpsi in data:
                 df = pd.read_pickle(data)
-                #df.info()
                 if df["dpsi perturb"][0] > 0: 
                     print(data)
                     r_RK4 = df["r"][0]
@@ -409,6 +412,9 @@ def compare_thesis_data_and_new_data():
                     z_unperturbed_RK4 = df["z unperturbed"][0]
                     simsteps_RK4 = df["sim_steps"][0]
                     dt_RK4 = df["dt"][0]
+                    time_vec_RK4 = np.linspace(0,int(simsteps_RK4*dt_RK4),simsteps_RK4)
+                    Epot_RK4 = df["Epot"]
+
                     if plot_unperturbed == True:
                         ax.plot(
                             r_unperturbed_RK4, z_unperturbed_RK4
@@ -427,9 +433,11 @@ def compare_thesis_data_and_new_data():
                         ax.plot(
                             r_RK4[0], z_RK4[0]
                             ,marker="o"
-                            ,color="g"
-                            ,label= "init pos for " + df["integration method"][0]
+                            ,color="m"
+                            ,label= "init unperturbed pos for " + df["integration method"][0]
                             )
+
+                    
 
             if pertub_types[1] in data:
                 df = pd.read_pickle(data)
@@ -444,23 +452,222 @@ def compare_thesis_data_and_new_data():
                     ax.plot(
                             r_unperturbed_Thesis, z_unperturbed_Thesis
                             ,marker="s"
+                            ,markersize=8
                             ,color="b"
-                            ,label= "init pos for " #+ df["integration method"][0]
+                            ,label= "init unperturbed pos for " #+ df["integration method"][0]
                             )
                 if plot_end:
                     ax.plot(
                         r_Thesis[simsteps_Thesis-1], z_Thesis[simsteps_Thesis-1]
-                        ,marker="o"
+                        ,marker="s"
+                        ,markersize=8
                         ,color="r"
                         ,label= "end pos for Thesis data" #+ df["integration method"][0] 
                         )
                 if plot_init:
                     ax.plot(
                         r_Thesis[0], z_Thesis[0]
-                        ,marker="o"
+                        ,marker="s"
+                        ,markersize=8
+                        ,color="y"
+                        ,label= "init pos for Thesis data" #+ df["integration method"][0]
+                        )
+    
+    plt.title(
+        f"for sim type :" + sim_types[0] + f"perturb type ={pertub_types[1]}"
+        + "\n"
+        +f"RK4, Euler sim tot time = {simsteps_RK4*dt_RK4:0.1e} s, {simsteps_Thesis*dt_Thesis:0.1e} s"
+        )
+    plt.grid()
+    plt.legend()
+    plt.show() """
+    
+    for i in range(len(sim_types)):
+        fig, ax = plt.subplots()
+        for data in new_data:
+            if sim_types[i] in data:
+                df = pd.read_pickle(data)
+                name_RK4 = ""
+                if "dpsi" not in data and "dtau" not in data:
+                    name_RK4 = "unperturbed RK4" + f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                elif "dpsi" in data and df["dpsi perturb"][0] > 0 :
+                    name_RK4 = "+perturbed RK4"+ f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                elif "dpsi" in data and df["dpsi perturb"][0] < 0 :
+                    name_RK4 = "-perturbed RK4"+ f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                
+                if "dtau" not in data:
+                    simsteps_RK4 = df["sim_steps"][0]
+                    dt_RK4 = df["dt"][0]
+                    time_vec_RK4 = np.linspace(0,simsteps_RK4*dt_RK4,simsteps_RK4-1)
+                    Epot_RK4 = df["Epot"][0]
+                    
+                    ax.plot(
+                        time_vec_RK4,Epot_RK4
+                        ,label=name_RK4
+                        ,marker = "."
+                        )
+
+        for data in old_data:
+            if sim_types[i] in data:
+                df = pd.read_pickle(data)
+                name_thesis = ""
+                if pertub_types[0] in data:
+                    name_thesis = pertub_types[0] +" thesis"#+ f"irl sim time = {df["simulation time [s]"][0]:0.1e}"
+                elif pertub_types[1] in data:
+                    name_thesis = pertub_types[1] +" thesis"#+ f"irl sim time = {df["simulation time [s]"][0]:0.1e}"
+                elif pertub_types[2] in data:
+                    name_thesis = pertub_types[2]+" thesis"#+ f"irl sim time = {df["simulation time [s]"][0]:0.1e}"
+
+                simsteps_thesis = df["sim_steps"][0]
+                dt_thesis = df["dt"][0]
+                time_vec_thesis = np.linspace(0,simsteps_thesis*dt_thesis,simsteps_thesis-1)
+                Epot_thesis = df["Epot"][0]
+
+                ax.plot(
+                    time_vec_thesis,Epot_thesis
+                    ,label=name_thesis + "thesis"
+                    ,linestyle="-."
+                    )
+
+
+        for data in new_data_Euler:
+            if sim_types[i] in data:
+                df = pd.read_pickle(data)
+                name_Euler = ""
+                if "dpsi" not in data and "dtau" not in data:
+                    name_Euler = "unperturbed Euler" + f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                elif "dpsi" in data and df["dpsi perturb"][0] > 0 :
+                    name_Euler = "+perturbed Euler"+ f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                elif "dpsi" in data and df["dpsi perturb"][0] < 0 :
+                    name_Euler = "-perturbed Euler"+ f" irl sim time = {df["simulation time [s]"][0]/60:0.1e} min"
+                
+                if "dtau" not in data:
+                    simsteps_Euler = df["sim_steps"][0]
+                    dt_Euler = df["dt"][0]
+                    time_vec_Euler = np.linspace(0,simsteps_Euler*dt_Euler,simsteps_Euler-1)
+                    Epot_Euler = df["Epot"][0]
+                    
+                    ax.plot(
+                        time_vec_Euler,Epot_Euler
+                        ,label=name_Euler
+                        ,marker = "."
+                        ,linestyle="dashed"
+                        )
+
+        plt.title(f"initial configuration: {sim_types[i]}")
+        plt.grid()
+        plt.legend()
+        plt.draw()
+        plt.pause(0.5)
+        plt.savefig(fig_save_path + sim_types[i] +".png")
+    plt.show()
+
+
+
+
+
+
+
+
+def find_dpsi_val():
+    from two_d_data_processing import get_files
+    from Surface_class import Surface_membrane
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    new_data_path = "2D sim results\\find dpsi val\\"
+    membrane = Surface_membrane(
+        T=1e-10
+        ,dt=1e-11
+        ,const_index=0
+        ,N=30
+        ,dpsi= 0.01
+        ,save_path= new_data_path
+        ,perturb_var="psi"
+        )
+    
+    membrane.init_config_show_time = 3
+    membrane.perturb = True
+    membrane.var_perturb_choice = membrane.var_perturb_options[0]
+    membrane.num_perturb = 10
+
+    #membrane.setup_simulation()
+    membrane.run_sim()
+
+    #exit()    
+    sim_types = ["triangle","plus","cross"]
+    pertub_types = ["unperturbed","+perturbed","-perturbed"]
+    dpsi = "dpsi"
+
+    old_data_path = "2D sim results\\Data for thesis\\multi processor result\\"
+    #new_data_path = "2D sim results\\object results compare with thesis data\\"
+
+    old_data = get_files(old_data_path)
+    new_data = get_files(new_data_path)
+
+    total_data = [d for d in old_data]
+    for i in range(len(new_data)):
+        total_data.append(new_data[i])
+
+
+    fig, ax = plt.subplots()
+    plot_unperturbed = True
+    plot_init = True
+    plot_end = False
+    for data in total_data:
+        if sim_types[0] in data:
+            if pertub_types[1] in data:
+                df = pd.read_pickle(data)
+                print(data)
+                #df.info()
+                r_Thesis = df["r"][0]
+                z_Thesis = df["z"][0]
+                r_unperturbed_Thesis = df["r unperturbed"][0]
+                z_unperturbed_Thesis = df["z unperturbed"][0]
+                simsteps_Thesis = df["sim_steps"][0]
+                dt_Thesis = df["dt"][0]
+                if plot_unperturbed:
+                    ax.plot(
+                            r_unperturbed_Thesis, z_unperturbed_Thesis
+                            ,marker="s"
+                            ,color="k"
+                            ,label= "Thesis unperturbed" #+ df["integration method"][0]
+                            )
+                if plot_end:
+                    ax.plot(
+                        r_Thesis[simsteps_Thesis-1], z_Thesis[simsteps_Thesis-1]
+                        ,marker="s"
+                        ,color="r"
+                        ,label= "end pos for Thesis data" #+ df["integration method"][0] 
+                        )
+                if plot_init:
+                    ax.plot(
+                        r_Thesis[0], z_Thesis[0]
+                        ,marker="s"
                         ,color="b"
                         ,label= "init pos for Thesis data" #+ df["integration method"][0]
                         )
+    
+    
+    df = pd.read_pickle(new_data[0])
+    print(new_data[0])
+    r_new = df["r"][0]
+    z_new = df["z"][0]
+    r_new_unperturbed = df["r unperturbed"][0]
+    z_new_unperturbed = df["z unperturbed"][0]
+    ax.plot(
+        r_new[0], z_new[0]
+        ,marker="o"
+        ,color="g"
+        ,label="new start"
+    )
+    ax.plot(
+        r_new_unperturbed, z_new_unperturbed
+        ,marker="o"
+        ,color="m"
+        ,label="new unperturbed"
+    )
     plt.title(
         f"RK4 sim tot time = {simsteps_Thesis*dt_Thesis:0.1e}"
         +f"\n Euler sim tot time = {simsteps_Thesis*dt_Thesis:0.1e}"
@@ -470,14 +677,10 @@ def compare_thesis_data_and_new_data():
     plt.show() 
 
 
-    for data in total_data:
-        if sim_types[0] in data:
-            if df["dpsi perturb"][0] < 0 or pertub_types[2] in data:
-                pass#print(data)
-
 if __name__ == "__main__":
     #speed_dt_test()
     #speed_N_test()
     #speed_var_corr_tol_test()
     #Overflow_for_dt_test()
     compare_thesis_data_and_new_data()
+    #find_dpsi_val()

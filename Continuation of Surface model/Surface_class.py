@@ -18,7 +18,7 @@ np.set_printoptions(legacy='1.25') #Setting the print format
 class Surface_membrane:
     def __init__(self
         ,N:int = 20 ,T:float=1.0e-7 ,dt:float=2.5e-11 ,const_index:int = 0
-        , dpsi:float = -0.02, dtau:float = 1.05, perturb_var:str = ""
+        , dpsi:float = -0.01, dtau:float = 1.05, perturb_var:str = ""
         ,save_path:str = ""
         ):
         super().__init__()
@@ -36,7 +36,7 @@ class Surface_membrane:
         self.ds:float = 1.5e-2/(self.N/20) # [mu m]
         self.dpsi_perturb:float = dpsi # [rad]
         self.dtau_perturb:float = dtau # [nN]
-        self.num_perturb:int = int(self.N/2) # Number of perturbed points
+        self.num_perturb:int = 10 #int(self.N/2) # Number of perturbed points
         self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
 
@@ -95,6 +95,9 @@ class Surface_membrane:
         self.var_perturb_choice:str = perturb_var  # The variable choosen
         self.start_flat:bool = False
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
+        self.phasespace_x = ""
+        self.phasespace_y = ""
+        self.phasespace_fignum = ""
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
@@ -140,6 +143,7 @@ class Surface_membrane:
                 ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
                 ,total_points = self.N
                 ,use_phase_space= self.use_phase_diagram
+                ,use_fig_number = self.phasespace_fignum
             )
         self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
         self.kG = self.k*self.alpha        
@@ -626,8 +630,19 @@ class Surface_membrane:
         while running:
             if choose_point == True:
                 print(f"Choose (x,y) coordinates")
-                x1 =  input("Excess Area=")
-                y1 = input("r1=")
+                if self.phasespace_x == "" and self.phasespace_y == "":
+                    x1 = input("Excess Area=")
+                    y1 = input("r1=")
+                elif isinstance(self.phasespace_x ,(float, int)) == True and isinstance(self.phasespace_y , (float,int)) == True:
+                    x1 = self.phasespace_x
+                    y1 = self.phasespace_y
+                else:
+                    print(
+                        "The chosen values for the phase space coordinates is not either float or integer"
+                        +f"program will terminate"
+                        )
+                    exit()
+
                 choose_point = False
                 calc_dist = True
 
@@ -697,7 +712,7 @@ class Surface_membrane:
 
 def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11):
     perturb_bool_list = [False,True,True,True,True]
-    perturb_list_psi = [0 ,0    ,0      ,0.02 ,-0.02]
+    perturb_list_psi = [0 ,0    ,0      ,0.01 ,-0.01]
     perturb_list_tau = [0 ,1.05 ,1-1.05 ,0    ,0    ]
     perturb_var_choice = ["","tau","tau","psi","psi"]
 
@@ -715,6 +730,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
         membrane.init_config_show_time = 10
         membrane.perturb = perturb_bool_list[i]
         membrane.print_constants = False
+        membrane.integration_method = "Euler"
         #membrane.dpsi_perturb *= perturb_list_psi[i]
         #membrane.var_perturb_choice = perturb_var_choice[i]
         #membrane.use_phase_diagram = True
@@ -781,18 +797,21 @@ def plotting_multi_process_results(
 
 
 if __name__ == "__main__":
-    #multi_process(cpu_cores=5,Tot_time=5e-7,N=30,sim_index=0,dt=1.25e-11)
-    #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=1,dt=2.5e-11)
-    #multi_process(cpu_cores=5,Tot_time=1e-6,N=20,sim_index=2,dt=2.5e-11)
-    plotting_multi_process_results()
+    #multi_process(cpu_cores=5,Tot_time=1e-8,N=30,sim_index=0,dt=1.25e-11)
+    #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
+    #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
+    #plotting_multi_process_results()
 
-    exit()
+    #exit()
     membrane = Surface_membrane(T=1e-6,const_index=0,N=30)
-    #membrane.use_phase_diagram = True
+    membrane.use_phase_diagram = True
     membrane.init_config_show_time = 3
-    membrane.perturb = True
+    membrane.perturb = False
     membrane.var_perturb_choice = membrane.var_perturb_options[1]
-    #membrane.phase_space_choice()
-    #membrane.setup_simulation()
+    membrane.phasespace_x = 15000
+    membrane.phasespace_y = 125
+    membrane.phasespace_fignum = 4
+    membrane.phase_space_choice()
+    membrane.setup_simulation()
     #membrane.dynamics()
-    membrane.run_sim()
+    #membrane.run_sim()

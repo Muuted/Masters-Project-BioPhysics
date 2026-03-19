@@ -61,6 +61,7 @@ def find_init_stationary_state(
         ,total_points = ""
         ,find_edge_condition = True
         ,use_phase_space = False
+        ,use_fig_number = ""
         ):
 
     #initial values
@@ -126,7 +127,16 @@ def find_init_stationary_state(
                     choose_config[2].append(i)
             plt.pause(0.5)
 
-            num_fig = int(input("What number figure do you wan to use? fig num="))
+            if isinstance(use_fig_number,(float,int)) == True:
+                num_fig = use_fig_number
+            elif use_fig_number == "":
+                num_fig = int(input("What number figure do you wan to use? fig num="))
+            else:
+                print(
+                    "Something in choosing the figure number went wrong, it is neither a float or int or the defuelt empty string"
+                    +f"program will terminate"
+                )
+                exit()
 
             if num_fig not in choose_config[0]:
                 print("You didnt choose any of the available figures, closing program")
