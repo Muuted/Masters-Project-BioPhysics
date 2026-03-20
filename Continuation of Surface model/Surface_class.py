@@ -800,9 +800,9 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-8,N=30,sim_index=0,dt=1.25e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
-    #plotting_multi_process_results()
+    plotting_multi_process_results()
 
-    #exit()
+    exit()
     membrane = Surface_membrane(T=1e-6,const_index=0,N=30)
     membrane.use_phase_diagram = True
     membrane.init_config_show_time = 3
