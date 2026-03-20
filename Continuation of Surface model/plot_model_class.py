@@ -87,6 +87,14 @@ def speed_dt_test():
         ,label= r"exp fit y, $\tau$=" + f"{tau:0.2e}"
     )
 
+    yln = [np.log(i) for i in sim_time_list[0]]
+    a,b = np.polyfit(x=dt_val_lists[0],y=yln,deg=1)
+    C = np.exp(b)
+    tau = -1/a
+    ax.plot(
+        dt_val_lists[0],[C*np.exp(-x/tau) for x in dt_val_lists[0]]
+        ,label="log fit -> exp"
+    )
     plt.legend()
     plt.grid()
     plt.xlabel("dt [s]")
@@ -97,6 +105,22 @@ def speed_dt_test():
     plt.draw()
     plt.pause(0.5)
     plt.savefig(save_path + "time comparison plot.png")
+
+
+    fig, ax = plt.subplots()
+    for i in range(3):
+        ax.plot(dt_val_lists[i], [np.log(x) for x in sim_time_list[i]]
+                ,label= f"ln({membrane_choice[i]})"
+                ,marker="."
+                )
+    plt.xlabel("dt [s]")
+    plt.ylabel("ln(time spend simulating) [ln(min)]")
+    plt.grid()
+    plt.title("ln() of the sim times")
+    plt.legend()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(save_path + "log time comparison plot.png")
     plt.show()
 
 
@@ -182,13 +206,13 @@ def speed_N_test():
         a,b = np.polyfit(N_val_lists[i], sim_time_list[i][:],deg=1)
         linreq = [a*n + b for n in N_val_lists[2]]
         ax.plot(N_val_lists[2],linreq
-                ,label=f"lin fit: " + membrane_choice[i]
+                ,label=f"lin fit: " + membrane_choice[i] + f"a={a:0.1e} min/N"
                 )
 
 
     plt.legend()
     plt.grid()
-    plt.xlabel("dt [s]")
+    plt.xlabel("N [number of links]")
     plt.ylabel("time spend simulating [min]")
     plt.title(f"Real time simulating for T={sim_time:0.1e} and dt={dt_list[i]:0.1e}")
     plt.draw()
@@ -678,9 +702,9 @@ def find_dpsi_val():
 
 
 if __name__ == "__main__":
-    #speed_dt_test()
+    speed_dt_test()
     #speed_N_test()
     #speed_var_corr_tol_test()
     #Overflow_for_dt_test()
-    compare_thesis_data_and_new_data()
+    #compare_thesis_data_and_new_data()
     #find_dpsi_val()
