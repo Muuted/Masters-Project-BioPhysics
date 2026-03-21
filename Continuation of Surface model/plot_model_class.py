@@ -587,12 +587,6 @@ def compare_thesis_data_and_new_data():
     plt.show()
 
 
-
-
-
-
-
-
 def find_dpsi_val():
     from two_d_data_processing import get_files
     from Surface_class import Surface_membrane
@@ -699,6 +693,8 @@ def find_dpsi_val():
     plt.grid()
     plt.legend()
     plt.show() 
+
+
 
 
 if __name__ == "__main__":

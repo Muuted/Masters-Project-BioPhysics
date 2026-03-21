@@ -1,4 +1,4 @@
-from Two_D_constants import Two_D_Constants, Two_D_paths
+#from Two_D_constants import Two_D_Constants#, Two_D_paths
 #from Two_D_simulation_function import Two_D_simulation_V2, Two_D_simulation_V3
 from Make_movie import Make_frames, Make_video
 from two_d_data_processing import tot_area, E_pot, E_kin
@@ -1752,6 +1752,25 @@ def Testing_RungeKutta():
     print(f"kr[:][0]={kr[:,0]}")
     print(f"sum(kr[:][0])={np.sum(kr[:,0]):.1e}")
 
+
+
+def test_flat_model_object():
+    from Surface_class import Surface_membrane
+    N = 40
+    T= 1e-6#5e-9
+    membrane = Surface_membrane(
+        N=N, T=T , dt=2e-11
+        ,save_path= f"2D sim results\\rolling test\\"
+    )
+    membrane.start_flat = True
+    membrane.make_plots = True
+    membrane.make_movie = True
+    membrane.tau = 0
+    membrane.const_length_diff_N_density = False
+    #membrane.init_config_show_time = 40
+    #membrane.setup_simulation()
+    membrane.run_sim()
+    
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -1785,4 +1804,5 @@ if __name__ == "__main__":
 
     #test_convergence_of_alpha()
 
-    Testing_RungeKutta()
+    #Testing_RungeKutta()
+    test_flat_model_object()

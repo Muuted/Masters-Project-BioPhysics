@@ -33,7 +33,7 @@ class Surface_membrane:
         self.eta:float = 1.0 # [kg/(m*s)]
         self.alpha:float = None #
         self.Area_init:float = None # [(mu m)^2] 
-        self.ds:float = 1.5e-2/(self.N/20) # [mu m]
+        self.ds:float = 1.5e-2#/(self.N/20) # [mu m]
         self.dpsi_perturb:float = dpsi # [rad]
         self.dtau_perturb:float = dtau # [nN]
         self.num_perturb:int = 10 #int(self.N/2) # Number of perturbed points
@@ -98,6 +98,7 @@ class Surface_membrane:
         self.phasespace_x = ""
         self.phasespace_y = ""
         self.phasespace_fignum = ""
+        self.const_length_diff_N_density = True
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
@@ -129,9 +130,14 @@ class Surface_membrane:
         # Making movies and plots
         self.make_movie:bool = False #True # make_movie 
         self.make_plots:bool = False #True # make_plots
-        #self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
+        self.fps_movie:int = 24 # chooses the frames per second in the movie of the dynamics        
 
     def setup_simulation(self):
+
+        if self.const_length_diff_N_density == True:
+            self.ds = self.ds/(self.N/20)
+            print("scaled N")
+        
         # scaling parameters        
         rs2 = 20*self.lc 
         zs2 = 0
@@ -149,20 +155,20 @@ class Surface_membrane:
         self.kG = self.k*self.alpha        
 
         if self.start_flat == True:
-            for i in range(self.N+1):
+            for i in range(int(self.N+1)):
                 self.r_list[0][i] = self.r0 + i*self.ds
                 self.z_list[0][i] = 0
                 if i < self.N:
                     self.psi_list[0][i] = 0
         else:
             """------ variables list ---------"""
-            for i in range(self.N+1):
+            for i in range(int(self.N+1)):
                 if i < self.N :
                     self.psi_list[0][i] = psi[i]
                 self.r_list[0][i] = r[i]
                 self.z_list[0][i] = z[i]
         
-        for i in range(self.N+1):
+        for i in range(int(self.N+1)):
             if i < self.N :
                 self.Area_list[i] =  np.pi*(self.r_list[0][i+1] + self.r_list[0][i])*np.sqrt( 
                     (self.r_list[0][i+1] - self.r_list[0][i])**2
