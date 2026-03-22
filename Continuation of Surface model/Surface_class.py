@@ -37,7 +37,7 @@ class Surface_membrane:
         self.dpsi_perturb:float = dpsi # [rad]
         self.dtau_perturb:float = dtau # [nN]
         self.num_perturb:int = 10 #int(self.N/2) # Number of perturbed points
-        self.r0:float = 5.0 # if the init config is just flat, this is the initial radius of the hole.
+        self.r0:float = 5.0e-2 # if the init config is just flat, this is the initial radius of the hole.
         self.L = 100 # some times used for the total length of the membrane
 
         # Phase space variables 
@@ -249,15 +249,15 @@ class Surface_membrane:
             + f"    k = {self.k:0.1e}  [zJ] \n "
             + f"    kG = {self.kG:.1e}  [zJ] \n "
             + f"    c0 = {self.c0:.1e}  [1/(mu m)] \n "
-            + f"    tau = {self.tau:0.1e}  [N] \n "
+            + f"    tau = {self.tau:0.1e}  [nN] \n "
             + f"    sigma = {self.sigma:0.1e} [zJ/(mu m)^2] \n "
             + f"    ds = {self.ds:0.1e} [mu m] \n "
             + f"    eta = {self.eta:0.1e} [(mu g)/(mu m * s)] \n "
             + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta)} [(mu g)/s]  \n "
             + f"    Sim steps = {self.sim_steps:0.1e} \n "
             + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
-            + f"    alpha = {self.alpha:0.1e} dimless \n "
-            + f"    var tol = {self.var_corr_tol:0.1e} dimless \n "
+            + f"    alpha = {self.alpha:0.1e}  \n "
+            + f"    var tol = {self.var_corr_tol:0.1e} \n "
             + f"------------------------------------------------------- \n \n "
         )
 

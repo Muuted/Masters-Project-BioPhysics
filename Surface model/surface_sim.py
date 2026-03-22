@@ -289,7 +289,7 @@ if __name__ == "__main__":
     #Surface_sim_Area_condition()
     Surface_sim_stationary_state_initial_configuration(
         do_simulation = True #determines if 
-        ,start_from_flat = False#True
+        ,start_from_flat = True
         ,do_perturbation = False#True
         ,make_movie = True
         ,make_plots= True

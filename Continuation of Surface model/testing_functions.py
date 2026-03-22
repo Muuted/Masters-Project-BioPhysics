@@ -1757,20 +1757,32 @@ def Testing_RungeKutta():
 def test_flat_model_object():
     from Surface_class import Surface_membrane
     N = 40
-    T= 1e-6#5e-9
+    T= 1e-7 #5e-9'
+    tau = 0#1.0e3 #max = 1.0
     membrane = Surface_membrane(
-        N=N, T=T , dt=2e-11
-        ,save_path= f"2D sim results\\rolling test\\"
+        N=N, T=T , dt = 0.8e-11
+        ,const_index=0
+        ,save_path= f"2D sim results\\rolling test\\tau={tau}\\"
     )
+
     membrane.start_flat = True
+    membrane.tau = tau
+    membrane.const_length_diff_N_density = False
+    membrane.var_corr_tol = 1e-3
+
     membrane.make_plots = True
     membrane.make_movie = True
-    membrane.tau = 0
-    membrane.const_length_diff_N_density = False
     #membrane.init_config_show_time = 40
     #membrane.setup_simulation()
     membrane.run_sim()
     
+
+
+
+
+
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
