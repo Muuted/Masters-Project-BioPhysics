@@ -272,6 +272,7 @@ class Surface_membrane:
             exit()
         print(f"integration method={self.integration_method}")
         print("Simulation progressbar \n ")
+
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
                 time1 = time.time()-start_time
@@ -378,6 +379,7 @@ class Surface_membrane:
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
                 ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
                 )
+            
             self.Kinetic_E[t] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
             self.Xsqre[t] = Xsqaured_test(
                 N=self.N
@@ -398,7 +400,7 @@ class Surface_membrane:
                 "area list": [self.Area_list],
                 "Epot":[self.Potential_E],
                 "Ekin":[self.Kinetic_E],
-                "Ekin before correction": [self.Potential_E_before_correction],
+                "Epot before correction": [self.Potential_E_before_correction],
                 "Chi squared test": [self.Xsqre],
                 #'lambs': [lambs_save],
                 #'nus': [nus_save],
@@ -806,18 +808,32 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=30,sim_index=0,dt=1.7e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
-    plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
+    #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
 
-    exit()
-    membrane = Surface_membrane(T=1e-6,const_index=0,N=30)
-    membrane.use_phase_diagram = True
-    membrane.init_config_show_time = 3
-    membrane.perturb = False
-    membrane.var_perturb_choice = membrane.var_perturb_options[1]
+    #exit()
+    membrane = Surface_membrane(
+        T=3e-7
+        ,dt=1e-11
+        ,const_index=1
+        ,N=40
+        ,save_path="2D sim results\\obj\\plus\\N=40\\"
+        )
+    membrane.var_corr_tol = 1e-3
+
+
+    membrane.use_phase_diagram = False
     membrane.phasespace_x = 15000
     membrane.phasespace_y = 125
     membrane.phasespace_fignum = 4
-    membrane.phase_space_choice()
-    membrane.setup_simulation()
-    #membrane.dynamics()
-    #membrane.run_sim()
+
+    membrane.init_config_show_time = 3
+    membrane.perturb = False
+    #membrane.var_perturb_choice = membrane.var_perturb_options[1]
+
+    membrane.make_movie = True
+    membrane.make_plots = True
+    #membrane.phase_space_choice()
+    #membrane.setup_simulation()
+    
+    membrane.run_sim()
+    

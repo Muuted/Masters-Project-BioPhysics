@@ -1756,31 +1756,161 @@ def Testing_RungeKutta():
 
 def test_flat_model_object():
     from Surface_class import Surface_membrane
+    from two_d_data_processing import get_files
     N = 40
-    T= 1e-7 #5e-9'
+    T= 4e-8 #1e-7 #5e-9'
+    dt = 0.5e-11
     tau = 0#1.0e3 #max = 1.0
-    membrane = Surface_membrane(
-        N=N, T=T , dt = 0.8e-11
-        ,const_index=0
-        ,save_path= f"2D sim results\\rolling test\\tau={tau}\\"
-    )
+    var_corr = [
+        #1e-5, 
+        #1e-4,
+        2.5e-4,
+        #5e-4,
+        #6.25e-4,
+        #7.5e-4,
+        #9.75e-4,
+        #1e-3,
+        1e-2
+        ]
+    for i in range(len(var_corr)):
+        save_path = f"2D sim results\\rolling test\\tau={tau:0.1e} dt={dt}\\"
+        membrane = Surface_membrane(
+            N=N, T=T , dt = dt
+            ,const_index = 0
+            ,save_path= save_path +f"varcorr={var_corr[i]:0.1e}\\"
+        )
 
-    membrane.start_flat = True
-    membrane.tau = tau
-    membrane.const_length_diff_N_density = False
-    membrane.var_corr_tol = 1e-3
+        membrane.start_flat = True
+        membrane.tau = tau
+        membrane.const_length_diff_N_density = False
+        membrane.var_corr_tol = var_corr[i]
 
-    membrane.make_plots = True
-    membrane.make_movie = True
-    #membrane.init_config_show_time = 40
-    #membrane.setup_simulation()
-    membrane.run_sim()
+        #membrane.make_plots = True
+        #membrane.make_movie = True
+        #membrane.close_final_plots = True
+        #membrane.init_config_show_time = 40
+        #membrane.setup_simulation()
+        #membrane.run_sim()
+        #membrane.plotting_n_movie_data()
+    
+    files = get_files(save_path)
+
+    for i in range(len(files)-1):
+        for _ in range(30):
+            df1 = pd.read_pickle(files[i])
+            df2 = pd.read_pickle(files[i+1])
+
+            tol1 = df1["Tolerance"][0]
+            tol2 = df2["Tolerance"][0]
+            if tol1 < tol2 :
+                files[i] ,files[i+1] = files[i+1], files[i]
+
+
+    fig,ax = plt.subplots()
+    d = 0
+    for data in files:
+        df = pd.read_pickle(data)
+        #print(df.info())
+        #print(data)
+        Epot = df["Epot"][0]
+        Epot_before = df["Epot before correction"][0]
+        corr_count = df["correction count"][0]
+        sim_steps = df["sim_steps"][0]
+        dt = df["dt"][0]
+        tol_varr = df["Tolerance"][0]
+        reduce = 1#2
+        time_vec = np.linspace(0,(sim_steps-reduce)*dt , sim_steps-reduce )
+
+        diff_Epot = []
+        count = 0
+        for i in range(sim_steps-reduce-1):
+            dE = Epot[i+1] - Epot[i]
+            if dE > 0:
+                count += 1
+                #diff_Epot.append(1)
+            elif dE <= 0:
+                pass #diff_Epot.append(0)
+            diff_Epot.append(count)
+        #print(len(diff_Epot))
+
+        #if any(diff_Epot) != 0:
+        ax.plot(
+            time_vec[0:sim_steps-2],diff_Epot
+            ,label=f"tol={tol_varr:.1e} , num violations={np.sum(diff_Epot)}"
+            ,marker="."
+            )
+    
+    plt.xlabel("time [s]")
+    plt.ylabel("num times Epot[t+1]-Epot[t] > 0")
+    plt.title("Checking the amount of times that the \n potential energy increases during the simulation.")
+    plt.legend()
+    plt.grid()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(save_path + "compare when dEmorethan0.png")
+
+
+    fig,ax = plt.subplots()
+    for data in files:
+        df = pd.read_pickle(data)
+        Epot = df["Epot"][0]
+        sim_steps = df["sim_steps"][0]
+        dt = df["dt"][0]
+        tol_varr = df["Tolerance"][0]
+        reduce = 1#2
+        time_vec = np.linspace(0,(sim_steps-reduce)*dt , sim_steps-reduce )
+
+        ax.plot(
+            time_vec,Epot
+            ,label=f"tol={tol_varr:.1e}"
+        )
+
+
+    plt.title("all Epot")
+    plt.xlabel("time [s]")
+    plt.ylabel("Epot [zJ]")
+    plt.legend()
+
+    df = pd.read_pickle(files[0])
+    print(df.info())
+    fig,ax = plt.subplots()
+    for data in files:
+        df = pd.read_pickle(data)
+        Epot = df["Epot"][0]
+        count_corr = df["correction count"][0]
+        sim_steps = df["sim_steps"][0]
+        tol_varr = df["Tolerance"][0]
+        sum_corrs = []
+        k = 0
+        diff_Epot = []
+        count = 0
+        for i in range(sim_steps-2):
+            k += count_corr[i]
+            sum_corrs.append(k)
+
+            dE = Epot[i+1] - Epot[i]
+            if dE > 0:
+                count += 1
+            diff_Epot.append(count)
+        
+        ax.plot(
+            sum_corrs
+            ,diff_Epot
+            ,label=f"tol={tol_varr:.1e}"
+            ,marker="."
+            )
+
+    plt.xlabel("sum corrections")
+    plt.ylabel("")
+    plt.legend()
+    plt.show()
     
 
 
 
-
-
+def test_gradients_again():
+    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,drdt_func
+    from two_d_data_processing import E_pot
 
 
 if __name__ == "__main__":
@@ -1811,10 +1941,12 @@ if __name__ == "__main__":
     #testing_gradient_of_constraints()
     #testing_gradient_for_S()
 
-
     #find_overflow_error()
 
     #test_convergence_of_alpha()
 
     #Testing_RungeKutta()
+
+
     test_flat_model_object()
+    #test_gradients_again()

@@ -26,8 +26,9 @@ def Make_video(
     
     FILES = [f"{i}.png" for i in range(num-1)]
     
+    #video_name = video_name.replace(".pkl","")
     # Get the filename from the output path
-    filename = video_name + ".avi"
+    filename = video_name.replace(".pkl","") + ".avi"
     #print(f'Creating video "{filename}" from images "{FILES}"')
 
     # Load the first image to get the frame size
@@ -201,34 +202,9 @@ def Get_directory_files(path):
         
     return file_names,folder_path
 
+
+
 if __name__=="__main__":
-    const_args = Two_D_Constants(
-        print_val=True
-    )
-
-    L,r0,N,ds,T,dt = const_args[0:6]
-    k,c0,sim_steps = const_args[6:9]
-    sigma, tau, kG = const_args[9:12]
-    Area_list, psi_list = const_args[12:14]
-    radi_list,z_list = const_args[14:16]
-
-    #sim_steps = 1000
-
-    path_args = Two_D_paths()
-    data_path, fig_save_path = path_args[0:2]
-    video_save_path,figs_for_video_path = path_args[2:4]
-    df_name, fps_movie ,num_frames = path_args[4:7]
-
-    Make_frames(
-        data_path=data_path
-        ,figs_save_path=figs_for_video_path
-        ,df_name=df_name
-    )
-    Make_video(
-        output_path=video_save_path
-        ,input_path=figs_for_video_path
-        ,video_name= df_name
-        ,fps=fps_movie
-    )
+    pass
     
     
