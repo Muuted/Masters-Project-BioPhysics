@@ -1909,7 +1909,7 @@ def test_flat_model_object():
 
 
 def test_gradients_again():
-    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,drdt_func
+    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,drdt_func, constraint_f,constraint_g
     from two_d_data_processing import E_pot
 
 
