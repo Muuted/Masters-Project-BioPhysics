@@ -812,7 +812,7 @@ if __name__ == "__main__":
 
     #exit()
     membrane = Surface_membrane(
-        T=3e-7
+        T=1e-7
         ,dt=1e-11
         ,const_index=1
         ,N=40
