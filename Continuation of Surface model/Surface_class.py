@@ -273,6 +273,21 @@ class Surface_membrane:
         print(f"integration method={self.integration_method}")
         print("Simulation progressbar \n ")
 
+        self.Potential_E_before_correction[0] = E_pot(
+                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
+                ,r=self.r_list[0],psi=self.psi_list[0],Area=self.Area_list
+                )
+        self.Potential_E[0] = E_pot(
+                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
+                ,r=self.r_list[0],psi=self.psi_list[0],Area=self.Area_list
+                )
+        self.Kinetic_E[0] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
+        self.Xsqre[0] = Xsqaured_test(
+                N=self.N
+                ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
+                ,r=self.r_list[0],z=self.z_list[0],psi=self.psi_list[0]
+                )
+        
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
                 time1 = time.time()-start_time
@@ -358,33 +373,35 @@ class Surface_membrane:
                                 print("\n ---- Overflow error occurred ---- \n")
                                 self.overflow_err = True
 
-            self.Potential_E_before_correction[t] = E_pot(
+            self.Potential_E_before_correction[t+1] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
+                ,r=self.r_list[t+1],psi=self.psi_list[t+1],Area=self.Area_list
                 )
 
             if self.do_correction == True:
                 correction_count = Make_variable_corrections(
-                    N=self.N
-                    ,r=self.r_list[t+1] ,z=self.z_list[t+1], psi=self.psi_list[t+1] 
-                    ,Area=self.Area_list ,Area_init=self.Area_init
-                    ,Tolerence=self.var_corr_tol
-                    ,corr_max=10
-                    ,t=t
+                    N = self.N
+                    ,r = self.r_list[t+1] ,z = self.z_list[t+1], psi = self.psi_list[t+1] 
+                    ,Area = self.Area_list
+                    ,Area_init = self.Area_init
+                    ,Tolerence = self.var_corr_tol
+                    ,corr_max = 10
+                    ,t = t
                 )
-                self.correct_count_list[t] = correction_count
-        
+                self.correct_count_list[t+1] = correction_count        
 
-            self.Potential_E[t] = E_pot(
+            self.Potential_E[t+1] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
+                ,r=self.r_list[t+1],psi=self.psi_list[t+1],Area=self.Area_list
                 )
             
-            self.Kinetic_E[t] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
-            self.Xsqre[t] = Xsqaured_test(
+            self.Kinetic_E[t+1] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
+
+            self.Xsqre[t+1] = Xsqaured_test(
                 N=self.N
                 ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
-                ,r=self.r_list[t],z=self.z_list[t],psi=self.psi_list[t])
+                ,r=self.r_list[t+1],z=self.z_list[t+1],psi=self.psi_list[t+1]
+                )
 
 
         print("\n")        

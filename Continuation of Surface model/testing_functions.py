@@ -1912,8 +1912,13 @@ def test_gradients_again():
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func
     from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi
     from two_d_data_processing import E_pot, get_files
+    
     file = get_files("2D sim results\\obj\\plus\\N=40\\")
-    df = pd.read_pickle(file[0])
+    #df = pd.read_pickle(file[0])
+
+    
+
+    
 
     
 
@@ -1952,5 +1957,5 @@ if __name__ == "__main__":
     #Testing_RungeKutta()
 
 
-    test_flat_model_object()
-    #test_gradients_again()
+    #test_flat_model_object()
+    test_gradients_again()
