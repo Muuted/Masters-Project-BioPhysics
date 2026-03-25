@@ -1908,20 +1908,212 @@ def test_flat_model_object():
 
 
 
+
+
 def test_gradients_again():
-    from Two_D_functions import Q_function, dzdt_func,dpsidt_func
+    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma
     from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi
     from two_d_data_processing import E_pot, get_files
     
-    file = get_files("2D sim results\\obj\\plus\\N=40\\")
-    #df = pd.read_pickle(file[0])
+    def Lagrange_grad(
+            N,k,kG,tau,c0
+            ,nus,lambs,Area
+            ,r,psi,z
+            ):
+        
+        S = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r,psi=psi,Area=Area)
+        grad_constraint = 0
+        for i in range(N):
+            grad_constraint += (
+                lambs[i]*constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
+                +nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
+            )
+
+        return grad_constraint - S
+
+    data_path = "2D sim results\\obj\\plus\\N=40\\"
+    compare_df_name = "compare_df.pkl"
+    file = get_files(data_path)
+    df = pd.read_pickle(file[0])
+    #print(df.info())
+    sim_steps = df["sim_steps"][0]
+    dt = df["dt"][0]
+    N = df["N"][0]
+    k = df["k"][0]
+    kG = df["kG"][0]
+    c0 = df["c0"][0]
+    sigma = df["sigma"][0]
+    tau = df["tau"][0]
+    eta =  1 #df["eta"][0] 
+    ds = df["ds"][0]
+    Area = df["area list"][0]
+
+    r = df["r"][0]
+    z = df["z"][0]
+    psi = df["psi"][0]
+
+    time_vec = np.linspace(0,(sim_steps)*dt,sim_steps)
+
+    grad_test_r = np.zeros(shape=(sim_steps,N+1))
+    grad_test_z = np.zeros(shape=(sim_steps,N+1))
+    grad_test_psi = np.zeros(shape=(sim_steps,N))
+
+    h = 1e-5
+    make_new_data = True
+    if make_new_data == True:
+        print_scale = sim_steps/1000
+        start_time = time.time()
+        for t in range(sim_steps-1):
+            if int(t%print_scale) == 0 :
+                time1 = time.time()-start_time
+                time_left = (time1/(t+1))*(sim_steps-t)
+                time_h_start, time_m_start, time_s_start = int((time1/60**2)%24), int((time1/60)%60), int(time1%60)
+                time_h_end, time_m_end, time_s_end = int((time_left/60**2)%24), int((time_left/60)%60), int(time_left%60)
+                print(
+                    f"completion : {round(t/(print_scale*10),1)}%       " 
+                    +f"Time since start = {time_h_start}h {time_m_start}m {time_s_start}s        "
+                    +f"Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s"
+                    , end="\r"
+                )
+
+            nus, lambs = Langrange_multi(
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                ,psi=psi[t],radi=r[t],z_list=z[t]
+                )
+            
+            grad_L_ref = Lagrange_grad(
+                    N=N,k=k,kG=kG,c0=c0,tau=tau
+                    ,nus=nus,lambs=lambs,Area=Area
+                    ,r=r[t],psi=psi[t], z=z[t]
+                    )                
+            
+            for i in range(N):
+                rh = [ r[t][n] + h if n==i else r[t][n] for n in range(N+1)]
+                zh = [ z[t][n] + h if n==i else z[t][n] for n in range(N+1)]
+                psih = [ psi[t][n] + h if n==i else psi[t][n] for n in range(N)]
+
+                """------------- Gradient test for r ------------------"""
+                grad_L_rh = Lagrange_grad(
+                    N=N,k=k,kG=kG,c0=c0,tau=tau
+                    ,nus=nus,lambs=lambs,Area=Area
+                    ,r=rh,psi=psi[t], z=z[t]
+                    )            
+
+                dLdrh = (grad_L_rh - grad_L_ref)/h  #the Newton derivative 
+
+                dLdr = gamma(i=i,ds=ds,eta=eta)*drdt_func(
+                            i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG
+                            ,tau=tau,ds=ds,eta=eta
+                            ,Area=Area
+                            ,lamb=lambs,nu=nus
+                            ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
+                            )
+
+                grad_test_r[t][i] = (dLdr - dLdrh)#/(dLdr + dLdrh)
+                
+
+                """------------- Gradient test for z ------------------"""
+
+                grad_L_zh = Lagrange_grad(
+                    N=N,k=k,kG=kG,c0=c0,tau=tau
+                    ,nus=nus,lambs=lambs,Area=Area
+                    ,r=r[t],psi=psi[t], z=zh
+                    )
+                
+                dLdzh = (grad_L_zh - grad_L_ref)/h
+
+                dLdz =  gamma(i=i,ds=ds,eta=eta)*dzdt_func(
+                    i=i,ds=ds,eta=eta,Area=Area
+                    ,radi=r[t] 
+                    ,nu=nus
+                )
+
+                grad_test_z[t][i] = (dLdzh - dLdz )#/(dLdzh + dLdz )
+
+
+                """------------- Gradient test for psi ------------------"""
+
+
+                df = pd.DataFrame({
+                    'grad test r': [grad_test_r],
+                    'grad test z': [grad_test_z],
+                    'grad test psi': [grad_test_psi]
+                })
+
+                df.to_pickle(data_path + compare_df_name)
+
+    elif make_new_data == False:
+        df_compare_grad = pd.read_pickle("2D sim results\\obj\\plus\\N=40\\" + compare_df_name)
+        grad_test_r = df_compare_grad["grad test r"][0]
+        grad_test_z = df_compare_grad["grad test z"][0]
+        grad_test_psi = df_compare_grad["grad test psi"][0]
+
+
+    N_vals = np.linspace(0,N,N)
+    max_vals_r,max_vals_z,max_vals_psi = np.zeros(N), np.zeros(N), np.zeros(N)
+    min_vals_r,min_vals_z,min_vals_psi = np.zeros(N), np.zeros(N), np.zeros(N)
+
+    for t in range(sim_steps):
+        for i in range(N):
+            r = grad_test_r[t][i]
+            z = grad_test_z[t][i]
+
+            if r > max_vals_r[i]:
+                max_vals_r[i] = r
+            if r < min_vals_r[i]:
+                min_vals_r[i] = r
+            
+            if z > max_vals_z[i]:
+                max_vals_z[i] = z
+            if z < min_vals_z[i]:
+                max_vals_z[i] = z
+            
 
     
 
-    
+    fig,ax = plt.subplots()
+    ax.plot(N_vals[0:N-1],max_vals_r[0:N-1],label="max vals")
+    ax.plot(N_vals[0:N-1],min_vals_r[0:N-1],label="min vals")
+    plt.legend()
+    plt.title("r")
 
-    
+    fig,ax = plt.subplots()
+    ax.plot(N_vals,max_vals_z,label="max vals")
+    ax.plot(N_vals,min_vals_z,label="min vals")
+    plt.legend()
+    plt.title("z")
+    #plt.show()
 
+    #exit()
+    fig,ax = plt.subplots()
+    ax.plot(time_vec,grad_test_r[:,39],marker=".")
+    #plt.show()
+    fig, ax = plt.subplots()
+    for i in range(N):
+        ax.plot(
+            time_vec,grad_test_r[:,i]
+            ,label=f"i={i}"
+        )
+        if i%10 == 0 and i>0:
+            plt.legend()
+            #plt.show()
+            fig, ax = plt.subplots()
+    
+            plt.title("grad r test")
+    plt.legend()
+
+
+    """
+    fig, ax = plt.subplots()
+    ax.plot(
+        time_vec,grad_test_z[:,0]
+    )
+    plt.title("grad z test")
+    """
+
+
+    plt.show()
+    
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()

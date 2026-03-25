@@ -346,7 +346,7 @@ class Surface_membrane:
                                 print("\n ---- Overflow error occurred ---- \n")
                                 self.overflow_err = True
                                 
-            if self.integration_method == "RK4":
+            elif self.integration_method == "RK4":
                 kr,kz,kpsi = RungeKutta45(
                     N=self.N,dt=self.dt,k=self.k,c0=self.c0, sigma=self.sigma
                     ,kG=self.kG ,tau=self.tau, ds=self.ds,eta=self.eta
@@ -372,6 +372,10 @@ class Surface_membrane:
                             if self.overflow_err == False:
                                 print("\n ---- Overflow error occurred ---- \n")
                                 self.overflow_err = True
+
+            else:
+                print("No integration method was choosen, program terminates")
+                exit()
 
             self.Potential_E_before_correction[t+1] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
@@ -429,6 +433,7 @@ class Surface_membrane:
                 "kG": self.kG,
                 "sigma": self.sigma,
                 "tau": self.tau,
+                "eta": self.eta,
                 "sim_steps": self.sim_steps,
                 "dt": self.dt,
                 "ds": self.ds,

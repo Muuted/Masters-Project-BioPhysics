@@ -49,6 +49,7 @@ def Q_function(
         i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
         ,Area:list,psi:list,radi:list
         ):
+    
     a,a1,a2,a3,a4,a5,a6,a7 = 0,0,0,0,0,0,0,0
     if i == 0:
         B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
@@ -59,7 +60,7 @@ def Q_function(
 
         return a 
 
-    if 0 < i < N-1:
+    elif 0 < i < N-1:
         B_before = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         
@@ -73,7 +74,7 @@ def Q_function(
         a = a1 + a2
         return a
 
-    if i == N-1:
+    elif i == N-1:
         B_before = B_function(i=i-1 ,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
         B = B_function(i=i,N=N,c0=c0,Area=Area,psi=psi,radi=radi)
 
@@ -87,12 +88,17 @@ def Q_function(
         a = a1 + a2
         return a
 
+    else:
+        print(f"index i={i} and is to larges as max N={N} this takes the max value of N-1={N-1}")
+        exit()
 
 def drdt_func(
         i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float, ds:float, eta:float
-        ,Area:list,psi:list,radi:list
-        ,lamb:list , nu:list, z_list:list
+        ,Area:list
+        ,psi:list,radi:list, z_list:list
+        ,lamb:list , nu:list
         ):
+    
     a1,a2,a3 = 0,0,0
     a11 ,a12 ,a21 ,a22 ,a31 ,a32 =0,0,0,0,0,0
 
@@ -122,12 +128,16 @@ def drdt_func(
             nu[i-1]*(z_list[i] - z_list[i-1])/Area[i-1] - nu[i]*z_list[i]/Area[i]
         )
         a3 = a31 + a32
-    
-    drdt = (a1 + a2 + a3) + Q_function(
-                                        i=i,N=N,k=k,c0=c0
-                                        ,sigma=sigma,kG=kG,tau=tau
-                                        ,Area=Area,psi=psi,radi=radi
-                                    )
+    Q = Q_function(
+            i=i,N=N,k=k,c0=c0
+            ,sigma=sigma,kG=kG,tau=tau
+            ,Area=Area,psi=psi,radi=radi
+        )
+    if isinstance(Q,(int,float)) == False:
+        print(f"Q={Q}")
+        print(f"sigma={sigma} , tau={tau} , kG={kG} , k={k} , c0={c0}")
+        exit()
+    drdt = (a1 + a2 + a3) + Q
                                     
     
     return drdt/gamma(i,ds=ds,eta=eta)
@@ -140,12 +150,14 @@ def dzdt_func(
     
     if i == 0 :
         dzdt = - np.pi*nu[i]*(radi[i+1] + radi[i])/(Area[i])
-    if i > 0 :
+    elif i > 0 :
         dzdt = np.pi*(
             nu[i-1]*(radi[i] + radi[i-1])/Area[i-1]
           - nu[i]*(radi[i+1] + radi[i])/Area[i]
         )
-    
+    else:
+        print(f"i was not i either 0 or greater than 0, error program is terminated")
+        exit()
     return dzdt/gamma(i,ds=ds,eta=eta)
 
 
