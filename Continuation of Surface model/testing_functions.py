@@ -2220,7 +2220,7 @@ def compare_potentential_energy():
 
     corr_place_x,corr_place_y = [], []
     Epot_x, Epot_y = [], []
-
+    Epot_path_x,Epot_path_y = [],[]
     for t in range(sim_steps):
         if corr_count[t] != 0:
             corr_place_y.append( (S_pot[t] + S_pot_before[t])/2)
@@ -2232,18 +2232,25 @@ def compare_potentential_energy():
             Epot_y.append(Q)
         #difference_Epot[t] = S_pot[t] - S_pot_before[t]
         
-    
+        Epot_path_x.append(time_vec[t])
+        Epot_path_y.append(S_pot_before[t])
+
+        Epot_path_x.append(time_vec[t])
+        Epot_path_y.append(S_pot[t])
+
     fig, ax = plt.subplots()
     ax.plot(
         time_vec,S_pot_before
         ,label="Epot before"
         ,marker="."
+        ,linewidth=4
     )
     ax.plot(
         time_vec,S_pot
         ,label="Epot"
         ,marker="."
         ,linestyle="dashed"
+        ,linewidth=4
     )
     ax.plot(
         corr_place_x,corr_place_y
@@ -2251,7 +2258,16 @@ def compare_potentential_energy():
         ,marker="|"
         ,markersize = 20
         #,linestyle=False
+        #,linewidth=3
     )
+
+    ax.plot(
+        Epot_path_x,Epot_path_y
+        ,label="path taken"
+        ,linestyle="-"#"dashed"
+        ,color="k"
+        )
+    
     plt.title("potential energy")
     plt.legend()
     plt.grid()
@@ -2263,6 +2279,8 @@ def compare_potentential_energy():
         Epot_x,Epot_y
         ,label="difference Epot"
         )
+    
+    
     plt.legend()
     plt.title(r"$ E_{pot} - E_{before,pot} $")
     plt.grid()
