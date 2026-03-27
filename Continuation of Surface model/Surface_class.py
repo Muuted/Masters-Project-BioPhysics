@@ -135,14 +135,14 @@ class Surface_membrane:
     def setup_simulation(self):
 
         if self.const_length_diff_N_density == True:
-            self.ds = self.ds/(self.N/20)
+            self.ds = self.ds*(20/self.N)
             print("scaled N")
         
         # scaling parameters        
         rs2 = 20*self.lc 
         zs2 = 0
         s0, sN = 0, 50*self.lc
-
+        #print(self.N)
         #Initiating the inital state of the membrane
         psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
                 sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
@@ -164,6 +164,7 @@ class Surface_membrane:
             """------ variables list ---------"""
             for i in range(int(self.N+1)):
                 if i < self.N :
+                    #print(i,self.N, self.ds,len(psi))
                     self.psi_list[0][i] = psi[i]
                 self.r_list[0][i] = r[i]
                 self.z_list[0][i] = z[i]
@@ -244,7 +245,7 @@ class Surface_membrane:
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
             + f"    number of chain links N: {self.N} \n " 
-            + f"    Total sim time = {self.T} [s] \n "
+            + f"    Total sim time = {self.T:.1e} [s] \n "
             + f"    dt = {self.dt:0.1e} [s] \n "
             + f"    k = {self.k:0.1e}  [zJ] \n "
             + f"    kG = {self.kG:.1e}  [zJ] \n "
@@ -253,7 +254,7 @@ class Surface_membrane:
             + f"    sigma = {self.sigma:0.1e} [zJ/(mu m)^2] \n "
             + f"    ds = {self.ds:0.1e} [mu m] \n "
             + f"    eta = {self.eta:0.1e} [(mu g)/(mu m * s)] \n "
-            + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta)} [(mu g)/s]  \n "
+            + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta):.2e} [(mu g)/s]  \n "
             + f"    Sim steps = {self.sim_steps:0.1e} \n "
             + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
             + f"    alpha = {self.alpha:0.1e}  \n "
@@ -833,15 +834,21 @@ if __name__ == "__main__":
     #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
 
     #exit()
+    N = 35
+    save_path = f"2D sim results\\obj\\plus\\N={N}\\"
+    save_path = f"2D sim results\\obj\\plus larger ds\\N={N}\\"
     membrane = Surface_membrane(
         T=1e-7
         ,dt=1e-11
-        ,const_index=1
-        ,N=40
-        ,save_path="2D sim results\\obj\\plus\\N=40\\"
+        ,const_index = 1
+        ,N=N
+        ,save_path= save_path
         )
-    membrane.var_corr_tol = 1e-3
-
+    membrane.var_corr_tol = 1e-4
+    
+    #ds_init = membrane.ds
+    membrane.ds = 1.5e-2*(20/30)
+    membrane.const_length_diff_N_density = False
 
     membrane.use_phase_diagram = False
     membrane.phasespace_x = 15000
@@ -858,4 +865,5 @@ if __name__ == "__main__":
     #membrane.setup_simulation()
     
     membrane.run_sim()
+    #membrane.plotting_n_movie_data()
     

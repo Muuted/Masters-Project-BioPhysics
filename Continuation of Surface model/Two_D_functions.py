@@ -32,13 +32,14 @@ def Kronecker(i,j):
         return 0
 
 def B_function(
-        i,N,c0,Area:list,psi:list,radi:list
+        i:int,N:int,c0:float,Area:list,psi:list,radi:list
         ):
     B = ""
     if 0 <= i < N-1:
         B = np.pi*(psi[i+1]-psi[i])*(radi[i+1]+radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
-    if i == N-1:
-        B = -np.pi*psi[i]*(radi[i+1]+radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
+
+    elif i == N-1:
+        B = -np.pi*psi[i]*(radi[i+1] + radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
 
     if B == "":
         print(f"B function never took a value")
@@ -89,7 +90,8 @@ def Q_function(
         return a
 
     else:
-        print(f"index i={i} and is to larges as max N={N} this takes the max value of N-1={N-1}")
+        print(f"\n index i={i} and is to larges as max N={N} this takes the max value of N-1={N-1}"
+              +f"\n this is freom the Q_function")
         exit()
 
 def drdt_func(
@@ -99,6 +101,12 @@ def drdt_func(
         ,lamb:list , nu:list
         ):
     
+    Q = Q_function(
+            i=i,N=N,k=k,c0=c0
+            ,sigma=sigma,kG=kG,tau=tau
+            ,Area=Area,psi=psi,radi=radi
+    )
+    
     a1,a2,a3 = 0,0,0
     a11 ,a12 ,a21 ,a22 ,a31 ,a32 =0,0,0,0,0,0
 
@@ -106,9 +114,9 @@ def drdt_func(
         a11 = -2*np.pi*radi[i]*lamb[i]/Area[i]
         a12 = np.pi*nu[i]*(z_list[i+1] - z_list[i])/Area[i]
 
-        a1 = a11 + a12
+        return  (Q + a11 + a12)/gamma(i,ds=ds,eta=eta)
 
-    if 0 < i < N-1:
+    elif 0 < i < N-1:
         a21 = 2*np.pi*radi[i]*(
             lamb[i-1]/Area[i-1] - lamb[i]/Area[i] 
         )
@@ -117,9 +125,9 @@ def drdt_func(
             nu[i-1]*(z_list[i] - z_list[i-1])/Area[i-1]
           + nu[i]*(z_list[i+1] - z_list[i])/Area[i]
         )
-        a2 = a21 + a22
+        return (Q + a21 + a22 )/gamma(i,ds=ds,eta=eta)
 
-    if i == N - 1:
+    elif i == N - 1:
         a31 = 2*np.pi*radi[i]*(
             lamb[i-1]/Area[i-1] - lamb[i]/Area[i] 
         )
@@ -127,18 +135,15 @@ def drdt_func(
         a32 = np.pi*(
             nu[i-1]*(z_list[i] - z_list[i-1])/Area[i-1] - nu[i]*z_list[i]/Area[i]
         )
-        a3 = a31 + a32
+        return (Q + a31 + a32)/gamma(i,ds=ds,eta=eta)
 
-    Q = Q_function(
-            i=i,N=N,k=k,c0=c0
-            ,sigma=sigma,kG=kG,tau=tau
-            ,Area=Area,psi=psi,radi=radi
-        )
-    
-    drdt = (a1 + a2 + a3) + Q
+    else:
+        print(f"\n in drdt_function, non of the available i, as was i={i} where max is N-1={N-1}")
+        exit()
+    #drdt = (a1 + a2 + a3) + Q
                                     
     
-    return drdt/gamma(i,ds=ds,eta=eta)
+    #return drdt/gamma(i,ds=ds,eta=eta)
 
 
 
@@ -148,15 +153,19 @@ def dzdt_func(
     
     if i == 0 :
         dzdt = - np.pi*nu[i]*(radi[i+1] + radi[i])/(Area[i])
+        return dzdt/gamma(i,ds=ds,eta=eta)
+    
     elif i > 0 :
         dzdt = np.pi*(
             nu[i-1]*(radi[i] + radi[i-1])/Area[i-1]
           - nu[i]*(radi[i+1] + radi[i])/Area[i]
         )
+        return dzdt/gamma(i,ds=ds,eta=eta)
+    
     else:
-        print(f"i was not i either 0 or greater than 0, error program is terminated")
+        print(f"\n in dzdt_func i was not i either 0 or greater than 0,the value of i={i} \n error program is terminated")
         exit()
-    return dzdt/gamma(i,ds=ds,eta=eta)
+    #return dzdt/gamma(i,ds=ds,eta=eta)
 
 
 
@@ -165,7 +174,7 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
         ,lamb:list , nu:list, z_list:list
         ):
     a1 ,a2 ,a3 = 0,0,0
-    if i < N-1 :
+    if 0 <= i < N-1 :
         dzdt_i_next = dzdt_func(i=i+1,ds=ds,eta=eta,Area=Area,radi=radi,nu=nu)
         dzdt_i = dzdt_func(i=i,ds=ds,eta=eta,Area=Area,radi=radi,nu=nu)
 
@@ -189,7 +198,9 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
 
         dpsidt = np.pi*(  a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
 
-    if i == N-1:
+        return dpsidt
+
+    elif i == N-1:
         dzdt_i = dzdt_func(i=i,ds=ds,eta=eta,Area=Area,radi=radi,nu=nu)
         drdt_i = drdt_func(
             i=i
@@ -203,7 +214,11 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
 
         dpsidt = np.pi*( a1*dzdt_i  + a3*drdt_i )/Area[i]
 
-    return dpsidt
+        return dpsidt
+    
+    else:
+        print(f"\n In dpsidt_func. Non of the values for i was chosen, value of i={i}  \n but has to be in range 0 to N-1={N-1}. Program termined")
+        exit()
 
 
 

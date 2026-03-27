@@ -1977,9 +1977,10 @@ def test_gradients_again():
                 +nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
             )
 
-        return grad_constraint - S
+        return -S + grad_constraint 
 
     data_path = "2D sim results\\obj\\plus\\N=40\\"
+    data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"
     compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
     df = pd.read_pickle(file[0])
@@ -2011,7 +2012,8 @@ def test_gradients_again():
     grad_test_psi = np.zeros(shape=(sim_steps,N))
 
     h = 1e-5
-    make_new_data = False#True
+    make_new_data = False# True
+    sim_steps = int(sim_steps/5)
     if make_new_data == True:
         print_scale = sim_steps/1000
         start_time = time.time()
@@ -2036,7 +2038,7 @@ def test_gradients_again():
             grad_L_ref = Lagrange_grad(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
                     ,nus=nus,lambs=lambs,Area=Area
-                    ,r=r[t],psi=psi[t], z=z[t]
+                    ,r=r[t] ,psi=psi[t] ,z=z[t]
                     )                
             
             for i in range(N):
@@ -2044,11 +2046,19 @@ def test_gradients_again():
                 zh = [ z[t][n] + h if n==i else z[t][n] for n in range(N+1)]
                 psih = [ psi[t][n] + h if n==i else psi[t][n] for n in range(N)]
 
-                """------------- Gradient test for r ------------------"""
+                """------------- Gradient test for r ---------------------------------------------------------------------"""
+                nus_rh, lambs_rh = Langrange_multi(
+                    N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                    ,psi=psi[t] ,z_list=z[t]
+                    ,radi=rh
+                )                
+                #print(f"nus diff = {(np.sum(nus) - np.sum(nus_rh))/(np.sum(nus_rh))}         lamb diff =  {(np.sum(lambs) - np.sum(lambs_rh))/(np.sum(lambs_rh))}")
                 grad_L_rh = Lagrange_grad(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,nus=nus,lambs=lambs,Area=Area
-                    ,r=rh,psi=psi[t], z=z[t]
+                    ,nus=nus_rh
+                    ,lambs=lambs_rh
+                    ,Area=Area
+                    ,r=rh ,psi=psi[t], z=z[t]
                     )            
 
                 dLdrh = (grad_L_rh - grad_L_ref)/h  #the Newton derivative 
@@ -2064,11 +2074,19 @@ def test_gradients_again():
                 grad_test_r[t][i] = (dLdr - dLdrh)#/(dLdr + dLdrh)
                 
 
-                """------------- Gradient test for z ------------------"""
 
+
+                """------------- Gradient test for z --------------------------------------------------------------------------"""
+                nus_zh, lambs_zh = Langrange_multi(
+                    N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                    ,psi=psi[t],radi=r[t]
+                    ,z_list=zh
+                )                
+                #print(f"nus diff = {(np.sum(nus) - np.sum(nus_zh))/(np.sum(nus_zh))}         lamb diff =  {(np.sum(lambs) - np.sum(lambs_zh))/(np.sum(lambs_zh))}")
+                #exit()
                 grad_L_zh = Lagrange_grad(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,nus=nus,lambs=lambs,Area=Area
+                    ,nus=nus_zh,lambs=lambs_zh,Area=Area
                     ,r=r[t],psi=psi[t], z=zh
                     )
                 
@@ -2076,11 +2094,11 @@ def test_gradients_again():
 
                 dLdz =  gamma(i=i,ds=ds,eta=eta)*dzdt_func(
                     i=i,ds=ds,eta=eta,Area=Area
-                    ,radi=r[t] 
+                    ,radi=r[t]
                     ,nu=nus
                 )
 
-                grad_test_z[t][i] = (dLdzh - dLdz )#/(dLdzh + dLdz )
+                grad_test_z[t][i] = (dLdz - dLdzh)#/(dLdzh + dLdz )
 
 
                 """------------- Gradient test for psi ------------------"""
@@ -2124,22 +2142,32 @@ def test_gradients_again():
     
 
     fig,ax = plt.subplots()
-    ax.plot(N_vals[0:N-1],max_vals_r[0:N-1],label="max vals")
-    ax.plot(N_vals[0:N-1],min_vals_r[0:N-1],label="min vals")
+    ax.plot(
+        N_vals#[0:N-1]
+        ,max_vals_r#[0:N-1]
+        ,label="max vals"
+        )
+    ax.plot(
+        N_vals#[0:N-1]
+        ,min_vals_r#[0:N-1]
+        ,label="min vals"
+        )
     plt.legend()
     plt.title("r")
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "max and min of r" +".png")
 
     fig,ax = plt.subplots()
     ax.plot(N_vals,max_vals_z,label="max vals")
     ax.plot(N_vals,min_vals_z,label="min vals")
     plt.legend()
     plt.title("z")
-    #plt.show()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "max and min of z" +".png")
 
-    #exit()
-    fig,ax = plt.subplots()
-    ax.plot(time_vec,grad_test_r[:,39],marker=".")
-    #plt.show()
+
     fig, ax = plt.subplots()
     for i in range(N):
         ax.plot(
@@ -2147,14 +2175,30 @@ def test_gradients_again():
             ,label=f"i={i}"
         )
         if i%10 == 0 and i>0:
-            plt.legend()
+            pass#plt.legend()
             #plt.show()
-            fig, ax = plt.subplots()
+            #fig, ax = plt.subplots()
     
-            plt.title("grad r test")
+    plt.title("grad r test")
     plt.legend()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "grad test r" +".png")
 
 
+    fig, ax = plt.subplots()
+    for i in range(N):
+        ax.plot(
+            time_vec,grad_test_z[:,i]
+            ,label=f"i={i}"
+        )
+    
+    plt.title("grad z test")
+    plt.legend()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "grad test z" +".png")
+    
     corr_place_y = []
     corr_place_x = []
     for t in range(sim_steps):
@@ -2162,7 +2206,6 @@ def test_gradients_again():
             corr_place_y.append( (S_pot[t] + S_pot_before[t])/2)
             corr_place_x.append( time_vec[t] )
             
-        pass
     
     fig, ax = plt.subplots()
     ax.plot(
@@ -2186,6 +2229,9 @@ def test_gradients_again():
     plt.title("potential energy")
     plt.legend()
     plt.grid()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "potential energy" +".png")
 
 
     plt.show()
@@ -2252,7 +2298,7 @@ def compare_potentential_energy():
         ,linestyle="dashed"
         ,linewidth=4
     )
-    ax.plot(
+    """ax.plot(
         corr_place_x,corr_place_y
         ,label="time of corr"
         ,marker="|"
@@ -2260,11 +2306,12 @@ def compare_potentential_energy():
         #,linestyle=False
         #,linewidth=3
     )
-
+    """
     ax.plot(
         Epot_path_x,Epot_path_y
         ,label="path taken"
         ,linestyle="-"#"dashed"
+        ,marker="."
         ,color="k"
         )
     
@@ -2291,7 +2338,7 @@ def compare_potentential_energy():
         time_vec[1::],T_kin[1::]
         ,marker="."
     )
-    plt.legend()
+    #plt.legend()
     plt.title(r"$ E_{kin} $")
     plt.grid()
 
@@ -2334,5 +2381,5 @@ if __name__ == "__main__":
 
 
     #test_flat_model_object()
-    #test_gradients_again()
-    compare_potentential_energy()
+    test_gradients_again()
+    #compare_potentential_energy()

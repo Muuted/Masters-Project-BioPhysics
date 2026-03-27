@@ -182,7 +182,7 @@ def find_init_stationary_state(
         ,ds = ds
         ,max_num_points = total_points
         )
-
+    
     r_discrete,z_discrete = [],[]
     psi_discrete,dpsidt_discrete = [],[]
     lambs_discrete, nus_discrete = [],[]

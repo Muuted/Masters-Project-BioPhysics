@@ -129,7 +129,7 @@ def plot_tot_area(
     if full_screen == True:
         wm = plt.get_current_fig_manager()
         wm.window.state('zoomed')
-    plt.plot(time[0:sim_steps-1],Xsqrt,label=r"$\chi^2$ test")
+    plt.plot(time[0:sim_steps],Xsqrt,label=r"$\chi^2$ test")
     plt.title(r"$\chi^2$ test for deviation from the unperturbed state, so $\sigma_i$=1",fontsize=15)
     plt.xlabel("t [s]",fontsize=15)
     plt.ylabel(r"$\chi^2$ [$\mu m^2$]", fontsize=font_size)
@@ -180,7 +180,7 @@ def plot_Epot_Ekin(
     font_size= 15
     
 
-    t_vec = [dt*i for i in range(sim_steps-1)]
+    t_vec = [dt*i for i in range(sim_steps)]
     fontsize = 10
     
     """--------------------------------------Kinetic & Potential energy plot ----------------------------------------------------------"""
