@@ -1757,19 +1757,19 @@ def Testing_RungeKutta():
 def test_flat_model_object():
     from Surface_class import Surface_membrane
     from two_d_data_processing import get_files
-    N = 40
+    N = 30
     T= 4e-8 #1e-7 #5e-9'
-    dt = 0.5e-11
+    dt = 1e-11
     tau = 0#1.0e3 #max = 1.0
     var_corr = [
-        #1e-5, 
-        #1e-4,
+        1e-5, 
+        1e-4,
         2.5e-4,
-        #5e-4,
-        #6.25e-4,
-        #7.5e-4,
-        #9.75e-4,
-        #1e-3,
+        5e-4,
+        6.25e-4,
+        7.5e-4,
+        9.75e-4,
+        1e-3,
         1e-2
         ]
     for i in range(len(var_corr)):
@@ -1818,12 +1818,12 @@ def test_flat_model_object():
         sim_steps = df["sim_steps"][0]
         dt = df["dt"][0]
         tol_varr = df["Tolerance"][0]
-        reduce = 1#2
+        reduce = 0
         time_vec = np.linspace(0,(sim_steps-reduce)*dt , sim_steps-reduce )
 
         diff_Epot = []
         count = 0
-        for i in range(sim_steps-reduce-1):
+        for i in range(sim_steps-1):
             dE = Epot[i+1] - Epot[i]
             if dE > 0:
                 count += 1
@@ -1835,7 +1835,7 @@ def test_flat_model_object():
 
         #if any(diff_Epot) != 0:
         ax.plot(
-            time_vec[0:sim_steps-2],diff_Epot
+            time_vec[0:sim_steps-1],diff_Epot
             ,label=f"tol={tol_varr:.1e} , num violations={np.sum(diff_Epot)}"
             ,marker="."
             )
@@ -1857,7 +1857,7 @@ def test_flat_model_object():
         sim_steps = df["sim_steps"][0]
         dt = df["dt"][0]
         tol_varr = df["Tolerance"][0]
-        reduce = 1#2
+        reduce = 0#1#2
         time_vec = np.linspace(0,(sim_steps-reduce)*dt , sim_steps-reduce )
 
         ax.plot(
@@ -1903,6 +1903,54 @@ def test_flat_model_object():
     plt.xlabel("sum corrections")
     plt.ylabel("")
     plt.legend()
+
+
+    fig,ax = plt.subplots()
+    d = 0
+    for data in files:
+        df = pd.read_pickle(data)
+        #print(df.info())
+        #print(data)
+        S_pot = df["Epot"][0]
+        S_pot_before = df["Epot before correction"][0]
+        corr_count = df["correction count"][0]
+        sim_steps = df["sim_steps"][0]
+        dt = df["dt"][0]
+        tol_varr = df["Tolerance"][0]
+        reduce = 0
+        time_vec = np.linspace(0,(sim_steps-reduce)*dt , sim_steps-reduce )
+
+        corr_place_y = []
+        corr_place_x = []
+
+        Epot_x, Epot_y = [], []
+        difference_Epot = np.zeros(sim_steps)
+        for t in range(sim_steps):
+            if corr_count[t] != 0:
+                corr_place_y.append( (S_pot[t] + S_pot_before[t])/2)
+                corr_place_x.append( time_vec[t] )
+            
+            Q = S_pot[t] - S_pot_before[t]
+            if Q > 0.005:
+                Epot_x.append(time_vec[t])
+                Epot_y.append(Q)
+        
+        if len(Epot_y) > 0 :
+            ax.plot(
+                Epot_x,Epot_y
+                ,label=f"tol={tol_varr:0.1e}"
+                ,marker="."
+                #,markersize=10
+            )
+        
+    plt.title(r"$ E_{pot} - E_{before,pot}$")
+    plt.xlabel("dt")
+    plt.ylabel(r"$ \Delta E_{pot} $")
+    plt.grid()
+
+    plt.legend()
+
+
     plt.show()
     
 
@@ -1935,8 +1983,9 @@ def test_gradients_again():
     compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
     df = pd.read_pickle(file[0])
-    #print(df.info())
+    print(df.info())
     sim_steps = df["sim_steps"][0]
+
     dt = df["dt"][0]
     N = df["N"][0]
     k = df["k"][0]
@@ -1947,6 +1996,9 @@ def test_gradients_again():
     eta =  1 #df["eta"][0] 
     ds = df["ds"][0]
     Area = df["area list"][0]
+    S_pot = df["Epot"][0]
+    S_pot_before = df["Epot before correction"][0]
+    corr_count = df["correction count"][0]
 
     r = df["r"][0]
     z = df["z"][0]
@@ -1959,7 +2011,7 @@ def test_gradients_again():
     grad_test_psi = np.zeros(shape=(sim_steps,N))
 
     h = 1e-5
-    make_new_data = True
+    make_new_data = False#True
     if make_new_data == True:
         print_scale = sim_steps/1000
         start_time = time.time()
@@ -2103,17 +2155,131 @@ def test_gradients_again():
     plt.legend()
 
 
-    """
+    corr_place_y = []
+    corr_place_x = []
+    for t in range(sim_steps):
+        if corr_count[t] != 0:
+            corr_place_y.append( (S_pot[t] + S_pot_before[t])/2)
+            corr_place_x.append( time_vec[t] )
+            
+        pass
+    
     fig, ax = plt.subplots()
     ax.plot(
-        time_vec,grad_test_z[:,0]
+        time_vec,S_pot_before
+        ,label="Epot before"
+        ,marker="."
     )
-    plt.title("grad z test")
-    """
+    ax.plot(
+        time_vec,S_pot
+        ,label="Epot"
+        ,marker="."
+        ,linestyle="dashed"
+    )
+    ax.plot(
+        corr_place_x,corr_place_y
+        ,label="time of corr"
+        ,marker="|"
+        ,markersize = 20
+        #,linestyle=False
+    )
+    plt.title("potential energy")
+    plt.legend()
+    plt.grid()
 
 
     plt.show()
     
+
+def compare_potentential_energy():
+    from two_d_data_processing import get_files
+
+    data_path = "2D sim results\\obj\\plus\\N=40\\"
+    compare_df_name = "compare_df.pkl"
+    file = get_files(data_path)
+    df = pd.read_pickle(file[0])
+    print(df.info())
+    sim_steps = df["sim_steps"][0]
+
+    dt = df["dt"][0]
+    N = df["N"][0]
+    k = df["k"][0]
+    kG = df["kG"][0]
+    c0 = df["c0"][0]
+    sigma = df["sigma"][0]
+    tau = df["tau"][0]
+    eta =  1 #df["eta"][0] 
+    ds = df["ds"][0]
+    Area = df["area list"][0]
+    S_pot = df["Epot"][0]
+    S_pot_before = df["Epot before correction"][0]
+    T_kin = df["Ekin"][0]
+    corr_count = df["correction count"][0]
+
+    time_vec = np.linspace(0,(sim_steps)*dt,sim_steps)
+
+    corr_place_x,corr_place_y = [], []
+    Epot_x, Epot_y = [], []
+
+    for t in range(sim_steps):
+        if corr_count[t] != 0:
+            corr_place_y.append( (S_pot[t] + S_pot_before[t])/2)
+            corr_place_x.append( time_vec[t] )
+        
+        Q = S_pot[t] - S_pot_before[t]
+        if Q !=0:
+            Epot_x.append(time_vec[t])
+            Epot_y.append(Q)
+        #difference_Epot[t] = S_pot[t] - S_pot_before[t]
+        
+    
+    fig, ax = plt.subplots()
+    ax.plot(
+        time_vec,S_pot_before
+        ,label="Epot before"
+        ,marker="."
+    )
+    ax.plot(
+        time_vec,S_pot
+        ,label="Epot"
+        ,marker="."
+        ,linestyle="dashed"
+    )
+    ax.plot(
+        corr_place_x,corr_place_y
+        ,label="time of corr"
+        ,marker="|"
+        ,markersize = 20
+        #,linestyle=False
+    )
+    plt.title("potential energy")
+    plt.legend()
+    plt.grid()
+
+
+    fig,ax = plt.subplots()
+    ax.plot(
+        #time_vec,difference_Epot
+        Epot_x,Epot_y
+        ,label="difference Epot"
+        )
+    plt.legend()
+    plt.title(r"$ E_{pot} - E_{before,pot} $")
+    plt.grid()
+
+
+    fig,ax = plt.subplots()
+    ax.plot(
+        time_vec[1::],T_kin[1::]
+        ,marker="."
+    )
+    plt.legend()
+    plt.title(r"$ E_{kin} $")
+    plt.grid()
+
+    plt.show()
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -2150,4 +2316,5 @@ if __name__ == "__main__":
 
 
     #test_flat_model_object()
-    test_gradients_again()
+    #test_gradients_again()
+    compare_potentential_energy()

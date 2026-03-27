@@ -37,8 +37,8 @@ class Surface_membrane:
         self.dpsi_perturb:float = dpsi # [rad]
         self.dtau_perturb:float = dtau # [nN]
         self.num_perturb:int = 10 #int(self.N/2) # Number of perturbed points
-        self.r0:float = 5.0e-2 # if the init config is just flat, this is the initial radius of the hole.
-        self.L = 100 # some times used for the total length of the membrane
+        self.r0:float = 5.0e-2 # [mu m] if the init config is just flat, this is the initial radius of the hole.
+        self.L = 100 # [mu m] some times used for the total length of the membrane
 
         # Phase space variables 
         self.const_index:int = const_index
@@ -81,11 +81,11 @@ class Surface_membrane:
         self.z_unperturbed:list = []
         self.psi_unperturbed:list = []     
 
-        self.Potential_E = np.zeros(self.sim_steps-1,dtype=float)
-        self.Potential_E_before_correction = np.zeros(self.sim_steps-1,dtype=float)
-        self.Kinetic_E = np.zeros(self.sim_steps-1,dtype=float)
-        self.Xsqre = np.zeros(self.sim_steps-1,dtype=float)
-        self.correct_count_list = np.zeros(self.sim_steps-1)
+        self.Potential_E = np.zeros(self.sim_steps,dtype=float)
+        self.Potential_E_before_correction = np.zeros(self.sim_steps,dtype=float)
+        self.Kinetic_E = np.zeros(self.sim_steps,dtype=float)
+        self.Xsqre = np.zeros(self.sim_steps,dtype=float)
+        self.correct_count_list = np.zeros(self.sim_steps)
 
         # Setting up program
         self.var_corr_tol:float = 1e-5 # The tolerence for when to use variable correction
@@ -281,7 +281,7 @@ class Surface_membrane:
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
                 ,r=self.r_list[0],psi=self.psi_list[0],Area=self.Area_list
                 )
-        self.Kinetic_E[0] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
+        self.Kinetic_E[0] = E_kin(N=self.N,t=0,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
         self.Xsqre[0] = Xsqaured_test(
                 N=self.N
                 ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb

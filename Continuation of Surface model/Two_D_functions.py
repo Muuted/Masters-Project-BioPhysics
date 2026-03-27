@@ -128,15 +128,13 @@ def drdt_func(
             nu[i-1]*(z_list[i] - z_list[i-1])/Area[i-1] - nu[i]*z_list[i]/Area[i]
         )
         a3 = a31 + a32
+
     Q = Q_function(
             i=i,N=N,k=k,c0=c0
             ,sigma=sigma,kG=kG,tau=tau
             ,Area=Area,psi=psi,radi=radi
         )
-    if isinstance(Q,(int,float)) == False:
-        print(f"Q={Q}")
-        print(f"sigma={sigma} , tau={tau} , kG={kG} , k={k} , c0={c0}")
-        exit()
+    
     drdt = (a1 + a2 + a3) + Q
                                     
     
