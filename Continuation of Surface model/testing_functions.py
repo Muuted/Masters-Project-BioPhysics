@@ -1982,6 +1982,7 @@ def test_gradients_again():
     data_path = "2D sim results\\obj\\plus\\N=40\\"
     data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"
     compare_df_name = "compare_df.pkl"
+    
     file = get_files(data_path)
     df = pd.read_pickle(file[0])
     print(df.info())
@@ -2345,6 +2346,100 @@ def compare_potentential_energy():
     plt.show()
 
 
+
+
+def test_if_variable_correction_causes_Epot_increase():
+    from two_d_data_processing import get_files
+    from Two_D_functions import dpsidt_func,drdt_func,dzdt_func
+    from Runge_Kutta import RungeKutta45
+    data_path = "2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
+    compare_df_name = "compare_df.pkl"
+    file = get_files(data_path)
+
+    df = pd.read_pickle(file[0])
+    print(df.info())
+    r_list = df["r"][0]
+    z_list = df["z"][0]
+    psi_list = df["psi"][0]
+    Area_list = df["area list"][0]
+
+    sim_steps = df["sim_steps"][0]
+    dt = df["dt"][0]
+    N = df["N"][0]
+    k = df["k"][0]
+    kG = df["kG"][0]
+    c0 = df["c0"][0]
+    sigma = df["sigma"][0]
+    tau = df["tau"][0]
+    eta =  1 #df["eta"][0] 
+    ds = df["ds"][0]
+    Area = df["area list"][0]
+    S_pot = df["Epot"][0]
+    S_pot_before = df["Epot before correction"][0]
+    T_kin = df["Ekin"][0]
+    corr_count = df["correction count"][0]
+
+    overflow_err = False
+    integration_method = "RK4"
+    time_vec = np.linspace(0,sim_steps*dt,sim_steps)
+
+    dEpotdt_before ,dEpotdt = np.zeros(sim_steps-1),np.zeros(sim_steps-1)
+    compare_dEdt = np.zeros(sim_steps-1)
+    t_points = np.zeros(10)
+    m = 0
+    for t in range(sim_steps-1):
+        dEpotdt_before[t] = (S_pot_before[t+1] - S_pot_before[t])/dt
+        dEpotdt[t] = (S_pot[t+1] - S_pot[t])/dt
+        compare_dEdt[t] = dEpotdt[t] - dEpotdt_before[t]
+
+        if t%(sim_steps/10) == 0:
+            t_points[m] = t
+            m += 1
+
+    t_start, t_stop = 0,0
+    for t in range(sim_steps-1):      
+        lambs,nus = Langrange_multi(
+                N=N,k=k,c0=c0,sigma=sigma
+                ,kG=kG,tau=tau,ds=ds,eta=eta
+                ,Area=Area_list
+                ,psi=psi_list[t]
+                ,radi=r_list[t]
+                ,z_list=z_list[t]
+            )
+        
+               
+        if integration_method == "RK4":
+            kr,kz,kpsi = RungeKutta45(
+                N=N,dt=dt,k=k,c0=c0, sigma=sigma
+                ,kG=kG ,tau=tau, ds=ds,eta=eta
+                ,Area=Area_list,lamb=lambs,nu=nus
+                ,psi_init=psi_list[t],r_init=r_list[t], z_init=z_list[t]
+                )
+            for i in range(N+1):
+                if i == N:
+                    z_list[t+1][i] = z_list[t][i]
+                    r_list[t+1][i] = r_list[t][i]
+                    #psi[t+1][i] = psi[t][i]
+                    if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i]:
+                        if overflow_err == False:
+                            print("\n ---- Overflow error occurred ---- \n")
+                            overflow_err = True
+
+                if i < N:
+                    r_list[t+1][i] = r_list[t][i] + (dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
+                    z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
+                    psi_list[t+1][i] = psi_list[t][i] + (dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
+
+                    if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i] or psi_list[t+1][i] != psi_list[t+1][i]:
+                        if overflow_err == False:
+                            print("\n ---- Overflow error occurred ---- \n")
+                            overflow_err = True
+        else:
+            print("No integration method was choosen, program terminates")
+            exit()
+
+
+
 if __name__ == "__main__":
     #test_Lagrange_multi()
     #test_make_frames()
@@ -2381,5 +2476,6 @@ if __name__ == "__main__":
 
 
     #test_flat_model_object()
-    test_gradients_again()
+    #test_gradients_again()
     #compare_potentential_energy()
+    test_if_variable_correction_causes_Epot_increase()

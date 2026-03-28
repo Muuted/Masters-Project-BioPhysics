@@ -55,7 +55,7 @@ def plot_tot_area(
         +f"Amax - AMin={Amax-Amin}"
         ,fontsize=font_size)
     plt.grid()
-    ax.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
+    plt.ticklabel_format(style="scientific",axis="both",scilimits=(0,0))
     
     save_name_1 = save_name + "Atot"# Total area over time"
     save_name_1 = "Atot"

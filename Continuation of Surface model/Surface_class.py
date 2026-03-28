@@ -98,8 +98,9 @@ class Surface_membrane:
         self.phasespace_x = ""
         self.phasespace_y = ""
         self.phasespace_fignum = ""
-        self.const_length_diff_N_density = True
-
+        self.const_length_diff_N_density = True # if True means that the value of ds changes to conserve length for different N
+        self.load_external_init_config = False # This allows the user to load an initial configuration, r,z,psi of shape (1,N)
+        self.external_args = [] #The args needed from external user.
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
         if self.var_perturb_choice == "psi":
@@ -173,12 +174,12 @@ class Surface_membrane:
             if i < self.N :
                 self.Area_list[i] =  np.pi*(self.r_list[0][i+1] + self.r_list[0][i])*np.sqrt( 
                     (self.r_list[0][i+1] - self.r_list[0][i])**2
-                      + (self.z_list[0][i+1] - self.z_list[0][i])**2 
+                    + (self.z_list[0][i+1] - self.z_list[0][i])**2 
                     )
                 if self.Area_list[i] == 0 :
                     print(f"Area[{i}]=0")
                     exit()
-        
+
         self.r_unperturb = [i for i in self.r_list[0]]
         self.z_unperturb = [i for i in self.z_list[0]]
         self.psi_unperturb = [i for i in self.psi_list[0]]
@@ -238,6 +239,10 @@ class Surface_membrane:
                     print("you close the program.")
                     exit()
             plt.close("all")
+
+    def load_external_config(self):
+        
+        pass
 
     def print_consts(self):
         if self.print_constants == True:
@@ -734,17 +739,24 @@ class Surface_membrane:
     def run_sim(self):
             if self.use_phase_diagram == True:
                 self.phase_space_choice()
-            self.setup_simulation()
+
+            if self.load_external_init_config == False:
+                self.setup_simulation()
+            elif self.load_external_init_config == True:
+                pass
+
             self.print_consts()
             self.dynamics()
             self.plotting_n_movie_data()
 
 
 
-def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11):
+def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11
+                  ,inte_scheme = "RK4"
+                  ):
     perturb_bool_list = [False,True,True,True,True]
     perturb_list_psi = [0 ,0    ,0      ,0.01 ,-0.01]
-    perturb_list_tau = [0 ,1.05 ,1-1.05 ,0    ,0    ]
+    perturb_list_tau = [0 ,1.05 ,1-0.05 ,0    ,0    ]
     perturb_var_choice = ["","tau","tau","psi","psi"]
 
     process = []
@@ -761,7 +773,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
         membrane.init_config_show_time = 10
         membrane.perturb = perturb_bool_list[i]
         membrane.print_constants = False
-        membrane.integration_method = "Euler"
+        membrane.integration_method = inte_scheme
         #membrane.dpsi_perturb *= perturb_list_psi[i]
         #membrane.var_perturb_choice = perturb_var_choice[i]
         #membrane.use_phase_diagram = True
@@ -829,11 +841,11 @@ def plotting_multi_process_results(
 
 if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=30,sim_index=0,dt=1.7e-11)
-    #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
+    #multi_process(cpu_cores=5,Tot_time=3e-7,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
-    #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
+    plotting_multi_process_results(path="2D sim results\\object results\\RK4\\")
 
-    #exit()
+    exit()
     N = 35
     save_path = f"2D sim results\\obj\\plus\\N={N}\\"
     save_path = f"2D sim results\\obj\\plus larger ds\\N={N}\\"
