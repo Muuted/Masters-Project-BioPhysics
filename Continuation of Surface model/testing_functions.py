@@ -2354,7 +2354,7 @@ def test_if_variable_correction_causes_Epot_increase():
     from Runge_Kutta import RungeKutta45
     data_path = "2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
     data_path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt)=(20,1.0e-06,2.5e-11)\\"
-    compare_df_name = "compare_df.pkl"
+    #compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
 
     df = pd.read_pickle(file[0])
