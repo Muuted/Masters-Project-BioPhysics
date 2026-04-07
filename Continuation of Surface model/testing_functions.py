@@ -2353,6 +2353,7 @@ def test_if_variable_correction_causes_Epot_increase():
     from Two_D_functions import dpsidt_func,drdt_func,dzdt_func
     from Runge_Kutta import RungeKutta45
     data_path = "2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
+    data_path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt)=(20,1.0e-06,2.5e-11)\\"
     compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
 
@@ -2361,6 +2362,11 @@ def test_if_variable_correction_causes_Epot_increase():
     r_list = df["r"][0]
     z_list = df["z"][0]
     psi_list = df["psi"][0]
+
+    r_ref = df["r"][0]
+    z_ref = df["z"][0]
+    psi_ref = df["psi"][0]
+
     Area_list = df["area list"][0]
 
     sim_steps = df["sim_steps"][0]
@@ -2375,7 +2381,8 @@ def test_if_variable_correction_causes_Epot_increase():
     ds = df["ds"][0]
     Area = df["area list"][0]
     S_pot = df["Epot"][0]
-    S_pot_before = df["Epot before correction"][0]
+    S_pot_ref = S_pot.copy()
+    #S_pot_before = df["Epot before correction"][0]
     T_kin = df["Ekin"][0]
     corr_count = df["correction count"][0]
 
@@ -2385,60 +2392,179 @@ def test_if_variable_correction_causes_Epot_increase():
 
     dEpotdt_before ,dEpotdt = np.zeros(sim_steps-1),np.zeros(sim_steps-1)
     compare_dEdt = np.zeros(sim_steps-1)
-    t_points = np.zeros(10)
+    t_points = np.zeros(9)
     m = 0
     for t in range(sim_steps-1):
-        dEpotdt_before[t] = (S_pot_before[t+1] - S_pot_before[t])/dt
-        dEpotdt[t] = (S_pot[t+1] - S_pot[t])/dt
-        compare_dEdt[t] = dEpotdt[t] - dEpotdt_before[t]
+        #dEpotdt_before[t] = (S_pot_before[t+1] - S_pot_before[t])/dt
+        #dEpotdt[t] = (S_pot[t+1] - S_pot[t])/dt
+        #compare_dEdt[t] = dEpotdt[t] - dEpotdt_before[t]
 
-        if t%(sim_steps/10) == 0:
-            t_points[m] = t
+        if t%(int(sim_steps/9)) == 0:
+            t_points[m] = int(t)
+            m += 1
+            if m == 9:
+                break
+
+    
+    num_of_free_steps = 40
+    for t_start in t_points:
+        t_stop = int(t_start + num_of_free_steps)
+
+        for t in range(int(t_start),t_stop):      
+            lambs,nus = Langrange_multi(
+                    N=N,k=k,c0=c0,sigma=sigma
+                    ,kG=kG,tau=tau,ds=ds,eta=eta
+                    ,Area=Area_list
+                    ,psi=psi_list[t]
+                    ,radi=r_list[t]
+                    ,z_list=z_list[t]
+                )            
+                
+            if integration_method == "RK4":
+                kr,kz,kpsi = RungeKutta45(
+                    N=N,dt=dt,k=k,c0=c0, sigma=sigma
+                    ,kG=kG ,tau=tau, ds=ds,eta=eta
+                    ,Area=Area_list,lamb=lambs,nu=nus
+                    ,psi_init=psi_list[t],r_init=r_list[t], z_init=z_list[t]
+                    )
+                for i in range(N+1):
+                    if i == N:
+                        z_list[t+1][i] = z_list[t][i]
+                        r_list[t+1][i] = r_list[t][i]
+                        #psi[t+1][i] = psi[t][i]
+                        if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i]:
+                            if overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                overflow_err = True
+
+                    if i < N:
+                        r_list[t+1][i] = r_list[t][i] + (dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
+                        z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
+                        psi_list[t+1][i] = psi_list[t][i] + (dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
+
+                        if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i] or psi_list[t+1][i] != psi_list[t+1][i]:
+                            if overflow_err == False:
+                                print("\n ---- Overflow error occurred ---- \n")
+                                overflow_err = True
+                    
+                    S_pot[t] = E_pot(
+                    N=N,k=k,kG=kG,tau=tau,c0=c0
+                    ,r=r_list[t],psi=psi_list[t],Area=Area_list
+                    )
+            else:
+                print("No integration method was choosen, program terminates")
+                exit()
+
+
+
+
+    fig,ax = plt.subplots()
+    ax.plot(
+        time_vec[0:sim_steps-1],S_pot
+        ,label="Epot"
+        #,marker="."
+        #,markersize=2
+    )
+
+    ax.plot(
+        time_vec[0:sim_steps-1],S_pot_ref
+        ,label="Epot ref"
+        #,marker="."
+        #,markersize=2
+    )
+    for m in range(len(t_points)):
+        t_start = int(t_points[m])
+        t_stop = int(t_start + num_of_free_steps + 20)
+        if t_start != 0:
+            t_start = int(t_points[m] - 20)
+            t_stop = int(t_start + num_of_free_steps + 40)
+
+
+        ymax = max(S_pot[int(t_start):t_stop])
+        ymin = min(S_pot[int(t_start):t_stop])
+        scaleing = ymax-ymin
+        ymax = ymax + scaleing*0.3
+        ymin = ymin - scaleing*0.3
+
+        xleft = time_vec[t_start] - time_vec[sim_steps-1]/40
+        xright = time_vec[t_start] + time_vec[sim_steps-1]/40
+
+        line_width = 1
+        ax.hlines(xmin=xleft,xmax=xright ,y=ymin ,color="k",linewidth=line_width)
+        ax.hlines(xmin=xleft,xmax=xright,y=ymax ,color="k",linewidth=line_width)
+
+        ax.vlines(x=xleft, ymin=ymin , ymax=ymax ,color="k",linewidth=line_width)
+        ax.vlines(x=xright, ymin=ymin , ymax=ymax ,color="k",linewidth=line_width)
+
+        ax.text(x=xright,y=ymax
+                ,s=f"{m}")
+    plt.title("Comparing the potential energy of the reference simulation \n "
+              +f"and the loaded version w/o variable corrections"
+              )
+    
+    plt.legend()
+    plt.grid()
+
+    """
+    for t_start in t_points:
+        t_stop = int(t_start + num_of_free_steps)
+        
+        fig,ax = plt.subplots()
+        ax.plot(
+            time_vec[0:sim_steps-1],S_pot
+            ,label=f"Epot, tstart={t_start}"
+            ,marker="."
+        )
+
+        plt.xlim(time_vec[int(t_start)],time_vec[t_stop])
+        plt.ylim(
+            min(S_pot[int(t_start):t_stop]) , max(S_pot[int(t_start):t_stop])
+        )
+        plt.legend()
+        plt.grid()
+
+
+    plt.show()"""
+    #exit()
+    fig,ax = plt.subplots(3,3)
+    m = 0
+    for i in range(3):
+        for j in range(3):
+            t_start = int(t_points[m])
+            t_stop = int(t_start + num_of_free_steps + 20)
+            if t_start != 0:
+                t_start = int(t_points[m] - 20)
+                t_stop = int(t_start + num_of_free_steps + 40)
+            
+
+            ax[i,j].plot(
+                    time_vec[int(t_start):t_stop],S_pot[int(t_start):t_stop]
+                    ,label=f"Epot, box: {m}"
+                    ,marker="."
+                )
+            
+            ax[i,j].plot(
+                    time_vec[int(t_start):t_stop],S_pot_ref[int(t_start):t_stop]
+                    ,label="Epot reference"
+                )
+            ax[i,j].legend()
+            ax[i,j].set_xlim([time_vec[t_start],time_vec[t_stop]])
+            ax[i,j].grid()
+            ymax = max(S_pot[int(t_start):t_stop])
+            ymin = min(S_pot[int(t_start):t_stop])
+            scaleing = ymax-ymin
+            ax[i,j].set_ylim(
+                ymin - scaleing*0.1 ,ymax + scaleing*0.1
+            )
+            if i == 2:
+                ax[i,j].set_xlabel("time [s]")
+            if j == 0:
+                ax[i,j].set_ylabel("Epot [zJ]")
+
             m += 1
 
-    t_start, t_stop = 0,0
-    for t in range(sim_steps-1):      
-        lambs,nus = Langrange_multi(
-                N=N,k=k,c0=c0,sigma=sigma
-                ,kG=kG,tau=tau,ds=ds,eta=eta
-                ,Area=Area_list
-                ,psi=psi_list[t]
-                ,radi=r_list[t]
-                ,z_list=z_list[t]
-            )
-        
-               
-        if integration_method == "RK4":
-            kr,kz,kpsi = RungeKutta45(
-                N=N,dt=dt,k=k,c0=c0, sigma=sigma
-                ,kG=kG ,tau=tau, ds=ds,eta=eta
-                ,Area=Area_list,lamb=lambs,nu=nus
-                ,psi_init=psi_list[t],r_init=r_list[t], z_init=z_list[t]
-                )
-            for i in range(N+1):
-                if i == N:
-                    z_list[t+1][i] = z_list[t][i]
-                    r_list[t+1][i] = r_list[t][i]
-                    #psi[t+1][i] = psi[t][i]
-                    if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i]:
-                        if overflow_err == False:
-                            print("\n ---- Overflow error occurred ---- \n")
-                            overflow_err = True
-
-                if i < N:
-                    r_list[t+1][i] = r_list[t][i] + (dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
-                    z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
-                    psi_list[t+1][i] = psi_list[t][i] + (dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
-
-                    if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i] or psi_list[t+1][i] != psi_list[t+1][i]:
-                        if overflow_err == False:
-                            print("\n ---- Overflow error occurred ---- \n")
-                            overflow_err = True
-        else:
-            print("No integration method was choosen, program terminates")
-            exit()
-
-
+    plt.suptitle("Zoomed in parts of the total potential energy plot to get a close look")
+    plt.show()
 
 if __name__ == "__main__":
     #test_Lagrange_multi()
