@@ -1977,7 +1977,7 @@ def test_gradients_again():
                 +nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
             )
 
-        return -S + grad_constraint 
+        return - S + grad_constraint 
 
     data_path = "2D sim results\\obj\\plus\\N=40\\"
     data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"
@@ -2072,9 +2072,11 @@ def test_gradients_again():
                             ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
                             )
 
-                grad_test_r[t][i] = (dLdr - dLdrh)#/(dLdr + dLdrh)
+                grad_test_r[t][i] = (dLdr - dLdrh)*100/dLdr #gets a % deviation of the theoretical result
                 
-
+                if grad_test_r[t][i] > 1e3:
+                    print(f"dLdr={dLdr} , dLdrh={dLdrh}")
+                    exit()
 
 
                 """------------- Gradient test for z --------------------------------------------------------------------------"""
@@ -2099,7 +2101,7 @@ def test_gradients_again():
                     ,nu=nus
                 )
 
-                grad_test_z[t][i] = (dLdz - dLdzh)#/(dLdzh + dLdz )
+                grad_test_z[t][i] = (dLdz - dLdzh)*100/dLdz
 
 
                 """------------- Gradient test for psi ------------------"""
@@ -2350,12 +2352,13 @@ def compare_potentential_energy():
 
 def test_if_variable_correction_causes_Epot_increase():
     from two_d_data_processing import get_files
-    from Two_D_functions import dpsidt_func,drdt_func,dzdt_func
+    from Two_D_functions import dpsidt_func,drdt_func,dzdt_func,Make_variable_corrections
     from Runge_Kutta import RungeKutta45
     data_path = "2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
-    data_path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt)=(20,1.0e-06,2.5e-11)\\"
+    #data_path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt)=(20,1.0e-06,2.5e-11)\\"
     #compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
+    
 
     df = pd.read_pickle(file[0])
     print(df.info())
@@ -2363,9 +2366,13 @@ def test_if_variable_correction_causes_Epot_increase():
     z_list = df["z"][0]
     psi_list = df["psi"][0]
 
-    r_ref = df["r"][0]
-    z_ref = df["z"][0]
-    psi_ref = df["psi"][0]
+    r_ref = r_list.copy()
+    z_ref = z_list.copy()
+    psi_ref = psi_list.copy()
+
+    r_var_corr = r_list.copy()
+    z_var_corr = z_list.copy()
+    psi_var_corr = psi_list.copy()
 
     Area_list = df["area list"][0]
 
@@ -2385,6 +2392,8 @@ def test_if_variable_correction_causes_Epot_increase():
     #S_pot_before = df["Epot before correction"][0]
     T_kin = df["Ekin"][0]
     corr_count = df["correction count"][0]
+    var_corr_tol = df["Tolerance"][0]
+    
 
     overflow_err = False
     integration_method = "RK4"
@@ -2407,6 +2416,7 @@ def test_if_variable_correction_causes_Epot_increase():
 
     
     num_of_free_steps = 40
+    do_correction = False#True
     for t_start in t_points:
         t_stop = int(t_start + num_of_free_steps)
 
@@ -2427,30 +2437,36 @@ def test_if_variable_correction_causes_Epot_increase():
                     ,Area=Area_list,lamb=lambs,nu=nus
                     ,psi_init=psi_list[t],r_init=r_list[t], z_init=z_list[t]
                     )
+                
                 for i in range(N+1):
                     if i == N:
                         z_list[t+1][i] = z_list[t][i]
                         r_list[t+1][i] = r_list[t][i]
                         #psi[t+1][i] = psi[t][i]
-                        if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i]:
-                            if overflow_err == False:
-                                print("\n ---- Overflow error occurred ---- \n")
-                                overflow_err = True
 
                     if i < N:
                         r_list[t+1][i] = r_list[t][i] + (dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
                         z_list[t+1][i] = z_list[t][i] + (dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
                         psi_list[t+1][i] = psi_list[t][i] + (dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
-                        if r_list[t+1][i] != r_list[t+1][i] or z_list[t+1][i] != z_list[t+1][i] or psi_list[t+1][i] != psi_list[t+1][i]:
-                            if overflow_err == False:
-                                print("\n ---- Overflow error occurred ---- \n")
-                                overflow_err = True
                     
                     S_pot[t] = E_pot(
                     N=N,k=k,kG=kG,tau=tau,c0=c0
                     ,r=r_list[t],psi=psi_list[t],Area=Area_list
                     )
+
+
+                if do_correction == True:
+                    correction_count = Make_variable_corrections(
+                        N = N
+                        ,r = r_list[t+1] ,z = z_list[t+1], psi = psi_list[t+1] 
+                        ,Area = Area_list
+                        ,Area_init = np.sum(Area_list)
+                        ,Tolerence = var_corr_tol
+                        ,corr_max = 10
+                        ,t = t
+                    )
+                    #correct_count_list[t+1] = correction_count       
             else:
                 print("No integration method was choosen, program terminates")
                 exit()
@@ -2459,15 +2475,17 @@ def test_if_variable_correction_causes_Epot_increase():
 
 
     fig,ax = plt.subplots()
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
     ax.plot(
-        time_vec[0:sim_steps-1],S_pot
+        time_vec[0:sim_steps],S_pot
         ,label="Epot"
         #,marker="."
         #,markersize=2
     )
 
     ax.plot(
-        time_vec[0:sim_steps-1],S_pot_ref
+        time_vec[0:sim_steps],S_pot_ref
         ,label="Epot ref"
         #,marker="."
         #,markersize=2
@@ -2497,7 +2515,7 @@ def test_if_variable_correction_causes_Epot_increase():
         ax.vlines(x=xright, ymin=ymin , ymax=ymax ,color="k",linewidth=line_width)
 
         ax.text(x=xright,y=ymax
-                ,s=f"{m}")
+                ,s=f"box:{m}")
     plt.title("Comparing the potential energy of the reference simulation \n "
               +f"and the loaded version w/o variable corrections"
               )
@@ -2527,6 +2545,11 @@ def test_if_variable_correction_causes_Epot_increase():
     plt.show()"""
     #exit()
     fig,ax = plt.subplots(3,3)
+    #fig.canvas.manager.full_screen_toggle()
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    #wm = plt.get_current_fig_manager()
+    #wm.window.state('zoomed')
     m = 0
     for i in range(3):
         for j in range(3):
@@ -2602,6 +2625,6 @@ if __name__ == "__main__":
 
 
     #test_flat_model_object()
-    #test_gradients_again()
+    test_gradients_again()
     #compare_potentential_energy()
-    test_if_variable_correction_causes_Epot_increase()
+    #test_if_variable_correction_causes_Epot_increase()
