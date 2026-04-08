@@ -2012,9 +2012,9 @@ def test_gradients_again():
     grad_test_z = np.zeros(shape=(sim_steps,N+1))
     grad_test_psi = np.zeros(shape=(sim_steps,N))
 
-    h = 1e-5
-    make_new_data = False# True
-    sim_steps = int(sim_steps/5)
+    h = 1e-7
+    make_new_data = False #True
+    sim_steps = sim_steps#int(sim_steps/5)
     if make_new_data == True:
         print_scale = sim_steps/1000
         start_time = time.time()
@@ -2074,9 +2074,9 @@ def test_gradients_again():
 
                 grad_test_r[t][i] = (dLdr - dLdrh)*100/dLdr #gets a % deviation of the theoretical result
                 
-                if grad_test_r[t][i] > 1e3:
-                    print(f"dLdr={dLdr} , dLdrh={dLdrh}")
-                    exit()
+                #if grad_test_r[t][i] > 1e3:
+                    #print(f"dLdr={dLdr} , dLdrh={dLdrh}")
+                    #exit()
 
 
                 """------------- Gradient test for z --------------------------------------------------------------------------"""
@@ -2116,7 +2116,7 @@ def test_gradients_again():
                 df.to_pickle(data_path + compare_df_name)
 
     elif make_new_data == False:
-        df_compare_grad = pd.read_pickle("2D sim results\\obj\\plus\\N=40\\" + compare_df_name)
+        df_compare_grad = pd.read_pickle(data_path + compare_df_name)
         grad_test_r = df_compare_grad["grad test r"][0]
         grad_test_z = df_compare_grad["grad test z"][0]
         grad_test_psi = df_compare_grad["grad test psi"][0]
