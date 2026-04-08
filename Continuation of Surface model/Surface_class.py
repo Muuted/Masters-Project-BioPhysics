@@ -93,7 +93,7 @@ class Surface_membrane:
         self.perturb:bool = False # decieds if we are going perturb the initial state or not   
         self.var_perturb_options:list = ["psi","tau"] # the types of options for variable perturbations    
         self.var_perturb_choice:str = perturb_var  # The variable choosen
-        self.start_flat:bool = False
+        self.start_flat:bool = False #Choses whether or not the simulation starts from a flat state or not.
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
         self.phasespace_x = ""
         self.phasespace_y = ""
@@ -101,6 +101,7 @@ class Surface_membrane:
         self.const_length_diff_N_density = True # if True means that the value of ds changes to conserve length for different N
         self.load_external_init_config = False # This allows the user to load an initial configuration, r,z,psi of shape (1,N)
         self.external_args = [] #The args needed from external user.
+
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
         if self.var_perturb_choice == "psi":
@@ -122,7 +123,7 @@ class Surface_membrane:
         self.print_constants:bool = True
 
         # 
-        self.save_data:bool = True
+        self.save_data:bool = True #choses whether or not the simulation data is saved.
         self.show_stationary_state:bool = True # Showing the initial configuration before simulation start
         self.init_config_show_time:float = 2 # Showing the initial configuration
         self.close_final_plots:bool = False
@@ -793,13 +794,14 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
 
 def plotting_multi_process_results(
         path:str = "2D sim results\\object results compare with thesis data\\"
+        ,make_movie= True
+        ,make_figures = True
+        ,make_comparison_figs = True
     ):
     #path = "2D sim results\\object results T=1e-06\\"
     #path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
     directory_list = list()
-    make_movie= True
-    make_figures = True
-    make_comparison_figs = True
+
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:

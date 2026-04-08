@@ -942,6 +942,19 @@ def Langrange_multi(
     return lamb_return,nu_return
 
 
+def Lagrange_multi_V2(
+        N:int ,k:float ,c0:float ,sigma:float 
+        ,kG:float ,tau:float , ds:float, eta:float
+        ,Area:list,psi:list
+        ,radi:list
+        ,z_list:list
+        ,print_matrix = False
+    ):
+
+    
+    pass
+
+
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
     f = ""
     if i > N:
