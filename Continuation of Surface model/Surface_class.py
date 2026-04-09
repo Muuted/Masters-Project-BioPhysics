@@ -138,31 +138,35 @@ class Surface_membrane:
 
         if self.const_length_diff_N_density == True:
             self.ds = self.ds*(20/self.N)
-            print("scaled N")
-        
-        # scaling parameters        
-        rs2 = 20*self.lc 
-        zs2 = 0
-        s0, sN = 0, 50*self.lc
-        #print(self.N)
-        #Initiating the inital state of the membrane
-        psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
-                sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
-                ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
-                ,total_points = self.N
-                ,use_phase_space= self.use_phase_diagram
-                ,use_fig_number = self.phasespace_fignum
-            )
-        self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
-        self.kG = self.k*self.alpha        
+            print("scaled N")        
+            
 
         if self.start_flat == True:
+            self.alpha = 0.75
+            self.kG = 0.75*self.k
+
             for i in range(int(self.N+1)):
                 self.r_list[0][i] = self.r0 + i*self.ds
                 self.z_list[0][i] = 0
                 if i < self.N:
                     self.psi_list[0][i] = 0
         else:
+            # scaling parameters        
+            rs2 = 20*self.lc 
+            zs2 = 0
+            s0, sN = 0, 50*self.lc
+            #print(self.N)
+            #Initiating the inital state of the membrane
+            psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
+                    sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
+                    ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+                    ,total_points = self.N
+                    ,use_phase_space= self.use_phase_diagram
+                    ,use_fig_number = self.phasespace_fignum
+                )
+            self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
+            self.kG = self.k*self.alpha    
+
             """------ variables list ---------"""
             for i in range(int(self.N+1)):
                 if i < self.N :
@@ -744,7 +748,8 @@ class Surface_membrane:
             if self.load_external_init_config == False:
                 self.setup_simulation()
             elif self.load_external_init_config == True:
-                pass
+                print("This is not implementet yet. Program termines")
+                exit()
 
             self.print_consts()
             self.dynamics()
