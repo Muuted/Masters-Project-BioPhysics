@@ -76,7 +76,7 @@ def plot_tot_area(
     plt.title(
         f"correction counts pr time step \n "
         +r"$\frac{corrections}{time step} \approx$"
-        +f"{round(np.sum(corr_count)/(sim_steps-1) ,3)}"
+        +f"{round(np.sum(corr_count)/(sim_steps-1) ,5)}"
         ,fontsize=font_size)
         
     plt.xlabel("t[s]",fontsize=font_size)

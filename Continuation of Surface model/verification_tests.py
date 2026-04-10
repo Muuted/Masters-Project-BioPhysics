@@ -69,15 +69,16 @@ def verification_of_model():
 
 def rolling_test():
     path = "2D sim results\\model verification\\rolling test\\"
-    integration_method = "Euler"
+    integration_method = "Euler"#"RK4"
+    r0 = 5
+    tol = 1e-3
+    N= 60
     membrane = Surface_membrane(
-            N = 40
-            ,T = 1e-6
-            ,dt = 2.5e-11
+            N = N
+            ,T = 2.5e-7
+            ,dt = 1e-11
             ,const_index=0
-            ,dpsi = 0
-            ,perturb_var = "psi"
-            ,save_path= path + integration_method + f"(tau,c0) = ({0:.1e}  ,{25:.1e} )\\"
+            ,save_path= path + integration_method + f"2 (N,r0,tol) = ({N}  ,{r0:.1e}  ,{tol:.1e} ) ,\\"
         )
 
     membrane.integration_method = integration_method
@@ -86,8 +87,9 @@ def rolling_test():
     membrane.const_length_diff_N_density = False
 
     membrane.close_final_plots = True
-    membrane.var_corr_tol = 1e-3
-
+    membrane.var_corr_tol = tol
+    membrane.r0 = r0
+    
     membrane.setup_simulation()
 
     membrane.tau = 0
@@ -96,7 +98,6 @@ def rolling_test():
     membrane.make_movie = True
     membrane.make_plots = True
 
-    membrane.print_consts()
     membrane.dynamics()
     membrane.plotting_n_movie_data()
 

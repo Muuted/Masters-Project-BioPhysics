@@ -114,7 +114,7 @@ class Surface_membrane:
         if save_path == "":
             self.save_path:str = a
         else:
-            self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+            self.save_path:str = save_path #+ f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
         self.save_figs_path:str = "figures and movie\\"
         self.figs_for_video_path:str = "figures for video\\"
         self.df_name:str = "2D Surface sim.pkl"
@@ -139,11 +139,26 @@ class Surface_membrane:
         if self.const_length_diff_N_density == True:
             self.ds = self.ds*(20/self.N)
             print("scaled N")        
-            
+        
+        # scaling parameters        
+        rs2 = 20*self.lc 
+        zs2 = 0
+        s0, sN = 0, 50*self.lc
+        #print(self.N)
+        #Initiating the inital state of the membrane
+        psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
+                sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
+                ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
+                ,total_points = self.N
+                ,use_phase_space= self.use_phase_diagram
+                ,use_fig_number = self.phasespace_fignum
+            )
+        self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
+        self.kG = self.k*self.alpha   
 
         if self.start_flat == True:
-            self.alpha = 0.75
-            self.kG = 0.75*self.k
+            #self.alpha = 0.75
+            #self.kG = 0.75*self.k
 
             for i in range(int(self.N+1)):
                 self.r_list[0][i] = self.r0 + i*self.ds
@@ -151,21 +166,6 @@ class Surface_membrane:
                 if i < self.N:
                     self.psi_list[0][i] = 0
         else:
-            # scaling parameters        
-            rs2 = 20*self.lc 
-            zs2 = 0
-            s0, sN = 0, 50*self.lc
-            #print(self.N)
-            #Initiating the inital state of the membrane
-            psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
-                    sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
-                    ,psi_L=self.psi2 ,r_L=rs2 ,z_L=zs2 ,s0=s0 ,sN=sN
-                    ,total_points = self.N
-                    ,use_phase_space= self.use_phase_diagram
-                    ,use_fig_number = self.phasespace_fignum
-                )
-            self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
-            self.kG = self.k*self.alpha    
 
             """------ variables list ---------"""
             for i in range(int(self.N+1)):
@@ -281,8 +281,7 @@ class Surface_membrane:
         if self.integration_method not in integration_options:
             print("No integration method choosen correctly")
             exit()
-        print(f"integration method={self.integration_method}")
-        print("Simulation progressbar \n ")
+        
 
         self.Potential_E_before_correction[0] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
@@ -299,6 +298,13 @@ class Surface_membrane:
                 ,r=self.r_list[0],z=self.z_list[0],psi=self.psi_list[0]
                 )
         
+
+        if self.print_constants == True:
+            self.print_consts()
+        
+        print(f"integration method={self.integration_method}")
+        print("Simulation progressbar \n ")
+
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
                 time1 = time.time()-start_time
@@ -418,7 +424,7 @@ class Surface_membrane:
                 ,r=self.r_list[t+1],z=self.z_list[t+1],psi=self.psi_list[t+1]
                 )
 
-
+        
         print("\n")        
 
         if self.save_data == True:        
@@ -762,7 +768,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
                   ):
     perturb_bool_list = [False,True,True,True,True]
     perturb_list_psi = [0 ,0    ,0      ,0.01 ,-0.01]
-    perturb_list_tau = [0 ,1.05 ,1-0.05 ,0    ,0    ]
+    perturb_list_tau = [0 ,1.0+0.05 ,1.0-0.05 ,0    ,0    ]
     perturb_var_choice = ["","tau","tau","psi","psi"]
 
     process = []

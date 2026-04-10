@@ -25,7 +25,7 @@ def Two_d_simulation_stationary_states(
     ,data_path:str
     ,integration_method:str #= "RK4"
     ,save_data:bool = True 
-    ,Tolerence:float = 1e-10
+    ,Tolerence:float = 1e-5
     ,do_correction:bool = True
     ,area_testing:bool = False
     ,print_progress:bool = True
@@ -91,7 +91,7 @@ def Two_d_simulation_stationary_states(
                                     )
                     psi[t+1][i] = psi[t][i] + dt*dpsidt
 
-        if integration_method == "RK4":
+        elif integration_method == "RK4":
             kr,kz,kpsi = RungeKutta45(
                 N=N,dt=dt,k=k,c0=c0, sigma=sigma
                 ,kG=kG ,tau=tau, ds=ds,eta=eta
