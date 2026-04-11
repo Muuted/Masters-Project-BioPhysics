@@ -269,6 +269,7 @@ class Surface_membrane:
             + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
             + f"    alpha = {self.alpha:0.1e}  \n "
             + f"    var tol = {self.var_corr_tol:0.1e} \n "
+            + f"    Integration Scheme = {self.integration_method} \n "
             + f"------------------------------------------------------- \n \n "
         )
 
@@ -757,7 +758,6 @@ class Surface_membrane:
                 print("This is not implementet yet. Program termines")
                 exit()
 
-            self.print_consts()
             self.dynamics()
             self.plotting_n_movie_data()
 
