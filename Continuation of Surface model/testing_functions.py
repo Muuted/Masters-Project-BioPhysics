@@ -1955,15 +1955,26 @@ def test_flat_model_object():
     
 
 
-
-
-
 def test_gradients_again():
-    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma
+    from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g
     from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi
     from two_d_data_processing import E_pot, get_files
     
-    def Lagrange_grad(
+
+    def constraints_multi(
+            N,k,kG,tau,c0
+            ,nus,lambs,Area
+            ,r,psi,z
+        ):
+        grad_constraint = 0
+        for i in range(N):
+            grad_constraint += (
+                lambs[i]*constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
+                + nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
+            )
+        return grad_constraint
+
+    """def Lagrange_grad(
             N,k,kG,tau,c0
             ,nus,lambs,Area
             ,r,psi,z
@@ -1971,13 +1982,14 @@ def test_gradients_again():
         
         S = E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r,psi=psi,Area=Area)
         grad_constraint = 0
+
         for i in range(N):
             grad_constraint += (
                 lambs[i]*constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
-                +nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
+                + nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
             )
 
-        return - S + grad_constraint 
+        return - S + grad_constraint """
 
     data_path = "2D sim results\\obj\\plus\\N=40\\"
     data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"
@@ -2008,13 +2020,22 @@ def test_gradients_again():
 
     time_vec = np.linspace(0,(sim_steps)*dt,sim_steps)
 
+    grad_test_dLdr = np.zeros(shape=(sim_steps,N+1))
+    grad_test_dLdz = np.zeros(shape=(sim_steps,N+1))
+    grad_test_dLdpsi = np.zeros(shape=(sim_steps,N))
+
     grad_test_r = np.zeros(shape=(sim_steps,N+1))
     grad_test_z = np.zeros(shape=(sim_steps,N+1))
     grad_test_psi = np.zeros(shape=(sim_steps,N))
 
+    grad_test_constraint_r = np.zeros(shape=(sim_steps,N+1))
+    grad_test_constraint_z = np.zeros(shape=(sim_steps,N+1))
+    grad_test_constraint_psi = np.zeros(shape=(sim_steps,N))
+
     h = 1e-7
-    make_new_data = False #True
-    sim_steps = sim_steps#int(sim_steps/5)
+    make_new_data = False
+    sim_steps = int(sim_steps/20)
+
     if make_new_data == True:
         print_scale = sim_steps/1000
         start_time = time.time()
@@ -2036,12 +2057,13 @@ def test_gradients_again():
                 ,psi=psi[t],radi=r[t],z_list=z[t]
                 )
             
-            grad_L_ref = Lagrange_grad(
-                    N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,nus=nus,lambs=lambs,Area=Area
-                    ,r=r[t] ,psi=psi[t] ,z=z[t]
-                    )                
+            S = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
+            constraint_eq = constraints_multi(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],z=z[t],Area=Area
+                                              ,nus=nus ,lambs=lambs)
+
+            grad_L_ref = S + constraint_eq
             
+
             for i in range(N):
                 rh = [ r[t][n] + h if n==i else r[t][n] for n in range(N+1)]
                 zh = [ z[t][n] + h if n==i else z[t][n] for n in range(N+1)]
@@ -2052,15 +2074,19 @@ def test_gradients_again():
                     N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                     ,psi=psi[t] ,z_list=z[t]
                     ,radi=rh
-                )                
-                #print(f"nus diff = {(np.sum(nus) - np.sum(nus_rh))/(np.sum(nus_rh))}         lamb diff =  {(np.sum(lambs) - np.sum(lambs_rh))/(np.sum(lambs_rh))}")
-                grad_L_rh = Lagrange_grad(
+                )
+                
+                                
+                S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=rh,psi=psi[t],Area=Area)
+
+                constraint_eq_rh = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,nus=nus_rh
-                    ,lambs=lambs_rh
-                    ,Area=Area
+                    ,nus=nus_rh ,lambs=lambs_rh
+                    ,Area=Area 
                     ,r=rh ,psi=psi[t], z=z[t]
-                    )            
+                    )
+
+                grad_L_rh = S_rh + constraint_eq_rh 
 
                 dLdrh = (grad_L_rh - grad_L_ref)/h  #the Newton derivative 
 
@@ -2072,12 +2098,15 @@ def test_gradients_again():
                             ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
                             )
 
-                grad_test_r[t][i] = (dLdr - dLdrh)*100/dLdr #gets a % deviation of the theoretical result
-                
-                #if grad_test_r[t][i] > 1e3:
-                    #print(f"dLdr={dLdr} , dLdrh={dLdrh}")
-                    #exit()
+                grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
 
+                diff_constraints_rh = (constraint_eq_rh - constraint_eq)/h
+                diff_constraints = c_diff(i=i,j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r")
+
+                grad_test_constraint_r[t][i] = (diff_constraints - diff_constraints_rh)/diff_constraints
+
+
+                grad_test_r[t][i] = 0
 
                 """------------- Gradient test for z --------------------------------------------------------------------------"""
                 nus_zh, lambs_zh = Langrange_multi(
@@ -2085,13 +2114,16 @@ def test_gradients_again():
                     ,psi=psi[t],radi=r[t]
                     ,z_list=zh
                 )                
-                #print(f"nus diff = {(np.sum(nus) - np.sum(nus_zh))/(np.sum(nus_zh))}         lamb diff =  {(np.sum(lambs) - np.sum(lambs_zh))/(np.sum(lambs_zh))}")
-                #exit()
-                grad_L_zh = Lagrange_grad(
+
+                S_zh = -E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
+
+                constraint_eq_zh = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
                     ,nus=nus_zh,lambs=lambs_zh,Area=Area
                     ,r=r[t],psi=psi[t], z=zh
                     )
+
+                grad_L_zh = S_zh + constraint_eq_zh
                 
                 dLdzh = (grad_L_zh - grad_L_ref)/h
 
@@ -2099,13 +2131,14 @@ def test_gradients_again():
                     i=i,ds=ds,eta=eta,Area=Area
                     ,radi=r[t]
                     ,nu=nus
-                )
+                    )
 
-                grad_test_z[t][i] = (dLdz - dLdzh)*100/dLdz
+                grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz
 
 
                 """------------- Gradient test for psi ------------------"""
 
+                """------------- Saving the data ------------------"""
 
                 df = pd.DataFrame({
                     'grad test r': [grad_test_r],
