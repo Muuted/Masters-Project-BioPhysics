@@ -1957,7 +1957,7 @@ def test_flat_model_object():
 
 def test_gradients_again():
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g
-    from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi
+    from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi, Q_function
     from two_d_data_processing import E_pot, get_files
     
 
@@ -1973,6 +1973,19 @@ def test_gradients_again():
                 + nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
             )
         return grad_constraint
+
+    def theory_constraint(
+            j,N,r,z,psi,Area,nus,lambs,diff_var
+    ):
+
+        dc = 0
+        for i in range(N):
+            dc += (
+                lambs[i]*c_diff_f(i=i,j=j,N=N,r=r,psi=psi,Area=Area,diff_var=diff_var)
+                + nus[i]*c_diff_g(i=i,j=j,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=diff_var)
+            )
+        
+        return dc
 
     """def Lagrange_grad(
             N,k,kG,tau,c0
@@ -2063,6 +2076,7 @@ def test_gradients_again():
 
             grad_L_ref = S + constraint_eq
             
+            
 
             for i in range(N):
                 rh = [ r[t][n] + h if n==i else r[t][n] for n in range(N+1)]
@@ -2097,53 +2111,77 @@ def test_gradients_again():
                             ,lamb=lambs,nu=nus
                             ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
                             )
+                
+
+                diff_constraints_rh = (constraint_eq_rh - constraint_eq)/h                
+                diff_constraints_r = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="r")
+
+                Q_r = Q_function(
+                    i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t]
+                )                
+                grad_S_r = (S_rh - S)/h
+
 
                 grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
+                grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r
+                grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r
 
-                diff_constraints_rh = (constraint_eq_rh - constraint_eq)/h
-                diff_constraints = c_diff(i=i,j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r")
-
-                grad_test_constraint_r[t][i] = (diff_constraints - diff_constraints_rh)/diff_constraints
-
-
-                grad_test_r[t][i] = 0
 
                 """------------- Gradient test for z --------------------------------------------------------------------------"""
                 nus_zh, lambs_zh = Langrange_multi(
                     N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                    ,psi=psi[t],radi=r[t]
-                    ,z_list=zh
-                )                
-
-                S_zh = -E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
+                    ,psi=psi[t] ,z_list=zh
+                    ,radi=r[t]
+                )
+                
+                                
+                S_zh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
 
                 constraint_eq_zh = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,nus=nus_zh,lambs=lambs_zh,Area=Area
-                    ,r=r[t],psi=psi[t], z=zh
+                    ,nus=nus_zh ,lambs=lambs_zh
+                    ,Area=Area 
+                    ,r=r[t] ,psi=psi[t], z=zh
                     )
 
-                grad_L_zh = S_zh + constraint_eq_zh
+                grad_L_zh = S_zh + constraint_eq_zh 
+
+                dLdzh = (grad_L_zh - grad_L_ref)/h  #the Newton derivative 
+
+                dLdz = gamma(i=i,ds=ds,eta=eta)*dzdt_func(
+                    i=i,ds=ds,eta=eta,Area=Area,radi=r[t],nu=nus
+                )
                 
-                dLdzh = (grad_L_zh - grad_L_ref)/h
 
-                dLdz =  gamma(i=i,ds=ds,eta=eta)*dzdt_func(
-                    i=i,ds=ds,eta=eta,Area=Area
-                    ,radi=r[t]
-                    ,nu=nus
-                    )
+                diff_constraints_zh = (constraint_eq_zh - constraint_eq)/h                
+                diff_constraints_z = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="z")
 
-                grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz
+                """Q_z = Q_function(
+                    i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t]
+                )"""
+                #grad_S_z = (S_zh - S)/h
 
 
-                """------------- Gradient test for psi ------------------"""
+                grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz  #gets a % deviation of the theoretical result
+                grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z
+                #grad_test_z[t][i] = (Q_z - grad_S_z)/Q_z
 
-                """------------- Saving the data ------------------"""
+
+
+                """------------- Gradient test for psi --------------------------------------------------------------"""
+
+                """------------- Saving the data --------------------------------------------------------------------"""
 
                 df = pd.DataFrame({
                     'grad test r': [grad_test_r],
                     'grad test z': [grad_test_z],
-                    'grad test psi': [grad_test_psi]
+                    'grad test psi': [grad_test_psi],
+                    'grad test dLdr': [grad_test_dLdr],
+                    'grad test dLdz': [grad_test_dLdz],
+                    'grad test dLdpsi': [grad_test_dLdpsi],
+                    'grad test constraint r':[grad_test_constraint_r],
+                    'grad test constraint z':[grad_test_constraint_z],
+                    'grad test constraint psi':[grad_test_constraint_psi]
                 })
 
                 df.to_pickle(data_path + compare_df_name)
@@ -2154,7 +2192,143 @@ def test_gradients_again():
         grad_test_z = df_compare_grad["grad test z"][0]
         grad_test_psi = df_compare_grad["grad test psi"][0]
 
+        grad_test_dLdr = df_compare_grad["grad test dLdr"][0]
+        grad_test_dLdz = df_compare_grad["grad test dLdz"][0]
+        grad_test_dLdpsi = df_compare_grad["grad test dLdpsi"][0]
 
+        grad_test_constraint_r =  df_compare_grad["grad test constraint r"][0]
+        grad_test_constraint_z =  df_compare_grad["grad test constraint z"][0]
+        grad_test_constraint_psi =  df_compare_grad["grad test constraint psi"][0]
+
+
+
+
+    fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_r[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test r")
+    
+
+
+
+    """fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_z[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test z")"""
+
+
+
+    fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_dLdr[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test dLdr")
+
+
+
+    fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_dLdz[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test dLdz")
+
+
+    fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_constraint_r[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test constraint r")
+
+
+    fig, ax = plt.subplots(2,2)
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    N_start = 0
+    dN_plot = int(N/4)
+    for n in range(2):
+        for m in range(2):
+            for i in range(N_start,N_start + dN_plot):
+                ax[n,m].plot(
+                    time_vec,grad_test_constraint_z[:,i]
+                    ,label=f"i={i}"
+                )
+                ax[n,m].legend()
+                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
+
+            N_start += dN_plot
+
+    plt.suptitle("Grad test constraint z")
+    plt.show()
+    
+
+    """
     N_vals = np.linspace(0,N,N)
     max_vals_r,max_vals_z,max_vals_psi = np.zeros(N), np.zeros(N), np.zeros(N)
     min_vals_r,min_vals_z,min_vals_psi = np.zeros(N), np.zeros(N), np.zeros(N)
@@ -2270,7 +2444,7 @@ def test_gradients_again():
     plt.savefig(data_path + "potential energy" +".png")
 
 
-    plt.show()
+    plt.show()"""
     
 
 def compare_potentential_energy():
