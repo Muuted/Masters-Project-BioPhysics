@@ -2047,7 +2047,7 @@ def test_gradients_again():
 
     h = 1e-7
     make_new_data = False
-    sim_steps = int(sim_steps/20)
+    sim_steps = int(sim_steps)
 
     if make_new_data == True:
         print_scale = sim_steps/1000
