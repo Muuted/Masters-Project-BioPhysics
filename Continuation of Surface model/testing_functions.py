@@ -1959,7 +1959,7 @@ def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
     h:float = 1e-7,
-    make_new_data:bool = True
+    make_new_data:bool = False
 ):
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g, dSdpsi_func
     from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi, Q_function
@@ -2215,19 +2215,25 @@ def test_gradients_again(
     data = [
         grad_test_r,
         grad_test_z,
+        grad_test_psi,
         grad_test_dLdr,
         grad_test_dLdz,
+        grad_test_dLdpsi,
         grad_test_constraint_r,
-        grad_test_constraint_z
+        grad_test_constraint_z,
+        grad_test_constraint_psi
     ]
 
     data_names = [
         r"Grad test r : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  - ( ~ S(r_i + h) - S(r_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ ",
         r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial z_{i} }  - ( ~ S(z_i + h) - S(z_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial z_{i} } } $ ",
+        r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  - ( ~ S(\psi_i + h) - S(\psi_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
         f"Grad test dLdr : " + r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ ",
         "Grad test dLdz : " + r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ ",
+        "Grad test dLdz : " + r"$ \dfrac{dLd \psi_{theory} - dLd \psi _{\psi_i+h} }{dLd \psi _{theory}} $ ",
         "Grad test constraint r : " + r"$ \dfrac{constriant_{theory} - constriant_{r_i+h} }{constriant_{theory}} $ ",
-        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ "
+        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ ",
+        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{constriant_{theory}} $ ",
     ]
 
     for l in range(len(data)):
