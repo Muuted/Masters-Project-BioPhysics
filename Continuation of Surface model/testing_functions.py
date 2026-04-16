@@ -1958,7 +1958,7 @@ def test_flat_model_object():
 def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
-    h:float = 1e-7,
+    h:float = 1e-8,
     make_new_data:bool = False
 ):
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g, dSdpsi_func
@@ -1981,7 +1981,7 @@ def test_gradients_again(
 
     def theory_constraint(
             j,N,r,z,psi,Area,nus,lambs,diff_var
-    ):
+        ):
 
         dc = 0
         for i in range(N):
@@ -1995,7 +1995,7 @@ def test_gradients_again(
      
     file = get_files(data_path)
     df = pd.read_pickle(file[0])
-    print(df.info())
+    #print(df.info())
     sim_steps = df["sim_steps"][0]
 
     dt = df["dt"][0]
@@ -2031,7 +2031,7 @@ def test_gradients_again(
     grad_test_constraint_psi = np.zeros(shape=(sim_steps,N))
 
     
-    sim_steps = int(sim_steps)
+    sim_steps = int(sim_steps/10)
 
     if make_new_data == True:
         print_scale = sim_steps/1000
@@ -2073,13 +2073,14 @@ def test_gradients_again(
                 )
                 
                                 
-                S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=rh,psi=psi[t],Area=Area)
+                S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,psi=psi[t],Area=Area
+                               ,r=rh )
 
                 constraint_eq_rh = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
                     ,nus=nus_rh ,lambs=lambs_rh
-                    ,Area=Area 
-                    ,r=rh ,psi=psi[t], z=z[t]
+                    ,Area=Area ,psi=psi[t], z=z[t]
+                    ,r=rh
                     )
 
                 grad_L_rh = S_rh + constraint_eq_rh 
@@ -2100,9 +2101,9 @@ def test_gradients_again(
 
                 Q_r = Q_function(
                     i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t]
-                )                
-                grad_S_r = (S_rh - S)/h
+                )
 
+                grad_S_r = (S_rh - S)/h
 
                 grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
                 grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r
@@ -2138,32 +2139,31 @@ def test_gradients_again(
                 diff_constraints_zh = (constraint_eq_zh - constraint_eq)/h                
                 diff_constraints_z = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="z")
 
-                Q_z = Q_function(
-                    i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t]
-                )
+                
                 #grad_S_z = (S_zh - S)/h
-
 
                 grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz  #gets a % deviation of the theoretical result
                 grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z
-                grad_test_z[t][i] = (Q_z - diff_constraints_zh)/Q_z
+                #grad_test_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z 
 
 
 
                 """------------- Gradient test for psi --------------------------------------------------------------"""
 
                 #dpsids = d
-                dSdpsi = dSdpsi_func(i=i,N=N,c0=c0,k=k,kG=kG,r=r[t],psi=psi[t],Area=Area)
+                dSdpsi = -dSdpsi_func(i=i,N=N,c0=c0,k=k,kG=kG,r=r[t],psi=psi[t],Area=Area)
 
-                S_psih = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psih,Area=Area)
+                S_psih = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],Area=Area
+                                 ,psi=psih
+                                 )
 
                 diff_constraints_psi = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="psi")
                 
                 constraint_eq_psih = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
                     ,nus=nus_zh ,lambs=lambs_zh
-                    ,Area=Area 
-                    ,r=r[t] ,psi=psih, z=z[t]
+                    ,Area=Area ,r=r[t], z=z[t]
+                    ,psi=psih
                     )
                 
                 grad_S_psi = (S_psih - S)/h
@@ -2176,9 +2176,10 @@ def test_gradients_again(
 
                 diff_constraints_psih = (constraint_eq_psih - constraint_eq)/h
 
+                grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi
                 grad_test_dLdpsi[t,i] = ( dLdpsi - dLdpsih )/dLdpsi 
                 grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi
-                grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi
+                
 
 
                 """------------- Saving the data --------------------------------------------------------------------"""
@@ -2200,7 +2201,7 @@ def test_gradients_again(
     elif make_new_data == False:
         df_compare_grad = pd.read_pickle(data_path + compare_df_name)
         grad_test_r = df_compare_grad["grad test r"][0]
-        grad_test_z = df_compare_grad["grad test z"][0]
+        #grad_test_z = df_compare_grad["grad test z"][0]
         grad_test_psi = df_compare_grad["grad test psi"][0]
 
         grad_test_dLdr = df_compare_grad["grad test dLdr"][0]
@@ -2214,7 +2215,7 @@ def test_gradients_again(
 
     data = [
         grad_test_r,
-        grad_test_z,
+        #grad_test_z,
         grad_test_psi,
         grad_test_dLdr,
         grad_test_dLdz,
@@ -2226,8 +2227,8 @@ def test_gradients_again(
 
     data_names = [
         r"Grad test r : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  - ( ~ S(r_i + h) - S(r_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ ",
-        r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial z_{i} }  - ( ~ S(z_i + h) - S(z_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial z_{i} } } $ ",
-        r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  - ( ~ S(\psi_i + h) - S(\psi_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
+        #r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial z_{i} }  - ( ~ S(z_i + h) - S(z_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial z_{i} } } $ ",
+        r"Grad test $\psi$ : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  - ( ~ S(\psi_i + h) - S(\psi_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
         f"Grad test dLdr : " + r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ ",
         "Grad test dLdz : " + r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ ",
         "Grad test dLdz : " + r"$ \dfrac{dLd \psi_{theory} - dLd \psi _{\psi_i+h} }{dLd \psi _{theory}} $ ",
@@ -2235,6 +2236,23 @@ def test_gradients_again(
         "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ ",
         "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{constriant_{theory}} $ ",
     ]
+
+
+  
+    
+    t_switch = [i for i in S_pot].index(min(S_pot))
+
+    fig, ax = plt.subplots()
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    ax.plot(time_vec,S_pot,label="Epot")
+    ax.vlines(x=time_vec[t_switch],ymin=min(S_pot),ymax=max(S_pot),label="dSdt > 0",color="k")
+
+    ax.set_xlabel("time [s]")
+    ax.set_ylabel("Epot")
+    plt.legend()
+    plt.grid()
+
 
     for l in range(len(data)):
         i_problem_list = []
@@ -2253,10 +2271,16 @@ def test_gradients_again(
         for n in range(2):
             for m in range(2):
                 for i in range(N_start,N_start + dN_plot):
+                    if i == N_start:
+                        ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k",label="dSdt>0")
+                    else:
+                        ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k")
+
                     ax[n,m].plot(
                         time_vec,data[l][:,i]
                         ,label=f"i={i}"
                     )
+
                     ax[n,m].grid("on")
                     ax[n,m].legend()
                     ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
