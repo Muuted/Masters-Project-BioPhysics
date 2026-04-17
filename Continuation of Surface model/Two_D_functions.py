@@ -973,6 +973,7 @@ def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
     g = ""
     if 0 <= i <= N:
         g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
+
     if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
@@ -988,30 +989,35 @@ def c_diff_f(
         ,diff_var:str =""
         )-> float:
     diff_var_list = ["r","z","psi",0,1,2]
-   
+    modification_counter = 0
     df = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
         df = 0
         if i + 1 == j:
             df = 2*np.pi*r[i+1]/Area[i]#*Kronecker(i+1,j) #- r[i]*Kronecker(i,j))/Area[i]
+            modification_counter += 1
         if i == j :
             df = -2*np.pi*r[i]/Area[i]
+            modification_counter += 1
             
     if diff_var == diff_var_list[1]or diff_var == 1:
         df = 0
+        modification_counter += 1
 
     if diff_var == diff_var_list[2] or diff_var == 0:
         df = 0
         if i == j:
             df = np.sin(psi[i])#*Kronecker(i,j)
+            modification_counter += 1
         
     if diff_var not in diff_var_list:
         #Error handling
         print(f"\n wrong diff variable of either (r,z,psi) error in c_diff_f \n")
         exit()
-    if df == "":
-        print("\n df never took value \n")
+    if df == "" or modification_counter > 1:
+        print(f"\n df never took value \n or modification counter ={modification_counter} should < 2")
         exit()
+ 
     return df
 
 
@@ -1020,33 +1026,39 @@ def c_diff_g(
         ,r:list,z:list,psi:list,Area:list
         ,diff_var:str = ""
         )-> float:
-    
+
     diff_var_list = ["r","z","psi",0,1,2]
+    modification_counter = 0
     dg = ""#0
     if diff_var == diff_var_list[0] or diff_var == 0:
         dg = 0
         if i + 1 == j or i == j:
             dg = np.pi*(z[i+1]-z[i])/Area[i]
+            modification_counter += 1
         
     if diff_var == diff_var_list[1] or diff_var == 1: 
         dg = 0
         if i+1 == j:
             dg = np.pi*(r[i+1] + r[i])/Area[i]
+            modification_counter += 1
         if i == j:
             dg = -np.pi*(r[i+1] + r[i])/Area[i]
+            modification_counter += 1
 
     if diff_var == diff_var_list[2] or diff_var == 2:
         dg = 0
         if i == j:
             dg = -np.cos(psi[i])
+            modification_counter += 1
 
     if diff_var not in diff_var_list:
             #Error handling
             print(f"\n wrong diff variable of either (r,z,psi) error in c_diff_g \n")
             exit()
-    if dg == "":
-        print("dg never took value")
+    if dg == ""or modification_counter > 1:
+        print(f"dg never took value \n or modification counter ={modification_counter} should < 2")
         exit()
+
     return dg
 
 
