@@ -957,12 +957,13 @@ def Lagrange_multi_V2(
 
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
     f = ""
+    if 0 <= i <= N:
+        f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
+
     if i > N:
         print(f"the value of i is to large, in the constraint equation \n"
               +f"i={i} and N={N}")
         exit()
-    if i <= N:
-        f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
     if f == "":
         print(f"value of f never took a number")
         exit()
@@ -970,11 +971,11 @@ def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
 
 def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
     g = ""
+    if 0 <= i <= N:
+        g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
     if i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
-    if i <= N:
-        g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
     if g == "":
         print(f"value of f new took a number")
         exit()
@@ -1223,26 +1224,10 @@ def Make_variable_corrections(
         ,t=""
     ):
 
-    #Area_new = tot_area(N=N,r=r,z=z)
-    #dA = Area_new - Area_init 
     do_correction = False
     do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi ,Area=Area,tol=Tolerence)
 
-    
-    #if Tolerence < abs(dA) :#or constraint_err == True:
-        #do_correction = True
-    #if constraint_err == True:
-    #do_correction = True
-    #print("")
     correction_count = 0
-    """if t > 6:
-        for i in range(N):
-            print(f"corr ={correction_count}    r[i={i}] ={r[i]}    z[i={i}]={z[i]}     psi[i={i}]={psi[i]}  ")
-
-        plt.figure()
-        plt.plot(r,z,"-o",label=f"{correction_count}")
-        plt.xlim(min(r),max(r))
-        plt.ylim(min(z),max(z))"""
 
     while do_correction == True:
         correction_count += 1
@@ -1271,33 +1256,14 @@ def Make_variable_corrections(
             z[i] += K_z
             psi[i] += K_psi
 
-            """if t > 6 :#and i == 1:
-                if i%N== 0:
-                    print(f"max(epsilon) ={max(epsilon)}")
-                    plt.plot(r,z,".-",label=f"{correction_count}")
-                print(f"corr ={correction_count}    r[i={i}] ={r[i]}    z[i={i}]={z[i]}     psi[i={i}]={psi[i]}  ")"""
-                
-
-                
-        #Area_new = tot_area(N=N,r=r,z=z)
-        #dA = Area_new - Area_init
-        #constraint_err = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
         do_correction = False
         do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
-        #do_correction = False
-        #if Tolerence < abs(dA):# or constraint_err == True:
-            #do_correction = True
+
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
             #exit()
             break
-
-    """if r[0] != r[0]:
-        print(f"t={t}")
-        #plt.legend()
-        #plt.show()
-        exit()"""
 
     return correction_count
 

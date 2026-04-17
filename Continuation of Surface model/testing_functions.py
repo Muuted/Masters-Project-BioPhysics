@@ -2031,7 +2031,7 @@ def test_gradients_again(
     grad_test_constraint_psi = np.zeros(shape=(sim_steps,N))
 
     
-    sim_steps = int(sim_steps/10)
+    sim_steps = int(sim_steps)
 
     if make_new_data == True:
         print_scale = sim_steps/1000
@@ -2083,7 +2083,7 @@ def test_gradients_again(
                     ,r=rh
                     )
 
-                grad_L_rh = S_rh + constraint_eq_rh 
+                """grad_L_rh = S_rh + constraint_eq_rh 
 
                 dLdrh = (grad_L_rh - grad_L_ref)/h  #the Newton derivative 
 
@@ -2093,7 +2093,7 @@ def test_gradients_again(
                             ,Area=Area
                             ,lamb=lambs,nu=nus
                             ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
-                            )
+                            )"""
                 
 
                 diff_constraints_rh = (constraint_eq_rh - constraint_eq)/h                
@@ -2105,7 +2105,7 @@ def test_gradients_again(
 
                 grad_S_r = (S_rh - S)/h
 
-                grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
+                #grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
                 grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r
                 grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r
 
@@ -2118,7 +2118,7 @@ def test_gradients_again(
                 )
                 
                                 
-                S_zh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
+                #S_zh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
 
                 constraint_eq_zh = constraints_multi(
                     N=N,k=k,kG=kG,c0=c0,tau=tau
@@ -2127,13 +2127,13 @@ def test_gradients_again(
                     ,r=r[t] ,psi=psi[t], z=zh
                     )
 
-                grad_L_zh = S_zh + constraint_eq_zh 
+                """grad_L_zh = S_zh + constraint_eq_zh 
 
                 dLdzh = (grad_L_zh - grad_L_ref)/h  #the Newton derivative 
 
                 dLdz = gamma(i=i,ds=ds,eta=eta)*dzdt_func(
                     i=i,ds=ds,eta=eta,Area=Area,radi=r[t],nu=nus
-                )
+                )"""
                 
 
                 diff_constraints_zh = (constraint_eq_zh - constraint_eq)/h                
@@ -2142,7 +2142,7 @@ def test_gradients_again(
                 
                 #grad_S_z = (S_zh - S)/h
 
-                grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz  #gets a % deviation of the theoretical result
+                #grad_test_dLdz[t][i] = (dLdz - dLdzh)/dLdz  #gets a % deviation of the theoretical result
                 grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z
                 #grad_test_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z 
 
@@ -2168,16 +2168,16 @@ def test_gradients_again(
                 
                 grad_S_psi = (S_psih - S)/h
 
-                grad_L_psih = S_psih + constraint_eq_psih
+                """grad_L_psih = S_psih + constraint_eq_psih
 
                 dLdpsih = (grad_L_psih - grad_L_ref)/h
                 
-                dLdpsi = (dSdpsi + diff_constraints_psi)
+                dLdpsi = (dSdpsi + diff_constraints_psi)"""
 
                 diff_constraints_psih = (constraint_eq_psih - constraint_eq)/h
 
                 grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi
-                grad_test_dLdpsi[t,i] = ( dLdpsi - dLdpsih )/dLdpsi 
+                #grad_test_dLdpsi[t,i] = ( dLdpsi - dLdpsih )/dLdpsi 
                 grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi
                 
 
@@ -2217,9 +2217,9 @@ def test_gradients_again(
         grad_test_r,
         #grad_test_z,
         grad_test_psi,
-        grad_test_dLdr,
-        grad_test_dLdz,
-        grad_test_dLdpsi,
+        #grad_test_dLdr,
+        #grad_test_dLdz,
+       # grad_test_dLdpsi,
         grad_test_constraint_r,
         grad_test_constraint_z,
         grad_test_constraint_psi
@@ -2229,15 +2229,21 @@ def test_gradients_again(
         r"Grad test r : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  - ( ~ S(r_i + h) - S(r_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ ",
         #r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial z_{i} }  - ( ~ S(z_i + h) - S(z_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial z_{i} } } $ ",
         r"Grad test $\psi$ : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  - ( ~ S(\psi_i + h) - S(\psi_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
-        f"Grad test dLdr : " + r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ ",
-        "Grad test dLdz : " + r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ ",
-        "Grad test dLdz : " + r"$ \dfrac{dLd \psi_{theory} - dLd \psi _{\psi_i+h} }{dLd \psi _{theory}} $ ",
+        #f"Grad test dLdr : " + r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ ",
+        #"Grad test dLdz : " + r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ ",
+        #"Grad test dLdz : " + r"$ \dfrac{dLd \psi_{theory} - dLd \psi _{\psi_i+h} }{dLd \psi _{theory}} $ ",
         "Grad test constraint r : " + r"$ \dfrac{constriant_{theory} - constriant_{r_i+h} }{constriant_{theory}} $ ",
         "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ ",
-        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{constriant_{theory}} $ ",
+        "Grad test constraint psi : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{constriant_{theory}} $ ",
     ]
 
-
+    save_name_list = [
+        "dSdr",
+        "dSdpsi",
+        "grad constriant r",
+        "grad constriant z",
+        "grad constriant psi"
+    ]
   
     
     t_switch = [i for i in S_pot].index(min(S_pot))
@@ -2252,6 +2258,11 @@ def test_gradients_again(
     ax.set_ylabel("Epot")
     plt.legend()
     plt.grid()
+    plt.draw()
+    plt.pause(0.5)
+    plt.savefig(data_path + "potential energy" + ".png")
+    plt.savefig(data_path + "potential energy" + ".svg")
+
 
 
     for l in range(len(data)):
@@ -2297,7 +2308,10 @@ def test_gradients_again(
            +f"\n for h = {h}"
         )
 
-
+        plt.draw()
+        plt.pause(0.5)
+        plt.savefig(data_path + save_name_list[l] + ".png")
+        plt.savefig(data_path + save_name_list[l] + ".svg")
 
     plt.show()
 
