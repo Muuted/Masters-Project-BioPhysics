@@ -1959,6 +1959,7 @@ def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
     h:float = 1e-9,
+    hpsi:float  = 1e-9,
     make_new_data:bool = True
 ):
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g, dSdpsi_func
@@ -1967,8 +1968,8 @@ def test_gradients_again(
     
 
     def constraints_multi(
-            N,k,kG,tau,c0
-            ,nus,lambs,Area
+            N,Area
+            ,nus,lambs
             ,r,psi,z
         ):
         grad_constraint = 0
@@ -2033,7 +2034,7 @@ def test_gradients_again(
 
     further_data = []
     
-    sim_steps = int(sim_steps/10)
+    sim_steps = int(sim_steps/100)
     tol = 1e-2 # for the tolerance of deviation
     print("\n \n")
     if make_new_data == True:
@@ -2058,7 +2059,7 @@ def test_gradients_again(
                 )
             
             S = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
-            constraint_eq = constraints_multi(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],z=z[t],Area=Area
+            constraint_eq = constraints_multi(N=N,r=r[t],psi=psi[t],z=z[t],Area=Area
                                               ,nus=nus ,lambs=lambs)
 
             grad_L_ref = S + constraint_eq            
@@ -2066,7 +2067,7 @@ def test_gradients_again(
             for i in range(N):
                 rh = [ r[t][n] + h if n==i else r[t][n] for n in range(N+1)]
                 zh = [ z[t][n]+ h  if n==i else z[t][n] for n in range(N+1)]
-                psih = [ psi[t][n]+ h  if n==i else psi[t][n] for n in range(N)]
+                psih = [ psi[t][n]+ hpsi  if n==i else psi[t][n] for n in range(N)]
 
                 """------------- Gradient test for r ---------------------------------------------------------------------"""
                 lambs_rh ,nus_rh= Langrange_multi(
@@ -2076,11 +2077,11 @@ def test_gradients_again(
                 )                
                                 
                 S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,psi=psi[t],Area=Area
-                               ,r=rh )
+                               ,r=rh
+                            )
 
                 constraint_eq_rh = constraints_multi(
-                    N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,Area=Area ,psi=psi[t], z=z[t]
+                    N=N,Area=Area ,psi=psi[t], z=z[t]
                     ,nus=nus_rh ,lambs=lambs_rh
                     ,r=rh
                     )
@@ -2111,35 +2112,41 @@ def test_gradients_again(
 
                 if abs(grad_test_constraint_r[t][i]) > tol:
                     further_data.append([
+                        grad_test_constraint_r[t][i],
                         f"grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r = ({diff_constraints_r} - {diff_constraints_rh})/{diff_constraints_r} = ",
-                        f"grad test constraint r (t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_r[t][i]:.3e} ",
-                        f"lambs rh={lambs_rh[i]:.3e}" ,
-                        f"lambs ={lambs[i]:.3e} ",
-                        f"nus rh={nus_rh[i]:.3e}" ,
-                        f"nus ={nus[i]:.3e}",
-                        f"constraint eq rh={constraint_eq_rh:.3e}   ",
-                        f"S rh={S_rh:.3e}" ,f" grad S r={grad_S_r:.3e}  " ,
-                        f"Q r={Q_r:.3e}   ",
-                        f"diff_constraints_rh={diff_constraints_rh:.3e} " ,
-                        f"diff_constraints_r={diff_constraints_r:.3e}    ",
+                        f"grad test constraint r (t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_r[t][i]} ",
+                        f"lambs rh={lambs_rh[i]}" ,
+                        f"lambs   ={lambs[i]} ",
+                        f"nus rh  ={nus_rh[i]}" ,
+                        f"nus     ={nus[i]}",
+                        f"constraint eq rh={constraint_eq_rh}   ",
+                        f"constraint eq   ={constraint_eq}   ",
+                        f"S rh={S_rh}" ,
+                        f"S   ={S}",
+                        f"grad S r={grad_S_r}  " ,
+                        f"Q r     ={Q_r}   ",
+                        f"diff_constraints_rh={diff_constraints_rh} " ,
+                        f"diff_constraints_r ={diff_constraints_r}    ",
                     ])
-                    
-                    
+                                        
 
                 if abs(grad_test_r[t][i]) > tol:
                     further_data.append([
+                        grad_test_r[t][i] ,
                         f"grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r =({Q_r} - {grad_S_r})/{Q_r}",
-                        f"grad test r: (t,i)={t,i}:  = {grad_test_r[t][i]:.3e} ",
-                        f"lambs rh={lambs_rh[i]:.3e} ",
-                        f"lambs ={lambs[i]:.3e} ",
-                        f"nus rh={nus_rh[i]:.3e}",
-                        f"nus ={nus[i]:.3e}",
-                        f"constraint eq rh={constraint_eq_rh:.3e}",
-                        f"S rh={S_rh:.3e} ",
-                        f"grad S r={grad_S_r:.3e}",
-                        f"Q r={Q_r:.3e}",
-                        f"diff_constraints_rh={diff_constraints_rh:.3e}",
-                        f"diff_constraints_r={diff_constraints_r:.3e}"
+                        f"grad test r: (t,i)={t,i}:  = {grad_test_r[t][i]} ",
+                        f"lambs rh={lambs_rh[i]} ",
+                        f"lambs  ={lambs[i]} ",
+                        f"nus rh={nus_rh[i]}",
+                        f"nus   ={nus[i]}",
+                        f"constraint eq rh={constraint_eq_rh}",
+                        f"constraint eq   ={constraint_eq}",
+                        f"S rh ={S_rh} ",
+                        f"S    ={S}",
+                        f"grad S r ={grad_S_r}",
+                        f"Q r      ={Q_r}",
+                        f"diff_constraints_rh ={diff_constraints_rh}",
+                        f"diff_constraints_r  ={diff_constraints_r}"
                     ])
                     
 
@@ -2153,8 +2160,7 @@ def test_gradients_again(
                 #S_zh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
 
                 constraint_eq_zh = constraints_multi(
-                    N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,Area=Area ,r=r[t] ,psi=psi[t]
+                    N=N,Area=Area ,r=r[t] ,psi=psi[t]
                     ,nus=nus_zh ,lambs=lambs_zh
                     ,z=zh
                     )
@@ -2180,12 +2186,17 @@ def test_gradients_again(
 
                 if abs(grad_test_constraint_z[t][i]) > tol:
                     further_data.append([
+                        grad_test_constraint_z[t][i],
                         f"grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z = ({diff_constraints_z} - {diff_constraints_zh})/{diff_constraints_z}",
-                        f"grad test constraint z: (t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_z[t][i]:.3e} ",
-                        f"lambs zh={lambs_zh[i]:.3e}",f"nus zh={nus_zh[i]:.3e}",
-                        f"constraint eq zh={constraint_eq_zh:.3e}",
-                        f"diff_constraints_zh={diff_constraints_zh:.3e}",
-                        f"diff_constraints_z={diff_constraints_z:.3e}"
+                        f"grad test constraint z: (t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_z[t][i]} ",
+                        f"lambs zh={lambs_zh[i]}",
+                        f"lambs   ={lambs[i]}",
+                        f"nus zh  ={nus_zh[i]}",
+                        f"nus     ={nus[i]}",
+                        f"constraint eq zh={constraint_eq_zh}",
+                        f"constraint eq   ={constraint_eq}",
+                        f"diff_constraints_zh={diff_constraints_zh}",
+                        f"diff_constraints_z ={diff_constraints_z}"
                     ])
 
 
@@ -2207,21 +2218,20 @@ def test_gradients_again(
                 diff_constraints_psi = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="psi")
                 
                 constraint_eq_psih = constraints_multi(
-                    N=N,k=k,kG=kG,c0=c0,tau=tau
-                    ,Area=Area ,r=r[t], z=z[t]
+                    N=N,Area=Area ,r=r[t], z=z[t]
                     ,nus=nus_psih ,lambs=lambs_psih
                     ,psi=psih
                     )
                 
-                grad_S_psi = (S_psih - S)/h
-
+                grad_S_psi = (S_psih - S)/hpsi
+                
                 """grad_L_psih = S_psih + constraint_eq_psih
 
                 dLdpsih = (grad_L_psih - grad_L_ref)/h
                 
                 dLdpsi = (dSdpsi + diff_constraints_psi)"""
-
-                diff_constraints_psih = (constraint_eq_psih - constraint_eq)/h
+                
+                diff_constraints_psih = (constraint_eq_psih - constraint_eq)/hpsi
 
                 grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi
                 #grad_test_dLdpsi[t,i] = ( dLdpsi - dLdpsih )/dLdpsi 
@@ -2229,31 +2239,40 @@ def test_gradients_again(
                 
                 if abs(grad_test_constraint_psi[t][i]) > tol:
                     further_data.append([
+                        grad_test_constraint_psi[t,i],
                         f"grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi = ({diff_constraints_psi} - {diff_constraints_psih})/{diff_constraints_psi}",
-                        f"grad test constraint psi:(t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_psi[t][i]:.3e} ",
-                        f"lambs psih={lambs_psih[i]:.3e}",
-                        f"lambs ={lambs[i]:.3e}",
-                        f"nus psih={nus_psih[i]:.3e}",
-                        f"nus ={nus[i]:.3e}",
-                        f"constraint eq psih={constraint_eq_psih:.3e}",
-                        f"S psih={S_psih:.3e}",f"grad S psi={grad_S_psi:.3e}",
-                        f"diff_constraints_psih={diff_constraints_psih:.3e}",
-                        f"diff_constraints_psi={diff_constraints_psi:.3e}    "
+                        f"grad test constraint psi:(t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_constraint_psi[t][i]} ",
+                        f"lambs psih={lambs_psih[i]}",
+                        f"lambs     ={lambs[i]}",
+                        f"nus psih  ={nus_psih[i]}",
+                        f"nus       ={nus[i]}",
+                        f"constraint eq psih={constraint_eq_psih}",
+                        f"constraint eq     ={constraint_eq:}",
+                        f"S psih={S_psih}",
+                        f"S     ={S}",
+                        f"grad S psi={grad_S_psi}",
+                        f"dSdpsi={dSdpsi}",
+                        f"diff_constraints_psih={diff_constraints_psih}",
+                        f"diff_constraints_psi ={diff_constraints_psi}    "
                     ])
 
                 if abs(grad_test_psi[t][i]) > tol:
                     further_data.append([
+                        grad_test_psi[t,i],
                         f"grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi = ({dSdpsi} - {grad_S_psi})/{dSdpsi}",
                         f"grad test psi: (t*dt,i)=({t*dt:.3e},{i}):  = {grad_test_psi[t][i]:.3e} ",
-                        f"lambs psih={psih[i]:.3e}  ",
-                        f"lambs ={lambs[i]:.3e}",
-                        f"nus psih={nus_psih[i]:.3e} ",
-                        f"nus ={nus[i]:.3e}",
-                        f"constraint eq psih={constraint_eq_psih:.3e}   ",
-                        f"S psih={S_psih:.3e}",
-                        f"grad S psi={grad_S_psi:.3e}",
-                        f"diff_constraints_psih={diff_constraints_psih:.3e}",
-                        f"diff_constraints_psi={diff_constraints_psi:.3e}"
+                        f"lambs psih={lambs_psih[i]}",
+                        f"lambs     ={lambs[i]}",
+                        f"nus psih  ={nus_psih[i]}",
+                        f"nus       ={nus[i]}",
+                        f"constraint eq psih={constraint_eq_psih}",
+                        f"constraint eq     ={constraint_eq:}",
+                        f"S psih={S_psih}",
+                        f"S     ={S}",
+                        f"grad S psi={grad_S_psi}",
+                        f"dSdpsi={dSdpsi}",
+                        f"diff_constraints_psih={diff_constraints_psih}",
+                        f"diff_constraints_psi ={diff_constraints_psi}    "
                     ])
 
                 """------------- Saving the data --------------------------------------------------------------------"""
@@ -2268,7 +2287,9 @@ def test_gradients_again(
                     'grad test constraint r':[grad_test_constraint_r],
                     'grad test constraint z':[grad_test_constraint_z],
                     'grad test constraint psi':[grad_test_constraint_psi],
-                    'further data':[further_data]
+                    'further data':[further_data],
+                    'h':h,
+                    'hpsi':hpsi
                 })
 
                 df2.to_pickle(data_path + compare_df_name)
@@ -2287,16 +2308,28 @@ def test_gradients_again(
         grad_test_constraint_z =  df_compare_grad["grad test constraint z"][0]
         grad_test_constraint_psi =  df_compare_grad["grad test constraint psi"][0]
         further_data = df_compare_grad["further data"][0]
-
-    for s in further_data:
-        pass#print(s)
+        h = df_compare_grad["h"][0]
+        hpsi = df_compare_grad["hpsi"][0]
+        
+        
     
     print("\n \n")
 
     for d in further_data[0]:
         print(d)
 
-    
+    print("\n \n")
+    d_max,imax = 0,0
+    for i in range(len(further_data)):
+        d = abs(further_data[i][0])
+        if d > d_max:
+            d_max = d
+            imax = i
+
+    print("The maximum deviation is: \n")
+    for d in further_data[imax]:
+        print(d)
+
     data = [
         grad_test_r,
         #grad_test_z,
@@ -2328,7 +2361,10 @@ def test_gradients_again(
         "grad constriant z",
         "grad constriant psi"
     ]
-  
+    
+    h_list = [
+        h,hpsi,h,h,hpsi
+    ]
     
     t_switch = [i for i in S_pot].index(min(S_pot))
 
@@ -2389,7 +2425,7 @@ def test_gradients_again(
 
         plt.suptitle(
            data_names[l] + f"   deviations greater than 1e-2:  i" + r"$\in$" + f"{i_problem_list}"
-           +f"\n for h = {h}"
+           +f"\n for h = {h_list[l]}"
         )
 
         plt.draw()
@@ -2398,170 +2434,7 @@ def test_gradients_again(
         plt.savefig(data_path + save_name_list[l] + ".svg")
 
     plt.show()
-
-    """
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_r[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-                ax[n,m].grid()
-                if n == 0:
-                    ax[n,m].set_ylabel("")
-                if n == 1:
-                    ax[n,m].set_xlabel("time [s]")
-
-            N_start += dN_plot
-
-    plt.suptitle(
-        r"Grad test r : "
-        +r"$ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  - ( ~ S(r_i + h) - S(r_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ "
-    )
-
-
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_z[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-
-            N_start += dN_plot
-
-    plt.suptitle("Grad test z")
-
-
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_dLdr[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-                ax[n,m].grid()
-                if n == 0:
-                    ax[n,m].set_ylabel("")
-                if n == 1:
-                    ax[n,m].set_xlabel("time [s]")
-            N_start += dN_plot
-
-    plt.suptitle(
-        "Grad test dLdr : "
-        r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ "
-    )
-
-
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_dLdz[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-                ax[n,m].grid()
-                if n == 0:
-                    ax[n,m].set_ylabel("")
-                if n == 1:
-                    ax[n,m].set_xlabel("time [s]")
-            N_start += dN_plot
-
-    plt.suptitle(
-        "Grad test dLdz : "
-        +r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ "
-        )
-
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_constraint_r[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-                ax[n,m].grid()
-                if n == 0:
-                    ax[n,m].set_ylabel("")
-                if n == 1:
-                    ax[n,m].set_xlabel("time [s]")
-            N_start += dN_plot
-
-    plt.suptitle(
-        "Grad test constraint r : "
-        +r"$ \dfrac{constriant_{theory} - constriant_{r_i+h} }{constriant_{theory}} $ "
-        )
-
-
-    fig, ax = plt.subplots(2,2)
-    manager = plt.get_current_fig_manager()
-    manager.window.showMaximized()
-    N_start = 0
-    dN_plot = int(N/4)
-    for n in range(2):
-        for m in range(2):
-            for i in range(N_start,N_start + dN_plot):
-                ax[n,m].plot(
-                    time_vec,grad_test_constraint_z[:,i]
-                    ,label=f"i={i}"
-                )
-                ax[n,m].legend()
-                ax[n,m].ticklabel_format(style='sci', scilimits=(0,0))
-                ax[n,m].grid()
-                if n == 0:
-                    ax[n,m].set_ylabel("")
-                if n == 1:
-                    ax[n,m].set_xlabel("time [s]")
-
-            N_start += dN_plot
-
-    plt.suptitle(
-        "Grad test constraint z : "
-        r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ "
-        +f" Problems for i" +r"$\in$" #+f"({})"
-        )
-    plt.show()"""
-       
+   
 
 def compare_potentential_energy():
     from two_d_data_processing import get_files
