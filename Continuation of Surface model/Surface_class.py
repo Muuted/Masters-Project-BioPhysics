@@ -304,7 +304,7 @@ class Surface_membrane:
             self.print_consts()
         
         print(f"integration method={self.integration_method}")
-        print("Simulation progressbar \n ")
+        print(" \n \n Simulation progressbar: \n")
 
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
@@ -315,7 +315,7 @@ class Surface_membrane:
                 print(
                     f"completion : {round(t/(print_scale*10),1)}%       " 
                     +f"Time since start = {time_h_start}h {time_m_start}m {time_s_start}s        "
-                    +f"Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s"
+                    +f" Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s   "
                     , end="\r"
                 )
             #t1,t2 = t%2, (t+1)%2
