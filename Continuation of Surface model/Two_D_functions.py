@@ -235,7 +235,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         )
         return_val = a11*a12*a13 + a21
 
-    if 0 < i < N-1 :
+    elif 0 < i < N-1 :
         a11 = k*(r[i]+r[i-1])/2
         a12 = B_function(i=i-1 ,N=N,c0=c0,Area=Area,psi=psi,radi=r)
         
@@ -249,7 +249,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         )
         return_val = a11*a12 + a21*a22*a23 + a31        
 
-    if i == N - 1 :
+    elif i == N - 1 :
         a11 = k*(r[i]+r[i-1])/2
         a12 = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=r)
         
@@ -262,7 +262,8 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
             np.sin(psi[i-1])  -np.sin(psi[i]) - psi[i]*np.cos(psi[i])
         )
         return_val = a11*a12 + a21*a22*a23 + a31        
-    
+    else:
+        print(f"\n i never took a value from the possible set. i={i} ")
     if return_val == "":
         print("\n return val never took value \n")
         exit()

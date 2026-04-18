@@ -2220,6 +2220,7 @@ def test_gradients_again(
                 constraint_eq_psih = constraints_multi(
                     N=N,Area=Area ,r=r[t], z=z[t]
                     ,nus=nus_psih ,lambs=lambs_psih
+                    #,nus=nus ,lambs=lambs
                     ,psi=psih
                     )
                 
@@ -2251,7 +2252,7 @@ def test_gradients_again(
                         f"S psih={S_psih}",
                         f"S     ={S}",
                         f"grad S psi={grad_S_psi}",
-                        f"dSdpsi={dSdpsi}",
+                        f"dSdpsi    ={dSdpsi}",
                         f"diff_constraints_psih={diff_constraints_psih}",
                         f"diff_constraints_psi ={diff_constraints_psi}    "
                     ])
@@ -2270,7 +2271,7 @@ def test_gradients_again(
                         f"S psih={S_psih}",
                         f"S     ={S}",
                         f"grad S psi={grad_S_psi}",
-                        f"dSdpsi={dSdpsi}",
+                        f"dSdpsi    ={dSdpsi}",
                         f"diff_constraints_psih={diff_constraints_psih}",
                         f"diff_constraints_psi ={diff_constraints_psi}    "
                     ])
@@ -2402,13 +2403,14 @@ def test_gradients_again(
         for n in range(2):
             for m in range(2):
                 for i in range(N_start,N_start + dN_plot):
-                    if i == N_start:
-                        ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k",label="dSdt>0")
-                    else:
-                        ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k")
+                    if t_switch < sim_steps:
+                        if i == N_start:
+                            ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k",label="dSdt>0")
+                        else:
+                            ax[n,m].vlines(x=time_vec[t_switch],ymin=min(data[l][:,i]),ymax=max(data[l][:,i]),color="k")
 
                     ax[n,m].plot(
-                        time_vec,data[l][:,i]
+                        time_vec[0:sim_steps],data[l][0:sim_steps,i]
                         ,label=f"i={i}"
                     )
 
