@@ -1965,6 +1965,7 @@ def test_gradients_again(
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g, dSdpsi_func
     from Two_D_functions import drdt_func, constraint_f,constraint_g, Langrange_multi, Q_function
     from two_d_data_processing import E_pot, get_files
+    from Lagrange_multipliers import Lagrange_multipliers
     
 
     def constraints_multi(
@@ -2053,9 +2054,13 @@ def test_gradients_again(
                     , end="\r"
                 )
 
-            lambs, nus = Langrange_multi(
+            lambs, nus = Lagrange_multipliers(#Langrange_multi(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                ,psi=psi[t],radi=r[t],z_list=z[t]
+                ,psi=psi[t]
+                #,radi=r[t]
+                ,r=r[t]
+                #,z_list=z[t]
+                ,z=z[t]
                 )
             
             S = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
@@ -2070,10 +2075,13 @@ def test_gradients_again(
                 psih = [ psi[t][n]+ hpsi  if n==i else psi[t][n] for n in range(N)]
 
                 """------------- Gradient test for r ---------------------------------------------------------------------"""
-                lambs_rh ,nus_rh= Langrange_multi(
+                lambs_rh ,nus_rh= Lagrange_multipliers(#Langrange_multi(
                     N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                    ,psi=psi[t] ,z_list=z[t]
-                    ,radi=rh
+                    ,psi=psi[t] 
+                    #,z_list=z[t]
+                    ,z=z[t]
+                    #,radi=rh
+                    ,r=rh
                 )                
                                 
                 S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,psi=psi[t],Area=Area
@@ -2151,10 +2159,13 @@ def test_gradients_again(
                     
 
                 """------------- Gradient test for z --------------------------------------------------------------------------"""
-                lambs_zh, nus_zh = Langrange_multi(
+                lambs_zh, nus_zh = Lagrange_multipliers(#Langrange_multi(
                     N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                    ,psi=psi[t] ,radi=r[t]
-                    ,z_list=zh
+                    ,psi=psi[t] 
+                    #,radi=r[t]
+                    ,r=r[t]
+                    #,z_list=zh
+                    ,z=zh
                 )                
                                 
                 #S_zh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],psi=psi[t],Area=Area)
@@ -2202,9 +2213,12 @@ def test_gradients_again(
 
                 """------------- Gradient test for psi --------------------------------------------------------------"""
 
-                lambs_psih, nus_psih = Langrange_multi(
+                lambs_psih, nus_psih = Lagrange_multipliers(#Langrange_multi(
                     N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                    ,z_list=z[t],radi=r[t]
+                    #,z_list=z[t]
+                    ,z=z[t]
+                    #,radi=r[t]
+                    ,r=r[t]
                     ,psi=psih 
                 )
 

@@ -1,6 +1,6 @@
 import  numpy as np
 
-from Two_D_functions import dSdpsi_func, gamma
+from Two_D_functions import dSdpsi_func, gamma, Q_function
 
 def find_lambda(i:int,j:int,N:int,r:list,z:list,psi:list,A:list):
     if i >= N or j >= N:
@@ -42,9 +42,9 @@ def Lagrange_multipliers(
                     if j == i + 1:
                         a1 = (z[j+1] - z[j])*np.sin(psi[j])
                         a2 = 2*r[j+1]*np.cos(psi[j])
-                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j+1]*Area[j]
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
 
-                        A[n,m] = 2*np.pi**2 * ( a1 + a2) * r[j+1] /a3
+                        A[n,m] = -2*np.pi**2 * ( a1 + a2) * r[j+1] /a3
 
                     if j == i:
                         a1 = (z[j+1] - z[j])*np.sin(psi[j])/Area[j]
@@ -52,7 +52,7 @@ def Lagrange_multipliers(
                         a3 = 2*np.cos(psi[j])/Area[j]
                         a4 = r[j+1]**2/gamma(i=j+1,ds=ds,eta=eta) + r[j]**2/ gamma(i=j,ds=ds,eta=eta)
 
-                        A[n,m] = 2*np.pi**2 * ( a1*a2 + a3*a4 )/Area[j]
+                        A[n,m] = 2*np.pi**2 * ( a1*a2 + a3*a4 )/Area[j]**2
                 
                 
                 if N <= m < 2*N:
@@ -66,9 +66,10 @@ def Lagrange_multipliers(
                         a22 = r[j+2] + r[j+1]
                         a2 = a21*a22*np.sin(psi[j])
 
-                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j+1]*Area[j]
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
 
                         A[n,m] = np.pi**2* (a1 - a2)/a3
+                        
                     if j == i:
                         a11 = ( r[j+1] + r[j] )**2
                         a12 = (z[j+1] - z[j])**2
@@ -79,82 +80,192 @@ def Lagrange_multipliers(
                         a22 = r[j+1]/ gamma(i=j+1,ds=ds,eta=eta) - r[j]/ gamma(i=j,ds=ds,eta=eta)
                         a2 = a21*a22
 
-                                         
-            
+                        A[n,m] = np.pi**2*( a1 + a2)/Area[j]**2
+
 
             if 0 < n < N-2:
                 if 0 <= m < N:
                     """---------- Calculate the lambda values -------------------------------"""
                     if j == i + 1:
-                        pass
+                        a1 = (z[j+1] - z[j])*np.sin(psi[j])
+                        a2 = 2*r[j+1]*np.cos(psi[j])
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
+
+                        A[n,m] = -2*np.pi**2 * ( a1 + a2) * r[j+1] /a3
+
                     if j == i:
-                        pass
-                    if j == i-1:
-                        pass
+                        a11 = (z[j+1] - z[j])*np.sin(psi[j])
+                        a12 = r[j+1]/gamma(i=j+1,ds=ds,eta=eta) - r[j]/gamma(i=j,ds=ds,eta=eta) 
+                        a1 =  a11*a12
+
+                        a21 = 2*np.cos(psi[j])
+                        a22 = r[j+1]**2/gamma(i=j+1,ds=ds,eta=eta) + r[j]**2/gamma(i=j,ds=ds,eta=eta) 
+                        a2 = a21*a22
+
+                        A[n,m] = 2*np.pi**2*( a1 + a2 )/Area[j]**2
+
+                    if j == i - 1:
+                        a1 = (z[j+1] - z[j])*np.sin(psi[j])
+                        
+                        a2 = 2*r[j]*np.cos(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j-1]*Area[j]
+
+                        A[n,m] = 2*np.pi**2* ( a1 + a2 )*r[j]/a3
+
                     
                 if N <= m < 2*N:
                     """---------- Calculate the nu values -------------------------------"""
                     if j == i + 1:
-                        pass
-                    if j == i:
-                        pass
-                    if j == i-1:
-                        pass
+                        a1 = 2*r[j+1]*np.cos(psi[j])*(z[j+2] - z[j+1])
 
-            
+                        a21 =  z[j+1] - z[j]
+                        a22 = -( r[j+1] + r[j] )*( r[j+2] + r[j+1] )
+                        a2 = ( a21 + a22 )*np.sin(psi[j]) 
+
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
+
+                        A[n,m] = (a1 + a2 )/a3
+
+                        
+                    if j == i:                        
+                        a11 = 1/gamma(i=j+1,ds=ds,eta=eta) + 1/gamma(i=j,ds=ds,eta=eta) 
+                        a12 =  (r[j+1] + r[j])**2 + (z[j+1] - z[j])**2
+                        a1 =  a11*a12*np.sin(psi[j])
+
+                        a21 = 2*(z[j+1] - z[j])*np.cos(psi[j])
+                        a22 = r[j+1]/gamma(i=j+1,ds=ds,eta=eta) - r[j]/gamma(i=j,ds=ds,eta=eta) 
+                        a2 = a21*a22
+
+                        A[n,m] = np.pi**2*(a1 + a2)/Area[j]**2
+
+                    if j == i-1:
+                        a11 = (z[j+1] - z[j])*np.sin(psi[j])
+                        a12 = -2*r[j]*np.cos(psi[j])
+                        a13 = z[j] - z[j-1]
+                        a1 = (a11 + a22)*a13
+
+                        a2 = -(r[j+1] + r[j])*( r[j] + r[j-1] )*np.sin(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]*Area[j-1]
+
+                        A[n,m] = np.pi**2*( a1 + a2 )/a3
+
+
             if  n == N-2:
                 if 0 <= m < N:
                     """---------- Calculate the lambda values -------------------------------"""
                     if j == i + 1:
-                        pass
+                        print(f"i,j={i,j}")
+                        a1 = (z[j+1] - z[j])*np.sin(psi[j])
+                        a2 = 2*r[j+1]*np.cos(psi[j])
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
+
+                        A[n,m] = -2*np.pi**2 * ( a1 + a2) * r[j+1] /a3
+
                     if j == i:
-                        pass
+                        a11 = (z[j+1] - z[j])*np.sin(psi[j])
+                        a12 = r[j+1]/gamma(i=j+1,ds=ds,eta=eta) - r[j]/gamma(i=j,ds=ds,eta=eta) 
+                        a1 =  a11*a12
+
+                        a21 = 2*np.cos(psi[j])
+                        a22 = r[j+1]**2/gamma(i=j+1,ds=ds,eta=eta) + r[j]**2/gamma(i=j,ds=ds,eta=eta) 
+                        a2 = a21*a22                        
+
+                        A[n,m] = 2*np.pi**2*( a1 + a2 )/Area[j]**2
+
                     if j == i - 1:
-                        pass
+                        a1 = (z[j+1] - z[j])*np.sin(psi[j])
+                        
+                        a2 = 2*r[j]*np.cos(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j-1]*Area[j]
+
+                        A[n,m] = 2*np.pi**2* ( a1 + a2 )*r[j]/a3
 
 
                 if N <= m < 2*N:
                     """---------- Calculate the nu values -------------------------------"""
                     if j == i + 1:
-                        pass
+                        a1 = (r[j+1] + r[j])*( r[j+2] + r[j+1] ) * np.sin(psi[j])
+
+                        a21 = (z[j+1] - z[j])* np.sin(psi[j])
+                        a22 = 2*r[j+1]*np.cos(psi[j])
+                        a2 = ( a21 + a22 ) * z[j+1]
+
+                        a3 = gamma(i=j+1,ds=ds,eta=eta)*Area[j+1]*Area[j]
+
+                        A[n,m] = -np.pi**2 *( a1 + a2)/a3
+
                     if j == i:
-                        pass
+                        a11 = ( r[j+1] + r[j] )**2 + (z[j+1] - z[j])**2
+                        a12 = 1/gamma(i=j+1,ds=ds,eta=eta) + 1/gamma(i=j,ds=ds,eta=eta)
+                        a1 = a11*a12*np.sin(psi[j])
+
+                        a21 = 2*(z[j+1] - z[j])*np.cos(psi[j])
+                        a22 = r[j+1]/gamma(i=j+1,ds=ds,eta=eta) - r[j]/gamma(i=j,ds=ds,eta=eta)
+                        a2 = a21*a22
+
+                        A[n,m] = (a1 + a2)/Area[j]**2
+
                     if j == i - 1:
-                        pass
+                        a11 = (z[j+1] -z[j])*np.sin(psi[j]) - 2*r[j]*np.cos(psi[j])
+                        a12 = z[j] - z[j-1]
+                        a1 = a11*a12
+
+                        a2 = -( r[j+1] + r[j] )*( r[j] + r[j-1] )* np.sin(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]*Area[j-1]
+
+                        A[n,m] = (a1 + a2 )/a3
             
 
             if  n == N-1:
                 if 0 <= m < N:
                     """---------- Calculate the lambda values -------------------------------"""
-                    if j == i + 1:
-                        pass
                     if j == i:
-                        pass
+                        a1 = z[j]*np.sin(psi[j])
+                        
+                        a2 = 2*r[j]*np.cos(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]**2
+                        
+                        A[n,m] = 2*np.pi**2*( a1 + a2 )/a3
+
                     if j == i - 1:
-                        pass
+                        a1 = z[j]*np.sin(psi[j])
+                        
+                        a2 = 2*r[j]*np.cos(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]*Area[j-1]
+                        
+                        A[n,m] = -2*np.pi**2*( a1 + a2 )/a3
 
 
-                if 0 <= m < N:
+                if N <= m < 2*N:
                     """---------- Calculate the nu values -------------------------------"""
-                    if j == i + 1:
-                        pass
                     if j == i:
-                        pass
+                        a11 = (r[j+1] + r[j])**2 + z[j]**2 
+                        a1 = a11*np.sin(psi[j])
+
+                        a2 = 2*r[j]*z[j]*np.cos(psi[j])
+
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]**2
+                        
+                        A[n,m] = np.pi**2* (a1 + a2)/a3
+
                     if j == i - 1:
-                        pass
+                        a11 = (r[j+1] + r[j])*np.sin(psi[j])
+                        a12 = r[j] + r[j-1]
+                        a1 = a11*a12
 
+                        a21 = z[j]*np.sin(psi[j]) + 2*r[j]*np.cos(psi[j]) 
+                        a22 = z[j] - z[j-1]
+                        a2 = a21*a22
 
+                        a3 = gamma(i=j,ds=ds,eta=eta)*Area[j]*Area[j-1]
 
-            if 0 <= n < N:
-                """---------- For the constraint eq's results part -------------------------------"""
-                if i==0:
-                    pass
-                if 0 < i < N-2:
-                    pass
-                if i == N-2:
-                    pass
-                if i == N-1:
-                    pass
+                        A[n,m] = -np.pi**2*( a1 + a2 )/a3
         
             
             if N <= n < 2*N:
@@ -166,13 +277,57 @@ def Lagrange_multipliers(
                     if i == j:
                         A[n,m] = -np.cos(psi[j])
 
+        
+        
+        if 0 <= n < N:
+            """---------- For the constraint eq's results part -------------------------------"""
+            if 0 <= i < N-1:
+                b11 = (z[j+1] - z[j] )*np.sin(psi[j]) 
+                b12 = 2*r[j+1]*np.cos(psi[j]) 
+                b1 = (b11 + b12 )/Area[j]
+
+                Qp1 = Q_function(i=i+1,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
+
+                b21 = 2*r[j]*np.cos(psi[j]) 
+                b2 = (b11 - b21 )/Area[j]
+                Q = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
+
+                b[n] = -b1*Qp1 -b2*Q
+
+            if i == N-1:
+                b11 = z[j]*np.sin(psi[j]) 
+                b21 = 2*r[j]*np.cos(psi[j]) 
+                b2 = (b11 + b21 )/Area[j]
+
+                Q = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
+
+                b[n] =  b2*Q
 
         if N <= n < 2*N:
             """---------- For the Lagrangian derivative results part -------------------------------"""
             b[n] = dSdpsi_func(i=i,N=N,c0=c0,k=k,kG=kG,r=r,psi=psi,Area=Area)
 
 
-            
+    
+    if print_matrix == True:
+        print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
+        print("b:",b)
+        #print("x:",x)
+        print("psi:",psi)
+        x = np.linalg.solve(A,b)
+        lamb_return = x[0:N]
+        nu_return = x[N:2*N]
+        print("len(lamb_return):",np.shape(lamb_return))
+        print("len(nus_return):",np.shape(nu_return))
+    else:
+        x = np.linalg.solve(A,b)
+
+        lamb_return = x[0:N]
+        nu_return = x[N:2*N]
+
+    return lamb_return,nu_return
+
+
 
 if __name__ == "__main___":
     pass
