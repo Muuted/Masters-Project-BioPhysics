@@ -155,7 +155,7 @@ def dzdt_func(
         dzdt = - np.pi*nu[i]*(radi[i+1] + radi[i])/(Area[i])
         return dzdt/gamma(i,ds=ds,eta=eta)
     
-    elif i > 0 :
+    elif 0 < i  :
         dzdt = np.pi*(
             nu[i-1]*(radi[i] + radi[i-1])/Area[i-1]
           - nu[i]*(radi[i+1] + radi[i])/Area[i]
@@ -197,7 +197,7 @@ def dpsidt_func(  i:int,N:int,k:float,c0:float, sigma:float, kG:float, tau:float
         a3 = (z_list[i+1] - z_list[i])*np.cos(psi[i]) + 2*radi[i]*np.sin(psi[i])
 
         dpsidt = np.pi*(  a1*(dzdt_i_next - dzdt_i) + a2*drdt_i_next + a3*drdt_i  )/Area[i]
-
+    
         return dpsidt
 
     elif i == N-1:
@@ -259,7 +259,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
             -np.pi*(r[i+1]+r[i])/Area[i] + np.cos(psi[i])/r[i]
             )
         a31 = kG*(
-            np.sin(psi[i-1])  -np.sin(psi[i]) - psi[i]*np.cos(psi[i])
+            np.sin(psi[i-1]) - np.sin(psi[i]) - psi[i]*np.cos(psi[i])
         )
         return_val = a11*a12 + a21*a22*a23 + a31        
     else:
@@ -992,20 +992,20 @@ def c_diff_f(
     diff_var_list = ["r","z","psi",0,1,2]
     modification_counter = 0
     df = ""#0
-    if diff_var == diff_var_list[0] or diff_var == 0:
+    if diff_var == "r" or diff_var == 0:
         df = 0
         if i + 1 == j:
-            df = 2*np.pi*r[i+1]/Area[i]#*Kronecker(i+1,j) #- r[i]*Kronecker(i,j))/Area[i]
+            df = 2*np.pi*r[i+1]/Area[i] #*Kronecker(i+1,j) #- r[i]*Kronecker(i,j))/Area[i]
             modification_counter += 1
         if i == j :
             df = -2*np.pi*r[i]/Area[i]
             modification_counter += 1
             
-    if diff_var == diff_var_list[1]or diff_var == 1:
+    if diff_var == "z" or diff_var == 1:
         df = 0
         modification_counter += 1
 
-    if diff_var == diff_var_list[2] or diff_var == 0:
+    if diff_var == "psi" or diff_var == 0:
         df = 0
         if i == j:
             df = np.sin(psi[i])#*Kronecker(i,j)
@@ -1031,13 +1031,13 @@ def c_diff_g(
     diff_var_list = ["r","z","psi",0,1,2]
     modification_counter = 0
     dg = ""#0
-    if diff_var == diff_var_list[0] or diff_var == 0:
+    if diff_var == "r" or diff_var == 0:
         dg = 0
         if i + 1 == j or i == j:
             dg = np.pi*(z[i+1]-z[i])/Area[i]
             modification_counter += 1
         
-    if diff_var == diff_var_list[1] or diff_var == 1: 
+    if diff_var == "z" or diff_var == 1: 
         dg = 0
         if i+1 == j:
             dg = np.pi*(r[i+1] + r[i])/Area[i]
@@ -1046,7 +1046,7 @@ def c_diff_g(
             dg = -np.pi*(r[i+1] + r[i])/Area[i]
             modification_counter += 1
 
-    if diff_var == diff_var_list[2] or diff_var == 2:
+    if diff_var == "psi" or diff_var == 2:
         dg = 0
         if i == j:
             dg = -np.cos(psi[i])
