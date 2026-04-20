@@ -1961,7 +1961,7 @@ def test_gradients_again(
     h:float = 1e-9,
     hpsi:float  = 1e-9,
     make_new_data:bool = True
-    ,use_lagrange_multi:str  = "old"#"old" #"new"
+    ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False#True
     ):
 

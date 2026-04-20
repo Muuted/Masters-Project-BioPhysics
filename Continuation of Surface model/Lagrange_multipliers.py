@@ -29,7 +29,7 @@ def Lagrange_multipliers(
     ):
     A = np.zeros(shape=(2*N,2*N))
     b = np.zeros(2*N)
-
+    
     for n in range(2*N):
         for m in range(2*N):
             i,j = n%N , m%N
@@ -116,11 +116,12 @@ def Lagrange_multipliers(
                 if N <= m < 2*N:
                     """---------- Calculate the nu values -------------------------------"""
                     if j == i + 1:
-                        a1 = 2*r[i+1]*np.cos(psi[i])*(z[i+2] - z[i+1])
+                        a11 = 2*r[i+1]*np.cos(psi[i])*( z[i+1] - z[i])
+                        a12 = ( z[i+1] - z[i])*np.sin(psi[i])                         
+                        a1 = (a11 + a12 )*(z[i+2] - z[i+1])
 
-                        a21 =  z[i+1] - z[i]
                         a22 = -( r[i+1] + r[i] )*( r[i+2] + r[i+1] )
-                        a2 = ( a21 + a22 )*np.sin(psi[i]) 
+                        a2 = a22 *np.sin(psi[i]) 
 
                         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
 
@@ -194,6 +195,15 @@ def Lagrange_multipliers(
                         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
 
                         A[n,m] = -np.pi**2 *( a1 + a2)/a3
+                        """a1 = -2*r[i+1]*np.cos(psi[i])* z[i+1]
+
+                        a21 =  z[i+1] - z[i]
+                        a22 = -( r[i+1] + r[i] )*( r[i+2] + r[i+1] )
+                        a2 = ( a21 + a22 )*np.sin(psi[i]) 
+
+                        a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
+
+                        A[n,m] = np.pi**2*(a1 + a2 )/a3"""
 
                     if j == i:
                         a11 = ( r[i+1] + r[i] )**2 + (z[i+1] - z[i])**2
