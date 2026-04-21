@@ -1958,8 +1958,9 @@ def test_flat_model_object():
 def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
-    h:float = 1e-9,
-    hpsi:float  = 1e-9,
+    hr:float = 1e-6,
+    hz:float = 1e-12,
+    hpsi:float  = 1e-6,
     make_new_data:bool = True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False#True
@@ -2008,9 +2009,11 @@ def test_gradients_again(
         for i in range(N):
             if constraint_eq == "f":
                 dc += constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
-            if constraint_eq == "g":
+            elif constraint_eq == "g":
                 dc += constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
-        
+            else:
+                print("No real variable for the constraint equations was chosen either f or g. in constraint_sum_qh()")
+                exit()
         return dc
 
     file = get_files(data_path)
@@ -2035,7 +2038,6 @@ def test_gradients_again(
     r = df["r"][0]
     z = df["z"][0]
     psi = df["psi"][0]
-
 
     time_vec = np.linspace(0,(sim_steps)*dt,sim_steps)
 
@@ -2102,8 +2104,8 @@ def test_gradients_again(
             #grad_L_ref = S + constraint_eq            
 
             for i in range(N):
-                rh = [ r[t][n] + h if n==i else r[t][n] for n in range(N+1)]
-                zh = [ z[t][n]+ h  if n==i else z[t][n] for n in range(N+1)]
+                rh = [ r[t][n] + hr if n==i else r[t][n] for n in range(N+1)]
+                zh = [ z[t][n]+ hz  if n==i else z[t][n] for n in range(N+1)]
                 psih = [ psi[t][n]+ hpsi  if n==i else psi[t][n] for n in range(N)]
 
                 """------------- Gradient test for r ---------------------------------------------------------------------"""
@@ -2135,7 +2137,6 @@ def test_gradients_again(
                 else:
                     print(f"Non of the lambs rh or lambs was chosen")
                     exit()
-
                                 
                 S_rh = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,psi=psi[t],Area=Area
                                ,r=rh
@@ -2147,36 +2148,24 @@ def test_gradients_again(
                     ,r=rh
                     )
 
-                """grad_L_rh = S_rh + constraint_eq_rh 
 
-                dLdrh = (grad_L_rh - grad_L_ref)/h  #the Newton derivative 
-
-                dLdr = gamma(i=i,ds=ds,eta=eta)*drdt_func(
-                            i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG
-                            ,tau=tau,ds=ds,eta=eta
-                            ,Area=Area
-                            ,lamb=lambs,nu=nus
-                            ,psi=psi[t] ,radi=r[t] ,z_list=z[t]
-                            )"""
-                
-
-                diff_constraints_rh = (constraint_eq_rh - constraint_eq)/h                
+                diff_constraints_rh = (constraint_eq_rh - constraint_eq)/hr               
                 diff_constraints_r = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="r")
 
                 Q_r = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t])
 
-                grad_S_r = (S_rh - S)/h
+                grad_S_r = (S_rh - S)/hr
 
                 f_diff_rh = (
                     constraint_sum_qh(N=N,Area=Area,r=rh,psi=psi[t],z=z[t],constraint_eq="f")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="f")
-                )/h
+                )/hr
                 f_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r",constraint_eq="f")
                 
                 g_diff_rh =  (
                     constraint_sum_qh(N=N,Area=Area,r=rh,psi=psi[t],z=z[t],constraint_eq="g")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="g")
-                )/h
+                )/hr
                 g_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r",constraint_eq="g")
 
                 #grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
@@ -2186,62 +2175,62 @@ def test_gradients_again(
                 if abs(grad_test_constraint_r[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_r[t][i],
-                        f"grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r = ({diff_constraints_r} - {diff_constraints_rh})/{diff_constraints_r} = ",
-                        f"grad test constraint r (t,i)=({t},{i}):  = {grad_test_constraint_r[t][i]} ",
-                        f"lambs rh = {lambs_rh[i]}" ,
-                        f"lambs    = {lambs[i]} ",
-                        f"(lambs - lambs rh)/lambs = {(lambs[i] - lambs_rh[i])/lambs[i]}",
-                        f"nus rh  = {nus_rh[i]}" ,
-                        f"nus     = {nus[i]}",
-                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_rh[i])/nus[i]}",
-                        f"constraint eq rh = {constraint_eq_rh}   ",
-                        f"constraint eq    = {constraint_eq}   ",
-                        f"(constraint eq - constraint eq rh)/constraint eq = {(constraint_eq - constraint_eq_rh)/constraint_eq}",
-                        f"S rh = {S_rh}" ,
-                        f"S    = {S}",
-                        f"(S - S rh)/S = {(S - S_rh)/S}",
-                        f"grad S r = {grad_S_r}  " ,
-                        f"Q r      = {Q_r}   ",
-                        f"(Q r - grad S r)/Q r = {(Q_r - grad_S_r)/Q_r}",
-                        f"diff_constraints_rh = {diff_constraints_rh} " ,
-                        f"diff_constraints_r  = {diff_constraints_r}    ",
-                        f"f_diff_rh = {f_diff_rh}",
-                        f"f_diff_r  = {f_diff_r}",
-                        f"(c_diff_r - c_diff_rh)/c_diff_r = {(f_diff_r - f_diff_rh)/f_diff_r}",
-                        f"g_diff_rh = {g_diff_rh}",
-                        f"g_diff_r  = {g_diff_r}",
-                        f"(g_diff_r - g_diff_rh)/c_diff_r = {(g_diff_r - g_diff_rh)/g_diff_r}"
+                        f"grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r = ({diff_constraints_r:e} - {diff_constraints_rh:e})/{diff_constraints_r:e} = ",
+                        f"grad test constraint r (t,i)=({t},{i}):  = {grad_test_constraint_r[t][i]:e} ",
+                        f"lambs rh = {lambs_rh[i]:e}" ,
+                        f"lambs    = {lambs[i]:e} ",
+                        f"(lambs - lambs rh)/lambs = {(lambs[i] - lambs_rh[i])/lambs[i]:e}",
+                        f"nus rh  = {nus_rh[i]:e}" ,
+                        f"nus     = {nus[i]:e}",
+                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_rh[i])/nus[i]:e}",
+                        f"constraint eq rh = {constraint_eq_rh:e}   ",
+                        f"constraint eq    = {constraint_eq:e}   ",
+                        f"(constraint eq - constraint eq rh)/constraint eq = {(constraint_eq - constraint_eq_rh)/constraint_eq:e}",
+                        f"S rh = {S_rh:e}" ,
+                        f"S    = {S:e}",
+                        f"(S - S rh)/S = {(S - S_rh)/S:e}",
+                        f"grad S r = {grad_S_r:e}  " ,
+                        f"Q r      = {Q_r:e}   ",
+                        f"(Q r - grad S r)/Q r = {(Q_r - grad_S_r)/Q_r:e}",
+                        f"diff_constraints_rh = {diff_constraints_rh:e} " ,
+                        f"diff_constraints_r  = {diff_constraints_r:e}    ",
+                        f"f_diff_rh = {f_diff_rh:e}",
+                        f"f_diff_r  = {f_diff_r:e}",
+                        f"(c_diff_r - c_diff_rh)/c_diff_r = {(f_diff_r - f_diff_rh)/f_diff_r:e}",
+                        f"g_diff_rh = {g_diff_rh:e}",
+                        f"g_diff_r  = {g_diff_r:e}",
+                        f"(g_diff_r - g_diff_rh)/c_diff_r = {(g_diff_r - g_diff_rh)/g_diff_r:e}"
                     ])
                                         
 
                 if abs(grad_test_r[t][i]) > tol:
                     further_data.append([
                         grad_test_r[t][i] ,
-                        f"grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r =({Q_r} - {grad_S_r})/{Q_r}",
-                        f"grad test r: (t,i)={t,i}:  = {grad_test_r[t][i]} ",
-                        f"lambs rh = {lambs_rh[i]}" ,
-                        f"lambs    = {lambs[i]} ",
-                        f"(lambs - lambs rh)/lambs = {(lambs[i] - lambs_rh[i])/lambs[i]}",
-                        f"nus rh = {nus_rh[i]}" ,
-                        f"nus    = {nus[i]}",
-                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_rh[i])/nus[i]}",
-                        f"constraint eq rh = {constraint_eq_rh}   ",
-                        f"constraint eq    = {constraint_eq}   ",
-                        f"(constraint eq - constraint eq rh)/constraint eq = {(constraint_eq - constraint_eq_rh)/constraint_eq}",
-                        f"S rh = {S_rh}" ,
-                        f"S    = {S}",
-                        f"(S - S rh)/S = {(S - S_rh)/S}",
-                        f"grad S r = {grad_S_r}  " ,
-                        f"Q r      = {Q_r}   ",
-                        f"(Q r - grad S r)/Q r = {(Q_r - grad_S_r)/Q_r}",
-                        f"diff_constraints_rh = {diff_constraints_rh} " ,
-                        f"diff_constraints_r  = {diff_constraints_r}    ",
-                        f"f_diff_rh = {f_diff_rh}",
-                        f"f_diff_r  = {f_diff_r}",
-                        f"(c_diff_r - c_diff_rh)/c_diff_r = {(f_diff_r - f_diff_rh)/f_diff_r}",
-                        f"g_diff_rh = {g_diff_rh}",
-                        f"g_diff_r  = {g_diff_r}",
-                        f"(g_diff_r - g_diff_rh)/c_diff_r = {(g_diff_r - g_diff_rh)/g_diff_r}"
+                        f"grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r =({Q_r:e} - {grad_S_r:e})/{Q_r:e}",
+                        f"grad test r: (t,i)={t,i}:  = {grad_test_r[t][i]:e} ",
+                        f"lambs rh = {lambs_rh[i]:e}" ,
+                        f"lambs    = {lambs[i]:e} ",
+                        f"(lambs - lambs rh)/lambs = {(lambs[i] - lambs_rh[i])/lambs[i]:e}",
+                        f"nus rh = {nus_rh[i]:e}" ,
+                        f"nus    = {nus[i]:e}",
+                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_rh[i])/nus[i]:e}",
+                        f"constraint eq rh = {constraint_eq_rh:e}   ",
+                        f"constraint eq    = {constraint_eq:e}   ",
+                        f"(constraint eq - constraint eq rh)/constraint eq = {(constraint_eq - constraint_eq_rh)/constraint_eq:e}",
+                        f"S rh = {S_rh:e}" ,
+                        f"S    = {S:e}",
+                        f"(S - S rh)/S = {(S - S_rh)/S:e}",
+                        f"grad S r = {grad_S_r:e}  " ,
+                        f"Q r      = {Q_r:e}   ",
+                        f"(Q r - grad S r)/Q r = {(Q_r - grad_S_r)/Q_r:e}",
+                        f"diff_constraints_rh = {diff_constraints_rh:e} " ,
+                        f"diff_constraints_r  = {diff_constraints_r:e}    ",
+                        f"f_diff_rh = {f_diff_rh:e}",
+                        f"f_diff_r  = {f_diff_r:e}",
+                        f"(c_diff_r - c_diff_rh)/c_diff_r = {(f_diff_r - f_diff_rh)/f_diff_r:e}",
+                        f"g_diff_rh = {g_diff_rh:e}",
+                        f"g_diff_r  = {g_diff_r:e}",
+                        f"(g_diff_r - g_diff_rh)/c_diff_r = {(g_diff_r - g_diff_rh)/g_diff_r:e}"
                     ])
                     
 
@@ -2283,30 +2272,22 @@ def test_gradients_again(
                     ,nus=nus_zh ,lambs=lambs_zh
                     ,z=zh
                     )
-
-                """grad_L_zh = S_zh + constraint_eq_zh 
-
-                dLdzh = (grad_L_zh - grad_L_ref)/h  #the Newton derivative 
-
-                dLdz = gamma(i=i,ds=ds,eta=eta)*dzdt_func(
-                    i=i,ds=ds,eta=eta,Area=Area,radi=r[t],nu=nus
-                )"""
                 
 
-                diff_constraints_zh = (constraint_eq_zh - constraint_eq)/h                
+                diff_constraints_zh = (constraint_eq_zh - constraint_eq)/hz                
                 diff_constraints_z = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="z")
 
                                 
                 f_diff_zh = (
                     constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=zh,constraint_eq="f")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="f")
-                )/h
+                )/hz
                 f_diff_z = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="z",constraint_eq="f")
                 
                 g_diff_zh =  (
                     constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=zh,constraint_eq="g")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="g")
-                )/h
+                )/hz
                 g_diff_z = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="z",constraint_eq="g")
 
                 #grad_S_z = (S_zh - S)/h
@@ -2318,25 +2299,25 @@ def test_gradients_again(
                 if abs(grad_test_constraint_z[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_z[t][i],
-                        f"grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z = ({diff_constraints_z} - {diff_constraints_zh})/{diff_constraints_z}",
-                        f"grad test constraint z: (t,i)=({t},{i}):  = {grad_test_constraint_z[t][i]} ",
-                        f"lambs rh = {lambs_zh[i]}" ,
-                        f"lambs    = {lambs[i]} ",
-                        f"(lambs - lambs zh)/lambs = {(lambs[i] - lambs_zh[i])/lambs[i]}",
-                        f"nus rh  = {nus_zh[i]}" ,
-                        f"nus     = {nus[i]}",
-                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_zh[i])/nus[i]}",
-                        f"constraint eq zh = {constraint_eq_zh}   ",
-                        f"constraint eq    = {constraint_eq}   ",
-                        f"(constraint eq - constraint eq zh)/constraint eq = {(constraint_eq - constraint_eq_zh)/constraint_eq}",
-                        f"diff_constraints_rh = {diff_constraints_rh} " ,
-                        f"diff_constraints_r  = {diff_constraints_r}    ",
-                        f"f_diff_zh = {f_diff_zh}",
-                        f"f_diff_z  = {f_diff_z}",
-                        f"(c_diff_z - c_diff_zh)/c_diff_z = {(f_diff_z - f_diff_zh)/f_diff_z}",
-                        f"g_diff_zh = {g_diff_zh}",
-                        f"g_diff_r  = {g_diff_z}",
-                        f"(g_diff_z - g_diff_zh)/c_diff_z = {(g_diff_z - g_diff_zh)/g_diff_z}"
+                        f"grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z = ({diff_constraints_z:e} - {diff_constraints_zh:e})/{diff_constraints_z:e}",
+                        f"grad test constraint z: (t,i)=({t},{i}):  = {grad_test_constraint_z[t][i]:e} ",
+                        f"lambs rh = {lambs_zh[i]:e}" ,
+                        f"lambs    = {lambs[i]:e} ",
+                        f"(lambs - lambs zh)/lambs = {(lambs[i] - lambs_zh[i])/lambs[i]:e}",
+                        f"nus rh  = {nus_zh[i]:e}" ,
+                        f"nus     = {nus[i]:e}",
+                        f"(nus[i] - nus rh[i])/nus[i] = {(nus[i] - nus_zh[i])/nus[i]:e}",
+                        f"constraint eq zh = {constraint_eq_zh:e}   ",
+                        f"constraint eq    = {constraint_eq:e}   ",
+                        f"(constraint eq - constraint eq zh)/constraint eq = {(constraint_eq - constraint_eq_zh)/constraint_eq:e}",
+                        f"diff_constraints_rh = {diff_constraints_rh:e} " ,
+                        f"diff_constraints_r  = {diff_constraints_r:e}    ",
+                        f"f_diff_zh = {f_diff_zh:e}",
+                        f"f_diff_z  = {f_diff_z:e}",
+                        f"(c_diff_z - c_diff_zh)/c_diff_z = {(f_diff_z - f_diff_zh)/f_diff_z:e}",
+                        f"g_diff_zh = {g_diff_zh:e}",
+                        f"g_diff_r  = {g_diff_z:e}",
+                        f"(g_diff_z - g_diff_zh)/c_diff_z = {(g_diff_z - g_diff_zh)/g_diff_z:e}"
                     ])
 
 
@@ -2377,14 +2358,14 @@ def test_gradients_again(
                 #dpsids = d
                 dSdpsi = -dSdpsi_func(i=i,N=N,c0=c0,k=k,kG=kG,r=r[t],psi=psi[t],Area=Area)
 
-                S_psih = - E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],Area=Area
+                S_psih = -E_pot(N=N,k=k,kG=kG,tau=tau,c0=c0,r=r[t],Area=Area
                                  ,psi=psih
                                  )
 
                 diff_constraints_psi = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="psi")
                 
                 constraint_eq_psih = constraints_multi(
-                    N=N,Area=Area ,r=r[t], z=z[t]
+                    N=N ,Area=Area ,r=r[t], z=z[t]
                     ,nus=nus_psih ,lambs=lambs_psih
                     #,nus=nus ,lambs=lambs
                     ,psi=psih
@@ -2392,25 +2373,20 @@ def test_gradients_again(
                 
                 grad_S_psi = (S_psih - S)/hpsi
                 
-                """grad_L_psih = S_psih + constraint_eq_psih
-
-                dLdpsih = (grad_L_psih - grad_L_ref)/h
-                
-                dLdpsi = (dSdpsi + diff_constraints_psi)"""
-                
                 diff_constraints_psih = (constraint_eq_psih - constraint_eq)/hpsi
 
-
+                
                 f_diff_psih = (
                     constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psih,z=z[t],constraint_eq="f")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="f")
-                )/h
+                )/hpsi
                 f_diff_psi = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="psi",constraint_eq="f")
+
                 
                 g_diff_psih =  (
                     constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psih,z=z[t],constraint_eq="g")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="g")
-                )/h
+                )/hpsi
                 g_diff_psi = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="psi",constraint_eq="g")
 
 
@@ -2421,61 +2397,62 @@ def test_gradients_again(
                 if abs(grad_test_constraint_psi[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_psi[t,i],
-                        f"grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi = ({diff_constraints_psi} - {diff_constraints_psih})/{diff_constraints_psi}",
-                        f"grad test constraint psi:(t,i)=({t},{i}):  = {grad_test_constraint_psi[t][i]} ",
-                        f"lambs psih= {lambs_psih[i]}" ,
-                        f"lambs     = {lambs[i]} ",
-                        f"(lambs - lambs psih)/lambs = {(lambs[i] - lambs_psih[i])/lambs[i]}",
-                        f"nus psih  = {nus_psih[i]}" ,
-                        f"nus       = {nus[i]}",
-                        f"(nus[i] - nus psih[i])/nus[i] = {(nus[i] - nus_psih[i])/nus[i]}",
-                        f"constraint eq psih = {constraint_eq_psih}   ",
-                        f"constraint eq      = {constraint_eq}   ",
+                        f"grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi = ({diff_constraints_psi:e} - {diff_constraints_psih:e})/{diff_constraints_psi:e}",
+                        f"grad test constraint psi:(t,i)=({t},{i}):  = {grad_test_constraint_psi[t][i]:e} ",
+                        f"lambs psih= {lambs_psih[i]:e}" ,
+                        f"lambs     = {lambs[i]:e} ",
+                        f"(lambs - lambs psih)/lambs = {(lambs[i] - lambs_psih[i])/lambs[i]:e}",
+                        f"nus psih  = {nus_psih[i]:e}" ,
+                        f"nus       = {nus[i]:e}",
+                        f"(nus[i] - nus psih[i])/nus[i] = {(nus[i] - nus_psih[i])/nus[i]:e}",
+                        f"constraint eq psih = {constraint_eq_psih:e}   ",
+                        f"constraint eq      = {constraint_eq:e}   ",
                         f"(constraint eq - constraint eq psih)/constraint eq = {(constraint_eq - constraint_eq_psih)/constraint_eq}",
-                        f"S psih = {S_psih}" ,
-                        f"S      = {S}",
-                        f"(S - S psih)/S = {(S - S_psih)/S}",
-                        f"grad S psi = {grad_S_psi}  " ,
-                        f"dSdpsi     = {dSdpsi}",
-                        f"(dSdpsi - grad S psi)/dSdpsi  = {(dSdpsi - grad_S_psi)/dSdpsi }",
-                        f"diff_constraints_psih = {diff_constraints_psih} " ,
-                        f"diff_constraints_psi  = {diff_constraints_psi}    ",
-                        f"f_diff_psih = {f_diff_psih}",
-                        f"f_diff_psi  = {f_diff_psi}",
-                        f"(f_diff_psi - f_diff_psih)/f_diff_psi = {(f_diff_psi - f_diff_psih)/f_diff_psi}",
-                        f"g_diff_psih = {g_diff_psih}",
-                        f"g_diff_psi  = {g_diff_psi}",
-                        f"(g_diff_psi - g_diff_psih)/c_diff_psi = {(g_diff_psi - g_diff_psih)/g_diff_psi}"
+                        f"S psih = {S_psih:e}" ,
+                        f"S      = {S:e}",
+                        f"(S - S psih)/S = {(S - S_psih)/S:e}",
+                        f"grad S psi = {grad_S_psi:e}  " ,
+                        f"dSdpsi     = {dSdpsi:e}",
+                        f"(dSdpsi - grad S psi)/dSdpsi  = {(dSdpsi - grad_S_psi)/dSdpsi :e}",
+                        f"diff_constraints_psih = {diff_constraints_psih:e} " ,
+                        f"diff_constraints_psi  = {diff_constraints_psi:e}    ",
+                        f"psi i = {psi[t][i]:e}",
+                        f"f_diff_psih = {f_diff_psih:e}",
+                        f"f_diff_psi  = {f_diff_psi:e}",
+                        f"(f_diff_psi - f_diff_psih)/f_diff_psi = {(f_diff_psi - f_diff_psih)/f_diff_psi:e}",
+                        f"g_diff_psih = {g_diff_psih:e}",
+                        f"g_diff_psi  = {g_diff_psi:e}",
+                        f"(g_diff_psi - g_diff_psih)/g_diff_psi = {(g_diff_psi - g_diff_psih)/g_diff_psi:e}"
                     ])
 
                 if abs(grad_test_psi[t][i]) > tol:
                     further_data.append([
                         grad_test_psi[t,i],
-                        f"grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi = ({dSdpsi} - {grad_S_psi})/{dSdpsi}",
-                        f"grad test psi: (t,i)=({t},{i}):  = {grad_test_psi[t][i]} ",
-                        f"lambs psih= {lambs_psih[i]}" ,
-                        f"lambs     = {lambs[i]} ",
-                        f"(lambs - lambs psih)/lambs = {(lambs[i] - lambs_psih[i])/lambs[i]}",
-                        f"nus psih  = {nus_psih[i]}" ,
-                        f"nus       = {nus[i]}",
-                        f"(nus[i] - nus psih[i])/nus[i] = {(nus[i] - nus_psih[i])/nus[i]}",
-                        f"constraint eq psih = {constraint_eq_psih}   ",
-                        f"constraint eq      = {constraint_eq}   ",
-                        f"(constraint eq - constraint eq psih)/constraint eq = {(constraint_eq - constraint_eq_psih)/constraint_eq}",
-                        f"S psih = {S_psih}" ,
-                        f"S      = {S}",
-                        f"(S - S psih)/S = {(S - S_psih)/S}",
-                        f"grad S psi = {grad_S_psi}  " ,
-                        f"dSdpsi     = {dSdpsi}",
-                        f"(dSdpsi - grad S psi)/dSdpsi  = {(dSdpsi - grad_S_psi)/dSdpsi }",
-                        f"diff_constraints_psih = {diff_constraints_psih} " ,
-                        f"diff_constraints_psi  = {diff_constraints_psi}    ",
-                        f"f_diff_psih = {f_diff_psih}",
-                        f"f_diff_psi  = {f_diff_psi}",
-                        f"(f_diff_psi - f_diff_psih)/f_diff_psi = {(f_diff_psi - f_diff_psih)/f_diff_psi}",
-                        f"g_diff_psih = {g_diff_psih}",
-                        f"g_diff_psi  = {g_diff_psi}",
-                        f"(g_diff_psi - g_diff_psih)/c_diff_psi = {(g_diff_psi - g_diff_psih)/g_diff_psi}"
+                        f"grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi = ({dSdpsi:e} - {grad_S_psi:e})/{dSdpsi:e}",
+                        f"grad test psi: (t,i)=({t},{i}):  = {grad_test_psi[t][i]:e} ",
+                        f"lambs psih= {lambs_psih[i]:e}" ,
+                        f"lambs     = {lambs[i]:e} ",
+                        f"(lambs - lambs psih)/lambs = {(lambs[i] - lambs_psih[i])/lambs[i]:e}",
+                        f"nus psih  = {nus_psih[i]:e}" ,
+                        f"nus       = {nus[i]:e}",
+                        f"(nus[i] - nus psih[i])/nus[i] = {(nus[i] - nus_psih[i])/nus[i]:e}",
+                        f"constraint eq psih = {constraint_eq_psih:e}   ",
+                        f"constraint eq      = {constraint_eq:e}   ",
+                        f"(constraint eq - constraint eq psih)/constraint eq = {(constraint_eq - constraint_eq_psih)/constraint_eq:e}",
+                        f"S psih = {S_psih:e}" ,
+                        f"S      = {S:e}",
+                        f"(S - S psih)/S = {(S - S_psih)/S:e}",
+                        f"grad S psi = {grad_S_psi:e}  " ,
+                        f"dSdpsi     = {dSdpsi:e}",
+                        f"(dSdpsi - grad S psi)/dSdpsi  = {(dSdpsi - grad_S_psi)/dSdpsi :e}",
+                        f"diff_constraints_psih = {diff_constraints_psih:e} " ,
+                        f"diff_constraints_psi  = {diff_constraints_psi:e}    ",
+                        f"f_diff_psih = {f_diff_psih:e}",
+                        f"f_diff_psi  = {f_diff_psi:e}",
+                        f"(f_diff_psi - f_diff_psih)/f_diff_psi = {(f_diff_psi - f_diff_psih)/f_diff_psi:e}",
+                        f"g_diff_psih = {g_diff_psih:e}",
+                        f"g_diff_psi  = {g_diff_psi:e}",
+                        f"(g_diff_psi - g_diff_psih)/c_diff_psi = {(g_diff_psi - g_diff_psih)/g_diff_psi:e}"
                     ])
 
                 """------------- Saving the data --------------------------------------------------------------------"""
@@ -2491,7 +2468,8 @@ def test_gradients_again(
                     'grad test constraint z':[grad_test_constraint_z],
                     'grad test constraint psi':[grad_test_constraint_psi],
                     'further data':[further_data],
-                    'h':h,
+                    'hr':hr,
+                    'hz':hz,
                     'hpsi':hpsi
                 })
 
@@ -2566,7 +2544,7 @@ def test_gradients_again(
     ]
     
     h_list = [
-        h,hpsi,h,h,hpsi
+        hr,hpsi,hr,hz,hpsi
     ]
     
     t_switch = [i for i in S_pot].index(min(S_pot))
@@ -2587,6 +2565,12 @@ def test_gradients_again(
     plt.savefig(data_path + "potential energy" + ".svg")
 
 
+    fig, ax = plt.subplots()
+    ax.plot(
+        time_vec, z[:,N], label="end pos of z"
+    )
+    plt.legend()
+    plt.grid()
 
     for l in range(len(data)):
         i_problem_list = []

@@ -383,7 +383,7 @@ class Surface_membrane:
 
                     if i < self.N:
                         self.r_list[t+1][i] = self.r_list[t][i] + (self.dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
-                        self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
+                        self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] + 2*kz[3][i] + kz[4][i])
                         self.psi_list[t+1][i] = self.psi_list[t][i] + (self.dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
                         if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i] or self.psi_list[t+1][i] != self.psi_list[t+1][i]:
