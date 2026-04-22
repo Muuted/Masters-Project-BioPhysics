@@ -8,7 +8,9 @@ def lambda_ip1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         a2 = 2*r[i+1]*np.cos(psi[i])
         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
 
-        return -2*np.pi**2*(a1 + a2)*r[i+1]/a3    
+        return -2*np.pi**2*(a1 + a2)*r[i+1]/a3
+    elif i == N - 1:
+        return 0.0
     else:
         print(f"\n i not in correct range 0 <= i={i} < N -1" +f"\n lambda_ip1 func")
         exit()
@@ -28,7 +30,7 @@ def lambda_i(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
     elif i == N - 1:
         a21 = z[i]*np.sin(psi[i])
         a22 = 2*r[i]*np.cos(psi[i])
-        a2  = (a21 + a22 )*r[i]/gamma(i=i,ds=ds,eta=eta)
+        a2  = ( a21 + a22 )*r[i]/gamma(i=i,ds=ds,eta=eta)
 
         return 2*np.pi**2*( a2 )/Area[i]**2
     else:
@@ -36,7 +38,9 @@ def lambda_i(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         exit()
 
 def lambda_im1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
-    if 1 <= i < N -1 :
+    if i == 0:
+        return 0.0
+    elif 0 < i < N -1 :
         a1 = (z[i+1] - z[i])*np.sin(psi[i])
                             
         a2 = -2*r[i]*np.cos(psi[i])
@@ -70,9 +74,7 @@ def nus_ip1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         a2 = (a21 + a22)*a23
 
         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
-
-        return np.pi**2*(a1 + a2 )/a3
-    
+        return np.pi**2*(a1 + a2 )/a3    
     elif i == N-2:
         a11 = (r[i+1] +r[i])*np.sin(psi[i])
         a12 = r[i+2] + r[i+1] 
@@ -86,7 +88,8 @@ def nus_ip1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
 
         return np.pi**2*(a1 + a2 )/a3
-    
+    elif i == N - 1:
+        return 0.0
     else:
         print(f"\n i not in correct range 1 <= i={i} < N-1"+f"\n nus_ip1 func")
         exit()
@@ -108,7 +111,6 @@ def nus_i(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         a3 = (a31 + a32 )*a33/gamma(i=i,ds=ds,eta=eta)
 
         return np.pi**2*(a1 + a2 + a3)/Area[i]**2
-    
     elif i == N - 1:
         a11 = (r[i+1] +r[i])**2*np.sin(psi[i])
         a12 = 1/gamma(i=i,ds=ds,eta=eta) 
@@ -125,7 +127,9 @@ def nus_i(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
         exit()
 
 def nus_im1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
-    if 1 <= i < N - 1:
+    if i == 0:
+        return 0.0
+    if 0 < i < N - 1:
         a11 = (r[i+1] + r[i] )* np.sin(psi[i])
         a12 = r[i] + r[i-1]
         a1 = - a11*a12
@@ -136,16 +140,15 @@ def nus_im1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
 
         a3 = gamma(i=i,ds=ds,eta=eta)*Area[i]*Area[i-1]
 
-        return np.pi**2*( a1 + a2 )/a3
-    
+        return np.pi**2*( a1 + a2 )/a3    
     elif i == N - 1:
         a11 = (r[i+1] + r[i] )* np.sin(psi[i])
         a12 = r[i] + r[i-1]
         a1 = - a11*a12
 
-        a21 = -z[i]*np.sin(psi[i])
-        a22 = -2*r[i]*np.cos(psi[i])
-        a2 = (a21 + a22)*(z[i] - z[i-1])
+        a21 = z[i]*np.sin(psi[i])
+        a22 = 2*r[i]*np.cos(psi[i])
+        a2 = -(a21 + a22)*(z[i] - z[i-1])
 
         a3 = gamma(i=i,ds=ds,eta=eta)*Area[i]*Area[i-1] 
 
@@ -173,26 +176,7 @@ def Lagrange_multipliers(
             i,j = n%N , m%N
 
             #---------- For the constraint eqations matrix part -------------------------------
-            if n == 0:
-                if 0 <= m < N:
-                    #---------- Calculate the lambda values -------------------------------
-                    if j == i + 1:
-                        A[n,m] = lambda_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i:
-                        A[n,m] = lambda_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-                
-                
-                if N <= m < 2*N:
-                    #---------- Calculate the nu values -------------------------------
-                    if j == i + 1:
-                        A[n,m] = nus_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-                        
-                    if j == i:
-                        A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-
-            if 0 < n < N-2:
+            if 0 <= n < N:
                 if 0 <= m < N:
                     #---------- Calculate the lambda values -------------------------------
                     if j == i + 1:
@@ -203,68 +187,19 @@ def Lagrange_multipliers(
 
                     if j == i - 1:
                         A[n,m] = lambda_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
                     
                 if N <= m < 2*N:
                     #---------- Calculate the nu values -------------------------------
                     if j == i + 1:
                         A[n,m] = nus_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                        
                     if j == i:                        
                         A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
 
                     if j == i-1:
                         A[n,m] = nus_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-
-            if  n == N-2:
-                if 0 <= m < N:
-                    #---------- Calculate the lambda values -------------------------------
-                    if j == i + 1:
-                        A[n,m] = lambda_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i:
-                        A[n,m] = lambda_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i - 1:
-                        A[n,m] = lambda_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-
-                if N <= m < 2*N:
-                    #---------- Calculate the nu values -------------------------------
-                    if j == i + 1:
-                        A[n,m] = nus_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i:
-                        A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i - 1:
-                        A[n,m] = nus_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
             
-
-            if  n == N-1:
-                if 0 <= m < N:
-                    #---------- Calculate the lambda values -------------------------------
-                    if j == i:
-                        A[n,m] = lambda_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i - 1:                        
-                        A[n,m] = lambda_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-
-                if N <= m < 2*N:
-                    """---------- Calculate the nu values -------------------------------"""
-                    if j == i:
-                        A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-
-                    if j == i - 1:
-                        A[n,m] = nus_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-        
-            
-            
+            #---------- For the Lagrangian derivative matrix part -------------------------------
             if N <= n < 2*N:
-                """---------- For the Lagrangian derivative matrix part -------------------------------"""
                 if 0 <= m < N:
                     if i == j:
                         A[n,m] = np.sin(psi[i])
@@ -717,4 +652,10 @@ def Lagrange_multipliers_V1(
 
 
 if __name__ == "__main__":
-    pass
+    Ns = 3
+    rs = [5*i for i in range(Ns+1)]
+    zs = [i for i in range(Ns+1)]
+    psis = [np.pi/3.5 for i in range(Ns)]
+    As = [0.1 for i in range(Ns)]
+
+    Lagrange_multipliers(N=Ns,k=1,c0=1,sigma=1,kG=1,tau=1,ds=1,eta=1,Area=As,r=rs,z=zs,psi=psis,print_matrix=True)

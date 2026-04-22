@@ -1958,7 +1958,7 @@ def test_flat_model_object():
 def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
-    hr:float = 1e-6,
+    hr:float = 1e-9,
     hz:float = 1e-12,
     hpsi:float  = 1e-6,
     make_new_data:bool = True
@@ -2091,8 +2091,8 @@ def test_gradients_again(
                     ,r=r[t]
                     #,z_list=z[t]
                     ,z=z[t]
+                    #,print_matrix=True
                 )
-
             else:
                 print("no real lagrange multi chosen")
                 exit()
