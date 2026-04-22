@@ -10,6 +10,7 @@ from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area, plot_comparison_of_plus_minus_un_perturbed_results
+from Lagrange_multipliers import Lagrange_multipliers
 import multiprocessing
 
 np.set_printoptions(legacy='1.25') #Setting the print format
@@ -320,7 +321,7 @@ class Surface_membrane:
                 )
             #t1,t2 = t%2, (t+1)%2
             
-            lambs,nus = Langrange_multi(
+            lambs,nus = Lagrange_multipliers(#Langrange_multi(
                     N=self.N,k=self.k,c0=self.c0,sigma=self.sigma
                     ,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
                     ,Area=self.Area_list

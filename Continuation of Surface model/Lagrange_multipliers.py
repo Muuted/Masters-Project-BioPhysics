@@ -192,6 +192,7 @@ def Lagrange_multipliers(
                     #---------- Calculate the nu values -------------------------------
                     if j == i + 1:
                         A[n,m] = nus_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
+                        
                     if j == i:                        
                         A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
 
