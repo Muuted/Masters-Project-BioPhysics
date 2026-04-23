@@ -1959,8 +1959,8 @@ def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
     hr:float = 1e-9,
-    hz:float = 1e-12,
-    hpsi:float  = 1e-6,
+    hz:float = 1e-9,
+    hpsi:float  = 1e-9,
     make_new_data:bool = True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False#True
@@ -1972,17 +1972,24 @@ def test_gradients_again(
     from Lagrange_multipliers import Lagrange_multipliers
     
 
-    def constraints_multi(N,Area,nus,lambs,r,psi,z):
+    def constraints_multi(N,Area,nus,lambs,r,psi,z,printvals=False):
         grad_constraint = 0
         for i in range(N):
             grad_constraint += (
                 lambs[i]*constraint_f(i=i,N=N,r=r,psi=psi,Area=Area)
                 + nus[i]*constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area)
             )
+            if printvals == True:
+                print(
+                    f"lambs[i]={lambs[i]:e} \n"
+                    f"constraint_f_i = {constraint_f(i=i,N=N,r=r,psi=psi,Area=Area):e} \n"
+                    f"nus[i]={nus[i]:e} \n"
+                    f"constraint_g_i = {constraint_g(i=i,N=N,r=r,psi=psi,z=z,Area=Area):e}"
+                    )
         return grad_constraint
 
     def theory_constraint(
-            j,N,r,z,psi,Area,nus,lambs,diff_var
+            j,N,r,z,psi,Area,nus,lambs,diff_var,printvals=False
         ):
 
         dc = 0
@@ -1991,7 +1998,13 @@ def test_gradients_again(
                 lambs[i]*c_diff_f(i=i,j=j,N=N,r=r,psi=psi,Area=Area,diff_var=diff_var)
                 + nus[i]*c_diff_g(i=i,j=j,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=diff_var)
             )
-        
+            if printvals == True:
+                print(
+                    f"lambs[i]={lambs[i]:e} \n"
+                    f"c_diff_f(i={i},j={j} = {c_diff_f(i=i,j=j,N=N,r=r,psi=psi,Area=Area,diff_var=diff_var):e} \n"
+                    f"nus[i]={nus[i]:e} \n"
+                    f"c_diff_g(i={i},j={j} = {c_diff_g(i=i,j=j,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=diff_var):e}"
+                    )
         return dc
 
     def diff_constraint_sum(j,N,r,z,psi,Area,diff_var,constraint_eq=""):
@@ -2024,7 +2037,8 @@ def test_gradients_again(
     dt = df["dt"][0]
     N = df["N"][0]
     k = df["k"][0]
-    kG = df["kG"][0]
+    #kG = df["kG"][0]
+    kG = 0.75*k
     c0 = df["c0"][0]
     sigma = df["sigma"][0]
     tau = df["tau"][0]
@@ -2039,6 +2053,12 @@ def test_gradients_again(
     z = df["z"][0]
     psi = df["psi"][0]
 
+    min_r = min([min(abs(r[t])) for t in range(sim_steps) ])
+    min_z = min([min(abs(z[t])) for t in range(sim_steps) ])
+    min_psi = min([min(abs(psi[t])) for t in range(sim_steps) ])
+
+    print(f"\n \n Finding the values closet to zero, for estimation the largest value of h")
+    print(f"min r = {min_r:e}     ,min z= {min_z:e}     ,min psi = {min_psi:e}")
     time_vec = np.linspace(0,(sim_steps)*dt,sim_steps)
 
     grad_test_dLdr = np.zeros(shape=(sim_steps,N+1))
@@ -2055,7 +2075,7 @@ def test_gradients_again(
 
     further_data = []
     
-    sim_steps = int(sim_steps/100)
+    sim_steps = int(sim_steps/400)
     tol = 1e-2 # for the tolerance of deviation
     print("\n \n")
     if make_new_data == True:
@@ -2148,7 +2168,6 @@ def test_gradients_again(
                     ,r=rh
                     )
 
-
                 diff_constraints_rh = (constraint_eq_rh - constraint_eq)/hr               
                 diff_constraints_r = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="r")
 
@@ -2175,6 +2194,8 @@ def test_gradients_again(
                 if abs(grad_test_constraint_r[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_r[t][i],
+                        f"i=",i,
+                        f"t=",t,
                         f"grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r = ({diff_constraints_r:e} - {diff_constraints_rh:e})/{diff_constraints_r:e} = ",
                         f"grad test constraint r (t,i)=({t},{i}):  = {grad_test_constraint_r[t][i]:e} ",
                         f"lambs rh = {lambs_rh[i]:e}" ,
@@ -2186,6 +2207,8 @@ def test_gradients_again(
                         f"constraint eq rh = {constraint_eq_rh:e}   ",
                         f"constraint eq    = {constraint_eq:e}   ",
                         f"(constraint eq - constraint eq rh)/constraint eq = {(constraint_eq - constraint_eq_rh)/constraint_eq:e}",
+                        f"(constraint eq - constraint eq rh) = {(constraint_eq - constraint_eq_rh):e}",
+                        f"(constraint eq - constraint eq rh)/hr = {(constraint_eq - constraint_eq_rh)/hr:e}",
                         f"S rh = {S_rh:e}" ,
                         f"S    = {S:e}",
                         f"(S - S rh)/S = {(S - S_rh)/S:e}",
@@ -2206,6 +2229,8 @@ def test_gradients_again(
                 if abs(grad_test_r[t][i]) > tol:
                     further_data.append([
                         grad_test_r[t][i] ,
+                        f"i=",i,
+                        f"t=",t,
                         f"grad_test_r[t][i] = (Q_r - grad_S_r)/Q_r =({Q_r:e} - {grad_S_r:e})/{Q_r:e}",
                         f"grad test r: (t,i)={t,i}:  = {grad_test_r[t][i]:e} ",
                         f"lambs rh = {lambs_rh[i]:e}" ,
@@ -2299,6 +2324,8 @@ def test_gradients_again(
                 if abs(grad_test_constraint_z[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_z[t][i],
+                        f"i=",i,
+                        f"t=",t,
                         f"grad_test_constraint_z[t][i] = (diff_constraints_z - diff_constraints_zh)/diff_constraints_z = ({diff_constraints_z:e} - {diff_constraints_zh:e})/{diff_constraints_z:e}",
                         f"grad test constraint z: (t,i)=({t},{i}):  = {grad_test_constraint_z[t][i]:e} ",
                         f"lambs rh = {lambs_zh[i]:e}" ,
@@ -2397,6 +2424,8 @@ def test_gradients_again(
                 if abs(grad_test_constraint_psi[t][i]) > tol:
                     further_data.append([
                         grad_test_constraint_psi[t,i],
+                        f"i=",i,
+                        f"t=",t,
                         f"grad_test_constraint_psi[t,i] = (diff_constraints_psi - diff_constraints_psih)/diff_constraints_psi = ({diff_constraints_psi:e} - {diff_constraints_psih:e})/{diff_constraints_psi:e}",
                         f"grad test constraint psi:(t,i)=({t},{i}):  = {grad_test_constraint_psi[t][i]:e} ",
                         f"lambs psih= {lambs_psih[i]:e}" ,
@@ -2428,6 +2457,8 @@ def test_gradients_again(
                 if abs(grad_test_psi[t][i]) > tol:
                     further_data.append([
                         grad_test_psi[t,i],
+                        f"i=",i,
+                        f"t=",t,
                         f"grad_test_psi[t,i] = (dSdpsi - grad_S_psi)/dSdpsi = ({dSdpsi:e} - {grad_S_psi:e})/{dSdpsi:e}",
                         f"grad test psi: (t,i)=({t},{i}):  = {grad_test_psi[t][i]:e} ",
                         f"lambs psih= {lambs_psih[i]:e}" ,
@@ -2501,15 +2532,104 @@ def test_gradients_again(
 
     print("\n \n")
     d_max,imax = 0,0
+    t_max,pos_max = 0,0
     for i in range(len(further_data)):
         d = abs(further_data[i][0])
         if d > d_max:
             d_max = d
             imax = i
+            pos_max = further_data[i][2]
+            t_max = further_data[i][4]
 
+    print(f"pos max = {pos_max} and tmax ={t_max}")
     print("The maximum deviation is: \n")
     for d in further_data[imax]:
         print(d)
+
+
+
+
+    """------------------------ Finding variables values for the worst breaking ---------------------------- """
+    rh = [ r[t_max][n] + hr if n==i else r[t_max][n] for n in range(N+1)]
+    zh = [ z[t_max][n]+ hz  if n==i else z[t_max][n] for n in range(N+1)]
+    psih = [ psi[t_max][n]+ hpsi  if n==i else psi[t_max][n] for n in range(N)]
+
+    lambs, nus = Lagrange_multipliers(
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                ,psi=psi[t]
+                #,radi=r[t]
+                ,r=r[t]
+                #,z_list=z[t]
+                ,z=z[t]
+                #,print_matrix=True
+            )
+    lambs_rh, nus_rh = Lagrange_multipliers(
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                ,psi=psi[t]
+                #,radi=r[t]
+                ,r=rh
+                #,z_list=z[t]
+                ,z=z[t]
+                #,print_matrix=True
+            )
+    lambs_zh, nus_zh = Lagrange_multipliers(
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                ,psi=psi[t]
+                #,radi=r[t]
+                ,r=r[t]
+                #,z_list=z[t]
+                ,z=zh
+                #,print_matrix=True
+            )
+    lambs_psih, nus_psih = Lagrange_multipliers(
+                N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
+                ,psi=psih
+                #,radi=r[t]
+                ,r=r[t]
+                #,z_list=z[t]
+                ,z=z[t]
+                #,print_matrix=True
+            )
+    
+    cdf = [ lambs[i]*c_diff_f(i=i,j=pos_max,N=N,r=r[t_max],psi=psi[t_max],Area=Area,diff_var="r") for i in range(N)]
+    cdf_rh = [
+        lambs_rh[i]*( 
+            constraint_f(i=i,N=N,r=rh,psi=psi[t_max],Area=Area)
+            -constraint_f(i=i,N=N,r=r[t_max],psi=psi[t_max],Area=Area)
+            ) for i in range(N+1)]
+    cdg = [ nus[i]*c_diff_g(i=i,j=pos_max,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area,diff_var="r") for i in range(N)]
+    cdg_rh = [
+        nus_rh[i]*( 
+            constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)
+            -constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)
+            ) for i in range(N)]
+
+    fig,ax = plt.subplots(1,2)
+
+    ax[0].plot(cdf,label="cdf")
+    fig,ax = plt.subplots(1,2)
+
+    ax[0].plot(lambs,label="lambs")
+    ax[0].plot(lambs_rh,label="lambs rh")
+    ax[0].plot(lambs_zh,label="lambs zh")
+    ax[0].plot(lambs_psih,label="lambs psih")
+
+    ax[0].legend()
+    ax[0].grid()
+
+    ax[1].plot(nus,label="nus")
+    ax[1].plot(nus_rh,label="nus rh")
+    ax[1].plot(nus_zh,label="nus zh")
+    ax[1].plot(nus_psih,label="nus psih")
+
+    ax[1].legend()
+    ax[1].grid()
+
+
+    
+    #plt.show()
+    #exit()
+
 
     data = [
         grad_test_r,

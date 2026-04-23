@@ -263,7 +263,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         )
         return_val = a11*a12 + a21*a22*a23 + a31        
     else:
-        print(f"\n i never took a value from the possible set. i={i} ")
+        print(f"\n i never took a value from the possible set. 0<= i={i} <= N-1 ")
     if return_val == "":
         print("\n return val never took value \n")
         exit()
@@ -958,10 +958,9 @@ def Lagrange_multi_V2(
 
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
     f = ""
-    if 0 <= i <= N:
+    if 0 <= i < N:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
-
-    if i > N:
+    elif i > N:
         print(f"the value of i is to large, in the constraint equation \n"
               +f"i={i} and N={N}")
         exit()
@@ -972,10 +971,11 @@ def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
 
 def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
     g = ""
-    if 0 <= i <= N:
+    if 0 <= i < N- 1:
         g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
-
-    if i > N:
+    elif i == N -1:
+        g = -np.pi*z[i]*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
+    elif i > N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
     if g == "":
