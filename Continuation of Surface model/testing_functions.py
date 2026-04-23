@@ -2541,6 +2541,7 @@ def test_gradients_again(
             pos_max = further_data[i][2]
             t_max = further_data[i][4]
 
+
     print(f"pos max = {pos_max} and tmax ={t_max}")
     print("The maximum deviation is: \n")
     for d in further_data[imax]:
@@ -2548,11 +2549,11 @@ def test_gradients_again(
 
 
 
-
+    
     """------------------------ Finding variables values for the worst breaking ---------------------------- """
-    rh = [ r[t_max][n] + hr if n==i else r[t_max][n] for n in range(N+1)]
-    zh = [ z[t_max][n]+ hz  if n==i else z[t_max][n] for n in range(N+1)]
-    psih = [ psi[t_max][n]+ hpsi  if n==i else psi[t_max][n] for n in range(N)]
+    rh = [ r[t_max][n] + hr if n==pos_max else r[t_max][n] for n in range(N+1)]
+    zh = [ z[t_max][n]+ hz  if n==pos_max else z[t_max][n] for n in range(N+1)]
+    psih = [ psi[t_max][n]+ hpsi  if n==pos_max else psi[t_max][n] for n in range(N)]
 
     lambs, nus = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
@@ -2591,22 +2592,47 @@ def test_gradients_again(
                 #,print_matrix=True
             )
     
-    cdf = [ lambs[i]*c_diff_f(i=i,j=pos_max,N=N,r=r[t_max],psi=psi[t_max],Area=Area,diff_var="r") for i in range(N)]
-    cdf_rh = [
-        lambs_rh[i]*( 
-            constraint_f(i=i,N=N,r=rh,psi=psi[t_max],Area=Area)
-            -constraint_f(i=i,N=N,r=r[t_max],psi=psi[t_max],Area=Area)
-            ) for i in range(N+1)]
-    cdg = [ nus[i]*c_diff_g(i=i,j=pos_max,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area,diff_var="r") for i in range(N)]
-    cdg_rh = [
-        nus_rh[i]*( 
-            constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)
-            -constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)
-            ) for i in range(N)]
+    cdf = []
+    cdf_rh = []
+    cdg = []
+    cdg_rh = []
+    for i in range(N):
+        cdf.append(lambs[i]*c_diff_f(i=i,j=pos_max,N=N,r=r[t_max],psi=psi[t_max],Area=Area,diff_var="r") )
+        cdf_rh.append(
+            ( lambs_rh[i]*constraint_f(i=i,N=N,r=rh,psi=psi[t_max],Area=Area)
+             - lambs[i]*constraint_f(i=i,N=N,r=r[t_max],psi=psi[t_max],Area=Area) 
+             )/hr
+        )
+
+        cdg.append(nus[i]*c_diff_g(i=i,j=pos_max,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area,diff_var="r"))
+        cdg_rh.append(
+            (
+            nus_rh[i]*constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)
+            -nus[i]*constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)
+            )/hr
+            )
+        if i < 2:
+            print(f"i={i}  ,  nus_rh[i]={ nus_rh[i]}    ,g_irh={constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)}")
+            print(f"i={i}  ,  nus[i]={ nus[i]}    ,g_i={constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)}")
 
     fig,ax = plt.subplots(1,2)
+    ax[0].plot(cdf,label="cdf",marker=".")
+    ax[0].plot(cdf_rh,label="cdf rh",marker=".")
+    ax[0].legend()
+    ax[0].grid()
 
-    ax[0].plot(cdf,label="cdf")
+    ax[1].plot(cdg,label="cdg",marker=".")
+    ax[1].plot(cdg_rh,label="cdg rh",marker=".")
+    ax[1].legend()
+    ax[1].grid()
+   
+    plt.suptitle("compare constraint diff")
+
+    plt.figure()
+    plt.plot(Area,label="Area")
+    plt.grid()
+    plt.legend()
+
     fig,ax = plt.subplots(1,2)
 
     ax[0].plot(lambs,label="lambs")
@@ -2627,8 +2653,8 @@ def test_gradients_again(
 
 
     
-    #plt.show()
-    #exit()
+    plt.show()
+    exit()
 
 
     data = [
@@ -2666,9 +2692,9 @@ def test_gradients_again(
     h_list = [
         hr,hpsi,hr,hz,hpsi
     ]
-    
-    t_switch = [i for i in S_pot].index(min(S_pot))
 
+    t_switch = [i for i in S_pot].index(min(S_pot))
+    """
     fig, ax = plt.subplots()
     manager = plt.get_current_fig_manager()
     manager.window.showMaximized()
@@ -2682,15 +2708,8 @@ def test_gradients_again(
     plt.draw()
     plt.pause(0.5)
     plt.savefig(data_path + "potential energy" + ".png")
-    plt.savefig(data_path + "potential energy" + ".svg")
+    plt.savefig(data_path + "potential energy" + ".svg")"""
 
-
-    fig, ax = plt.subplots()
-    ax.plot(
-        time_vec, z[:,N], label="end pos of z"
-    )
-    plt.legend()
-    plt.grid()
 
     for l in range(len(data)):
         i_problem_list = []
