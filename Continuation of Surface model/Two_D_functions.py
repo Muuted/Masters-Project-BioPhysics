@@ -40,7 +40,9 @@ def B_function(
 
     elif i == N-1:
         B = -np.pi*psi[i]*(radi[i+1] + radi[i])/Area[i] + np.sin(psi[i])/radi[i] - c0
-
+    else:
+        print("i never took a correct value")
+        exit()
     if B == "":
         print(f"B function never took a value")
         exit()
@@ -233,8 +235,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         a21 = kG*(
             -np.sin(psi[i]) + (psi[i+1]-psi[i])*np.cos(psi[i])
         )
-        return_val = a11*a12*a13 + a21
-
+        return a11*a12*a13 + a21
     elif 0 < i < N-1 :
         a11 = k*(r[i]+r[i-1])/2
         a12 = B_function(i=i-1 ,N=N,c0=c0,Area=Area,psi=psi,radi=r)
@@ -247,8 +248,7 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         a31 = kG*(
             np.sin(psi[i-1]) - np.sin(psi[i]) + (psi[i+1]-psi[i])*np.cos(psi[i])
         )
-        return_val = a11*a12 + a21*a22*a23 + a31        
-
+        return a11*a12 + a21*a22*a23 + a31        
     elif i == N - 1 :
         a11 = k*(r[i]+r[i-1])/2
         a12 = B_function(i=i-1,N=N,c0=c0,Area=Area,psi=psi,radi=r)
@@ -261,14 +261,14 @@ def dSdpsi_func(i:int,N:int,c0:float,k:float,kG:float,r:list,psi:list,Area:list)
         a31 = kG*(
             np.sin(psi[i-1]) - np.sin(psi[i]) - psi[i]*np.cos(psi[i])
         )
-        return_val = a11*a12 + a21*a22*a23 + a31        
+        return a11*a12 + a21*a22*a23 + a31        
     else:
         print(f"\n i never took a value from the possible set. 0<= i={i} <= N-1 ")
     if return_val == "":
         print("\n return val never took value \n")
         exit()
 
-    return return_val
+    #return return_val
 
 def Langrange_multi_original(
          N ,k ,c0 ,sigma ,kG ,tau #, ds
@@ -958,9 +958,9 @@ def Lagrange_multi_V2(
 
 def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
     f = ""
-    if 0 <= i <= N:
+    if 0 <= i <= N-1:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
-    elif i > N:
+    else:#elif i > N - 1:
         print(f"the value of i is to large, in the constraint equation \n"
               +f"i={i} and N={N}")
         exit()
@@ -971,11 +971,11 @@ def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
 
 def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
     g = ""
-    if 0 <= i < N -1:
+    if 0 <= i < N-1:
         g = np.pi*(z[i+1]-z[i])*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
     elif i == N-1:
         g = -np.pi*z[i]*(r[i+1] + r[i])/Area[i] - np.sin(psi[i])
-    elif i > N:
+    else:#elif i >= N:
         print(f"the value of i is to large, in the constraint equation")
         exit()
     if g == "":

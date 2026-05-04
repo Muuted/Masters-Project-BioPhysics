@@ -13,9 +13,6 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     
-    a = 5.0
-
-    if isinstance(a,int) == True or isinstance(a,float):
-        print("is an integer or float")
-    if isinstance(a,list) == True:
-        print("is a list")
+   N=3 
+   for i in range(2*N):
+      print(f"i%N={i}%{N}={i%N}")

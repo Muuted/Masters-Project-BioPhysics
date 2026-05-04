@@ -82,7 +82,7 @@ def nus_ip1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
 
         a21 = (z[i+1]-z[i])*np.sin(psi[i])
         a22 = 2*r[i+1]*np.cos(psi[i])
-        a23 = - z[i+1]
+        a23 = - z[i+1] # z[i+2] - z[i+1]
         a2 = (a21 + a22)*a23
 
         a3 = gamma(i=i+1,ds=ds,eta=eta)*Area[i+1]*Area[i]
@@ -118,7 +118,7 @@ def nus_i(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
 
         a31 = z[i]*np.sin(psi[i])
         a32 = 2*r[i]*np.cos(psi[i])
-        a33 =  z[i]
+        a33 =  z[i] # (z[i+1] - z[i])
         a3 = (a31 + a32 )*a33/gamma(i=i,ds=ds,eta=eta)
 
         return np.pi**2*(a1 + a3)/Area[i]**2 
@@ -168,8 +168,8 @@ def Lagrange_multipliers(
         ,z:list
         ,print_matrix = False
     ):
-    A = np.zeros(shape=(2*N,2*N))
-    b = np.zeros(2*N)
+    A = np.zeros(shape=(2*N,2*N),dtype=float)
+    b = np.zeros(2*N,dtype=float)
     
     for n in range(2*N):
         for m in range(2*N):
@@ -192,11 +192,11 @@ def Lagrange_multipliers(
                     #---------- Calculate the nu values -------------------------------
                     if j == i + 1:
                         A[n,m] = nus_ip1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
-                        
+
                     if j == i:                        
                         A[n,m] = nus_i(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
 
-                    if j == i-1:
+                    if j == i - 1:
                         A[n,m] = nus_im1(i=i,N=N,ds=ds,eta=eta,r=r,z=z,psi=psi,Area=Area)
             
             #---------- For the Lagrangian derivative matrix part -------------------------------
@@ -207,8 +207,6 @@ def Lagrange_multipliers(
                 if N <= m < 2*N:
                     if i == j:
                         A[n,m] = -np.cos(psi[i])
-
-        
         
         if 0 <= n < N:
             """---------- For the constraint eq's results part -------------------------------"""
@@ -219,20 +217,20 @@ def Lagrange_multipliers(
 
                 Qp1 = Q_function(i=i+1,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
 
-                b21 = 2*r[i]*np.cos(psi[i]) 
-                b2 = (b11 - b21 )/Area[i]
+                b21 = -2*r[i]*np.cos(psi[i]) 
+                b2 = ( b11 + b21 )/Area[i]
                 Q = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
 
                 b[n] = -np.pi*( b1*Qp1 + b2*Q )
 
             if i == N-1:
                 b11 = z[i]*np.sin(psi[i]) 
-                b21 = 2*r[i]*np.cos(psi[i]) 
-                b2 = (b11 + b21 )/Area[i]
+                b21 = 2*r[i]*np.cos(psi[i])
+                b2 = ( b11 + b21 )/Area[i]
 
                 Q = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi,radi=r)
 
-                b[n] =  np.pi*b2*Q
+                b[n] = np.pi*b2*Q
 
         if N <= n < 2*N:
             """---------- For the Lagrangian derivative results part -------------------------------"""

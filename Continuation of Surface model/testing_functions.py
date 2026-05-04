@@ -2169,7 +2169,8 @@ def test_gradients_again(
                     )
 
                 diff_constraints_rh = (constraint_eq_rh - constraint_eq)/hr               
-                diff_constraints_r = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,nus=nus,lambs=lambs,diff_var="r")
+                diff_constraints_r = theory_constraint(j=i,N=N,r=r[t],z=z[t],psi=psi[t]
+                                                       ,Area=Area,nus=nus,lambs=lambs,diff_var="r")
 
                 Q_r = Q_function(i=i,N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,Area=Area,psi=psi[t],radi=r[t])
 
@@ -2179,13 +2180,15 @@ def test_gradients_again(
                     constraint_sum_qh(N=N,Area=Area,r=rh,psi=psi[t],z=z[t],constraint_eq="f")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="f")
                 )/hr
-                f_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r",constraint_eq="f")
+                f_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t]
+                                               ,Area=Area,diff_var="r",constraint_eq="f")
                 
                 g_diff_rh =  (
                     constraint_sum_qh(N=N,Area=Area,r=rh,psi=psi[t],z=z[t],constraint_eq="g")
                     -constraint_sum_qh(N=N,Area=Area,r=r[t],psi=psi[t],z=z[t],constraint_eq="g")
                 )/hr
-                g_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t],Area=Area,diff_var="r",constraint_eq="g")
+                g_diff_r = diff_constraint_sum(j=i,N=N,r=r[t],z=z[t],psi=psi[t]
+                                               ,Area=Area,diff_var="r",constraint_eq="g")
 
                 #grad_test_dLdr[t][i] = (dLdr - dLdrh)/dLdr #gets a % deviation of the theoretical result
                 grad_test_constraint_r[t][i] = (diff_constraints_r - diff_constraints_rh)/diff_constraints_r
@@ -2552,8 +2555,8 @@ def test_gradients_again(
     
     """------------------------ Finding variables values for the worst breaking ---------------------------- """
     rh = [ r[t_max][n] + hr if n==pos_max else r[t_max][n] for n in range(N+1)]
-    zh = [ z[t_max][n]+ hz  if n==pos_max else z[t_max][n] for n in range(N+1)]
-    psih = [ psi[t_max][n]+ hpsi  if n==pos_max else psi[t_max][n] for n in range(N)]
+    zh = [ z[t_max][n]+ hz if n==pos_max else z[t_max][n] for n in range(N+1)]
+    psih = [ psi[t_max][n]+ hpsi if n==pos_max else psi[t_max][n] for n in range(N)]
 
     lambs, nus = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
@@ -2605,12 +2608,10 @@ def test_gradients_again(
         )
 
         cdg.append(nus[i]*c_diff_g(i=i,j=pos_max,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area,diff_var="r"))
-        cdg_rh.append(
-            (
+        cdg_rh.append((
             nus_rh[i]*constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)
             -nus[i]*constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)
-            )/hr
-            )
+            )/hr)
         if i < 2:
             print(f"i={i}  ,  nus_rh[i]={ nus_rh[i]}    ,g_irh={constraint_g(i=i,N=N,r=rh,z=z[t_max],psi=psi[t_max],Area=Area)}")
             print(f"i={i}  ,  nus[i]={ nus[i]}    ,g_i={constraint_g(i=i,N=N,r=r[t_max],z=z[t_max],psi=psi[t_max],Area=Area)}")
@@ -2618,20 +2619,30 @@ def test_gradients_again(
     fig,ax = plt.subplots(1,2)
     ax[0].plot(cdf,label="cdf",marker=".")
     ax[0].plot(cdf_rh,label="cdf rh",marker=".")
+    ax[0].vlines(
+        x=pos_max
+        ,ymin=min([min(cdf),min(cdf_rh)])
+        ,ymax=max([max(cdf),max(cdf_rh)])
+        ,color="k"
+        ,label="perturb index"
+                     )
     ax[0].legend()
     ax[0].grid()
 
     ax[1].plot(cdg,label="cdg",marker=".")
     ax[1].plot(cdg_rh,label="cdg rh",marker=".")
+    ax[1].vlines(
+        x=pos_max
+        ,ymin=min([min(cdg),min(cdg_rh)])
+        ,ymax=max([max(cdg),max(cdg_rh)])
+        ,color="k"
+        ,label="perturb index"
+                     )
     ax[1].legend()
     ax[1].grid()
    
     plt.suptitle("compare constraint diff")
 
-    plt.figure()
-    plt.plot(Area,label="Area")
-    plt.grid()
-    plt.legend()
 
     fig,ax = plt.subplots(1,2)
 
@@ -2639,6 +2650,13 @@ def test_gradients_again(
     ax[0].plot(lambs_rh,label="lambs rh")
     ax[0].plot(lambs_zh,label="lambs zh")
     ax[0].plot(lambs_psih,label="lambs psih")
+    ax[0].vlines(
+        x=pos_max
+        ,ymin=min([min(lambs),min(lambs_rh),min(lambs_zh),min(lambs_psih)])
+        ,ymax=max([max(lambs),max(lambs_rh),max(lambs_zh),max(lambs_psih)])
+        ,color="k"
+        ,label="perturb index"
+                     )
 
     ax[0].legend()
     ax[0].grid()
@@ -2647,14 +2665,21 @@ def test_gradients_again(
     ax[1].plot(nus_rh,label="nus rh")
     ax[1].plot(nus_zh,label="nus zh")
     ax[1].plot(nus_psih,label="nus psih")
+    ax[1].vlines(
+        x=pos_max
+        ,ymin=min([min(nus),min(nus_rh),min(nus_zh),min(nus_psih)])
+        ,ymax=max([max(nus),max(nus_rh),max(nus_zh),max(nus_psih)])
+        ,color="k"
+        ,label="perturb index"
+            )
+
 
     ax[1].legend()
     ax[1].grid()
 
 
-    
-    plt.show()
-    exit()
+    #plt.show()
+    #exit()
 
 
     data = [
