@@ -1958,9 +1958,9 @@ def test_flat_model_object():
 def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
-    hr:float = 1e-9,
-    hz:float = 1e-9,
-    hpsi:float  = 1e-9,
+    hr:float = 1e-12,
+    hz:float = 1e-12,
+    hpsi:float  = 1e-12,
     make_new_data:bool = True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False#True
@@ -2526,7 +2526,6 @@ def test_gradients_again(
         hr = df_compare_grad["hr"][0]
         hz = df_compare_grad["hz"][0]
         hpsi = df_compare_grad["hpsi"][0]
-        hpsi = df_compare_grad["hpsi"][0]
         
         
     
@@ -2563,36 +2562,28 @@ def test_gradients_again(
     lambs, nus = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                 ,psi=psi[t_max]
-                #,radi=r[t]
                 ,r=r[t_max]
-                #,z_list=z[t]
                 ,z=z[t_max]
                 #,print_matrix=True
             )
     lambs_rh, nus_rh = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                 ,psi=psi[t_max]
-                #,radi=r[t]
                 ,r=rh
-                #,z_list=z[t]
                 ,z=z[t_max]
                 #,print_matrix=True
             )
     lambs_zh, nus_zh = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                 ,psi=psi[t_max]
-                #,radi=r[t]
                 ,r=r[t_max]
-                #,z_list=z[t]
                 ,z=zh
                 #,print_matrix=True
             )
     lambs_psih, nus_psih = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                 ,psi=psih
-                #,radi=r[t]
                 ,r=r[t_max]
-                #,z_list=z[t]
                 ,z=z[t_max]
                 #,print_matrix=True
             )
