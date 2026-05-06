@@ -2523,7 +2523,9 @@ def test_gradients_again(
         grad_test_constraint_z =  df_compare_grad["grad test constraint z"][0]
         grad_test_constraint_psi =  df_compare_grad["grad test constraint psi"][0]
         further_data = df_compare_grad["further data"][0]
-        h = df_compare_grad["h"][0]
+        hr = df_compare_grad["hr"][0]
+        hz = df_compare_grad["hz"][0]
+        hpsi = df_compare_grad["hpsi"][0]
         hpsi = df_compare_grad["hpsi"][0]
         
         
@@ -2560,27 +2562,27 @@ def test_gradients_again(
 
     lambs, nus = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                ,psi=psi[t]
+                ,psi=psi[t_max]
                 #,radi=r[t]
-                ,r=r[t]
+                ,r=r[t_max]
                 #,z_list=z[t]
-                ,z=z[t]
+                ,z=z[t_max]
                 #,print_matrix=True
             )
     lambs_rh, nus_rh = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                ,psi=psi[t]
+                ,psi=psi[t_max]
                 #,radi=r[t]
                 ,r=rh
                 #,z_list=z[t]
-                ,z=z[t]
+                ,z=z[t_max]
                 #,print_matrix=True
             )
     lambs_zh, nus_zh = Lagrange_multipliers(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
-                ,psi=psi[t]
+                ,psi=psi[t_max]
                 #,radi=r[t]
-                ,r=r[t]
+                ,r=r[t_max]
                 #,z_list=z[t]
                 ,z=zh
                 #,print_matrix=True
@@ -2589,9 +2591,9 @@ def test_gradients_again(
                 N=N,k=k,c0=c0,sigma=sigma,kG=kG,tau=tau,ds=ds,eta=eta,Area=Area
                 ,psi=psih
                 #,radi=r[t]
-                ,r=r[t]
+                ,r=r[t_max]
                 #,z_list=z[t]
-                ,z=z[t]
+                ,z=z[t_max]
                 #,print_matrix=True
             )
     
