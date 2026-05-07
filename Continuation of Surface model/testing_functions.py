@@ -13,6 +13,7 @@ import progressbar
 import scipy
 from scipy.special import kv
 np.set_printoptions(legacy='1.25')
+plt.switch_backend('TkAgg')
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
