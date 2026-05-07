@@ -13,7 +13,6 @@ import progressbar
 import scipy
 from scipy.special import kv
 np.set_printoptions(legacy='1.25')
-plt.switch_backend('TkAgg')
 
 def test_Lagrange_multi():
     const_args = Two_D_Constants(
@@ -1959,9 +1958,9 @@ def test_flat_model_object():
 def test_gradients_again(
     data_path:str = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\",
     compare_df_name:str = "compare_df.pkl",
-    hr:float = 1e-12,
-    hz:float = 1e-12,
-    hpsi:float  = 1e-12,
+    hr:float = 1e-9,
+    hz:float = 1e-9,
+    hpsi:float  = 1e-9,
     make_new_data:bool = True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False#True
