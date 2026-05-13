@@ -1961,7 +1961,7 @@ def test_gradients_again(
     hr:float = 1e-9,
     hz:float = 1e-9,
     hpsi:float  = 1e-9,
-    make_new_data:bool = True
+    make_new_data:bool = False #True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
     ,use_normal_lagrange_multi:str = False #True 
     ):
@@ -2784,7 +2784,7 @@ def test_gradients_again(
 def compare_potentential_energy():
     from two_d_data_processing import get_files
 
-    data_path = "2D sim results\\obj\\plus\\N=40\\"
+    data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"#"2D sim results\\obj\\plus\\N=40\\"
     compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
     df = pd.read_pickle(file[0])
@@ -2895,7 +2895,7 @@ def test_if_variable_correction_causes_Epot_increase():
     from two_d_data_processing import get_files
     from Two_D_functions import dpsidt_func,drdt_func,dzdt_func,Make_variable_corrections
     from Runge_Kutta import RungeKutta45
-    data_path = "2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
+    data_path = "2D sim results\\obj\\plus larger ds\\N=40\\(N,T,dt)=(40,1.0e-07,1.0e-11)\\"#"2D sim results\\object results\\RK4\\T=3e-07\\plus\\(N,T,dt)=(20,3.0e-07,2.5e-11)\\"
     #data_path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt)=(20,1.0e-06,2.5e-11)\\"
     #compare_df_name = "compare_df.pkl"
     file = get_files(data_path)
