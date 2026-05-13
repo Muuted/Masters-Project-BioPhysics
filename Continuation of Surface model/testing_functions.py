@@ -1963,7 +1963,7 @@ def test_gradients_again(
     hpsi:float  = 1e-9,
     make_new_data:bool = True
     ,use_lagrange_multi:str  = "new"#"old" #"new"
-    ,use_normal_lagrange_multi:str = False#True
+    ,use_normal_lagrange_multi:str = False #True 
     ):
 
     from Two_D_functions import Q_function, dzdt_func,dpsidt_func,gamma, c_diff_f,c_diff_g, dSdpsi_func
@@ -2551,8 +2551,6 @@ def test_gradients_again(
     for d in further_data[imax]:
         print(d)
 
-
-
     
     """------------------------ Finding variables values for the worst breaking ---------------------------- """
     rh = [ r[t_max][n] + hr if n==pos_max else r[t_max][n] for n in range(N+1)]
@@ -2688,15 +2686,15 @@ def test_gradients_again(
     ]
 
     data_names = [
-        r"Grad test r : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  - ( ~ S(r_i + h) - S(r_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ ",
+        r"Grad test r : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial r_{i} }  -  \dfrac{S(r_i + h) - S(r_i)}{h_r}  }{  \dfrac{ \partial S_{theory} }{ \partial r_{i} } } $ ",
         #r"Grad test z : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial z_{i} }  - ( ~ S(z_i + h) - S(z_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial z_{i} } } $ ",
-        r"Grad test $\psi$ : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  - ( ~ S(\psi_i + h) - S(\psi_i) ~ ) }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
+        r"Grad test $\psi$ : $ \dfrac{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} }  -  \dfrac{S(\psi_i + h) - S(\psi_i)}{h_{\psi}}  }{  \dfrac{ \partial S_{theory} }{ \partial \psi_{i} } } $ ",
         #f"Grad test dLdr : " + r"$ \dfrac{dLdr_{theory} - dLdr_{r_i+h} }{dLdr_{theory}} $ ",
         #"Grad test dLdz : " + r"$ \dfrac{dLdz_{theory} - dLdz_{z_i+h} }{dLdz_{theory}} $ ",
         #"Grad test dLdz : " + r"$ \dfrac{dLd \psi_{theory} - dLd \psi _{\psi_i+h} }{dLd \psi _{theory}} $ ",
-        "Grad test constraint r : " + r"$ \dfrac{constriant_{theory} - constriant_{r_i+h} }{constriant_{theory}} $ ",
-        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{constriant_{theory}} $ ",
-        "Grad test constraint psi : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{constriant_{theory}} $ ",
+        "Grad test constraint r : " + r"$ \dfrac{constriant_{theory} - constriant_{r_i+h} }{ constriant_{theory}} $ ",
+        "Grad test constraint z : " + r"$ \dfrac{constriant_{theory} - constriant_{z_i+h} }{ constriant_{theory}} $ ",
+        "Grad test constraint psi : " + r"$ \dfrac{constriant_{theory} - constriant_{\psi_i+h} }{ constriant_{theory}} $ ",
     ]
 
     save_name_list = [
@@ -2712,6 +2710,7 @@ def test_gradients_again(
     ]
 
     t_switch = [i for i in S_pot].index(min(S_pot))
+    
     """
     fig, ax = plt.subplots()
     manager = plt.get_current_fig_manager()
@@ -2726,7 +2725,8 @@ def test_gradients_again(
     plt.draw()
     plt.pause(0.5)
     plt.savefig(data_path + "potential energy" + ".png")
-    plt.savefig(data_path + "potential energy" + ".svg")"""
+    plt.savefig(data_path + "potential energy" + ".svg")
+    """
 
 
     for l in range(len(data)):
@@ -3166,6 +3166,7 @@ if __name__ == "__main__":
 
 
     #test_flat_model_object()
+    
     test_gradients_again()
-    #compare_potentential_energy()
-    #test_if_variable_correction_causes_Epot_increase()
+    compare_potentential_energy()
+    test_if_variable_correction_causes_Epot_increase()
