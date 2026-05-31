@@ -75,7 +75,7 @@ class Surface_membrane:
         # Lists for variables
         self.r_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
         self.z_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
-        self.psi_list:list = np.zeros(shape=(self.sim_steps,self.N),dtype=float)
+        self.psi_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
         self.Area_list = np.zeros(self.N,dtype=float)
 
         self.r_unperturbed:list = []
@@ -145,7 +145,7 @@ class Surface_membrane:
         rs2 = 20*self.lc 
         zs2 = 0
         s0, sN = 0, 50*self.lc
-        #print(self.N)
+        
         #Initiating the inital state of the membrane
         psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
                 sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
@@ -161,22 +161,26 @@ class Surface_membrane:
             #self.alpha = 0.75
             #self.kG = 0.75*self.k
 
-            for i in range(int(self.N+1)):
+            for i in range(self.N+1):
                 self.r_list[0][i] = self.r0 + i*self.ds
                 self.z_list[0][i] = 0
-                if i < self.N:
-                    self.psi_list[0][i] = 0
+                #if i < self.N:
+                self.psi_list[0][i] = 0
         else:
-
             """------ variables list ---------"""
-            for i in range(int(self.N+1)):
-                if i < self.N :
+            for i in range(self.N+1):
+                #if i < self.N :
                     #print(i,self.N, self.ds,len(psi))
-                    self.psi_list[0][i] = psi[i]
+                self.psi_list[0][i] = psi[i]
                 self.r_list[0][i] = r[i]
                 self.z_list[0][i] = z[i]
         
-        for i in range(int(self.N+1)):
+        #Subtracting the last asymptotic constant value zN+1 from all points.
+        zNp1 = self.z_list[0][self.N]
+        for i in range(self.N+1):
+            self.z_list[0][i] += -zNp1
+
+        for i in range(self.N+1):
             if i < self.N :
                 self.Area_list[i] =  np.pi*(self.r_list[0][i+1] + self.r_list[0][i])*np.sqrt( 
                     (self.r_list[0][i+1] - self.r_list[0][i])**2
@@ -189,6 +193,7 @@ class Surface_membrane:
         self.r_unperturb = [i for i in self.r_list[0]]
         self.z_unperturb = [i for i in self.z_list[0]]
         self.psi_unperturb = [i for i in self.psi_list[0]]
+
 
         if self.perturb == True:
             if self.var_perturb_choice == "psi":#self.var_perturb_options[0]:
@@ -326,8 +331,8 @@ class Surface_membrane:
                     ,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
                     ,Area=self.Area_list
                     ,psi=self.psi_list[t]
-                    ,radi=self.r_list[t]
-                    ,z_list=self.z_list[t]
+                    ,r=self.r_list[t]
+                    ,z=self.z_list[t]
                 )
             
             if self.integration_method == "Euler":

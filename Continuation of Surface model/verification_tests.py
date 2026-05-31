@@ -102,7 +102,6 @@ def rolling_test():
     membrane.plotting_n_movie_data()
 
 
-
 if __name__ == "__main__":
     #verification_of_model()
     rolling_test()

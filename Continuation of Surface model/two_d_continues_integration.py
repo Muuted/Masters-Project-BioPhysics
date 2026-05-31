@@ -180,7 +180,7 @@ def find_init_stationary_state(
         r = r_sol#ans_odeint.y[1]
         ,z = z_sol#ans_odeint.y[2]
         ,ds = ds
-        ,max_num_points = total_points
+        ,max_num_points = total_points + 3
         )
     
     r_discrete,z_discrete = [],[]
