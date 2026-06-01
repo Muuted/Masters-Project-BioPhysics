@@ -1158,7 +1158,7 @@ def c_diff(
                 ,Area=Area
                 ,diff_var=diff_var
                 )
-    if  N <= i < 2*N :
+    elif  N <= i < 2*N :
         c_diff_val =c_diff_g(
                 i=i%N,j=j,N=N
                 ,r=r,z=z,psi=psi
@@ -1179,7 +1179,7 @@ def Epsilon_v2(
         ,testing:bool= False
         )->list:
     A = np.zeros(shape=(2*N,2*N),dtype=float)
-    b = np.zeros(2*N)
+    b = np.zeros(2*N,dtype=float)
     vars = ["r","z","psi"]
     
     for alpha in range(2*N):
@@ -1192,9 +1192,11 @@ def Epsilon_v2(
 
         if 0 <= alpha < N :
             b[alpha] = -constraint_f(i=alpha%N,N=N,r=r,psi=psi,Area=Area)
-        if N <= alpha < 2*N :
+        elif N <= alpha < 2*N :
             b[alpha] = -constraint_g(i=alpha%N,N=N,r=r,z=z,psi=psi,Area=Area)
-
+        else:
+            print("\n Error alpha out of range \n")
+            exit()
     
     if print_matrix == True:
         print(f"A: {np.shape(A)[0]}x{np.shape(A)[1]}\n ",A)
@@ -1239,12 +1241,10 @@ def Make_variable_corrections(
 
     do_correction = False
     do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi ,Area=Area,tol=Tolerence)
-
     correction_count = 0
 
     while do_correction == True:
         correction_count += 1
-        #print(f"correction count={correction_count}",end="\r")
         epsilon = Epsilon_v2(
                 N=N, r=r, z=z ,psi=psi ,Area=Area
                         )
@@ -1252,30 +1252,22 @@ def Make_variable_corrections(
         for i in range(N):      
             K_r,K_z,K_psi = 0,0,0
             for beta in range(2*N):
+                K_r += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="r")
                 
-                K_r += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="r")
-                    )*scaleing
+                K_z += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="z")
                 
-                K_z += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="z")
-                    )*scaleing
-                
-                K_psi += (
-                    epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
-                    )*scaleing
+                K_psi += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
                 
             r[i] += K_r
             z[i] += K_z
             psi[i] += K_psi
 
-        do_correction = False
+        #do_correction = False
         do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
-
         
         if correction_count >= corr_max:
             print(f"{corr_max} corrections, is too many corrections, we close the program. ")
-            #exit()
+            exit()
             break
 
     return correction_count
