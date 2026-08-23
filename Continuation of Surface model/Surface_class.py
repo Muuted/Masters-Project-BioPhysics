@@ -10,7 +10,6 @@ from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area, plot_comparison_of_plus_minus_un_perturbed_results
-from Lagrange_multipliers import Lagrange_multipliers
 import multiprocessing
 
 np.set_printoptions(legacy='1.25') #Setting the print format
@@ -38,8 +37,8 @@ class Surface_membrane:
         self.dpsi_perturb:float = dpsi # [rad]
         self.dtau_perturb:float = dtau # [nN]
         self.num_perturb:int = 10 #int(self.N/2) # Number of perturbed points
-        self.r0:float = 5.0e-2 # [mu m] if the init config is just flat, this is the initial radius of the hole.
-        self.L = 100 # [mu m] some times used for the total length of the membrane
+        self.r0:float = 5.0e-2 # if the init config is just flat, this is the initial radius of the hole.
+        self.L = 100 # some times used for the total length of the membrane
 
         # Phase space variables 
         self.const_index:int = const_index
@@ -75,18 +74,18 @@ class Surface_membrane:
         # Lists for variables
         self.r_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
         self.z_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
-        self.psi_list:list = np.zeros(shape=(self.sim_steps,self.N+1),dtype=float)
+        self.psi_list:list = np.zeros(shape=(self.sim_steps,self.N),dtype=float)
         self.Area_list = np.zeros(self.N,dtype=float)
 
         self.r_unperturbed:list = []
         self.z_unperturbed:list = []
         self.psi_unperturbed:list = []     
 
-        self.Potential_E = np.zeros(self.sim_steps,dtype=float)
-        self.Potential_E_before_correction = np.zeros(self.sim_steps,dtype=float)
-        self.Kinetic_E = np.zeros(self.sim_steps,dtype=float)
-        self.Xsqre = np.zeros(self.sim_steps,dtype=float)
-        self.correct_count_list = np.zeros(self.sim_steps)
+        self.Potential_E = np.zeros(self.sim_steps-1,dtype=float)
+        self.Potential_E_before_correction = np.zeros(self.sim_steps-1,dtype=float)
+        self.Kinetic_E = np.zeros(self.sim_steps-1,dtype=float)
+        self.Xsqre = np.zeros(self.sim_steps-1,dtype=float)
+        self.correct_count_list = np.zeros(self.sim_steps-1)
 
         # Setting up program
         self.var_corr_tol:float = 1e-5 # The tolerence for when to use variable correction
@@ -94,14 +93,12 @@ class Surface_membrane:
         self.perturb:bool = False # decieds if we are going perturb the initial state or not   
         self.var_perturb_options:list = ["psi","tau"] # the types of options for variable perturbations    
         self.var_perturb_choice:str = perturb_var  # The variable choosen
-        self.start_flat:bool = False #Choses whether or not the simulation starts from a flat state or not.
+        self.start_flat:bool = False
         self.use_phase_diagram: bool = False # decides if using the phase space diagram to find the simulation values
         self.phasespace_x = ""
         self.phasespace_y = ""
         self.phasespace_fignum = ""
-        self.const_length_diff_N_density = True # if True means that the value of ds changes to conserve length for different N
-        self.load_external_init_config = False # This allows the user to load an initial configuration, r,z,psi of shape (1,N)
-        self.external_args = [] #The args needed from external user.
+        self.const_length_diff_N_density = True
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
@@ -115,7 +112,7 @@ class Surface_membrane:
         if save_path == "":
             self.save_path:str = a
         else:
-            self.save_path:str = save_path #+ f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+            self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
         self.save_figs_path:str = "figures and movie\\"
         self.figs_for_video_path:str = "figures for video\\"
         self.df_name:str = "2D Surface sim.pkl"
@@ -124,7 +121,7 @@ class Surface_membrane:
         self.print_constants:bool = True
 
         # 
-        self.save_data:bool = True #choses whether or not the simulation data is saved.
+        self.save_data:bool = True
         self.show_stationary_state:bool = True # Showing the initial configuration before simulation start
         self.init_config_show_time:float = 2 # Showing the initial configuration
         self.close_final_plots:bool = False
@@ -138,14 +135,14 @@ class Surface_membrane:
     def setup_simulation(self):
 
         if self.const_length_diff_N_density == True:
-            self.ds = self.ds*(20/self.N)
-            print("scaled N")        
+            self.ds = self.ds/(self.N/20)
+            print("scaled N")
         
         # scaling parameters        
         rs2 = 20*self.lc 
         zs2 = 0
         s0, sN = 0, 50*self.lc
-        
+
         #Initiating the inital state of the membrane
         psi,r,z, r_contin, z_contin, alpha = find_init_stationary_state(
                 sigma=self.sigma ,k=self.k ,c0=self.c0 ,tau=self.tau ,ds=self.ds
@@ -155,45 +152,35 @@ class Surface_membrane:
                 ,use_fig_number = self.phasespace_fignum
             )
         self.alpha = (self.c0 - (psi[1] - psi[0])/self.ds )*r[0]/np.sin(psi[0]) - 1
-        self.kG = self.k*self.alpha   
+        self.kG = self.k*self.alpha        
 
         if self.start_flat == True:
-            #self.alpha = 0.75
-            #self.kG = 0.75*self.k
-
-            for i in range(self.N+1):
+            for i in range(int(self.N+1)):
                 self.r_list[0][i] = self.r0 + i*self.ds
                 self.z_list[0][i] = 0
-                #if i < self.N:
-                self.psi_list[0][i] = 0
+                if i < self.N:
+                    self.psi_list[0][i] = 0
         else:
             """------ variables list ---------"""
-            for i in range(self.N+1):
-                #if i < self.N :
-                    #print(i,self.N, self.ds,len(psi))
-                self.psi_list[0][i] = psi[i]
+            for i in range(int(self.N+1)):
+                if i < self.N :
+                    self.psi_list[0][i] = psi[i]
                 self.r_list[0][i] = r[i]
                 self.z_list[0][i] = z[i]
         
-        #Subtracting the last asymptotic constant value zN+1 from all points.
-        zNp1 = self.z_list[0][self.N]
-        for i in range(self.N+1):
-            self.z_list[0][i] += -zNp1
-
-        for i in range(self.N+1):
+        for i in range(int(self.N+1)):
             if i < self.N :
                 self.Area_list[i] =  np.pi*(self.r_list[0][i+1] + self.r_list[0][i])*np.sqrt( 
                     (self.r_list[0][i+1] - self.r_list[0][i])**2
-                    + (self.z_list[0][i+1] - self.z_list[0][i])**2 
+                      + (self.z_list[0][i+1] - self.z_list[0][i])**2 
                     )
                 if self.Area_list[i] == 0 :
                     print(f"Area[{i}]=0")
                     exit()
-
+        
         self.r_unperturb = [i for i in self.r_list[0]]
         self.z_unperturb = [i for i in self.z_list[0]]
         self.psi_unperturb = [i for i in self.psi_list[0]]
-
 
         if self.perturb == True:
             if self.var_perturb_choice == "psi":#self.var_perturb_options[0]:
@@ -251,17 +238,13 @@ class Surface_membrane:
                     exit()
             plt.close("all")
 
-    def load_external_config(self):
-        
-        pass
-
     def print_consts(self):
         if self.print_constants == True:
             print(
             f" \n \n"
             + "------------- Constant used in Simulation -------------- \n "
             + f"    number of chain links N: {self.N} \n " 
-            + f"    Total sim time = {self.T:.1e} [s] \n "
+            + f"    Total sim time = {self.T} [s] \n "
             + f"    dt = {self.dt:0.1e} [s] \n "
             + f"    k = {self.k:0.1e}  [zJ] \n "
             + f"    kG = {self.kG:.1e}  [zJ] \n "
@@ -270,12 +253,11 @@ class Surface_membrane:
             + f"    sigma = {self.sigma:0.1e} [zJ/(mu m)^2] \n "
             + f"    ds = {self.ds:0.1e} [mu m] \n "
             + f"    eta = {self.eta:0.1e} [(mu g)/(mu m * s)] \n "
-            + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta):.2e} [(mu g)/s]  \n "
+            + f"    gamma(i!=0) = {gamma(i=2,ds=self.ds,eta=self.eta)} [(mu g)/s]  \n "
             + f"    Sim steps = {self.sim_steps:0.1e} \n "
             + f"    dpsi = {self.dpsi_perturb:0.1e} [rad] \n "
             + f"    alpha = {self.alpha:0.1e}  \n "
             + f"    var tol = {self.var_corr_tol:0.1e} \n "
-            + f"    Integration Scheme = {self.integration_method} \n "
             + f"------------------------------------------------------- \n \n "
         )
 
@@ -288,29 +270,8 @@ class Surface_membrane:
         if self.integration_method not in integration_options:
             print("No integration method choosen correctly")
             exit()
-        
-
-        self.Potential_E_before_correction[0] = E_pot(
-                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[0],psi=self.psi_list[0],Area=self.Area_list
-                )
-        self.Potential_E[0] = E_pot(
-                N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[0],psi=self.psi_list[0],Area=self.Area_list
-                )
-        self.Kinetic_E[0] = E_kin(N=self.N,t=0,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
-        self.Xsqre[0] = Xsqaured_test(
-                N=self.N
-                ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
-                ,r=self.r_list[0],z=self.z_list[0],psi=self.psi_list[0]
-                )
-        
-
-        if self.print_constants == True:
-            self.print_consts()
-        
         print(f"integration method={self.integration_method}")
-        print(" \n \n Simulation progressbar: \n")
+        print("Simulation progressbar \n ")
 
         for t in range(self.sim_steps-1):
             if int(t%print_scale) == 0 and self.print_progress == True:
@@ -321,18 +282,18 @@ class Surface_membrane:
                 print(
                     f"completion : {round(t/(print_scale*10),1)}%       " 
                     +f"Time since start = {time_h_start}h {time_m_start}m {time_s_start}s        "
-                    +f" Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s   "
+                    +f"Estimated time left = {time_h_end}h {time_m_end}m {time_s_end}s"
                     , end="\r"
                 )
             #t1,t2 = t%2, (t+1)%2
             
-            lambs,nus = Lagrange_multipliers(#Langrange_multi(
+            lambs,nus = Langrange_multi(
                     N=self.N,k=self.k,c0=self.c0,sigma=self.sigma
                     ,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
                     ,Area=self.Area_list
                     ,psi=self.psi_list[t]
-                    ,r=self.r_list[t]
-                    ,z=self.z_list[t]
+                    ,radi=self.r_list[t]
+                    ,z_list=self.z_list[t]
                 )
             
             if self.integration_method == "Euler":
@@ -370,7 +331,7 @@ class Surface_membrane:
                                 print("\n ---- Overflow error occurred ---- \n")
                                 self.overflow_err = True
                                 
-            elif self.integration_method == "RK4":
+            if self.integration_method == "RK4":
                 kr,kz,kpsi = RungeKutta45(
                     N=self.N,dt=self.dt,k=self.k,c0=self.c0, sigma=self.sigma
                     ,kG=self.kG ,tau=self.tau, ds=self.ds,eta=self.eta
@@ -389,7 +350,7 @@ class Surface_membrane:
 
                     if i < self.N:
                         self.r_list[t+1][i] = self.r_list[t][i] + (self.dt/6)*(kr[1][i] + 2*kr[2][i] + 2*kr[3][i] + kr[4][i])
-                        self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] + 2*kz[3][i] + kz[4][i])
+                        self.z_list[t+1][i] = self.z_list[t][i] + (self.dt/6)*(kz[1][i] + 2*kz[2][i] +2* kz[3][i] + kz[4][i])
                         self.psi_list[t+1][i] = self.psi_list[t][i] + (self.dt/6)*(kpsi[1][i] + 2*kpsi[2][i] + 2*kpsi[3][i] + kpsi[4][i])
 
                         if self.r_list[t+1][i] != self.r_list[t+1][i] or self.z_list[t+1][i] != self.z_list[t+1][i] or self.psi_list[t+1][i] != self.psi_list[t+1][i]:
@@ -397,41 +358,35 @@ class Surface_membrane:
                                 print("\n ---- Overflow error occurred ---- \n")
                                 self.overflow_err = True
 
-            else:
-                print("No integration method was choosen, program terminates")
-                exit()
-
-            self.Potential_E_before_correction[t+1] = E_pot(
+            self.Potential_E_before_correction[t] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[t+1],psi=self.psi_list[t+1],Area=self.Area_list
+                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
                 )
 
             if self.do_correction == True:
                 correction_count = Make_variable_corrections(
-                    N = self.N
-                    ,r = self.r_list[t+1] ,z = self.z_list[t+1], psi = self.psi_list[t+1] 
-                    ,Area = self.Area_list
-                    ,Area_init = self.Area_init
-                    ,Tolerence = self.var_corr_tol
-                    ,corr_max = 10
-                    ,t = t
+                    N=self.N
+                    ,r=self.r_list[t+1] ,z=self.z_list[t+1], psi=self.psi_list[t+1] 
+                    ,Area=self.Area_list ,Area_init=self.Area_init
+                    ,Tolerence=self.var_corr_tol
+                    ,corr_max=10
+                    ,t=t
                 )
-                self.correct_count_list[t+1] = correction_count        
+                self.correct_count_list[t] = correction_count
+        
 
-            self.Potential_E[t+1] = E_pot(
+            self.Potential_E[t] = E_pot(
                 N=self.N,k=self.k,kG=self.kG,tau=self.tau,c0=self.c0
-                ,r=self.r_list[t+1],psi=self.psi_list[t+1],Area=self.Area_list
+                ,r=self.r_list[t],psi=self.psi_list[t],Area=self.Area_list
                 )
             
-            self.Kinetic_E[t+1] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
-
-            self.Xsqre[t+1] = Xsqaured_test(
+            self.Kinetic_E[t] = E_kin(N=self.N,t=t,dt=self.dt,r=self.r_list,z=self.z_list,Area=self.Area_list)
+            self.Xsqre[t] = Xsqaured_test(
                 N=self.N
                 ,r_init=self.r_unperturb,z_init=self.z_unperturb,psi_init=self.psi_unperturb
-                ,r=self.r_list[t+1],z=self.z_list[t+1],psi=self.psi_list[t+1]
-                )
+                ,r=self.r_list[t],z=self.z_list[t],psi=self.psi_list[t])
 
-        
+
         print("\n")        
 
         if self.save_data == True:        
@@ -457,7 +412,6 @@ class Surface_membrane:
                 "kG": self.kG,
                 "sigma": self.sigma,
                 "tau": self.tau,
-                "eta": self.eta,
                 "sim_steps": self.sim_steps,
                 "dt": self.dt,
                 "ds": self.ds,
@@ -757,24 +711,17 @@ class Surface_membrane:
     def run_sim(self):
             if self.use_phase_diagram == True:
                 self.phase_space_choice()
-
-            if self.load_external_init_config == False:
-                self.setup_simulation()
-            elif self.load_external_init_config == True:
-                print("This is not implementet yet. Program termines")
-                exit()
-
+            self.setup_simulation()
+            self.print_consts()
             self.dynamics()
             self.plotting_n_movie_data()
 
 
 
-def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11
-                  ,inte_scheme = "RK4"
-                  ):
+def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:float=2.5e-11):
     perturb_bool_list = [False,True,True,True,True]
     perturb_list_psi = [0 ,0    ,0      ,0.01 ,-0.01]
-    perturb_list_tau = [0 ,1.0+0.05 ,1.0-0.05 ,0    ,0    ]
+    perturb_list_tau = [0 ,1.05 ,1-1.05 ,0    ,0    ]
     perturb_var_choice = ["","tau","tau","psi","psi"]
 
     process = []
@@ -791,7 +738,7 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
         membrane.init_config_show_time = 10
         membrane.perturb = perturb_bool_list[i]
         membrane.print_constants = False
-        membrane.integration_method = inte_scheme
+        membrane.integration_method = "Euler"
         #membrane.dpsi_perturb *= perturb_list_psi[i]
         #membrane.var_perturb_choice = perturb_var_choice[i]
         #membrane.use_phase_diagram = True
@@ -811,14 +758,13 @@ def multi_process(Tot_time:float,cpu_cores:int=5, sim_index:int=0,N:int=20,dt:fl
 
 def plotting_multi_process_results(
         path:str = "2D sim results\\object results compare with thesis data\\"
-        ,make_movie= True
-        ,make_figures = True
-        ,make_comparison_figs = True
     ):
     #path = "2D sim results\\object results T=1e-06\\"
     #path = "2D sim results\\object results T=1e-06\\plus\\(N,T,dt,dtau)=(20,1.0e-06,2.5e-11,-5.0e-02)\\"
     directory_list = list()
-
+    make_movie= True
+    make_figures = True
+    make_comparison_figs = True
     for root, dirs, files in os.walk(path, topdown=False):
         for df_name in files:
             if ".pkl" in df_name:
@@ -860,26 +806,19 @@ def plotting_multi_process_results(
 
 if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=30,sim_index=0,dt=1.7e-11)
-    #multi_process(cpu_cores=5,Tot_time=3e-7,N=20,sim_index=1,dt=2.5e-11)
+    #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
-    plotting_multi_process_results(path="2D sim results\\object results\\RK4\\")
+    #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
 
-    exit()
-    N = 35
-    save_path = f"2D sim results\\obj\\plus\\N={N}\\"
-    save_path = f"2D sim results\\obj\\plus larger ds\\N={N}\\"
     membrane = Surface_membrane(
         T=1e-7
         ,dt=1e-11
-        ,const_index = 1
-        ,N=N
-        ,save_path= save_path
+        ,const_index=1
+        ,N=40
+        ,save_path="2D sim results\\obj\\plus\\N=40\\"
         )
-    membrane.var_corr_tol = 1e-4
-    
-    #ds_init = membrane.ds
-    membrane.ds = 1.5e-2*(20/30)
-    membrane.const_length_diff_N_density = False
+    membrane.var_corr_tol = 1e-3
+
 
     membrane.use_phase_diagram = False
     membrane.phasespace_x = 15000
@@ -896,5 +835,4 @@ if __name__ == "__main__":
     #membrane.setup_simulation()
     
     membrane.run_sim()
-    #membrane.plotting_n_movie_data()
     
