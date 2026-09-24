@@ -956,7 +956,7 @@ def Lagrange_multi_V2(
     pass
 
 
-def constraint_f(i:int,N:int,r:list,psi:list,Area:list) -> float:
+def constraint_f(r:list,psi:list,i:int,N:int,Area:list) -> float:
     f = ""
     if 0 <= i <= N-1:
         f = np.pi*(r[i+1]**2 - r[i]**2)/Area[i] - np.cos(psi[i])
