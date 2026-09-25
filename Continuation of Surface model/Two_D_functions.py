@@ -1165,7 +1165,10 @@ def c_diff(
                 ,Area=Area
                 ,diff_var=diff_var
                 )
-
+    else:
+        print(f"Erro c_diff_val didnt take correct value of i")
+        exit()
+        
     if c_diff_val == "":
         print(f"Error c_diff_val didnt take a value because i={i}")
         exit()
@@ -1187,7 +1190,9 @@ def Epsilon_v2(
             a = 0
             for n in range(N):
                 for variables in vars:
-                    a += c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)                    
+                    a1 = c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)
+                    a2 = c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)                    
+                    a += a1*a2 #c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)                    
             A[alpha][beta] = a            
 
         if 0 <= alpha < N :
