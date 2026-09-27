@@ -4,8 +4,9 @@ import time
 import os
 import pandas as pd
 from two_d_continues_integration import find_init_stationary_state
-from Two_D_functions import Perturbation_of_inital_state, drdt_func,dzdt_func,dpsidt_func
-from Two_D_functions import Langrange_multi, Make_variable_corrections, gamma
+from Two_D_functions import drdt_func,dzdt_func,dpsidt_func
+from Two_D_functions import Langrange_multi, gamma#,Make_variable_corrections, gamma
+from error_correction_functions import Make_variable_corrections,Perturbation_of_inital_state
 from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video

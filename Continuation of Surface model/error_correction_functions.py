@@ -1,9 +1,11 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from Two_D_functions import constraint_f, constraint_g, check_constraints_truth
 
 
 def c_diff_f(
         i:int,j:int,N:int
-        ,r:list,psi:list,Area:list
+        ,r:list[float],psi:list[float],Area:list[float]
         ,diff_var:str =""
         )-> float:
     diff_var_list = ["r","z","psi",0,1,2]
@@ -41,7 +43,7 @@ def c_diff_f(
 
 def c_diff_g(
         i:int,j:int,N:int
-        ,r:list,z:list,psi:list,Area:list
+        ,r:list[float],z:list[float],psi:list[float],Area:list[float]
         ,diff_var:str = ""
         )-> float:
 
@@ -82,7 +84,7 @@ def c_diff_g(
 
 def c_diff(
         i:int,j:int,N:int
-        ,r:list,z:list,psi:list,Area:list
+        ,r:list[float],z:list[float],psi:list[float],Area:list[float]
         ,diff_var =""
         ):
     
@@ -100,6 +102,7 @@ def c_diff(
                 ,Area=Area
                 ,diff_var=diff_var
                 )
+        
     elif  N <= i < 2*N :
         c_diff_val =c_diff_g(
                 i=i%N,j=j,N=N
@@ -116,7 +119,7 @@ def c_diff(
 
 
 def Epsilon_v2(
-        N:int,r:list,z:list,psi:list,Area:list
+        N:int,r:list[float],z:list[float],psi:list[float],Area:list[float]
         ,print_matrix:bool = False
         ,testing:bool= False
         )->list:
@@ -161,8 +164,8 @@ def Epsilon_v2(
 
 def Make_variable_corrections(
         N:int
-        ,r:list,z:list,psi:list
-        ,Area:list, Area_init:float
+        ,r:list[float],z:list[float],psi:list[float]
+        ,Area:list[float], Area_init:float
         ,Tolerence:float = 1e-10
         ,corr_max:int = 20
         ,t=""
@@ -201,3 +204,55 @@ def Make_variable_corrections(
 
     return correction_count
 
+
+
+
+def Perturbation_of_inital_state(
+        points_perturbed:int
+        , ds:float, N:int
+        ,r:list[float],z:list[float],psi:list[float]
+        ,Area:list[float]
+        ,delta_psi:float = -1
+        ,flat = False
+        ,Tolerence:float = 1e-10
+        ,show_initial_condi:bool = False
+        ):
+    print("delta_psi=",delta_psi)
+    r_unperturb = [i for i in r]
+    z_unperturb = [i for i in z]
+
+    if points_perturbed > len(psi)-1:
+        print(f"Perturbing too many points \n"
+              +f"len(psi)={len(psi)} and points perturbed={points_perturbed}")
+        exit()
+    i_start = points_perturbed#len(psi)-1 - points_perturbed
+    i_stop = -1
+
+    for i in range(0,points_perturbed):
+            psi[i] += delta_psi*(points_perturbed - i)
+            #psi[i] += delta_psi*np.exp(-i)#/abs(delta_psi))
+            #psi[i] += delta_psi
+
+    for i in range(i_start,i_stop,-1):
+        r[i] = r[i+1] + np.cos(psi[i]+np.pi)*ds
+        z[i] = z[i+1] + np.sin(psi[i]+np.pi)*ds
+    
+    r_perturb = [i for i in r]
+    z_perturb = [i for i in z]
+
+    Area_initial = np.sum(Area)
+    corr_count = Make_variable_corrections(N=N,r=r,z=z,psi=psi,Area=Area,Area_init=Area_initial)
+
+    print(f"number of corrections need = {corr_count}")
+    if show_initial_condi == True:
+        plt.figure()
+        plt.plot(r_perturb,z_perturb,"-o",label="perturbed not corrected")
+        plt.plot(r_unperturb,z_unperturb,"-o",label="unperturbed")
+        plt.plot(r,z,"-o",label="perturbed and corrected")
+        plt.legend()
+        plt.draw()
+
+
+
+if __name__ == "__main__":
+    pass
