@@ -84,7 +84,8 @@ def c_diff_g(
 
 def c_diff(
         i:int,j:int,N:int
-        ,r:list[float],z:list[float],psi:list[float],Area:list[float]
+        ,r:list[float],z:list[float]
+        ,psi:list[float],Area:list[float]
         ,diff_var =""
         ):
     
@@ -104,7 +105,7 @@ def c_diff(
                 )
         
     elif  N <= i < 2*N :
-        c_diff_val =c_diff_g(
+        c_diff_val = c_diff_g(
                 i=i%N,j=j,N=N
                 ,r=r,z=z,psi=psi
                 ,Area=Area
