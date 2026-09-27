@@ -983,7 +983,7 @@ def constraint_g(i:int,N:int,r:list,z:list,psi:list,Area:list)-> float:
         exit()
     return g
 
-
+"""
 def c_diff_f(
         i:int,j:int,N:int
         ,r:list,psi:list,Area:list
@@ -1215,7 +1215,7 @@ def Epsilon_v2(
         return epsilon_f,epsilon_g, A, b
     else:
         return x
-
+"""
 
 def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->bool:
     err = False
@@ -1229,7 +1229,7 @@ def check_constraints_truth(N:int,r:list,z:list,psi:list,Area:list,tol:float)->b
 
     return err
 
-
+"""
 def Make_variable_corrections(
         N:int
         ,r:list,z:list,psi:list
@@ -1272,7 +1272,7 @@ def Make_variable_corrections(
 
     return correction_count
 
-
+"""
 def Perturbation_of_inital_state(
         points_perturbed:int
         , ds:float, N:int
