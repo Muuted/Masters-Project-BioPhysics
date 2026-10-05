@@ -125,7 +125,7 @@ def Epsilon_v2(
         N:int,r:list[float],z:list[float],psi:list[float],Area:list[float]
         ,print_matrix:bool = False
         ,testing:bool= False
-        )->list:
+        ) -> list[float]:
     A = np.zeros(shape=(2*N,2*N),dtype=float)
     b = np.zeros(2*N,dtype=float)
     vars = ["r","z","psi"]
@@ -162,9 +162,9 @@ def Epsilon_v2(
     if testing == True:
         epsilon_f = x[0:N]
         epsilon_g = x[N:2*N]
-        return epsilon_f,epsilon_g, A, b
+        return epsilon_f,epsilon_g, A, b # pyright: ignore[reportReturnType]
     else:
-        return x
+        return x # pyright: ignore[reportReturnType]
 
 
 def Make_variable_corrections(
