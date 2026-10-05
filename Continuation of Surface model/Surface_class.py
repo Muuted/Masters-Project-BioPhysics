@@ -12,7 +12,7 @@ from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area, plot_comparison_of_plus_minus_un_perturbed_results
 import multiprocessing
-
+import platform
 np.set_printoptions(legacy='1.25') #Setting the print format
 
 
@@ -24,6 +24,10 @@ class Surface_membrane:
         ):
         super().__init__()
         # Base constants
+        if platform.system() not in ["Window","Linux"]:
+            print("Neither Linux or Windows in used. Which the program was developed in")
+            print("code excutede in the Surface_class.py file under the __init__ function")
+            exit()
         self.N:int = N # Number of links
         self.T:float = T # [s] real time simulatied in seconds
         self.dt:float = dt # [s] time step
@@ -43,7 +47,11 @@ class Surface_membrane:
 
         # Phase space variables 
         self.const_index:int = const_index
-        self.phase_space_names:list = ["triangle\\","plus\\","cross\\"]
+        if platform.system() == "Linux":
+            self.phase_space_names:list = ["triangle/","plus/","cross/"]
+        elif platform.system() == "Windows":
+            self.phase_space_names:list = ["triangle\\","plus\\","cross\\"]
+
         self.tilde_sigma_list:list = [
         0.0253164556962025 
         ,0.29873417721519
@@ -103,19 +111,36 @@ class Surface_membrane:
 
         # Printing choices and paths saving
         self.integration_method:str = "RK4" #Type of integration scheme
-        if self.var_perturb_choice == "psi":
-            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
-        elif self.var_perturb_choice == "tau":
-            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
-        else:
-            a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
-        
-        if save_path == "":
-            self.save_path:str = a
-        else:
-            self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
-        self.save_figs_path:str = "figures and movie\\"
-        self.figs_for_video_path:str = "figures for video\\"
+        if platform.system() == "Windows":
+            if self.var_perturb_choice == "psi":
+                a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})\\"
+            elif self.var_perturb_choice == "tau":
+                a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})\\"
+            else:
+                a = f"2D sim results\\object results\\T={self.T}\\" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+            
+            if save_path == "":
+                self.save_path:str = a
+            else:
+                self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})\\"
+            self.save_figs_path:str = "figures and movie\\"
+            self.figs_for_video_path:str = "figures for video\\"
+
+        elif platform.system() == "Linux":
+            if self.var_perturb_choice == "psi":
+                a = f"2D sim results/object results/T={self.T}/" + self.phase_space_names[self.const_index] + f"(N,T,dt,dpsi)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dpsi_perturb:0.1e})/"
+            elif self.var_perturb_choice == "tau":
+                a = f"2D sim results/object results/T={self.T}/" + self.phase_space_names[self.const_index] + f"(N,T,dt,dtau)=({self.N},{self.T:0.1e},{self.dt:0.1e},{self.dtau_perturb:0.1e})/"
+            else:
+                a = f"2D sim results/object results/T={self.T}/" + self.phase_space_names[self.const_index] + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})/"
+            
+            if save_path == "":
+                self.save_path:str = a
+            else:
+                self.save_path:str = save_path + f"(N,T,dt)=({self.N},{self.T:0.1e},{self.dt:0.1e})/"
+            self.save_figs_path:str = "figures and movie/"
+            self.figs_for_video_path:str = "figures for video/"
+
         self.df_name:str = "2D Surface sim.pkl"
         self.print_progress:bool = True
         self.print_scale:int = int((self.sim_steps-2)/1000)
@@ -471,7 +496,10 @@ class Surface_membrane:
 
     def phase_space_choice(self):
         df_name = "Matlab data"
-        data_path2 = "2D sim results\\"
+        if platform.system() == "Windows":
+            data_path2 = "2D sim results\\"
+        elif platform.system() == "Linux":
+            data_path2 = "2D sim results/"
 
         if not os.path.exists(data_path2 + df_name):
             print(f"The file does not exsist")
@@ -811,12 +839,20 @@ if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
     #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
 
+    if platform.system() == "Windows":
+            data_path2 = "2D sim results\\"
+    elif platform.system() == "Linux":
+            data_path2 = "2D sim results/"
+    else:
+        print("No operationg system?")
+        exit()
+
     membrane = Surface_membrane(
-        T=1e-7
+        T= 5e-11 #1e-7
         ,dt=1e-11
         ,const_index=1
         ,N=40
-        ,save_path="2D sim results/obj/plus/N=40/"
+        ,save_path= data_path2
         )
     membrane.var_corr_tol = 1e-3
 
