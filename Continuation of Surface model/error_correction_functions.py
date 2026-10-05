@@ -98,7 +98,7 @@ def c_diff(
 
     if 0 <= i < N :
         c_diff_val = c_diff_f(
-                i=i,j=j,N=N
+                i=i%N,j=j%N,N=N
                 ,r=r,psi=psi
                 ,Area=Area
                 ,diff_var=diff_var
@@ -106,14 +106,16 @@ def c_diff(
         
     elif  N <= i < 2*N :
         c_diff_val = c_diff_g(
-                i=i%N,j=j,N=N
+                i=i%N,j=j%N,N=N
                 ,r=r,z=z,psi=psi
                 ,Area=Area
                 ,diff_var=diff_var
                 )
-
+    else: 
+        print(f"Error c_diff_val didnt take a value because i={i} and shouldnt be higher than N={N}")
+        exit()
     if c_diff_val == "":
-        print(f"Error c_diff_val didnt take a value because i={i}")
+        print(f"Error c_diff_val didnt take a value because i={i} and shouldnt be higher than N={N}")
         exit()
     
     return c_diff_val
