@@ -816,7 +816,7 @@ if __name__ == "__main__":
         ,dt=1e-11
         ,const_index=1
         ,N=40
-        ,save_path="2D sim results\\obj\\plus\\N=40\\"
+        ,save_path="2D sim results/obj/plus/N=40/"
         )
     membrane.var_corr_tol = 1e-3
 

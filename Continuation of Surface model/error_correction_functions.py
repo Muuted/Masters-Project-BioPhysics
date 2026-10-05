@@ -135,7 +135,9 @@ def Epsilon_v2(
             a = 0
             for n in range(N):
                 for variables in vars:
-                    a += c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)                    
+                    a += c_diff(i=alpha,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables
+                        )*c_diff(i=beta,j=n,N=N,r=r,z=z,psi=psi,Area=Area,diff_var=variables)  
+
             A[alpha][beta] = a            
 
         if 0 <= alpha < N :
@@ -184,6 +186,7 @@ def Make_variable_corrections(
                 N=N, r=r, z=z ,psi=psi ,Area=Area
                         )
         scaleing = 1
+        K_r_corr,K_z_corr,K_psi_corr = [],[],[]
         for i in range(N):      
             K_r,K_z,K_psi = 0,0,0
             for beta in range(2*N):
@@ -192,10 +195,14 @@ def Make_variable_corrections(
                 K_z += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="z")
                 
                 K_psi += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
-                
-            r[i] += K_r
-            z[i] += K_z
-            psi[i] += K_psi
+            K_r_corr.append(K_r)
+            K_z_corr.append(K_z)
+            K_psi_corr.append(K_psi)
+
+        for i in range(N):
+            r[i] += K_r_corr[i]
+            z[i] += K_z_corr[i]
+            psi[i] += K_psi_corr[i]
 
         #do_correction = False
         do_correction = check_constraints_truth(N=N,r=r,z=z,psi=psi,Area=Area,tol=Tolerence)
