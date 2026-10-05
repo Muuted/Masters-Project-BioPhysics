@@ -1,5 +1,5 @@
-from two_d_continues_integration import find_init_stationary_state
-from Two_D_functions import Perturbation_of_inital_state,gamma
+#from two_d_continues_integration import find_init_stationary_state
+#from Two_D_functions import Perturbation_of_inital_state,gamma
 import numpy as np
 import random
 import matplotlib.pyplot as plt

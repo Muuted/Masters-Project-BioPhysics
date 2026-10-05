@@ -3,16 +3,17 @@ import matplotlib.pyplot as plt
 import time
 import os
 import pandas as pd
+import multiprocessing
+import platform
 from two_d_continues_integration import find_init_stationary_state
-from Two_D_functions import drdt_func,dzdt_func,dpsidt_func
-from Two_D_functions import Langrange_multi, gamma#,Make_variable_corrections, gamma
+from Two_D_functions import drdt_func,dzdt_func,dpsidt_func, gamma
+from Lagrange_multipliers import Lagrange_multi
 from error_correction_functions import Make_variable_corrections,Perturbation_of_inital_state
 from Runge_Kutta import RungeKutta45
 from two_d_data_processing import E_kin, E_pot, Xsqaured_test
 from Make_movie import Make_frames, Make_video
 from two_d_plot_data import plot_Epot_Ekin, plot_tot_area, plot_comparison_of_plus_minus_un_perturbed_results
-import multiprocessing
-import platform
+
 np.set_printoptions(legacy='1.25') #Setting the print format
 
 
@@ -28,6 +29,7 @@ class Surface_membrane:
             print("Neither Linux or Windows in used. Which the program was developed in")
             print("code excutede in the Surface_class.py file under the __init__ function")
             exit()
+
         self.N:int = N # Number of links
         self.T:float = T # [s] real time simulatied in seconds
         self.dt:float = dt # [s] time step
@@ -313,13 +315,13 @@ class Surface_membrane:
                 )
             #t1,t2 = t%2, (t+1)%2
             
-            lambs,nus = Langrange_multi(
+            lambs,nus = Lagrange_multi(
                     N=self.N,k=self.k,c0=self.c0,sigma=self.sigma
                     ,kG=self.kG,tau=self.tau,ds=self.ds,eta=self.eta
                     ,Area=self.Area_list
                     ,psi=self.psi_list[t]
-                    ,radi=self.r_list[t]
-                    ,z_list=self.z_list[t]
+                    ,r=self.r_list[t]
+                    ,z=self.z_list[t]
                 )
             
             if self.integration_method == "Euler":
@@ -835,7 +837,6 @@ def plotting_multi_process_results(
 
 if __name__ == "__main__":
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=30,sim_index=0,dt=1.7e-11)
-    #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=1,dt=2.5e-11)
     #multi_process(cpu_cores=5,Tot_time=1e-7,N=20,sim_index=2,dt=2.5e-11)
     #plotting_multi_process_results(path="2D sim results\\object results\\T=1e-07\\")
 
@@ -848,8 +849,8 @@ if __name__ == "__main__":
         exit()
 
     membrane = Surface_membrane(
-        T= 5e-11 #1e-7
-        ,dt=1e-11
+        T= 6e-10#1e-7
+        ,dt=5e-12
         ,const_index=1
         ,N=40
         ,save_path= data_path2

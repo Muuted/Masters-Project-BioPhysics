@@ -195,10 +195,15 @@ def Make_variable_corrections(
                 K_z += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r ,psi=psi ,z=z ,Area=Area,diff_var="z")
                 
                 K_psi += epsilon[beta]*c_diff(i=beta,j=i,N=N ,r=r,psi=psi,z=z,Area=Area,diff_var="psi")
+            
             K_r_corr.append(K_r)
             K_z_corr.append(K_z)
             K_psi_corr.append(K_psi)
 
+            #r[i] += K_r#_corr[i]
+            #z[i] += K_z#_corr[i]
+            #psi[i] += K_psi#_corr[i]
+            
         for i in range(N):
             r[i] += K_r_corr[i]
             z[i] += K_z_corr[i]

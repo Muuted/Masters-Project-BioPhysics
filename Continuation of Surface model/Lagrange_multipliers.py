@@ -160,7 +160,7 @@ def nus_im1(i:int,N:int,ds:float,eta:float,r:list,z:list,psi:list,Area:list):
 
 
 
-def Lagrange_multipliers(
+def Lagrange_multi(
         N:int ,k:float ,c0:float ,sigma:float 
         ,kG:float ,tau:float , ds:float, eta:float
         ,Area:list,psi:list
@@ -657,4 +657,4 @@ if __name__ == "__main__":
     psis = [np.pi/3.5 for i in range(Ns)]
     As = [0.1 for i in range(Ns)]
 
-    Lagrange_multipliers(N=Ns,k=1,c0=1,sigma=1,kG=1,tau=1,ds=1,eta=1,Area=As,r=rs,z=zs,psi=psis,print_matrix=True)
+    Lagrange_multi(N=Ns,k=1,c0=1,sigma=1,kG=1,tau=1,ds=1,eta=1,Area=As,r=rs,z=zs,psi=psis,print_matrix=True)
