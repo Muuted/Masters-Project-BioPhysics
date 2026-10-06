@@ -25,9 +25,10 @@ class Surface_membrane:
         ):
         super().__init__()
         # Base constants
-        if platform.system() not in ["Window","Linux"]:
+        if platform.system() not in ["Windows","Linux"]:
             print("Neither Linux or Windows in used. Which the program was developed in")
             print("code excutede in the Surface_class.py file under the __init__ function")
+            print(f"Platform registered is : {platform.system()}")
             exit()
 
         self.N:int = N # Number of links
