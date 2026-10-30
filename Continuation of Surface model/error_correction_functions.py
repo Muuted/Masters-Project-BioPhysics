@@ -162,7 +162,8 @@ def Epsilon_v2(
     if testing == True:
         epsilon_f = x[0:N]
         epsilon_g = x[N:2*N]
-        return epsilon_f,epsilon_g,x, A, b # pyright: ignore[reportReturnType]
+        #print("testing chosen")
+        return epsilon_f,epsilon_g, A, b # pyright: ignore[reportReturnType]
     else:
         return x # pyright: ignore[reportReturnType]
 

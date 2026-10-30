@@ -58,10 +58,11 @@ def test_error_corr_function(testcase:dict)-> str:
     expected_epsilon = testcase["expected epsilon"]
     test_passed = True
 
-    epsilon_f,epsilon_g, M, x = Epsilon_v2(
+    epsilon_f,epsilon_g, M, x  = Epsilon_v2(
         N=N,r=r,z=z,psi=psi,Area=A,
         testing=True
         )
+    
     epsilon_found = np.append(epsilon_f,epsilon_g)
 
     row,col = np.shape(M)  # pyright: ignore[reportAssignmentType]
@@ -74,12 +75,12 @@ def test_error_corr_function(testcase:dict)-> str:
         for j in range(col):
             if expected_M[i][j] != M[i][j]: # pyright: ignore[reportIndexIssue]
                 test_passed = False
-                print(
-                    f"The test failed in the comparison of the matricies for finding the epsilon values \n"
-                    f"on index (i,j)={i,j} with the values \n"
-                    f"expected_M_{i,j} = {expected_M[i][j]} \n"
-                    f"M_{i,j} = {M[i][j]}" # type: ignore
-                )
+                #print(
+                #    f"The test failed in the comparison of the matricies for finding the epsilon values \n"
+                #    f"on index (i,j)={i,j} with the values \n"
+                #    f"expected_M_{i,j} = {expected_M[i][j]} \n"
+                #    f"M_{i,j} = {M[i][j]}" # type: ignore
+                #)
 
     "Testing the b vectors"
     for i in range(row):
